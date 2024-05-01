@@ -1,0 +1,197 @@
+/* eslint-disable react-native/no-inline-styles */
+import React, { useState, useEffect } from 'react';
+import { View, Text, TouchableOpacity, Alert, Image, Linking, Dimensions, Modal, ImageBackground, SafeAreaView, Platform } from 'react-native';
+import { Actions } from 'react-native-router-flux';
+import { MainStatusBar, BasicButton, Header, Wrap, CheckBox, ImageBackgroundComponent, BasicInputBox, BasicInputBoxPassword, SimpleHeader, SimpleHeaderNew, BorderLine } from '../../common/index';
+import styles from './SaitaCardChangePasswordStyle';
+import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
+import Singleton from '../../../Singleton';
+import { Fonts, Images, Colors } from '../../../theme';
+import HeaderwithBackIcon from '../../common/HeaderWithBackIcon';
+import * as Constants from '../../../Constant';
+import { useDispatch } from 'react-redux';
+import Loader from '../Loader/Loader';
+import { setNewPasswordCard } from '../../../Redux/Actions/SaitaCardAction'
+
+
+const windowWidth = Dimensions.get('window').width;
+const windowHeight = Dimensions.get('window').height;
+
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+
+const SaitaCardChangePassword = props => {
+
+  const dispatch = useDispatch();
+  const [password, setPassword] = useState('');
+  const [confirmpassword, setConfirmPassword] = useState('');
+  const [isLoading, setisLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(true);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(true);
+
+
+
+  useEffect(() => {
+
+  }, []);
+
+  const redirect = (msg) => {
+    Alert.alert(
+      'Success',
+      msg,
+      [
+        {
+          text: 'Ok',
+          onPress: () => {
+            Actions.jump("SaitaCardLogin")
+          },
+        },
+
+      ],
+      { cancelable: false },
+    );
+  }
+
+  const proceedPassword = () => {
+    if (password == "") {
+      Singleton.showAlert('New Password field is required.');
+      return
+    }
+    if (confirmpassword == "") {
+      Singleton.showAlert('Confirm Password field is required.');
+      return
+    }
+
+    if (password.length < 6) {
+      Singleton.showAlert('Password must be greater than 5 characters');
+      return
+    }
+
+
+    if (confirmpassword.length < 6) {
+      Singleton.showAlert('Confirm Password must be greater than 5 characters');
+      return
+    }
+    if (Constants.PASSWORD_REGEX.test(password) == false) {
+      Singleton.showAlert("Password must include a special character, upper and lower case letters and a number")
+      return
+    }
+    if (confirmpassword != password) {
+      Singleton.showAlert('Password mismatch.');
+      return
+    }
+
+
+    if (Constants.PASSWORD_REGEX.test(confirmpassword) == false) {
+      Singleton.showAlert("Confirm Password must include a special character, upper and lower case letters and a number")
+      return
+    }
+
+    
+
+
+
+
+
+
+
+    setisLoading(true);
+    let data = {
+      email: props.dataObj.email,
+      otp: props.dataObj.otp,
+      newPwd: password,
+      cnfrmPwd: confirmpassword,
+      otp_type: "forget_pwd"
+    };
+    dispatch(setNewPasswordCard({ data })).then(res => {
+      setisLoading(false);
+      ////MM//MMconsole.warn('MM',"proceedPassword res::::::::", res);
+      if (res.status) {
+        redirect(res.message)
+        //Actions.jump("SaitaCardLogin")
+        //  Singleton.showAlert(res.message)
+      }
+    }).catch(err => {
+      //console.warn('MM',"proceedPassword eerrr:::::::::", err);
+      setisLoading(false);
+      Singleton.showAlert(err.message)
+    });
+  }
+
+
+
+  return (
+    <Wrap style={{ backgroundColor: ThemeManager.colors.backgroundColor }}>
+      <KeyboardAwareScrollView style={{ height: windowHeight }} showsVerticalScrollIndicator={false} enableOnAndroid={true} keyboardShouldPersistTaps={'always'} bounces={false}>
+
+        <View style={{ height: windowHeight }}>
+          <View style={styles.container}>
+            <MainStatusBar
+              backgroundColor={ThemeManager.colors.backgroundColor}
+              barStyle={ThemeManager.colors.themeColor === 'light' ? 'dark-content' : 'light-content'} />
+
+            {/* <Text style={[styles.lablePrefLang, { color: ThemeManager.colors.lightTextColor },]}>Visual form of a document or a typeface{'\n'} without relying on meaningful content. </Text> */}
+            <SimpleHeaderNew
+              title={LanguageManager.newpassword}
+              backImage={ThemeManager.ImageIcons.iconBack}
+              titleStyle
+              back={false}
+              backPressed={() => {
+                props.navigation.goBack();
+              }}
+
+            />
+            <BorderLine/>
+            <View style={{ justifyContent: 'center', marginTop: 80, marginHorizontal: 25, }}>
+              <BasicInputBoxPassword
+                titleStyle={{ color: ThemeManager.colors.textColor, fontSize: 13, fontFamily: Fonts.semibold }}
+                title={LanguageManager.password}
+                width="85%"
+                maxLength={20}
+                onPress={() => setShowPassword(!showPassword)}
+                secureTextEntry={showPassword}
+                keyboardType='ascii-capable'
+                // keyboardType={Platform.OS == 'ios' ? "ascii-capable": "visible-password"}
+                onChangeText={text => setPassword(text)}
+                mainStyle={{ borderColor: ThemeManager.colors.inputBoxColor }}
+                placeholder={LanguageManager.enterhere}>
+
+              </BasicInputBoxPassword>
+
+              <BasicInputBoxPassword
+                titleStyle={{ color: ThemeManager.colors.textColor, fontSize: 13, fontFamily: Fonts.semibold }}
+                title={LanguageManager.confirmpassword}
+                width="85%"
+                maxLength={20}
+                onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+                secureTextEntry={showConfirmPassword}
+                onChangeText={text => setConfirmPassword(text)}
+                keyboardType='ascii-capable'
+                // keyboardType={Platform.OS == 'ios' ? "ascii-capable": "visible-password"}
+                mainContainerStyle={{ marginTop: 10 }}
+                mainStyle={{ borderColor: ThemeManager.colors.inputBoxColor }}
+                placeholder={LanguageManager.enterhere}>
+
+              </BasicInputBoxPassword>
+
+              <BasicButton
+                onPress={() => proceedPassword()}
+                btnStyle={styles.btnStyle}
+                customGradient={styles.customGrad}
+                text="Submit"
+              />
+            </View>
+
+
+          </View>
+        </View>
+
+
+        {isLoading && <Loader />}
+
+      </KeyboardAwareScrollView>
+    </Wrap>
+
+  );
+};
+
+export default SaitaCardChangePassword;

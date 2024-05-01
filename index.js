@@ -1,0 +1,39 @@
+/**
+ * @format
+ */
+//  import "@ethersproject/shims"
+import '@walletconnect/react-native-compat'
+ import 'react-native-get-random-values'
+import 'react-native-gesture-handler'
+import '@react-native-anywhere/polyfill-base64'
+import 'polyfill-object.fromentries'
+import { AppRegistry, LogBox, Text, TextInput } from 'react-native';
+import App from './src/App';
+import messaging from '@react-native-firebase/messaging'
+import crypto from 'crypto'
+global.crypto = crypto
+import { name as appName } from './app.json';
+import * as Sentry from "@sentry/react-native";
+if (typeof global.globalThis === 'undefined') {
+  global.globalThis = Function('return this')();
+}
+const TextEncodingPolyfill = require('text-encoding');
+Object.assign(global, {
+  TextEncoder: TextEncodingPolyfill.TextEncoder,
+  TextDecoder: TextEncodingPolyfill.TextDecoder,
+});
+if (Text.defaultProps == null) {
+  Text.defaultProps = {};
+  Text.defaultProps.allowFontScaling = false;
+}
+
+if (TextInput.defaultProps == null) {
+  TextInput.defaultProps = {};
+  TextInput.defaultProps.allowFontScaling = false;
+}
+
+
+console.disableYellowBox = true
+
+
+AppRegistry.registerComponent(appName, () => Sentry.wrap(App));

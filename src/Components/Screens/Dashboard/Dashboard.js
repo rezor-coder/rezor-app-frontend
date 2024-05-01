@@ -1,0 +1,638 @@
+/* eslint-disable react-native/no-inline-styles */
+import React, { useEffect, useState } from 'react';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  ScrollView,
+  Dimensions,
+  Linking,
+  AppState,
+  BackHandler,
+  StatusBar
+} from 'react-native';
+import { Actions } from 'react-native-router-flux';
+import { Images, Colors } from '../../../theme/';
+import { MainHeader, IconText } from '../../common';
+import styles from './DashboardStyle';
+import FastImage from 'react-native-fast-image';
+import fonts from '../../../theme/Fonts';
+import { SliderBox } from 'react-native-image-slider-box';
+import Singleton from '../../../Singleton';
+import * as constants from '../../../Constant';
+import { EventRegister } from 'react-native-event-listeners';
+import images from '../../../theme/Images';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  getDashboardWallets,
+  walletDataUpdate,
+  getAdvertisementList,
+  walletFormUpdate,
+  getInfuraLink,
+  getInfuraBNBLink,
+  getRouterDetails,
+  getSocialList,
+  getMyWallets,
+  getDexUrls,
+} from '../../../Redux/Actions';
+import messaging from '@react-native-firebase/messaging';
+import Loader from '../Loader/Loader';
+import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
+import { areaDimen, heightDimen, widthDimen } from '../../../Utils/themeUtils';
+import { FlatList } from 'react-native';
+import { BASE_IMAGE } from '../../../Endpoints';
+import { showMessage } from 'react-native-flash-message';
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+const Dashboard = props => {
+  const [viewKey,setViewKey]=useState(new Date())
+  const insets = useSafeAreaInsets();
+  const dispatch = useDispatch();
+  const CoinDataMain = useSelector(state => state?.walletReducer?.myWallets);
+  const CoinData = useSelector(state => state?.walletReducer?.dashboardWallets);
+  const [BANNER, setBANNER] = useState([]);
+  const [Page, setPage] = useState(1);
+  const [Limit, setLimit] = useState(25);
+  const [isLoading, setisLoading] = useState(true);
+  const [showLoader, setShowLoader] = useState(false);
+  useEffect(() => {
+    EventRegister.addEventListener('themeChanged',()=>{
+      setViewKey(new Date())
+    })
+    getWalletData();
+    // Notification();
+    Bannerimg();
+    let backHandle
+    backHandle = BackHandler.addEventListener('hardwareBackPress', () => {
+      if (Actions.currentScene == 'Dashboard') {
+        Actions.currentScene != 'Main' && Actions.reset("Main")
+      } else {
+        Actions.pop()
+      }
+      return true
+    })
+    EventRegister.addEventListener('walletAPIEvent', data1 => {
+      getWalletData();
+    });
+    let focus = props.navigation.addListener('didFocus', () => {
+      backHandle = BackHandler.addEventListener('hardwareBackPress', () => {
+        if (Actions.currentScene == 'Dashboard') {
+          Actions.currentScene != 'Main' && Actions.reset("Main")
+        } else {
+          Actions.pop()
+        }
+        return true
+      })
+      Singleton.getInstance().currentCard = 'black';
+      getInfuraMainLink();
+      getBNBLink();
+      getNodeDetails();
+      getWalletData();
+      // Notification();
+      Bannerimg();
+      dispatch(getSocialList())
+        .then(async response => {
+          Singleton.getInstance().newSaveData(
+            constants.SOCIAL_LINKS,
+            JSON.stringify(response.data),
+          );
+        })
+        .catch(error => { });
+      dispatch(walletFormUpdate({ prop: 'selectedAddress', value: '' }));
+    });
+    let blur = props.navigation.addListener('didBlur', () => {
+      backHandle?.remove();
+    })
+    return () => {
+      backHandle?.remove();
+      blur?.remove();
+      focus?.remove();
+      EventRegister.removeEventListener('themeChanged')
+    };
+  }, []);
+
+  const getInfuraMainLink = () => {
+    dispatch(getInfuraLink())
+      .then(response => {
+        constants.mainnetInfuraLink = response.link;
+        Singleton.getInstance().ethLink = response.link;
+      })
+      .catch(error => { });
+  };
+  const getBNBLink = () => {
+    dispatch(getInfuraBNBLink())
+      .then(response => {
+        constants.mainnetInfuraLinkBNB = response.link;
+        Singleton.getInstance().bnbLink = response.link;
+      })
+      .catch(error => { });
+  };
+
+  const getNodeDetails = () => {
+    let access_token = Singleton.getInstance().access_token;
+    dispatch(getDexUrls(access_token))
+      .then(response => {
+        console.warn('MM', 'response==getDexUrls ==== pin', response);
+      })
+      .catch(error => {
+        console.warn('MM', 'error==getDexUrls=== pin', error);
+      });
+    dispatch(getRouterDetails())
+      .then(response => {
+        let instance = Singleton.getInstance();
+        instance.SwapRouterAddress = response.data.Router;
+        instance.SwapFactoryAddress = response.data.Factory;
+        instance.StakeSaitamaAddress = response.data.SaitamaAddress;
+        instance.StakingContractAddress = response.data.StakingContractAddress;
+        instance.SwapWethAddress = response.data.WethAddress;
+        instance.SwapRouterBNBAddress = response.data.BnbRouter;
+        instance.SwapRouterStcAddress = response.data.StcRouter;
+        instance.SwapWBNBAddress = response.data.WbnbAddress;
+        instance.SwapWethAddressSTC = response.data.StcWeth;
+        instance.SwapFactoryAddressSTC=response.data.StcFactory;
+        instance.SwapFactoryAddressBNB=response.data.BnbFactory;
+      })
+      .catch(error => { });
+  };
+  const getWalletData = () => {
+    Singleton.getInstance().newSaveData(constants.IS_LOGIN, '1');
+    Singleton.getInstance()
+      .newGetData(constants.DASHBOARD_WALLET_LIST)
+      .then(wallet_list => {
+        wallet_list == null && setShowLoader(true);
+        wallet_list?.length > 0 &&
+          dispatch(
+            walletDataUpdate({
+              prop: 'dashboardWallets',
+              value: JSON.parse(wallet_list),
+            }),
+          );
+        getMyWalletsData();
+      });
+  };
+  const Bannerimg = () => {
+    let access_token = Singleton.getInstance().access_token;
+    dispatch(getAdvertisementList({ access_token }))
+      .then(response => {
+        const imgArr = response.data;
+        setBANNER(imgArr);
+      })
+      .catch(error => { });
+  };
+  const walletListCall = () => {
+    let page = Page;
+    let limit = Limit;
+    let access_token = Singleton.getInstance().access_token;
+    Singleton.getInstance()
+      .newGetData(constants.addresKeyList)
+      .then(addresKeyList => {
+        Singleton.getInstance()
+          .newGetData(constants.coinFamilyKeys)
+          .then(coinFamilyKey => {
+            let addrsListKeys = JSON.parse(addresKeyList);
+            let coinFamilyKeys = coinFamilyKey?.split(',');
+            dispatch(
+              getMyWallets({
+                page,
+                limit,
+                addrsListKeys,
+                coinFamilyKeys,
+                access_token,
+              }),
+            )
+              .then(response => { })
+              .catch(error => {
+                setisLoading(false);
+              });
+          })
+          .catch(err => {
+            setisLoading(false);
+          });
+      });
+  };
+  const getMyWalletsData = () => {
+    walletListCall();
+    let page = Page;
+    let limit = 100;
+    let access_token = Singleton.getInstance().access_token;
+    Singleton.getInstance()
+      .newGetData(constants.addresKeyList)
+      .then(addresKeyList => {
+        Singleton.getInstance()
+          .newGetData(constants.coinFamilyKeys)
+          .then(coinFamilyKey => {
+            let addrsListKeys = JSON.parse(addresKeyList);
+            let coinFamilyKeys = coinFamilyKey?.split(',');
+            showLoader == true ? setisLoading(true) : setisLoading(false);
+            dispatch(
+              getDashboardWallets({
+                page,
+                limit,
+                addrsListKeys,
+                coinFamilyKeys,
+                access_token,
+              }),
+            )
+              .then(response => {
+                setisLoading(false);
+                dispatch(
+                  walletDataUpdate({
+                    prop: 'dashboardWallets',
+                    value: response,
+                  }),
+                );
+              })
+              .catch(error => {
+                setisLoading(false);
+              });
+          })
+          .catch(err => {
+            setisLoading(false);
+          });
+      });
+  };
+  const CardItem = ({ item, index }) => {
+    return (
+      <View
+        style={[styles.cardMain, { backgroundColor: ThemeManager.colors.iconBg, }]}>
+        {item.coin_image ? (
+          <FastImage
+            source={{
+              uri: item.coin_image.includes('https')
+                ? item.coin_image
+                : BASE_IMAGE + item.coin_image,
+            }}
+            style={{
+              height: areaDimen(38),
+              width: areaDimen(38),
+              borderRadius: areaDimen(15),
+            }}
+          />
+        ) : (
+          <View
+            style={[styles.imageNameContainer, { backgroundColor: Colors.buttonColor2 }]}>
+            <Text style={{ color: 'white' }}>
+              {item?.coin_symbol?.toUpperCase().charAt(0)}
+            </Text>
+          </View>
+        )}
+        <View
+          style={{
+            marginLeft: widthDimen(8),
+            flex: 1,
+          }}>
+          <View style={{ justifyContent: 'center' }}>
+            <Text
+              style={[styles.coinNameStyle, { color: ThemeManager.colors.textColor, }]}>
+              {item.coin_name.toString().length > 13
+                ? item.coin_name.substring(0, 8) + '...'
+                : item.coin_name}
+              <Text
+                style={[styles.coinFamilyText, { color: ThemeManager.colors.inActiveColor, }]}>
+                {' '}
+                {item.is_token == 1
+                  ? item?.coin_family == 1
+                    ? '(ERC20)'
+                    : item?.coin_family == 6
+                      ? '(BEP20)'
+                      : item?.coin_family == 3
+                        ? '(TRC20)'
+                        : item?.coin_family == 11
+                          ? ' (MATIC ERC20)'
+                         : item?.coin_family == 4
+                          ? ' (SBC24)'
+                          : ''
+                  : ''}
+              </Text>
+            </Text>
+          </View>
+          <Text
+            style={[styles.coinBalanceText,
+            {
+              color: ThemeManager.colors.inActiveColor,
+            },
+            ]}
+            numberOfLines={1}>
+            {item.balance != 0
+              ? Singleton.getInstance().exponentialToDecimal(
+                Singleton.getInstance().toFixed(
+                  Singleton.getInstance().exponentialToDecimal(
+                    item.balance,
+                  ),
+                  constants.CRYPTO_DECIMALS,
+                ),
+              ) || 0
+              : item.balance}{' '}
+            {item.coin_symbol.toUpperCase()}
+          </Text>
+        </View>
+        <View style={{ flexDirection: 'row' }}>
+          {item.is_stake == 1 && (
+            <TouchableOpacity
+              style={[styles.stakeButton, { borderColor: ThemeManager.colors.inActiveColor, }]}
+              onPress={() => {
+                Singleton.getInstance()
+                  .newGetData(constants.IS_PRIVATE_WALLET)
+                  .then(isPrivate => {
+                    if (
+                      isPrivate == 'btc' ||
+                      isPrivate == 'matic' ||
+                      isPrivate == 'trx'
+                    ) {
+                      Singleton.showAlert(
+                        constants.UNCOMPATIBLE_WALLET,
+                      );
+                    } else {
+                      Actions.currentScene !== 'Stake' &&
+                        Actions.Stake({
+                          chain: item.coin_family == 1 ? 'eth' : 'bnb',
+                        });
+                    }
+                  });
+              }}>
+              <Text
+                style={[styles.stakeText, { color: ThemeManager.colors.inActiveColor }]}>
+                {LanguageManager.stake}
+              </Text>
+            </TouchableOpacity>
+          )}
+          {/* {item.on_epay == 1 && (
+            <TouchableOpacity
+              style={[styles.buyButton, { backgroundColor: ThemeManager.colors.primary, }]}
+              onPress={() => {
+                Singleton.getInstance()
+                  .newGetData(constants.IS_PRIVATE_WALLET)
+                  .then(isPrivate => {
+                    if (
+                      isPrivate == 'btc' ||
+                      isPrivate == 'matic' ||
+                      isPrivate == 'trx'
+                    ) {
+                      Singleton.showAlert(
+                        constants.UNCOMPATIBLE_WALLET,
+                      );
+                    } else {
+                      Actions.currentScene != 'Epay' &&
+                        Actions.Epay({ selectedItem: item });
+                    }
+                  });
+              }}>
+              <Text
+                style={[styles.buyText, { color: Colors.white }]}>
+                {LanguageManager.buy}
+              </Text>
+            </TouchableOpacity>
+          )} */}
+        </View>
+      </View>
+    )
+  }
+  return (
+    <View style={{ backgroundColor: ThemeManager.colors.dashboardBg, flex: 1, paddingTop: insets.top }} key={viewKey}>
+      <StatusBar
+        backgroundColor={ThemeManager.colors.bg}
+        barStyle={ThemeManager.colors.themeColor === 'light'
+          ? 'dark-content'
+          : 'light-content'}
+      />
+      <MainHeader
+        goback={false}
+        searchEnable={false}
+        onChangedText={text => { }}
+        containerStyle={{ backgroundColor: ThemeManager.colors.dashboardBg }}
+        onpress3={() => {
+          Actions.currentScene != 'Notification' && Actions.Notification();
+        }}
+        onpress2={() => {
+          Actions.currentScene != 'Setting' &&
+            props.navigation.navigate('Setting', {
+              onGoBack: () => { },
+            });
+        }}
+        onpress1={() => {
+          Singleton.getInstance()
+            .newGetData(constants.IS_PRIVATE_WALLET)
+            .then(isPrivate => {
+              if (isPrivate == 'btc' || isPrivate == 'trx') {
+                Singleton.showAlert(constants.UNCOMPATIBLE_WALLET);
+              } else {
+                Actions.currentScene != 'ConnectWithDapp' &&
+                  Actions.ConnectWithDapp();
+              }
+            });
+        }}
+        styleImg1={{
+          tintColor: ThemeManager.colors.iconColor,
+          width: widthDimen(20),
+        }}
+        styleImg2={{
+          tintColor: ThemeManager.colors.iconColor,
+          width: widthDimen(20),
+        }}
+        styleImg3={{
+          tintColor: ThemeManager.colors.iconColor,
+          width: widthDimen(20),
+        }}
+        firstImg={images.walletConnect}
+        thridImg={ThemeManager.ImageIcons.bellIcon}
+        secondImg={ThemeManager.ImageIcons.setting}
+      />
+      <ScrollView
+        bounces={false}
+        stickyHeaderIndices={[2]}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: 20 }}>
+        <View
+          style={{
+            width: '100%',
+            height: heightDimen(232), //sliderWidth / 1.8,
+            alignItems: 'center',
+            paddingTop: heightDimen(24),
+          }}>
+          <SliderBox
+            parentWidth={widthDimen(380)}
+            images={BANNER.map(a => a.image)}
+            autoplay
+            circleLoop
+            imageLoadingColor={Colors.fadeDot}
+            sliderBoxHeight={heightDimen(184)}
+            onCurrentImagePressed={index => Linking.openURL(BANNER[index].link)}
+            dotColor={ThemeManager.colors.dotColor}
+            dotStyle={{
+              width: 0,
+              height: 0,
+            }}
+            inactiveDotColor="#90A4AE"
+            resizeMode="stretch"
+            ImageComponentStyle={{
+              borderRadius: areaDimen(5),
+              resizeMode: 'stretch',
+              backgroundColor: ThemeManager.colors.bg,
+            }}
+          />
+        </View>
+        <View
+          style={{
+            width: '100%',
+            borderRadius: areaDimen(10),
+            justifyContent: 'center',
+            paddingHorizontal: widthDimen(7),
+          }}>
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-evenly',
+              paddingBottom: heightDimen(10),
+            }}>
+            {/* <IconText
+              tintColor={ThemeManager.colors.headingText}
+              onPress={() => {
+                Singleton.getInstance()
+                  .newGetData(constants.IS_PRIVATE_WALLET)
+                  .then(isPrivate => {
+                    if (
+                      isPrivate == 'btc' ||
+                      isPrivate == 'matic' ||
+                      isPrivate == 'trx'
+                    ) {
+                      Singleton.showAlert(constants.UNCOMPATIBLE_WALLET);
+                    } else {
+                      Actions.currentScene != 'Epay' && Actions.Epay();
+                    }
+                  });
+              }}
+              styleIconText={{ backgroundColor: ThemeManager.colors.iconBg }}
+              imageIcon={Images.Buy}
+              title={LanguageManager.buy}
+            /> */}
+
+            <IconText
+              tintColor={ThemeManager.colors.headingText}
+              onPress={() => {
+                if (global.disconnected) {
+                  Singleton.showAlert(constants.NO_NETWORK);
+                  return;
+                }
+                Singleton.getInstance()
+                  .newGetData(constants.IS_PRIVATE_WALLET)
+                  .then(isPrivate => {
+                    if (
+                      isPrivate == 'btc' ||
+                      isPrivate == 'matic' ||
+                      isPrivate == 'bnb' ||
+                      isPrivate == 'trx' ||
+                      isPrivate == 'eth' ||
+                      isPrivate == 'stc'
+                    ) {
+                      Singleton.showAlert(constants.UNCOMPATIBLE_WALLET);
+                    } else {
+                      Singleton.getInstance()
+                        .newGetData(constants.access_token_cards)
+                        .then(access_token_cards => {
+                          if (access_token_cards == null) {
+                            Actions.currentScene != 'SaitaCardWelcome' &&
+                              Actions.SaitaCardWelcome();
+                          } else {
+                            Actions.currentScene != 'SaitaCardsInfo' &&
+                              Actions.SaitaCardsInfo({ from: 'Dashboard' });
+                          }
+                        });
+                    }
+                  });
+              }}
+              styleIconText={{ backgroundColor: ThemeManager.colors.iconBg }}
+              imageIcon={Images.saitaCard}
+              title={'SaitaCard'}
+            />
+            <IconText
+              tintColor={ThemeManager.colors.headingText}
+              onPress={() => {
+                let item = { coin_family: 1 };
+                Singleton.getInstance()
+                  .newGetData(constants.IS_PRIVATE_WALLET)
+                  .then(isPrivate => {
+                    if (
+                      isPrivate == 'btc' ||
+                      isPrivate == 'matic' ||
+                      isPrivate == 'trx'
+                    ) {
+                      Singleton.showAlert(constants.UNCOMPATIBLE_WALLET);
+                    } else {
+                      Actions.currentScene != 'Trade' &&
+                        Actions.Trade({ chain: isPrivate });
+                    }
+                  });
+              }}
+              styleIconText={{ backgroundColor: ThemeManager.colors.iconBg }}
+              imageIcon={Images.swap}
+              title={LanguageManager.swap}
+            />
+            <IconText
+              tintColor={ThemeManager.colors.headingText}
+              onPress={() => {
+                if (CoinData.length == 0) {
+                  Singleton.showAlert('Please enable your wallet for Send.');
+                  return;
+                }
+                Actions.currentScene != 'Send' &&
+                  Actions.Send({ walletList: CoinDataMain, from: 'Send' });
+              }}
+              styleIconText={{ backgroundColor: ThemeManager.colors.iconBg }}
+              imageIcon={Images.send}
+              title="Send"
+            />
+          </View>
+        </View>
+        <View key={2}>
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              borderRadius: 8,
+              paddingTop: 12,
+              paddingHorizontal: 20,
+              width: '100%',
+              backgroundColor: ThemeManager.colors.dashboardBg,
+            }}>
+            <View>
+              <Text
+                style={{
+                  color: ThemeManager.colors.textColor,
+                  fontSize: 16,
+                  fontFamily: fonts.semibold,
+                }}>
+                {LanguageManager.assets}
+              </Text>
+            </View>
+          </View>
+        </View>
+        <FlatList
+          data={CoinData}
+          ListEmptyComponent={() => {
+            return (
+              <View
+                style={{
+                  height: Dimensions.get('screen').height / 3,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}>
+                <Text
+                  style={[
+                    styles.noCoinText,
+                    { color: ThemeManager.colors.textColor },
+                  ]}>
+                  {LanguageManager.noCoinEnabled}
+                </Text>
+              </View>
+            );
+          }}
+          contentContainerStyle={{ paddingVertical: heightDimen(10) }}
+          style={{ paddingBottom: heightDimen(80) }}
+          renderItem={CardItem}
+        />
+      </ScrollView>
+
+      {isLoading && <Loader />}
+    </View>
+  );
+};
+export default Dashboard;

@@ -1,0 +1,73 @@
+{
+  "migIndex": 1,
+  "data": [
+    {
+      "path": "assets/fonts/Helvetica-Bold.ttf",
+      "sha1": "ba24a4ad975ac14a219dadc340690ae4d19a3f68"
+    },
+    {
+      "path": "assets/fonts/Helvetica-BoldOblique.ttf",
+      "sha1": "afe42ef13d2c3ce4b2a15ec73d7996f53e37e676"
+    },
+    {
+      "path": "assets/fonts/Helvetica-Oblique.ttf",
+      "sha1": "1b41bf58374f95e319e8ae4deebd79a694802e6b"
+    },
+    {
+      "path": "assets/fonts/Helvetica.ttf",
+      "sha1": "bf6e82531a0b8d0ed5f82ca41e9748aa8d2ed8c9"
+    },
+    {
+      "path": "assets/fonts/OCR-A.ttf",
+      "sha1": "33f10c648bfb1b25d0bd3a34615e62bba86511ed"
+    },
+    {
+      "path": "assets/fonts/OCR-ABT.ttf",
+      "sha1": "d377e741f281cf95cb31de41e0b9a10b0ea1e0c5"
+    },
+    {
+      "path": "assets/fonts/OCR-A_Regular.ttf",
+      "sha1": "b6e05cff15d96a5bd08fc664cfbdeabbaaedf821"
+    },
+    {
+      "path": "assets/fonts/Poppins-Bold.ttf",
+      "sha1": "875cf0cecd647bcf22e79d633d868c1b1ec98dfa"
+    },
+    {
+      "path": "assets/fonts/Poppins-Light.ttf",
+      "sha1": "e247a92158e112f8bf7b638c8d95381d66b00dbb"
+    },
+    {
+      "path": "assets/fonts/Poppins-Medium.ttf",
+      "sha1": "283f21b44efbdbf276ba802be2d949a36bbc4233"
+    },
+    {
+      "path": "assets/fonts/Poppins-Regular.ttf",
+      "sha1": "fdd3002e7d814ee47c1c1b8487c72c6bbb3a2d00"
+    },
+    {
+      "path": "assets/fonts/Poppins-SemiBold.ttf",
+      "sha1": "8a4ace9392d06bcb7f8ea2f5169b07e4c383a90d"
+    },
+    {
+      "path": "assets/fonts/helvetica-compressed-5871d14b6903a.otf",
+      "sha1": "8ddd4a7955071a6aeb51e67002299aa2bde407e2"
+    },
+    {
+      "path": "assets/fonts/helvetica-light-587ebe5a59211.ttf",
+      "sha1": "a7d02da118efb487c83136ea82b1d40e19dc019b"
+    },
+    {
+      "path": "assets/fonts/helvetica-rounded-bold-5871d05ead8de.otf",
+      "sha1": "9979d852574beb09a99841fda8d3ef030e9a4b64"
+    },
+    {
+      "path": "assets/fonts/ocr-a_bt.ttf",
+      "sha1": "d377e741f281cf95cb31de41e0b9a10b0ea1e0c5"
+    },
+    {
+      "path": "assets/fonts/ocr-aregular.ttf",
+      "sha1": "e6c35aee44323fee6068f0369fd1e942a716872c"
+    }
+  ]
+}

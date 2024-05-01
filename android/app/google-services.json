@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "364680627571",
+    "project_id": "saitamask-bee60",
+    "storage_bucket": "saitamask-bee60.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:364680627571:android:1ec12d549bff2765123106",
+        "android_client_info": {
+          "package_name": "com.saitapro"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "364680627571-spn72ragc4d6pu12gi7f8pros10clpub.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC77OwKfNlkDkLiATFpIVf-tZiDHWaIMTk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "364680627571-spn72ragc4d6pu12gi7f8pros10clpub.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "364680627571-a9c2074ecaid99s9b9v8asndhhvbqpqk.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.antier.saitamask"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

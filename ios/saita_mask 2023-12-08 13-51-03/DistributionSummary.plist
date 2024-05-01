@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>saita_mask.ipa</key>
+	<array>
+		<dict>
+			<key>architectures</key>
+			<array>
+				<string>arm64</string>
+			</array>
+			<key>buildNumber</key>
+			<string>1</string>
+			<key>certificate</key>
+			<dict>
+				<key>SHA1</key>
+				<string>31C2F4B28A0500D925C50F08FD8E7F7960E439E2</string>
+				<key>dateExpires</key>
+				<string>24/01/24</string>
+				<key>type</key>
+				<string>Apple Development</string>
+			</dict>
+			<key>entitlements</key>
+			<dict>
+				<key>application-identifier</key>
+				<string>G89FY56MNB.com.saitapro</string>
+				<key>aps-environment</key>
+				<string>development</string>
+				<key>com.apple.developer.team-identifier</key>
+				<string>G89FY56MNB</string>
+				<key>get-task-allow</key>
+				<true/>
+			</dict>
+			<key>name</key>
+			<string>saita_mask.app</string>
+			<key>profile</key>
+			<dict>
+				<key>UUID</key>
+				<string>f9cac61c-d0b9-4aaa-b511-97a424d6d693</string>
+				<key>dateExpires</key>
+				<string>03/12/24</string>
+				<key>name</key>
+				<string>iOS Team Provisioning Profile: com.saitapro</string>
+			</dict>
+			<key>team</key>
+			<dict>
+				<key>id</key>
+				<string>G89FY56MNB</string>
+				<key>name</key>
+				<string>SAITAMA TECHNOLOGY L.L.C</string>
+			</dict>
+			<key>versionNumber</key>
+			<string>11.1</string>
+		</dict>
+	</array>
+</dict>
+</plist>

@@ -1,0 +1,45 @@
+require_relative '../node_modules/react-native/scripts/react_native_pods'
+require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
+
+platform :ios, '13.0'
+# source 'https://github.com/CocoaPods/Specs.git'
+# install! 'cocoapods', :deterministic_uuids => false
+target 'saita_mask' do
+  config = use_native_modules!
+  use_modular_headers!
+  use_react_native!(
+    :path => config[:reactNativePath],
+    # to enable hermes on iOS, change `false` to `true` and then install pods
+    :hermes_enabled => false
+  )
+  pod 'react-native-date-picker', :path => '../node_modules/react-native-date-picker'
+  pod 'react-native-slider', :path => '../node_modules/@react-native-community/slider'
+  pod 'react-native-netinfo', :path => '../node_modules/@react-native-community/netinfo'
+  pod 'glog', :podspec => '../node_modules/react-native/third-party-podspecs/glog.podspec', :modular_headers => false
+  permissions_path = '../node_modules/react-native-permissions/ios'
+  pod 'Permission-Camera', :path => "#{permissions_path}/Camera"
+   pod 'HDWalletKit'
+   pod 'HDWalletKitBTC', :path => './'
+  # pod 'react-native-charts-wrapper', :path => '../node_modules/react-native-charts-wrapper'
+
+  # pod 'react-native-image-picker', :path => '../node_modules/react-native-image-picker'
+#  pod 'ShuftiPro',  :git => "https://github.com/shuftipro/iOS-binary-pod"
+
+
+
+pod 'glog', :podspec => '../node_modules/react-native/third-party-podspecs/glog.podspec', :modular_headers => false
+
+
+  target 'saita_maskTests' do
+    inherit! :complete
+  end
+
+  # Enables Flipper.
+  # Note that if you have use_frameworks! enabled, Flipper will not work and
+  # you should disable the next line.
+  # use_flipper!()
+  # post_install do |installer|
+  #   react_native_post_install(installer)
+  #   __apply_Xcode_12_5_M1_post_install_workaround(installer)
+  # end
+end

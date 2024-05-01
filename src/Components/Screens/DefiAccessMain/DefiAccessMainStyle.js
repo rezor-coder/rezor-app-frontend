@@ -1,0 +1,173 @@
+import {StyleSheet, Dimensions} from 'react-native';
+import { ThemeManager } from '../../../../ThemeManager';
+import {Images, Colors, Fonts} from '../../../theme';
+import { heightDimen, widthDimen } from '../../../Utils/themeUtils';
+
+export default StyleSheet.create({
+  wrap: {
+    display: 'flex',
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: Colors.screenBg,
+  },
+  subHeader: {
+    paddingHorizontal: widthDimen(23),
+    marginTop: heightDimen(18),
+    marginBottom: heightDimen(18),
+  },
+  subHeaderTitleStyle: {
+    fontFamily: Fonts.medium,
+    fontSize: 22,
+    color: Colors.textColor,
+    paddingHorizontal: 8,
+    alignSelf: 'center',
+    textAlign: 'center',
+    marginBottom: 7,
+  },
+  subHeaderTextStyle: {
+    fontFamily: Fonts.regular,
+    fontSize: 14,
+    color: Colors.textColor,
+    paddingHorizontal: 8,
+  },
+  tab_wrapstyle: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 30,
+  },
+  tabsWrap: {
+    backgroundColor: Colors.tabsWrapBg,
+    height: 53,
+    borderRadius: 12,
+    paddingHorizontal: 13,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  tab_itemTextStyle: {
+    fontFamily: Fonts.medium,
+    fontSize: 14,
+    color: Colors.textColor,
+    paddingHorizontal: 12,
+  },
+  tab_itemStyle: {},
+  tab_isActiveStyle: {
+    backgroundColor: Colors.White,
+    paddingHorizontal: 8,
+    height: 31,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 8,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 1.41,
+    elevation: 2,
+  },
+  tab_isActiveTextStyle: {
+    fontFamily: Fonts.medium,
+    fontSize: 14,
+    color: Colors.themeColor,
+    paddingHorizontal: 8,
+  },
+  searchBtn: {
+    position: 'absolute',
+    right: widthDimen(24),
+    height:'100%',
+    justifyContent:'center'
+  },
+  listStyle: {
+    marginVertical: 8,
+    paddingHorizontal: 10,
+    // flexWrap: 'wrap',
+    width: Dimensions.get('screen').width / 2,
+    alignItems: 'center',
+  },
+  item_defi: {
+    // backgroundColor: '#fff',
+    // backgroundColor: 'red',
+    borderRadius: 12,
+    paddingHorizontal: 10,
+    paddingVertical:10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: "100%",
+    // flexWrap: 'wrap',
+    shadowColor:ThemeManager.colors.shadowColor,
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 3.05,
+    elevation: 4,
+  },
+  textBlockStyle: {
+    flex: 1,
+    paddingLeft: 17,
+    paddingRight: 11,
+  },
+
+  titleTextStyle: {
+    fontFamily: Fonts.regular,
+    color: Colors.textColor,
+    fontSize: 14,
+    textAlign: 'center',
+    // marginBottom:4,
+    marginLeft: 8,
+    maxWidth: '75%',
+    alignSelf: 'center',
+  },
+  descTextStyle: {
+    fontFamily: Fonts.regular,
+    color: Colors.textColor,
+    fontSize: 12,
+    lineHeight: 15,
+  },
+  listStyle: {
+    marginBottom: 20,
+    paddingHorizontal: 23,
+  },
+  item_defi: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    borderRadius: 12,
+    paddingLeft: 8,
+    paddingTop: 12,
+    paddingBottom: 12,
+    shadowColor:ThemeManager.colors.shadowColor,
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 3.05,
+    elevation: 4,
+  },
+  textBlockStyle: {
+    flex: 1,
+    paddingLeft: 17,
+    paddingRight: 11,
+  },
+  linkTextStyle: {
+    fontFamily: Fonts.regular,
+    fontSize: 12,
+    color: Colors.white,
+    marginTop: 5,
+  },
+  titleTextStyle: {
+    fontFamily: Fonts.bold,
+    color: Colors.textColor,
+    fontSize: 14,
+    marginBottom: 4,
+  },
+  descTextStyle: {
+    fontFamily: Fonts.regular,
+    color: Colors.textColor,
+    fontSize: 12,
+    lineHeight: 15,
+  },
+});

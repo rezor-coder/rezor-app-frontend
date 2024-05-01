@@ -1,0 +1,11 @@
+for error non-null argument -
+
+node_modules/react-native/libraries/EventEmitter/NativeEventEmitter.js
+
+comment this
+// if (Platform.OS === 'ios') {
+// invariant(
+// nativeModule != null,
+// '`new NativeEventEmitter()` requires a non-null argument.',
+// );
+// }

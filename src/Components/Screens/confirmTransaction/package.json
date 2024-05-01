@@ -1,0 +1,4 @@
+{
+    "name": "confirmTransaction",
+    "main": "confirmTransaction.js"
+}

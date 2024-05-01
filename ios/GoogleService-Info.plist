@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>364680627571-ppjbi7v8l4th8m8p39slv3ap3teuipge.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.364680627571-ppjbi7v8l4th8m8p39slv3ap3teuipge</string>
+	<key>API_KEY</key>
+	<string>AIzaSyCEm0X-TrM3E1Fx85huMvZ2jjiflCDjxM0</string>
+	<key>GCM_SENDER_ID</key>
+	<string>364680627571</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.saitapro</string>
+	<key>PROJECT_ID</key>
+	<string>saitamask-bee60</string>
+	<key>STORAGE_BUCKET</key>
+	<string>saitamask-bee60.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false/>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<true/>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true/>
+	<key>IS_GCM_ENABLED</key>
+	<true/>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true/>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:364680627571:ios:2ad43a2be6322ada123106</string>
+</dict>
+</plist>

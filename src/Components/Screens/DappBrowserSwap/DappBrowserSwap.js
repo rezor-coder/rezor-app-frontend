@@ -1,0 +1,1313 @@
+/* eslint-disable react-native/no-inline-styles */
+/* eslint-disable react/self-closing-comp */
+import React, { Component, useRef, useState, useEffect } from 'react';
+import {
+  View,
+  Image,
+  Text,
+  SafeAreaView,
+  TouchableOpacity,
+  Dimensions,
+  ScrollView,
+  Platform,
+  Animated,
+  Modal,
+  ActivityIndicator,
+  TextInput,
+  Linking,
+  Keyboard,
+  BackHandler,
+  Alert,
+} from 'react-native';
+import styles from './DappBrowserSwapStyle';
+import { Actions, ActionConst } from 'react-native-router-flux';
+import { Inputtext, ButtonPrimary, SimpleHeader } from '../../common';
+import RNFS from 'react-native-fs';
+import WebView from 'react-native-webview';
+import { Wallet } from 'ethers';
+import web3 from 'web3';
+import Loader from '../Loader/Loader';
+import Images from '../../../theme/Images';
+import {
+  getTotalGasFeeDapp,
+  getPriorityDapp,
+  getNonceValueDapp,
+  getEthBaseFeeDapp,
+  getDappSignedTxn,
+  getsignRawTxnDappBnb,
+} from '../../../utils';
+import { getBnbNonce, getBnbGasEstimate, sendBNB } from '../../../Redux/Actions';
+import { connect } from 'react-redux';
+import Singleton from '../../../Singleton';
+import * as Constants from '../../../Constant';
+import { Colors, Fonts } from '../../../theme';
+import { IS_PRODUCTION, DAPP_IMG_URL } from '../../../Endpoints';
+import FastImage from 'react-native-fast-image';
+import createInvoke from 'react-native-webview-invoke/native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scrollview';
+import images from '../../../theme/Images';
+var web3BscUrl =
+  IS_PRODUCTION == 0
+    ? 'https://data-seed-prebsc-1-s1.binance.org:8545/'
+    : 'https://bsc-dataseed1.binance.org:443';
+const gasFeeMultiplier = 0.000000000000000001;
+const gas = 1000000000;
+const fullNode = 'https://api.trongrid.io/';
+const solidityNode = 'https://api.trongrid.io/';
+const eventServer = 'https://api.trongrid.io/';
+var that = undefined;
+let jsCode = `document.querySelector('#myContent').style.backgroundColor = 'blue';`;
+let isLoadAlert = false
+class DappBrowserSwap extends Component {
+  constructor(props) {
+    ////console.warn('MM','===>>>> ccc', this.props);
+
+    super(props);
+    // this.timer = null;
+    // this.timer2 = null;
+    // this.timer3 = null;
+    //console.warn('MM','this.props.item.blockChainType:::::', this.props.item);
+    ////console.log(
+    // 'Constants.mainnetInfuraLink:::::',
+    //   Constants.mainnetInfuraLink,
+    // );
+    this.state = {
+      content: '',
+      jsContent: '',
+      address: this.props.item
+        ? this.props.item?.coin_family == 6
+          ? Singleton.getInstance().defaultBnbAddress
+          : Singleton.getInstance().defaultEthAddress
+        : Singleton.getInstance().defaultEthAddress,
+      chainId: IS_PRODUCTION == 0 ? '5' : '1',
+      rpcUrl:
+        IS_PRODUCTION == 0
+          ? Constants.testnetEth
+          : this.props.publicEthUrl,
+      privacyMode: false,
+      isVisible: false,
+      signingData: '',
+      calculatedFee: '',
+      gasPrice: '',
+      gas: '',
+      feeIndex: 1,
+      canGoBack: false,
+      gasFeeMultiplier: 0.000000000000000001,
+      canGoForward: false,
+      isLoading: false,
+      mnemonics: '',
+      selectedNetwork: this.props.item
+        ? this.props.item?.coin_family == 6
+          ? 'Binance'
+          : 'Ethereum'
+        : 'Ethereum',
+      selectedNetworkImageUri: this.props.item
+        ? this.props.item?.coin_family == 6
+          ? `${DAPP_IMG_URL}/images/bnb.png`
+          : `${DAPP_IMG_URL}/images/eth.png`
+        : `${DAPP_IMG_URL}/images/eth.png`,
+      url: '',
+      enteredURL: this.props.url
+        ? this.props.url
+        : 'https://app.compound.finance',
+      startUrl: this.props.url,
+      // startUrl: this.props.url.includes('https://')
+      //   ? this.props.url
+      //   : 'https://www.google.com/search?q=' + this.props.url,
+      isNetworkModalVisible: false,
+      advanceModalVisible: false,
+      favoriteArray: [],
+      isFavorite: false,
+      urlTitle: '',
+      showAlertDialog: false,
+      alertTxt: '',
+      currentUrl: '',
+      currencyName: '',
+      dialogGasPrice: 0,
+      dialogGasLimit: 0,
+      dialogNonce: 0,
+      advanceGasFees: 0,
+      advanceGasPrice: 0,
+      advanceMode: false,
+      advancedGasLimit: 0,
+      advancePriorityFee: 0,
+      baseFee: 0,
+      MaxFee: 0,
+      advancedSet: false,
+      priorityFees: 0,
+      web3BscUrl:
+        Constants.network == 'testnet'
+          ? 'https://data-seed-prebsc-1-s1.binance.org:8545/'
+          : this.props.publicBscUrl,
+      finished: false,
+      txnTobeSigned: undefined,
+      gotSigningRequest: false,
+      rejected: false,
+      tronAddress: 'TWnLSuJyjJFCsffuFWUMXtqTX2YfhtvbUT',
+      tronPvtKey: '',
+      modalVisibleBnb: false,
+      ethPrice: 0,
+    };
+  }
+  invoke = createInvoke(() => this.webview);
+  componentDidMount() {
+    // alert("Addres: "+this.state.address)
+    // //console.warn('MM',">>>>>myWallets.", this.props.myWallets);
+    // //console.warn('MM','address:::::', this.state.address)
+
+    this.getEthPriceinFiat();
+
+    // this.props.navigation.addListener('didBlur', this.screenBlur);
+    // this.props.navigation.addListener('didFocus', this.screenFocus);
+    that = this;
+    this.invoke.define('signTronTx', this.signTronTx);
+    if (this.state.selectedNetwork != 'Tron') {
+      var provider = new web3.providers.HttpProvider(this.state.rpcUrl);
+      this.web3 = new web3(provider);
+      console.log('addd', Singleton.getInstance().defaultEthAddress);
+      Singleton.getInstance()
+        .newGetData(Singleton.getInstance().defaultEthAddress)
+        .then(mnemonics => {
+          // //console.warn('MM','chk address::::::::::::::', Singleton.getInstance().defaultEthAddress,);
+          // //console.warn('MM','chk mnemonics::::::::::::::', mnemonics);
+          var address = this.state.address;
+          this.setState({ mnemonics: mnemonics, address: address });
+          // //console.warn('MM','-------------------------', this.state.address);
+
+          setTimeout(() => {
+            this.webview?.reload();
+          }, 800);
+          // setTimeout(() => {
+          //   this.webview?.reload();
+          // }, 3000);
+          // setTimeout(() => {
+          //   this.webview?.reload();
+          // }, 5000);
+
+          if (this.state.jsContent === '') {
+            //console.warn('MM','chk platform::::', Platform.OS);
+            if (Platform.OS === 'ios') {
+              RNFS.readFile(`${RNFS.MainBundlePath}/trust-min.js`, 'utf8').then(
+                content => {
+                  console.log('content');
+                  this.setState(
+                    {
+                      jsContent: this.getJavascript(
+                        this.state.chainId,
+                        this.state.rpcUrl,
+                        address,
+                        content,
+                      ),
+                      content: content,
+                    },
+                    () => {
+                      this.setUrl(2);
+                    },
+                  );
+                },
+              ).catch(err => {
+                console.log('err readfile', err);
+              })
+              // this.setUrl(2);
+            } else {
+              RNFS.readFileAssets(`trust-min.js`, 'utf8').then(content => {
+                this.setState(
+                  {
+                    jsContent: this.getJavascript(
+                      this.state.chainId,
+                      this.state.rpcUrl,
+                      address,
+                      content,
+                    ),
+                    content: content,
+                  },
+                  () => {
+                    this.setUrl(2);
+                  },
+                );
+              });
+            }
+          }
+        });
+      this.getBaseFee();
+    } else {
+      Singleton.getInstance()
+        .newGetData(`${Singleton.getInstance().defaultTRXAddress}_pk`)
+        .then(trnPvKey => {
+          //console.warn('MM','trnPvt key::::::::', trnPvKey);
+          this.setState({ tronPvtKey: trnPvKey });
+        });
+    }
+  }
+
+  getEthPriceinFiat() {
+    this.props.myWallets.find(value => {
+      if ('eth' == value.coin_symbol.toLowerCase()) {
+        let perPrice_in_fiat = parseFloat(value.perPrice_in_fiat);
+        this.setState({ ethPrice: perPrice_in_fiat });
+        //console.warn('MM','-----value.perPrice_in_fiat', perPrice_in_fiat);
+        return;
+      }
+    });
+  }
+
+  componentWillUnmount() {
+    clearTimeout(this.timer);
+    clearTimeout(this.timer1);
+    clearTimeout(this.timer2);
+    // if (this.timer) {
+    //   clearTimeout(this.timer);
+    // }
+    // if (this.timer1) {
+    //   clearTimeout(this.timer1);
+    // }
+    // if (this.timer2) {
+    //   clearTimeout(this.timer2);
+    // }
+  }
+
+  screenFocus = () => {
+    BackHandler.addEventListener('hardwareBackPress', this.backAction);
+  };
+  screenBlur = () => {
+    BackHandler.removeEventListener('hardwareBackPress', this.backAction);
+  };
+  backAction = () => {
+    //console.warn('MM','i dapp browser');
+    Actions.pop();
+    return true;
+  };
+  signTronTx(txn) {
+    //console.warn('MM','chk trn txn:::::::', txn);
+    return new Promise((resolve, reject) => {
+      try {
+        that.setState(
+          { txnTobeSigned: txn, gotSigningRequest: true, rejected: false },
+          () => {
+            var timer = setInterval(() => {
+              if (!that.state.gotSigningRequest) {
+                clearInterval(timer);
+                resolve(that.state.txnTobeSigned);
+              }
+              if (that.state.rejected) {
+                clearInterval(timer);
+                that.setState({
+                  txnTobeSigned: undefined,
+                  gotSigningRequest: false,
+                  rejected: false,
+                });
+                reject('user rejected');
+              }
+            }, 1000);
+          },
+        );
+      } catch (err) {
+        Singleton.showAlert(err);
+        reject(err);
+      }
+    });
+  }
+  onLoadStart = event => {
+    this.setState({ isLoading: Platform.OS != 'ios' ? true : true });
+  };
+  checkForSigned() {
+    return new Promise((resolve, reject) => { });
+  }
+  onShouldStartLoadWithRequest = () => {
+    return true;
+  };
+  onMessage = async ({ nativeEvent }) => {
+    let message = JSON.parse(nativeEvent.data);
+    console.warn('MM','---------message------', JSON.parse(nativeEvent.data));
+    console.warn('MM','---------selectedNetwork------', this.state.selectedNetwork);
+    if (message.name == 'signTransaction') {
+      if (!message.object.value) {
+        message.object.value = '0x0';
+      }
+      if (!message.object.gas) {
+        message.object.gas = '0x238ec';
+      }
+      this.setState({ signingData: message });
+      this.getNonceAndGas(
+        this.hex2dec(message.object.value),
+        this.state.selectedNetwork == 'Ethereum' ? 'eth' : 'bnb',
+        this.state.selectedNetwork == 'Ethereum' ? 'transaction' : 'binance',
+      );
+    } else if (message.name == 'requestAccounts') {
+      // let js = `window.ethereum.setAddress('${this.state.address}');`;
+      let js = `trustwallet.${message?.network}.setAddress('${this.state.address}');`;
+
+      this.webview.injectJavaScript(js);
+      let mmid = message.id;
+      let js1 = `trustwallet.${message?.network}.sendResponse(${mmid}, ['${this.state.address}'])`;
+
+      // let js1 = `window.ethereum.sendResponse(${mmid}, ['${this.state.address}'])`;
+      this.webview.injectJavaScript(js1);
+    } else if (
+      message.name == 'signPersonalMessage' ||
+      message.name == 'signMessage'
+    ) {
+      let mmid = message.id;
+      const wallet = Wallet.fromMnemonic(this.state.mnemonics);
+      var pKey = wallet.privateKey;
+      let signedMessage = await Singleton.getInstance().signPersonalMessage(
+        message.object.data,
+        pKey,
+      );
+      // let js = `window.ethereum.sendResponse(${mmid}, "${signedMessage}")`;
+      let js = `trustwallet.${message?.network}.sendResponse(${mmid}, "${signedMessage}")`;
+      this.webview.injectJavaScript(js);
+    }
+  };
+  //  getJavascript (chainId, rpcUrl, address, jsContent) {
+  //   let source = '';
+  //   console.warn('MM','chainId:', chainId, 'rpcUrl:', rpcUrl, 'address:', address);
+  //   if (this.state.privacyMode) {
+  //     source = `
+  //     ${jsContent}
+  //         var config = {
+  //             chainId: ${chainId}},
+  //             rpcUrl: ${rpcUrl}
+  //         };
+  //         const provider = new window.Trust(config);
+  //         window.ethereum = provider;
+  //         window.chrome = {webstore: {}};        
+  //     `;
+  //   } else {
+  //     source = `
+  //     ${jsContent}
+  //     var config = {
+  //       address: '${address}',
+  //       chainId: '${chainId}',
+  //       rpcUrl: '${rpcUrl}'
+  //     };
+  //     const provider = new window.Trust(config);
+  //     provider.isDebug = true;
+  //     window.ethereum = provider;
+  //     window.web3 = new window.Web3(provider);
+  //     window.web3.eth.defaultAccount = config.address;
+  //     window.chrome = {webstore: {}};
+  //     `;
+  //     return source;
+  //   }
+  // };
+  getJavascript = function (chainId, rpcUrl, address, jsContent) {
+    // console.log('chainId:', chainId, 'rpcUrl:', rpcUrl, 'address:', address);
+    let source = '';
+    source = `
+      ${jsContent}
+      (function() {
+       var config = {
+        ethereum: {
+          address: '${address}',
+          chainId: '${chainId}',
+          rpcUrl: '${rpcUrl}'
+       }
+       };
+       trustwallet.ethereum = new trustwallet.Provider(config);
+       trustwallet.postMessage = (jsonString) => {
+        window.ReactNativeWebView?.postMessage(JSON.stringify(jsonString))
+       };
+       window.ethereum = trustwallet.ethereum;
+    })();
+      `;
+    return source;
+  };
+
+  ConvertBase(num) {
+    return {
+      from: function (baseFrom) {
+        return {
+          to: function (baseTo) {
+            return parseInt(num, baseFrom).toString(baseTo);
+          },
+        };
+      },
+    };
+  }
+  hex2dec(num) {
+    return this.ConvertBase(num).from(16).to(10);
+  }
+  async getNonceAndGas(amount, coinsym, coinType) {
+    //  alert(coinsym)
+    if (coinsym.toLowerCase() == 'eth') {
+      var gasFees = await getTotalGasFeeDapp();
+      var currentNonce = await getNonceValueDapp(this.state.address);
+      ////console.log(
+      // 'GAS_FEES-----',
+      //   gasFees,
+      //   'this.hex2dec(this.state.signingData.object.gas):::',
+      //   this.hex2dec(this.state.signingData.object.gas),
+      // );
+      //console.warn('MM','NONCE_VALUE-----', currentNonce);
+      this.nonce = currentNonce;
+      var initialValue =
+        gasFees * this.hex2dec(this.state.signingData.object.gas);
+      var fee = initialValue * gasFeeMultiplier;
+      //console.warn('MM','Calculate gasFees 123333--- ', gasFees);
+      //console.warn('MM','Calculate fees total 123333--- ', fee);
+      //console.warn('MM','Calculate signingData --- ', this.state.signingData);
+      this.setState({
+        isVisible: true,
+        calculatedFee: fee.toFixed(5),
+        gasPrice: gasFees,
+      });
+    }
+    if (coinsym.toLowerCase() == 'bnb') {
+      let data = {
+        from: Singleton.getInstance().defaultBnbAddress,
+        to: Singleton.getInstance().defaultBnbAddress,
+        amount: 0,
+      };
+      let wallet_address = Singleton.getInstance().defaultBnbAddress;
+      let access_token = Singleton.getInstance().access_token;
+      let blockChain = 'binancesmartchain';
+      let coin_symbol = 'bnb';
+      let contractAddress = 'bnb';
+      this.props
+        .getBnbNonce({ wallet_address, access_token, blockChain, coin_symbol })
+        .then(nonce => {
+          //console.warn('MM','Chk bnb nonce::::::::', nonce);
+          this.props
+            .getBnbGasEstimate({
+              blockChain,
+              data,
+              contractAddress,
+              access_token,
+            })
+            .then(response => {
+              //console.warn('MM','response GAS--bnb ', response);
+              var standard = response.resultList[0].safe_gas_price * 1000000000;
+              var initialValue =
+                standard * this.hex2dec(this.state.signingData.object.gas);
+              var fee = initialValue * gasFeeMultiplier;
+              this.setState({
+                isVisible: true,
+                calculatedFee: fee.toFixed(5),
+                gasPrice: standard,
+              });
+            })
+            .catch(err => {
+              //console.warn('MM','Error: ', err);
+              this.setState({ isLoading: false });
+            });
+        });
+    }
+  }
+
+  getTotalUsd(value, fee, ethprice) {
+    let data = ethprice * (value + fee);
+    return Singleton.getInstance().toFixed(data, 2);
+  }
+  onSubmitGas() {
+    if (parseFloat(this.state.advancedGasLimit) == 0.0) {
+      Singleton.showAlert(Constants.ENTER_GASLIMIT);
+      return;
+    }
+    if (parseFloat(this.state.advancedGasLimit) < 21000) {
+      Singleton.showAlert(Constants.VALID_GASLIMIT);
+      return;
+    }
+    if (parseFloat(this.state.advancePriorityFee) == 0.0) {
+      Singleton.showAlert(Constants.VALID_PRIORITY_FEE);
+      return;
+    }
+    ////console.log(
+    // 'gas gwei price----',
+    //   2 * this.state.baseFee + parseInt(this.state.advancePriorityFee),
+    // );
+    //console.warn('MM','gas limit----', this.state.advancedGasLimit);
+    let gasGwei =
+      parseFloat(2 * this.state.baseFee) +
+      parseFloat(this.state.advancePriorityFee);
+    ////console.log(
+    // 'T_GAS_FEES----',
+    //   (
+    //     gasGwei *
+    //     this.state.advancedGasLimit *
+    //     this.state.gasFeeMultiplier
+    //   ).toFixed(8),
+    // );
+    this.setState({
+      advanceGasPrice: gasGwei,
+      advanceGasFees: (
+        gasGwei *
+        this.state.advancedGasLimit *
+        this.state.gasFeeMultiplier
+      ).toFixed(8),
+      advanceMode: true,
+      advanceModalVisible: false,
+      isVisible: true,
+    });
+  }
+
+  onSubmitGasbnb() {
+    if (parseFloat(this.state.advanceGasPrice) == 0.0) {
+      Singleton.showAlert(Constants.VALID_GASPRICE);
+      return;
+    }
+    if (parseFloat(this.state.advancedGasLimit) == 0.0) {
+      Singleton.showAlert(Constants.ENTER_GASLIMIT);
+      return;
+    }
+    if (parseFloat(this.state.advancedGasLimit) < 21000) {
+      Singleton.showAlert(Constants.VALID_GASLIMIT);
+      return;
+    }
+    const price = this.state.advanceGasPrice * 10 ** 9;
+    this.setState({
+      advanceGasPrice: price,
+      advanceGasFees: (
+        price *
+        this.state.advancedGasLimit *
+        this.state.gasFeeMultiplier
+      ).toFixed(8),
+      advanceMode: true,
+      advanceModalVisible: false,
+      modalVisibleBnb: false,
+      isVisible: true,
+    });
+  }
+  async makeRaxTxn() {
+    ////console.log(
+    // 'here-------',
+    //   this.state.gasPrice,
+    //   ';;;;',
+    //   this.state.priorityFees,
+    //   this.props.item,
+    // );
+    if (this.props.item?.coin_family == 1) {
+      const wallet = await Wallet.fromMnemonic(this.state.mnemonics);
+      var pKey = wallet.privateKey;
+      //console.warn('MM','here-------pKey', pKey);
+      var gasPrice = this.state.gasPrice;
+      var priorityFees = this.state.priorityFees;
+      let gasLimit = this.state.signingData.object.gas; //convert in hex
+      var currentNonce = this.nonce;
+      let amount = this.state.signingData.object.value;
+      if (this.state.advanceMode) {
+        gasLimit = this.web3.utils.toHex(this.state.advancedGasLimit); //convert in hex
+        gasPrice = this.state.advanceGasPrice * 1000000000;
+        priorityFees = this.web3.utils.toHex(this.state.advancePriorityFee);
+      }
+      //console.warn('MM','GAS_PRICE----', gasPrice);
+      //console.warn('MM','GAS_LIMIT----', gasLimit);
+      //console.warn('MM','NONCE_VALUE----', amount);
+      var hexedAmount = this.web3.utils.toHex(amount); // convert in hex
+      var hexedGasPrice = this.web3.utils.toHex(gasPrice); //convert in hex
+      var hexedPriorityPrice = this.web3.utils.toHex(priorityFees); //convert in hex
+      try {
+        getDappSignedTxn(
+          pKey,
+          hexedAmount,
+          hexedGasPrice,
+          gasLimit,
+          currentNonce,
+          this.state.signingData.object.to,
+          this.state.signingData.object.from,
+          this.state.signingData.object.data,
+          'eth',
+          hexedPriorityPrice,
+        ).then(serializedTxn => {
+          //console.warn('MM','chk signed txn::::::eth:::::', serializedTxn);
+          this.sendCoin(serializedTxn);
+        });
+      } catch (err) {
+        //console.warn('MM','rtt----', err);
+      }
+    } else if (this.props.item?.coin_family == 6) {
+      Singleton.getInstance()
+        .newGetData(`${Singleton.getInstance().defaultBnbAddress}_pk`)
+        .then(pk => {
+          var pKey = pk;
+          let gasLimit = this.state.signingData.object.gas; // in hex
+          let gasPrice = this.web3.utils.toHex(this.state.gasPrice); // in hex
+          let amount = (
+            this.hex2dec(
+              this.state.signingData.object.value
+                ? this.state.signingData.object.value
+                : '0x0',
+            ) /
+            10 ** 18
+          ).toString();
+          getsignRawTxnDappBnb(
+            pKey,
+            amount,
+            gasPrice,
+            gasLimit,
+            this.nonce,
+            this.state.signingData.object.to,
+            this.state.signingData.object.from,
+            this.state.signingData.object.data,
+            parseInt(this.state.chainId),
+          ).then(serializedTx => {
+            //console.warn('MM','this.serializedTx-------', serializedTx);
+            this.sendCoin(serializedTx);
+          });
+        })
+        .catch(err => {
+          Singleton.showAlert('Unable to process transaction.');
+        });
+    }
+  }
+  sendCoin(serializedTx) {
+    let amountt = Singleton.getInstance().exponentialToDecimal(
+      this.state.signingData.object.value,
+    );
+    let data = {
+      from: this.state.signingData.object.from,
+      to: this.state.signingData.object.to,
+      amount: (this.hex2dec(amountt) / 10 ** 18).toString(),
+      gas_price: this.state.gasPrice,
+      gas_estimate: this.hex2dec(this.state.signingData.object.gas),
+      tx_raw: serializedTx,
+      tx_type: 'WITHDRAW',
+      nonce: this.nonce,
+      chat: 0,
+      is_smart: 1,
+      typeMessage: 'swapDapp',
+    };
+    let access_token = Singleton.getInstance().access_token;
+    let blockChain =
+      this.state.selectedNetwork == 'Ethereum'
+        ? 'ethereum'
+        : 'binancesmartchain';
+    let coin_symbol = this.state.selectedNetwork == 'Ethereum' ? 'eth' : 'bnb';
+    this.props
+      .sendBNB({ data, access_token, blockChain, coin_symbol })
+      .then(res => {
+        ////console.log(
+        // '-----------------------Response------------',
+        //   res.tx_hash,
+        //   this.state.signingData.id,
+        // );
+        this.setState({ isVisible: false, isLoading: false });
+        let mmid = this.state.signingData.id;
+        let hash = res.tx_hash;
+        // let js = `window.ethereum.sendResponse(${mmid}, '${hash}')`;
+        let js = `trustwallet.ethereum.sendResponse(${mmid}, '${hash}')`;
+
+
+        // if(props.typeofAction=="stake"){
+        //   Singleton.showAlert("Stake successful, waiting for Blockchain confirmation.")
+        // }else{
+        //   Singleton.showAlert(res.message)
+        // }
+
+        this.webview.injectJavaScript(js);
+      })
+      .catch(err => {
+        //console.warn('MM','Error: ', err);
+        let js = `trustwallet.ethereum.sendError(${this.state.signingData.id}, '${err.message}')`;
+
+        // let js = `window.ethereum.sendError(${this.state.signingData.id
+        //   }, '${JSON.stringify(err.message)}')`;
+        this.webview.injectJavaScript(js);
+        this.setState({ isVisible: false, isLoading: false });
+        Singleton.showAlert(err.message);
+      });
+  }
+  validURL(str) {
+    var pattern = new RegExp(
+      '^(https?:\\/\\/)?' + // protocol
+      '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
+      '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
+      '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
+      '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
+      '(\\#[-a-z\\d_]*)?$',
+      'i',
+    ); // fragment locator
+    return !!pattern.test(str);
+  }
+  setUrl(type) {
+    if (this.validURL(this.state.enteredURL)) {
+      if (!this.state.enteredURL.startsWith('http')) {
+        //console.warn('MM','true ==>>> ', 'https://' + this.state.enteredURL);
+        this.setState({ url: 'https://' + this.state.enteredURL });
+      } else {
+        //console.warn('MM','2true ==>>> ', 'https://' + this.state.enteredURL);
+        // 1 is reload
+        if (type == 1) {
+          //console.warn('MM','check type 1 part=====>', this.state.enteredURL);
+          if (this.state.url == this.state.enteredURL) {
+            this.setState({ url: '' }, () => {
+              this.setState({ url: this.state.enteredURL });
+            });
+          }
+        } else {
+          //console.warn('MM','3true ==>>> ', 'https://' + this.state.enteredURL);
+          this.setState({ url: this.state.enteredURL });
+        }
+      }
+    } else {
+      //console.warn('MM','check else part=====>', this.state.enteredURL);
+      //console.warn('MM','4true ==>>> ', 'https://' + this.state.enteredURL);
+      let a = this.state.enteredURL.includes('about:blank')
+        ? this.props.url
+        : this.state.enteredURL;
+      if (!this.state.enteredURL.includes('https://')) {
+        this.setState({
+          startUrl: 'https://www.google.com/search?q=' + this.state.enteredURL,
+        });
+      }
+      this.setState({ url: 'https://www.google.com/search?q=' + a });
+    }
+  }
+  advanceModeDialogOpen() {
+    this.setState({
+      advanceModalVisible:
+        this.state.selectedNetwork == 'Ethereum' ? true : false,
+      modalVisibleBnb: this.state.selectedNetwork == 'Binance' ? true : false,
+      isVisible: false,
+    });
+  }
+
+  onLoadEnd = event => {
+    this.setState({ isLoading: false });
+  };
+  render() {
+    //console.warn('MM',"?????url",this.state.startUrl);
+    return (
+      <>
+        <SafeAreaView style={{ flex: 1, }}>
+          <View style={{ flex: 1, marginTop: -12 }}>
+            {/* <SimpleHeader title={''} /> */}
+            <WebView
+              ref={ref => (this.webview = ref)}
+              source={{ uri: this.state.startUrl }}
+              injectedJavaScriptBeforeContentLoaded={this.state.jsContent}
+              style={{ flex: 1 }}
+              onMessage={
+                this.state.selectedNetwork != 'Tron'
+                  ? this.onMessage
+                  : this.invoke.listener
+              }
+              clearCache={true}
+              onShouldStartLoadWithRequest={this.onShouldStartLoadWithRequest}
+              onNavigationStateChange={navState => {
+                console.warn('MM',' navState ==>>>', navState);
+                //console.warn('MM',' navState uri==>>>', this.state.url);
+                this.setState({
+                  canGoBack: navState.canGoBack,
+                  canGoForward: navState.canGoForward,
+                  enteredURL: navState.url,
+                  urlTitle: navState.title,
+                });
+                ////console.log(
+                //     'check entered url---------->',
+                //       this.state.enteredURL,
+                //       );
+                //       ////console.log(
+                //         'check this.state.startUrl ---------->',
+                // this.state.startUrl,
+                // );
+                if (this.state.startUrl != this.state.enteredURL) {
+                } else {
+                  this.setState({ canGoBack: false });
+                }
+              }}
+              startInLoadingState={true}
+              sendCookies
+              javascriptEnabled
+              allowsInlineMediaPlayback
+              useWebkit
+              testID={'browser-webview'}
+              originWhitelist={['*']}
+              onLoadStart={this.onLoadStart}
+              onLoadEnd={this.onLoadEnd}
+              onError={err => {
+
+                if (!isLoadAlert) {
+                  isLoadAlert = true
+                  Alert.alert('Alert', 'Unable to load, please try again later.', [{
+                    text: 'Try Again',
+                    onPress: () => {
+                      isLoadAlert = false
+                      this.webview?.reload()}
+                  }, {
+                    text: 'Cancel',
+                    onPress: () => {
+                      isLoadAlert = false
+                  }
+                  }], {
+                    cancelable: true,
+
+                  })
+                }
+                console.warn('MM', 'chk err', err);
+                // this.webview?.reload();
+              }}
+            />
+            {/* {this.state.isLoading && <Loader />} */}
+            {this.state.isNetworkModalVisible && (
+              <View style={styles.dropdown}>
+                <TouchableOpacity
+                  style={{ padding: 10 }}
+                  onPress={() => {
+                    var provider = new web3.providers.HttpProvider(
+                      IS_PRODUCTION == 0
+                        ? Constants.testnetEth
+                        :this.props.publicEthUrl,
+                    );
+                    this.web3 = new web3(provider);
+                    this.setState({
+                      isNetworkModalVisible: false,
+                      selectedNetwork: 'Ethereum',
+                      selectedNetworkImageUri: DAPP_IMG_URL + '/images/eth.png',
+                      chainId: Constants.network == 'testnet' ? '5' : '1',
+                      rpcUrl:
+                        IS_PRODUCTION == 0
+                          ? 'https://eth-goerli.g.alchemy.com/v2/CeBAVqM26_O3EE-R3sDD-Edf5q0kD5UH'
+                          : this.props.publicEthUrl,
+                      jsContent: this.getJavascript(
+                        IS_PRODUCTION == 0 ? '3' : '1',
+                        IS_PRODUCTION == 0
+                          ? 'https://eth-goerli.g.alchemy.com/v2/CeBAVqM26_O3EE-R3sDD-Edf5q0kD5UH'
+                          : this.props.publicEthUrl,
+                        this.state.address,
+                        this.state.content,
+                      ),
+                    });
+                    setTimeout(() => {
+                      this.webview?.reload();
+                    }, 2000);
+                  }}>
+                  <View style={{ flexDirection: 'row' }}>
+                    <FastImage
+                      style={{ marginRight: 10, width: 20, height: 20 }}
+                      source={{
+                        uri: DAPP_IMG_URL + '/images/eth.png',
+                        priority: FastImage.priority.normal,
+                      }}
+                      resizeMode={FastImage.resizeMode.contain}
+                    />
+                    <Text
+                      style={{
+                        fontFamily: Fonts.regular,
+                        fontSize: 15,
+                        color: '#d01961',
+                      }}>
+                      Ethereum
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={{ padding: 10 }}
+                  onPress={() => {
+                    let rpcUrl =  IS_PRODUCTION == 0
+                    ? 'https://data-seed-prebsc-1-s1.binance.org:8545/'
+                    : this.props.publicBscUrl;
+                    var provider = new web3.providers.HttpProvider(rpcUrl);
+                    this.web3 = new web3(provider);
+                    this.setState({
+                      isNetworkModalVisible: false,
+                      selectedNetwork: 'Binance',
+                      selectedNetworkImageUri: DAPP_IMG_URL + '/images/bnb.png',
+                      chainId: '4',
+                      rpcUrl: rpcUrl,
+                      jsContent: this.getJavascript(
+                        IS_PRODUCTION == 0 ? '97' : '56',
+                        rpcUrl,
+                        this.state.address,
+                        this.state.content,
+                      ),
+                    });
+                    setTimeout(() => {
+                      this.webview?.reload();
+                    }, 2000);
+                  }}>
+                  <View style={{ flexDirection: 'row' }}>
+                    <FastImage
+                      style={{ marginRight: 10, width: 20, height: 20 }}
+                      source={{
+                        uri: DAPP_IMG_URL + '/images/bnb.png',
+                        priority: FastImage.priority.normal,
+                      }}
+                      resizeMode={FastImage.resizeMode.contain}
+                    />
+                    <Text
+                      style={{
+                        fontFamily: Fonts.regular,
+                        fontSize: 15,
+                        color: '#d01961',
+                      }}>
+                      Binance
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              </View>
+            )}
+          </View>
+          {/* <View style={{ width: '100%', height: 44, flexDirection: 'row', justifyContent: 'space-between', backgroundColor: Colors.white }}>
+            <View style={{ width: 100, height: 44, flexDirection: 'row', justifyContent: 'space-between', elevation: 2, }}>
+              <TouchableOpacity style={{ width: 40, height: '100%', justifyContent: 'center', alignItems: 'center', }}
+                onPress={() => {
+                  //console.warn('MM','print enter url===----->', this.state.enteredURL);
+                  if (this.state.enteredURL === 'about:blank') {
+                    this.setState({ canGoBack: false, });
+                  } else {
+                    this.webview.goBack();
+                  }
+                }}
+                disabled={!this.state.canGoBack}>
+                <FastImage style={[{ width: 25, height: 25, transform: [{ rotateY: '180deg' }] }, this.state.canGoBack ? { opacity: 1 } : { opacity: 0.2 }]}
+                  tintColor={'blue'} resizeMode={'contain'} source={images.rightArrow}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity style={{ width: 40, height: '100%', justifyContent: 'center', alignItems: 'center', }}
+                onPress={() => this.webview.goForward()}
+                disabled={!this.state.canGoForward}>
+                <FastImage style={[{ width: 25, height: 25, tintColor: 'blue' }, this.state.canGoForward ? { opacity: 1 } : { opacity: 0.2 },]}
+                  tintColor={'blue'} resizeMode={'contain'} source={Images.rightArrow}
+                />
+              </TouchableOpacity>
+            </View>
+            <View style={{ width: 50, height: 44, flexDirection: 'row', justifyContent: 'space-between' }}>
+              <TouchableOpacity style={{ width: 40, height: '100%', justifyContent: 'center', alignItems: 'center' }}
+                onPress={() => this.webview.reload()}>
+                <FastImage
+                  style={{ width: 25, height: 25, tintColor: 'blue' }}
+                  resizeMode={'contain'} tintColor={'blue'}
+                  source={Images.financeIcon}
+                />
+              </TouchableOpacity>
+            </View>
+          </View> */}
+          {/* {this.state.isLoading && <Loader color="white" />} */}
+        </SafeAreaView>
+        <SafeAreaView style={{ backgroundColor: Colors.white }} />
+        <Modal
+          visible={this.state.isVisible}
+          animationType="fade"
+          style={{ margin: 0, justifyContent: 'flex-end' }}>
+          {this.state.signingData != '' && (
+            <>
+              <View style={styles.modalView}>
+                <View style={styles.modalinner}>
+                  <View
+                    style={{
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      marginBottom: 30,
+                    }}>
+                    <Text style={styles.titleSign}>Confirm Transaction</Text>
+                    <TouchableOpacity
+                      style={{
+                        position: 'absolute',
+                        right: 0,
+                        top: 0,
+                        height: 40,
+                        width: 40,
+                        alignItems: 'flex-end',
+                      }}
+                      onPress={() => {
+                        let js = `trustwallet.ethereum.sendError(${this.state.signingData.id}, 'Cancelled')`;
+
+                        // let js = `window.ethereum.sendError(${this.state.signingData.id}, 'Cancelled')`;
+                        //console.warn('MM','----------------js-----------', js);
+                        this.webview.injectJavaScript(js);
+                        this.setState({ isVisible: false });
+                      }}>
+                      <FastImage
+                        style={{ width: 15, height: 15, marginRight: 10 }}
+                        resizeMode={FastImage.resizeMode.contain}
+                        source={Images.cancel}
+                      />
+                    </TouchableOpacity>
+                  </View>
+                  <View style={styles.vwSignTransaction}>
+                    <Text style={styles.textLbl}>To</Text>
+                    <Text style={styles.txtValue}>
+                      {this.state.signingData.object.to}
+                    </Text>
+                  </View>
+                  <View style={styles.vwSignTransaction}>
+                    <Text style={styles.textLbl}>From</Text>
+                    <Text style={styles.txtValue}>
+                      {this.state.signingData.object.from}
+                    </Text>
+                  </View>
+                  {/* {this.state.advanceMode == false && this.renderSlowStandardFast()} */}
+                  <View style={styles.vwSignTransaction}>
+                    <Text style={styles.textLbl}>Gas Fee</Text>
+                    <Text style={styles.txtValue}>
+                      {this.state.advanceMode
+                        ? this.state.advanceGasFees
+                        : this.state.calculatedFee}{' '}
+                      {this.state.selectedNetwork == 'Ethereum' ? 'ETH' : 'BNB'}
+                      {' ('}
+                      {Singleton.getInstance().CurrencySymbol}
+                      {Singleton.getInstance().toFixed(
+                        this.state.ethPrice * this.state.calculatedFee,
+                        2,
+                      )}
+                      {')'}
+                    </Text>
+                  </View>
+                  <View style={styles.vwSignTransaction}>
+                    <Text style={styles.textLbl}>Total </Text>
+                    <Text style={styles.txtValue}>
+                      {/* {//console.log(
+                      // 'signingData',
+                      // this.hex2dec(this.state.signingData.object.value) /
+                      // 10 ** 18,
+                      // this.state.calculatedFee,
+                      // this.state.ethPrice,
+                      // parseFloat(
+                      //   this.hex2dec(this.state.signingData.object.value) /
+                      //   10 ** 18,
+                      // ) + parseFloat(this.state.calculatedFee),
+                      // parseFloat(this.state.ethPrice),
+                      // )} */}
+                      {parseFloat(
+                        parseFloat(
+                          this.hex2dec(this.state.signingData.object.value) /
+                          10 ** 18,
+                        ) +
+                        parseFloat(
+                          this.state.advanceMode
+                            ? this.state.advanceGasFees
+                            : this.state.calculatedFee,
+                        ),
+                      ).toFixed(8)}{' '}
+                      {this.state.selectedNetwork == 'Ethereum' ? 'ETH' : 'BNB'}
+                      {' ('}
+                      {Singleton.getInstance().CurrencySymbol}
+                      {this.getTotalUsd(
+                        parseFloat(
+                          this.hex2dec(this.state.signingData.object.value) /
+                          10 ** 18,
+                        ),
+                        parseFloat(this.state.calculatedFee),
+                        parseFloat(this.state.ethPrice),
+                      )}
+                      {')'}
+                    </Text>
+                  </View>
+
+                  <ButtonPrimary
+                    text="Submit"
+                    onpress={() => {
+                      this.setState({ isLoading: true });
+                      setTimeout(() => {
+                        this.makeRaxTxn();
+                      }, 1000);
+                    }}
+                    btnstyle={{ width: '80%', padding: 10 }}
+                  />
+                  {/* <TouchableOpacity
+                    onPress={() => { this.advanceModeDialogOpen(); }}>
+                    <Text style={styles.modalTitle}>Advance Mode</Text>
+                  </TouchableOpacity>
+                  {this.state.advanceMode && (
+                    <TouchableOpacity
+                      onPress={() => { this.setState({ advanceMode: false }); }}>
+                      <Text style={styles.modalTitle}>Reset</Text>
+                    </TouchableOpacity>
+                  )} */}
+                </View>
+              </View>
+            </>
+          )}
+          {this.state.isLoading && <Loader />}
+        </Modal>
+
+        {/* **********************************MODAL FOR ADVANCED BNB GAS PRICE*********************************************** */}
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={this.state.modalVisibleBnb}
+          onRequestClose={() => { }}>
+          <View style={styles.viewGas}>
+            <TouchableOpacity
+              onPress={() =>
+                this.setState({ modalVisibleBnb: false, isVisible: true })
+              }
+              style={{ flex: 0.1, marginBottom: 40 }}>
+              <FastImage
+                style={{
+                  width: 30,
+                  height: 30,
+                  marginRight: 10,
+                  alignSelf: 'flex-end',
+                }}
+                resizeMode={FastImage.resizeMode.contain}
+                source={Images.cancel}
+              />
+            </TouchableOpacity>
+            {/* <TouchableOpacity
+                onPress={() => this.setState({ modalVisibleBnb: false })}
+                style={{ flex: 0.5, backgroundColor: Colors.screenBg, opacity: 0.85 }}>
+              </TouchableOpacity> */}
+            <View style={styles.viewGas}>
+              <Inputtext
+                label="Gas Price"
+                placeholder="Please enter Gas Price"
+                value={this.state.advanceGasPrice}
+                labelStyle={styles.labelTextStyle}
+                keyboardType="decimal-pad"
+                maxLength={10}
+                onChangeNumber={text =>
+                  this.setState({ advanceGasPrice: parseFloat(text) })
+                }></Inputtext>
+
+              <Inputtext
+                label="Gas Limit"
+                placeholder="Please enter Gas Limit"
+                value={this.state.advancedGasLimit}
+                labelStyle={styles.labelTextStyle}
+                keyboardType={'number-pad'}
+                onChangeNumber={text =>
+                  this.setState({ advancedGasLimit: parseFloat(text) })
+                }></Inputtext>
+              <View style={styles.buttonStylesSubmit}>
+                <ButtonPrimary
+                  title="Submit"
+                  onPress={() => this.onSubmitGasbnb()}
+                />
+              </View>
+            </View>
+          </View>
+        </Modal>
+
+        {/* **********************************MODAL FOR ADVANCED GAS PRICE*********************************************** */}
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={this.state.advanceModalVisible}
+          onRequestClose={() => { }}>
+          <View style={styles.viewGas}>
+            <TouchableOpacity
+              onPress={() =>
+                this.setState({ advanceModalVisible: false, isVisible: true })
+              }
+              style={{ flex: 0.1, marginBottom: 40 }}>
+              <FastImage
+                tintColor={'white'}
+                style={{
+                  width: 15,
+                  height: 15,
+                  marginRight: 10,
+                  alignSelf: 'flex-end',
+                }}
+                resizeMode={FastImage.resizeMode.contain}
+                source={Images.cancel}
+              />
+            </TouchableOpacity>
+            <Inputtext
+              label="Gas Limit"
+              placeholder="Please enter Gas Limit"
+              placeholderTextColor={Colors.fadeDot}
+              value={this.state.advancedGasLimit}
+              labelStyle={styles.labelTextStyle}
+              keyboardType={'numeric'}
+              inputStyle={styles.inputstyle}
+              onChangeNumber={text =>
+                this.setState({ advancedGasLimit: parseFloat(text) })
+              }
+            />
+
+            <Inputtext
+              label="Max Priority Fee (Gwei)"
+              placeholder="Please enter Max Priority Fee"
+              labelStyle={styles.labelTextStyle}
+              placeholderTextColor={Colors.fadeDot}
+              value={this.state.advancePriorityFee}
+              keyboardType={'numeric'}
+              inputStyle={styles.inputstyle}
+              onChangeNumber={text => {
+                //console.warn('MM',' this.state.baseFee', this.state.baseFee);
+                this.setState({
+                  advancePriorityFee: parseFloat(text),
+                  MaxFee:
+                    text == ''
+                      ? ''
+                      : (
+                        parseFloat(2 * this.state.baseFee) + parseFloat(text)
+                      ).toString(),
+                });
+              }}
+            />
+            <Inputtext
+              label="Max Fee (Gwei)"
+              placeholder="Max Fee"
+              placeholderTextColor={Colors.fadeDot}
+              labelStyle={styles.labelTextStyle}
+              value={this.state.MaxFee}
+              inputStyle={styles.inputstyle}
+              keyboardType={'numeric'}
+              editable={false}></Inputtext>
+            <View style={styles.buttonStylesSubmit}>
+              <ButtonPrimary
+                text="Submit"
+                onpress={() => this.onSubmitGas()}
+                btnstyle={{ width: '80%', padding: 10 }}
+              />
+            </View>
+          </View>
+          {this.state.isLoading && <Loader />}
+        </Modal>
+
+        {/* **********************************MODAL FOR TRON  *********************************************** */}
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={this.state.gotSigningRequest}
+          onRequestClose={() => { }}>
+          <View style={styles.tronModal}>
+            <TouchableOpacity
+              onPress={() => this.setState({ gotSigningRequest: false })}
+              style={{ flex: 0.1, alignItems: 'flex-end' }}>
+              <FastImage
+                style={{ width: 30, height: 30, marginRight: 10 }}
+                resizeMode={FastImage.resizeMode.contain}
+                source={Images.cancel}
+              />
+            </TouchableOpacity>
+            <View style={styles.tronModal1}>
+              <View style={styles.tronViewStyle}>
+                <ButtonPrimary
+                  title="Confirm Swap"
+                  style={{ marginBottom: 20 }}
+                  onPress={() => this.sendTron()}
+                />
+                <ButtonPrimary
+                  title="Cancel"
+                  onPress={() =>
+                    this.setState({ rejected: true, gotSigningRequest: false })
+                  }
+                />
+              </View>
+            </View>
+          </View>
+          {/* {this.state.isLoading && <Loader color="white" />} */}
+        </Modal>
+      </>
+    );
+  }
+
+  async getBaseFee() {
+    const fee = await getEthBaseFeeDapp();
+    const priorityFees = await getPriorityDapp();
+    this.setState({ baseFee: fee, priorityFees: priorityFees }, () => {
+
+      //  console.warn('MM',' Base Fee chk fee:::::eth:::::::', this.state.baseFee)
+    }
+    );
+    // ////console.log(
+    // ' Priority Fee chk fee:::::eth:::::::',
+    //   this.hex2dec(priorityFees) / 100000000,
+    //   );
+  }
+}
+
+const mapStateToProp = state => {
+  const { currentEthpriceInSelectedCurrency, myWallets } = state.walletReducer;
+  const {stakeUrl, publicBscUrl, publicEthUrl} = state.walletReducer.dex_data;
+  return { currentEthpriceInSelectedCurrency, myWallets,stakeUrl, publicBscUrl, publicEthUrl };
+};
+export default connect(mapStateToProp, {
+  getBnbNonce,
+  getBnbGasEstimate,
+  sendBNB,
+})(DappBrowserSwap);
