@@ -57,5 +57,4 @@ In this project we have used following technologies:
 
 + React.js
 + React-native
-+ Web3.js
-+ Crypto.js
+
