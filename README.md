@@ -67,28 +67,28 @@ SaitaPro_frontend
 |--ABI # this folder abis for contracts
 |--android # this folder contains android native files
 |--assets 
-   |-- fonts # this folder contains font files
-   |-- images # this folder contains common icons and dark and white icons folder
-   |   |-- iconDark # this folder contains icons for dark theme
-   |   |-- iconWhite  # this folder contains icons for light theme
+|   |-- fonts # this folder contains font files
+|   |-- images # this folder contains common icons and dark and white icons folder
+|  |   |-- iconDark # this folder contains icons for dark theme
+|   |   |-- iconWhite  # this folder contains icons for light theme
 |--ios # this folder contains iOS native files
 |--src
-   |-- Api # this folder contains common api calls file
-   |-- Components
-   |   |-- Screens # this folder contains screens classes
-   |   |-- common # this folder contains common components
-   |-- Redux 
-   |   |-- Actions # this folder contains redux action classes used for data management
-   |   |-- Reducers # this folder contains redux reducer classes used for data management
-   |-- Utils # contains uitlity files like wallet connect common methods, theme common methods and multisender abis
-   |-- theme # this folder contains common classes for fonts, colors and images
-   |-- App.js # root class of the project
-   |-- Router.js # navigation center
-   |-- Constants.js # this file common keys and text phrases 
-   |-- Singleton.js # this class contains common methods and values used inside project
-   |-- utils.js # this class contains common methods and values used inside project
-   |-- Endpoints.js # this file contains api endpoints
-  
+|   |-- Api # this folder contains common api calls file
+|   |-- Components
+|   |   |-- Screens # this folder contains screens classes
+|   |   |-- common # this folder contains common components
+|   |-- Redux 
+|   |   |-- Actions # this folder contains redux action classes used for data management
+|   |   |-- Reducers # this folder contains redux reducer classes used for data management
+|   |-- Utils # contains uitlity files like wallet connect common methods, theme common methods and multisender abis
+|   |-- theme # this folder contains common classes for fonts, colors and images
+|   |-- App.js # root class of the project
+|   |-- Router.js # navigation center
+|   |-- Constants.js # this file common keys and text phrases 
+|   |-- Singleton.js # this class contains common methods and values used inside project
+|   |-- utils.js # this class contains common methods and values used inside project
+|   |-- Endpoints.js # this file contains api endpoints
+ThemeManager.js # theme and language manager class.
 ```
 
 
