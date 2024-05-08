@@ -82,10 +82,13 @@ SaitaPro_frontend
    |   |-- Reducers # this folder contains redux reducer classes used for data management
    |-- Utils # contains uitlity files like wallet connect common methods, theme common methods and multisender abis
    |-- theme # this folder contains common classes for fonts, colors and images
+   |-- App.js # root class of the project
+   |-- Router.js # navigation center
    |-- Constants.js # this file common keys and text phrases 
    |-- Singleton.js # this class contains common methods and values used inside project
    |-- utils.js # this class contains common methods and values used inside project
    |-- Endpoints.js # this file contains api endpoints
+  
 ```
 
 
