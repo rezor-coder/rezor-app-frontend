@@ -1,20 +1,20 @@
 import React from "react";
-import { widthPercentageToDP as wp, heightPercentageToDP as hp } from "react-native-responsive-screen";
+import { Dimensions, Image, Modal, Platform, SafeAreaView, ScrollView, StyleSheet, Text, TouchableHighlight, View } from 'react-native';
 import { Grid, Row } from "react-native-easy-grid";
+import { heightPercentageToDP as hp, widthPercentageToDP as wp } from "react-native-responsive-screen";
 import ShuftiPro from "react-native-shuftipro-kyc";
-import { Actions, Actions as NavigationActions } from 'react-native-router-flux'
-import { Text, View, Image, TouchableHighlight, StyleSheet, SafeAreaView, Platform, ScrollView, Dimensions, Modal } from 'react-native';
-import { EventRegister } from "react-native-event-listeners";
 import { LanguageManager, ThemeManager } from "../../../../ThemeManager";
+import Singleton from '../../../Singleton';
 import { Colors, Fonts } from "../../../theme";
 import { ImageBackgroundComponent, SimpleHeader, Wrap } from "../../common";
 import { SettingBar } from "../../common/SettingBar";
-import Singleton from '../../../Singleton';
 
 import LottieView from 'lottie-react-native';
-import images from "../../../theme/Images";
-import { BASE_URL_SAITACARDS } from "../../../Endpoints";
 import { network } from "../../../Constant";
+import { BASE_URL_SAITACARDS } from "../../../Endpoints";
+import { NavigationStrings } from "../../../Navigation/NavigationStrings";
+import { getCurrentRouteName, goBack, navigate } from "../../../navigationsService";
+import images from "../../../theme/Images";
 // test
 // const client_id = 'b62f96f10b6912daa5884f4645df2e29730348402c341b456cf1c76a4bb14bb0';
 // const secret_key = '7sTPf887HestGcegqposGQYJovA2PWfq';
@@ -156,7 +156,7 @@ class KycShufti extends React.Component {
       paylaod: {
         country: '',
         language: 'EN',
-        email: this.props.email,
+        email: this.props?.route?.params?.email,
         callback_url: BASE_URL_SAITACARDS + 'user/getKycResponse',
         redirect_url: 'saitamatoken.com',
         show_consent: 0,
@@ -213,7 +213,7 @@ class KycShufti extends React.Component {
 
   componentDidMount() {
     global.isCamera = true
-    //console.warn('MM',">>>>>statesprops jkyc", this.props.email);
+    //console.warn('MM',">>>>>statesprops jkyc", this.props?.route?.params?.email);
   }
 
   UNSAFE_componentWillMount() { }
@@ -370,7 +370,7 @@ class KycShufti extends React.Component {
             <TouchableHighlight
               underlayColor="none"
               onPress={() => {
-                Actions.pop();
+                goBack();
               }}>
               <Image
                 source={require(back_icon)}
@@ -607,7 +607,7 @@ class KycShufti extends React.Component {
               // kycmodalFail: true
             });
             Singleton.getInstance().currentCard = 'black'
-            Actions.currentScene != 'SaitaCardsInfo' && Actions.SaitaCardsInfo();
+            getCurrentRouteName() != 'SaitaCardsInfo' && navigate(NavigationStrings.SaitaCardsInfo);
           }}
 
           cancelBtn={cancelResponse => {
@@ -615,7 +615,7 @@ class KycShufti extends React.Component {
               // switchBetweenServiceAndType: true,
               // screenSelectServices: true,
             });
-            Actions.pop()
+            goBack()
           }}
         />
       );

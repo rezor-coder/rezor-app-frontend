@@ -1,27 +1,24 @@
 /* eslint-disable react-native/no-inline-styles */
-import { View, Text, Image } from 'react-native';
-import React, { useState, useEffect } from 'react';
-import { styles } from './BuyHistoryStyle';
-import { Wrap, BasicButton, BorderLine } from '../../common';
-import LinearGradient from 'react-native-linear-gradient';
-import { SimpleHeader } from '../../common/SimpleHeader';
-import { Actions } from 'react-native-router-flux';
-import { BasicInputBox } from '../../common/BasicInputBox';
-import { Images, Colors } from '../../../theme/index';
-import { getBuyTransactionList } from '../../../Redux/Actions';
+import moment from 'moment';
+import React, { useEffect, useState } from 'react';
+import { Image, Text, View } from 'react-native';
 import {
   FlatList,
-  TextInput,
-  TouchableOpacity,
+  TouchableOpacity
 } from 'react-native-gesture-handler';
-import { ButtonPrimary } from '../../common/ButtonPrimary';
-import fonts from '../../../theme/Fonts';
-import * as constants from '../../../Constant';
-import Singleton from '../../../Singleton';
-import { connect, useDispatch, useSelector } from 'react-redux';
-import Loader from '../Loader/Loader';
+import { useDispatch, useSelector } from 'react-redux';
 import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
-import moment from 'moment';
+import * as constants from '../../../Constant';
+import { NavigationStrings } from '../../../Navigation/NavigationStrings';
+import { getBuyTransactionList } from '../../../Redux/Actions';
+import Singleton from '../../../Singleton';
+import { getCurrentRouteName, goBack, navigate } from '../../../navigationsService';
+import fonts from '../../../theme/Fonts';
+import { Colors, Images } from '../../../theme/index';
+import { BorderLine, Wrap } from '../../common';
+import { SimpleHeader } from '../../common/SimpleHeader';
+import Loader from '../Loader/Loader';
+import { styles } from './BuyHistoryStyle';
 
 const BuyHistory = props => {
   const dispatch = useDispatch();
@@ -109,7 +106,7 @@ const BuyHistory = props => {
       <SimpleHeader
         back={false}
         backPressed={() => {
-          Actions.pop();
+          goBack();
         }}
         title={'Buy ' + LanguageManager.history}
         history={false}
@@ -128,8 +125,8 @@ const BuyHistory = props => {
             <View style={{ flex: 1 }}>
               <TouchableOpacity
                 onPress={() => {
-                  Actions.currentScene != 'BuyTransactionDetail' &&
-                    Actions.BuyTransactionDetail({ TxnData: item });
+                  getCurrentRouteName() != 'BuyTransactionDetail' &&
+                  navigate(NavigationStrings.BuyTransactionDetail,{ TxnData: item });
                 }}>
                 <View
                   style={[

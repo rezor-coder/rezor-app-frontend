@@ -118,6 +118,14 @@ import {
   SaitaCardDepositBinance,
   Splash,
   DefiAccessmainIOS,
+  SaitaCardDashBoard,
+  CardInfo,
+  CardManage,
+  ApplyCard,
+  DepositScreen,
+  ApplyCardWelcomeScreen,
+  RegisterNow,
+  UserDetail,
 } from './Components/Screens/index';
 
 import {Colors, Images} from './theme';
@@ -137,7 +145,6 @@ const RouterComponent = ({onRouteChanged}) => {
     <Router
       onStateChange={onRouteChanged}
       navigationBarStyle={{
-        backgroundColor: ThemeManager.colors.bg,
         borderBottomWidth: 0,
       }}
       hideNavBar={false}
@@ -152,7 +159,6 @@ const RouterComponent = ({onRouteChanged}) => {
           panHandlers={null}
           initial
         />
-
         <Scene
           key="SplashAppName"
           hideNavBar={true}
@@ -160,7 +166,6 @@ const RouterComponent = ({onRouteChanged}) => {
           gestureEnable={false}
           panHandlers={null}
         />
-
         <Scene
           key="Login"
           hideNavBar={true}
@@ -175,7 +180,6 @@ const RouterComponent = ({onRouteChanged}) => {
           gestureEnable={false}
           panHandlers={null}
         />
-
         <Scene
           key="DappBrowser"
           hideNavBar={true}
@@ -190,7 +194,6 @@ const RouterComponent = ({onRouteChanged}) => {
           gestureEnable={false}
           panHandlers={null}
         />
-
         <Scene
           key="BuyHistory"
           hideNavBar={true}
@@ -198,7 +201,6 @@ const RouterComponent = ({onRouteChanged}) => {
           gestureEnable={false}
           panHandlers={null}
         />
-
         <Scene
           key="BackupOptions"
           hideNavBar={true}
@@ -206,7 +208,6 @@ const RouterComponent = ({onRouteChanged}) => {
           gestureEnable={false}
           panHandlers={null}
         />
-
         <Scene
           key="ExportPrivateKeys"
           hideNavBar={true}
@@ -214,7 +215,6 @@ const RouterComponent = ({onRouteChanged}) => {
           gestureEnable={false}
           panHandlers={null}
         />
-
         <Scene
           key="SendCryptoContacts"
           hideNavBar={true}
@@ -229,7 +229,6 @@ const RouterComponent = ({onRouteChanged}) => {
           gestureEnable={false}
           panHandlers={null}
         />
-
         <Scene
           key="BuyTransactionDetail"
           hideNavBar={true}
@@ -237,7 +236,6 @@ const RouterComponent = ({onRouteChanged}) => {
           gestureEnable={false}
           panHandlers={null}
         />
-
         <Scene
           key="Security"
           hideNavBar={true}
@@ -266,7 +264,6 @@ const RouterComponent = ({onRouteChanged}) => {
           gestureEnable={false}
           panHandlers={null}
         />
-
         <Scene
           key="HourChanges"
           hideNavBar={true}
@@ -274,7 +271,6 @@ const RouterComponent = ({onRouteChanged}) => {
           gestureEnable={false}
           panHandlers={null}
         />
-
         <Scene
           key="VerifyPhrase"
           hideNavBar={true}
@@ -296,7 +292,6 @@ const RouterComponent = ({onRouteChanged}) => {
           gestureEnable={false}
           panHandlers={null}
         />
-
         <Scene
           key="WalletSequrity"
           hideNavBar={true}
@@ -311,7 +306,6 @@ const RouterComponent = ({onRouteChanged}) => {
           gestureEnable={false}
           panHandlers={null}
         />
-
         <Scene
           key="WalletSequrityConfirm"
           hideNavBar={true}
@@ -319,7 +313,6 @@ const RouterComponent = ({onRouteChanged}) => {
           gestureEnable={false}
           panHandlers={null}
         />
-
         <Scene
           key="CreateOrImportWallet"
           hideNavBar={true}
@@ -327,7 +320,6 @@ const RouterComponent = ({onRouteChanged}) => {
           gestureEnable={false}
           panHandlers={null}
         />
-
         <Scene
           key="Setting"
           hideNavBar={true}
@@ -335,7 +327,6 @@ const RouterComponent = ({onRouteChanged}) => {
           gestureEnable={false}
           panHandlers={null}
         />
-
         <Scene
           key="Congrats"
           hideNavBar={true}
@@ -343,7 +334,6 @@ const RouterComponent = ({onRouteChanged}) => {
           gestureEnable={false}
           panHandlers={null}
         />
-
         <Scene
           key="FaceID"
           hideNavBar={true}
@@ -358,7 +348,6 @@ const RouterComponent = ({onRouteChanged}) => {
           gestureEnable={false}
           panHandlers={null}
         />
-
         <Scene
           key="CreatePIN"
           hideNavBar={true}
@@ -373,7 +362,6 @@ const RouterComponent = ({onRouteChanged}) => {
           gestureEnable={false}
           panHandlers={null}
         />
-
         <Scene
           key="SaitaCardForgot"
           hideNavBar={true}
@@ -381,7 +369,6 @@ const RouterComponent = ({onRouteChanged}) => {
           gestureEnable={false}
           panHandlers={null}
         />
-
         <Scene
           key="SaitaCardNewPassword"
           hideNavBar={true}
@@ -403,7 +390,6 @@ const RouterComponent = ({onRouteChanged}) => {
           gestureEnable={false}
           panHandlers={null}
         />
-
         <Scene
           key="CardSetting"
           hideNavBar={true}
@@ -411,7 +397,6 @@ const RouterComponent = ({onRouteChanged}) => {
           gestureEnable={false}
           panHandlers={null}
         />
-
         <Scene
           key="WelcomeScreen"
           hideNavBar={true}
@@ -419,7 +404,6 @@ const RouterComponent = ({onRouteChanged}) => {
           gestureEnable={false}
           panHandlers={null}
         />
-
         <Scene
           key="SelectLanguage"
           hideNavBar={true}
@@ -427,7 +411,6 @@ const RouterComponent = ({onRouteChanged}) => {
           gestureEnable={false}
           panHandlers={null}
         />
-
         <Scene
           key="ChooseLanguage"
           hideNavBar={true}
@@ -435,7 +418,6 @@ const RouterComponent = ({onRouteChanged}) => {
           gestureEnable={false}
           panHandlers={null}
         />
-
         <Scene
           key="CreateWallet"
           hideNavBar={true}
@@ -471,7 +453,6 @@ const RouterComponent = ({onRouteChanged}) => {
           gestureEnable={false}
           panHandlers={null}
         />
-
         <Scene
           key="RecoveryPhrase"
           hideNavBar={true}
@@ -479,7 +460,6 @@ const RouterComponent = ({onRouteChanged}) => {
           gestureEnable={false}
           panHandlers={null}
         />
-
         <Scene
           key="GetSupport"
           hideNavBar={true}
@@ -494,7 +474,6 @@ const RouterComponent = ({onRouteChanged}) => {
           gestureEnable={false}
           panHandlers={null}
         />
-
         <Scene
           key="SwapScreen"
           hideNavBar={true}
@@ -565,7 +544,6 @@ const RouterComponent = ({onRouteChanged}) => {
           gestureEnable={false}
           panHandlers={null}
         />
-
         <Scene
           key="QrCode"
           hideNavBar={true}
@@ -601,7 +579,6 @@ const RouterComponent = ({onRouteChanged}) => {
           gestureEnable={false}
           panHandlers={null}
         />
-
         <Scene
           key="AddNewContacts"
           hideNavBar={true}
@@ -609,7 +586,6 @@ const RouterComponent = ({onRouteChanged}) => {
           gestureEnable={false}
           panHandlers={null}
         />
-
         <Scene
           key="AddToken"
           hideNavBar={true}
@@ -617,7 +593,6 @@ const RouterComponent = ({onRouteChanged}) => {
           gestureEnable={false}
           panHandlers={null}
         />
-
         <Scene
           key="SaveContact"
           hideNavBar={true}
@@ -625,7 +600,6 @@ const RouterComponent = ({onRouteChanged}) => {
           gestureEnable={false}
           panHandlers={null}
         />
-
         <Scene
           key="Epay"
           hideNavBar={true}
@@ -647,7 +621,6 @@ const RouterComponent = ({onRouteChanged}) => {
           gestureEnable={false}
           panHandlers={null}
         />
-
         <Scene
           key="Linkview"
           hideNavBar={true}
@@ -655,7 +628,6 @@ const RouterComponent = ({onRouteChanged}) => {
           gestureEnable={false}
           panHandlers={null}
         />
-
         <Scene
           key="Loader"
           hideNavBar={true}
@@ -663,7 +635,6 @@ const RouterComponent = ({onRouteChanged}) => {
           gestureEnable={false}
           panHandlers={null}
         />
-
         <Scene
           key="AddNewContacts"
           hideNavBar={true}
@@ -692,7 +663,6 @@ const RouterComponent = ({onRouteChanged}) => {
           gestureEnable={false}
           panHandlers={null}
         />
-
         <Scene
           key="ScanQr"
           hideNavBar={true}
@@ -700,7 +670,6 @@ const RouterComponent = ({onRouteChanged}) => {
           gestureEnable={false}
           panHandlers={null}
         />
-
         <Scene
           key="SelectBlockchain"
           hideNavBar={true}
@@ -771,7 +740,6 @@ const RouterComponent = ({onRouteChanged}) => {
           gestureEnable={false}
           panHandlers={null}
         />
-
         <Scene
           key="SwapLiquidity"
           hideNavBar={true}
@@ -779,7 +747,6 @@ const RouterComponent = ({onRouteChanged}) => {
           gestureEnable={false}
           panHandlers={null}
         />
-
         <Scene
           key="Liquidity"
           hideNavBar={true}
@@ -787,7 +754,6 @@ const RouterComponent = ({onRouteChanged}) => {
           gestureEnable={false}
           panHandlers={null}
         />
-
         <Scene
           key="DappBrowserSwap"
           hideNavBar={true}
@@ -795,7 +761,6 @@ const RouterComponent = ({onRouteChanged}) => {
           gestureEnable={false}
           panHandlers={null}
         />
-
         <Scene
           key="DappBrowserSwapc"
           hideNavBar={true}
@@ -817,7 +782,6 @@ const RouterComponent = ({onRouteChanged}) => {
           gestureEnable={false}
           panHandlers={null}
         />
-
         <Scene
           key="TermsandPrivacy"
           hideNavBar={true}
@@ -825,7 +789,6 @@ const RouterComponent = ({onRouteChanged}) => {
           gestureEnable={false}
           panHandlers={null}
         />
-
         <Scene
           key="SwapNew"
           hideNavBar={true}
@@ -856,6 +819,63 @@ const RouterComponent = ({onRouteChanged}) => {
           // initial
         />
         <Scene
+          key="SaitaCardDashBoard"
+          hideNavBar={true}
+          component={SaitaCardDashBoard}
+          gestureEnable={false}
+          panHandlers={null}
+        />
+        <Scene
+          key="CardInfo"
+          hideNavBar={true}
+          component={CardInfo}
+          gestureEnable={false}
+          panHandlers={null}
+        />
+        <Scene
+          key="CardManage"
+          hideNavBar={true}
+          component={CardManage}
+          gestureEnable={false}
+          panHandlers={null}
+        />
+        <Scene
+          key="ApplyCardWelcomeScreen"
+          hideNavBar={true}
+          component={ApplyCardWelcomeScreen}
+          gestureEnable={false}
+          panHandlers={null}
+        />
+        <Scene
+          key="ApplyCard"
+          hideNavBar={true}
+          component={ApplyCard}
+          gestureEnable={false}
+          panHandlers={null}
+        />
+        <Scene
+          key="DepositScreen"
+          hideNavBar={true}
+          component={DepositScreen}
+          gestureEnable={false}
+          panHandlers={null}
+        />
+        <Scene
+          key="RegisterNow"
+          hideNavBar={true}
+          component={RegisterNow}
+          gestureEnable={false}
+          panHandlers={null}
+        />
+          <Scene
+          key="UserDetail"
+          hideNavBar={true}
+          component={UserDetail}
+          gestureEnable={false}
+          panHandlers={null}
+        />
+        {/* /------------------------------ */}
+        <Scene
           key="SaitaCardWelcome"
           hideNavBar={true}
           component={SaitaCardWelcome}
@@ -869,7 +889,6 @@ const RouterComponent = ({onRouteChanged}) => {
           gestureEnable={false}
           panHandlers={null}
         />
-
         <Scene
           key="SaitaCardBlack"
           hideNavBar={true}
@@ -877,7 +896,6 @@ const RouterComponent = ({onRouteChanged}) => {
           gestureEnable={false}
           panHandlers={null}
         />
-
         <Scene
           key="SaitaCardGold"
           hideNavBar={true}
@@ -885,7 +903,6 @@ const RouterComponent = ({onRouteChanged}) => {
           gestureEnable={false}
           panHandlers={null}
         />
-
         <Scene
           key="SaitaCardDiamond"
           hideNavBar={true}
@@ -893,7 +910,6 @@ const RouterComponent = ({onRouteChanged}) => {
           gestureEnable={false}
           panHandlers={null}
         />
-
         <Scene
           key="SaitaCardDeposit"
           hideNavBar={true}
@@ -901,7 +917,6 @@ const RouterComponent = ({onRouteChanged}) => {
           gestureEnable={false}
           panHandlers={null}
         />
-
         <Scene
           key="CardHistoryDetail"
           hideNavBar={true}
@@ -909,7 +924,6 @@ const RouterComponent = ({onRouteChanged}) => {
           gestureEnable={false}
           panHandlers={null}
         />
-
         <Scene
           key="SaitaCardHistory"
           hideNavBar={true}
@@ -973,7 +987,6 @@ const RouterComponent = ({onRouteChanged}) => {
           gestureEnable={false}
           panHandlers={null}
         />
-
         <Scene
           key="CountryCodes"
           hideNavBar={true}
@@ -995,7 +1008,6 @@ const RouterComponent = ({onRouteChanged}) => {
           gestureEnable={false}
           panHandlers={null}
         />
-
         <Scene
           key="NfcDemo"
           hideNavBar={true}
@@ -1003,7 +1015,6 @@ const RouterComponent = ({onRouteChanged}) => {
           gestureEnable={false}
           panHandlers={null}
         />
-
         <Scene key="Main" hideNavBar wrap={false}>
           <Tabs
             wrap={false}
@@ -1017,7 +1028,9 @@ const RouterComponent = ({onRouteChanged}) => {
             tabBarStyle={{
               height: heightDimen(80),
             }}
-            tabBarComponent={(props) => { return (<CustomTabBar navigation={props.navigation}  />) }}>
+            tabBarComponent={props => {
+              return <CustomTabBar navigation={props.navigation} />;
+            }}>
             <Scene
               hideNavBar={true}
               key="Dashboard"
@@ -1167,14 +1180,14 @@ const RouterComponent = ({onRouteChanged}) => {
           gestureEnable={false}
           panHandlers={null}
         />
-         <Scene
+        <Scene
           hideNavBar={true}
           key="SendSTC"
           component={SendSTC}
           gestureEnable={false}
           panHandlers={null}
         />
-         <Scene
+        <Scene
           hideNavBar={true}
           key="MultiSenderSTC"
           component={MultiSenderSTC}

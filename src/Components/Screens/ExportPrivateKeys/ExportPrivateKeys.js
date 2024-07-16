@@ -1,16 +1,16 @@
-import { View, Text, TouchableOpacity ,ScrollView} from 'react-native';
-import React, { useState, useEffect, createRef } from 'react';
+import Clipboard from '@react-native-community/clipboard';
+import React, { createRef, useEffect, useState } from 'react';
+import { BackHandler, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import Toast from 'react-native-easy-toast';
+import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
+import * as Constants from '../../../Constant';
+import { NavigationStrings } from '../../../Navigation/NavigationStrings';
+import Singleton from '../../../Singleton';
+import { heightDimen } from '../../../Utils/themeUtils';
+import { navigate } from '../../../navigationsService';
 import { BorderLine, Wrap } from '../../common';
 import { SimpleHeader } from '../../common/SimpleHeader';
-import { Actions } from 'react-native-router-flux';
 import { styles } from './ExportPrivateKeysStyle';
-import Singleton from '../../../Singleton';
-import Toast, { DURATION } from 'react-native-easy-toast';
-import * as Constants from '../../../Constant';
-import Clipboard from '@react-native-community/clipboard';
-import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
-import { BackHandler } from 'react-native';
-import { heightDimen } from '../../../Utils/themeUtils';
 
 
 const ExportPrivateKeys = props => {
@@ -22,7 +22,7 @@ const ExportPrivateKeys = props => {
   useEffect(() => {
     let backHandle = null;
     backHandle = BackHandler.addEventListener('hardwareBackPress', backAction);
-    let focus = props.navigation.addListener('didFocus', () => {
+    let focus = props.navigation.addListener('focus', () => {
       // if (Platform.OS == "android")
       // RNPreventScreenshot?.enabled(true)
       //  console.warn('MM','did Focus called recovery phrase::::::');
@@ -31,16 +31,16 @@ const ExportPrivateKeys = props => {
         backAction,
       );
     });
-    let blur = props.navigation.addListener('didBlur', () => {
+    let blur = props.navigation.addListener('blur', () => {
       //  console.warn('MM','did Blur called recovery phrase::::::');
       backHandle?.remove();
     });
     return () => {
       if (focus) {
-        focus?.remove()
+        focus()
       }
       if (blur) {
-        blur?.remove()
+        blur()
       }
       if (backHandle) {
         backHandle?.remove()
@@ -49,32 +49,31 @@ const ExportPrivateKeys = props => {
   }, [props]);
 
   const backAction = () => {
-    //Actions.jump('BackupOptions');
-    props.screenType == 'Editwallet'
-      ? Actions.jump('EditWallet')
-      : Actions.jump('BackupOptions');
+    props.route?.params?.screenType == 'Editwallet'
+      ? navigate(NavigationStrings.EditWallet)
+      : navigate(NavigationStrings.BackupOptions);
     return true;
   };
 
 
   useEffect(() => {
-    //  console.warn('MM','chk item:::::::::', JSON.stringify(props.walletItem));
-    if (props.walletItem == undefined) {
+    //  console.warn('MM','chk item:::::::::', JSON.stringify(props.route?.params?.walletItem));
+    if (props.route?.params?.walletItem == undefined) {
       Singleton.getInstance().newGetData(`${Singleton.getInstance().defaultEthAddress}_pk`).then(ethPvtKey => {
         // console.warn('MM','ethPvtKey--------', ethPvtKey);
         setEthPvtKey(ethPvtKey);
       });
     } else {
-      let address = props.walletItem.loginRequest.address;
-      let blockChain = props?.walletItem?.blockChain;
+      let address = props.route?.params?.walletItem.loginRequest.address;
+      let blockChain = props.route?.params?.walletItem?.blockChain;
       switch (blockChain) {
         case 'all':
-          Singleton.getInstance().newGetData(`${props?.walletItem?.loginRequest?.btcAddress}_pk`).then(btcPvtKey => {
+          Singleton.getInstance().newGetData(`${props.route?.params?.walletItem?.loginRequest?.btcAddress}_pk`).then(btcPvtKey => {
             // console.warn('MM','ethPvtKey--------', ethPvtKey);
             setBtcPvtKey(btcPvtKey);
             Singleton.getInstance().newGetData(`${address}_pk`).then(ethPvtKey => {
               // console.warn('MM','ethPvtKey--------', ethPvtKey);
-              Singleton.getInstance().newGetData(`${props?.walletItem?.loginRequest?.trxAddress}_pk`).then(trxPvtKey => {
+              Singleton.getInstance().newGetData(`${props.route?.params?.walletItem?.loginRequest?.trxAddress}_pk`).then(trxPvtKey => {
                 setEthPvtKey(ethPvtKey);
                 setAddressObj([
                   {
@@ -175,7 +174,7 @@ const ExportPrivateKeys = props => {
           break;
 
         case 'btc':
-          Singleton.getInstance().newGetData(`${props?.walletItem?.loginRequest?.btcAddress}_pk`).then(btcPvtKey => {
+          Singleton.getInstance().newGetData(`${props.route?.params?.walletItem?.loginRequest?.btcAddress}_pk`).then(btcPvtKey => {
             setBtcPvtKey(btcPvtKey);
             setAddressObj([
               {
@@ -190,7 +189,7 @@ const ExportPrivateKeys = props => {
           break;
 
         case 'trx':
-          Singleton.getInstance().newGetData(`${props?.walletItem?.loginRequest?.trxAddress}_pk`).then(btcPvtKey => {
+          Singleton.getInstance().newGetData(`${props.route?.params?.walletItem?.loginRequest?.trxAddress}_pk`).then(btcPvtKey => {
 
             setBtcPvtKey(btcPvtKey);
             setAddressObj([
@@ -208,7 +207,7 @@ const ExportPrivateKeys = props => {
           break;
       }
 
-      // let address = props.walletItem.loginRequest.address;
+      // let address = props.route?.params?.walletItem.loginRequest.address;
       // Singleton.getInstance()
       //   .getData(`${address}_pk`)
       //   .then(ethPvtKey => {
@@ -232,9 +231,9 @@ const ExportPrivateKeys = props => {
         back={false}
         backPressed={() => {
           // props.navigation.state.params.onGoBack();
-          props.screenType == 'Editwallet'
-            ? Actions.jump('EditWallet')
-            : Actions.jump('BackupOptions');
+          props.route?.params?.screenType == 'Editwallet'
+            ? navigate(NavigationStrings.EditWallet)
+            : navigate(NavigationStrings.BackupOptions);
           // props.navigation.goBack();
         }}
       />

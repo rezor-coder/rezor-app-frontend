@@ -1,31 +1,23 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, { Component } from 'react';
 import {
-  TouchableOpacity,
-  FlatList,
-  Image,
-  ScrollView,
-  SafeAreaView,
   BackHandler,
-  View,
   Text,
+  View
 } from 'react-native';
-import styles from './BackupOptionsStyle';
-import {
-  SecuritySwitch,
-  SimpleHeader,
-  Wrap,
-  SecurityLink,
-  MainStatusBar,
-  BorderLine,
-} from '../../common';
-import { Fonts, Images, Colors } from '../../../theme';
-import { Actions } from 'react-native-router-flux';
-import Singleton from '../../../Singleton';
-import * as constants from '../../../Constant';
-import { SettingBar } from '../../common/SettingBar';
 import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
-import fonts from '../../../theme/Fonts';
+import * as constants from '../../../Constant';
+import { NavigationStrings } from '../../../Navigation/NavigationStrings';
+import Singleton from '../../../Singleton';
+import { getCurrentRouteName, goBack, navigate } from '../../../navigationsService';
+import {
+  BorderLine,
+  MainStatusBar,
+  SecurityLink,
+  SimpleHeader,
+  Wrap
+} from '../../common';
+import styles from './BackupOptionsStyle';
 
 class BackupOptions extends Component {
   constructor(props) {
@@ -64,8 +56,8 @@ class BackupOptions extends Component {
           ? this.setState({ isEnabled: false })
           : this.setState({ isEnabled: true });
       });
-    this.props.navigation.addListener('didFocus', this.screenFocus);
-    this.props.navigation.addListener('didBlur', this.screenBlur);
+    this.props.navigation.addListener('focus', this.screenFocus);
+    this.props.navigation.addListener('blur', this.screenBlur);
   }
   screenBlur = () => {
     BackHandler.removeEventListener('hardwareBackPress', this.backAction);
@@ -75,7 +67,7 @@ class BackupOptions extends Component {
   };
   backAction = () => {
  //  console.warn('MM','i security');
-    Actions.pop();
+    goBack();
     return true;
   };
   enableDisableAppLock(status) {
@@ -129,8 +121,8 @@ class BackupOptions extends Component {
                   ]}
                   showIcon
                   onPress={() =>
-                    Actions.currentScene != 'ConfirmPin' &&
-                    Actions.ConfirmPin({
+                    getCurrentRouteName() != 'ConfirmPin' &&
+                    navigate(NavigationStrings.ConfirmPin,{
                       redirectTo: 'RecoveryPhrase',
                       goBack: true,
                       walletItem: this.state.activeWallet,
@@ -154,13 +146,13 @@ class BackupOptions extends Component {
               title={LanguageManager.exportPrivateKeys}
               onPress={() =>
              {
-              Actions.currentScene != 'ConfirmPin' &&
-              Actions.ConfirmPin({
+              getCurrentRouteName() != 'ConfirmPin' &&
+              navigate(NavigationStrings.ConfirmPin,{
                 redirectTo: 'ExportPrivateKeys',
                 goBack: true,
                 walletItem: this.state.activeWallet,
               })
-                //  Actions.currentScene != 'ExportPrivateKeys' &&
+                //  getCurrentRouteName() != 'ExportPrivateKeys' &&
                 // Actions.ExportPrivateKeys({
                 //   walletItem: this.state.activeWallet,
                 // })

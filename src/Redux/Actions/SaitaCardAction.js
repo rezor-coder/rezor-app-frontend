@@ -5,11 +5,25 @@ import {
     API_FETCH_BANK_DETAILS, API_CARD_HISTORY, API_USERCARD_LIST, API_FORGETCARDPASSWORD, API_FORGETCARD_VERIFY, API_NEWPASSWORDCARD,
     API_CHANGE_PASSWORDCARD,
     API_APPLY_VIRTUAL_ADDRESS,
-    API_CARDS_SENDOTP_MOBILE
+    API_CARDS_SENDOTP_MOBILE,
+    SIGN_UP,
+    RESEND_OTP,
+    CONFIRM_PHONE,
+    EMAIL_ADD,
+    SET_USER_DETAIL,
+    USER_LOGOUT,
+    USER_LOGIN,
+    GET_USER_PROFILE,
+    GET_KYC_ID,
+    REQUEST_VAULT_CARD,
+    FORGET_OTP_SEND,
+    FORGET_OTP_CONFIRM,
+    FORGET_PASSWORD_CONFIRM
 } from '../../Endpoints';
 import { APIClient } from "../../Api";
 import * as Constants from '../../Constant'
 import Singleton from '../../Singleton';
+import { CARD_USER_DETAIL } from './types';
 
 
 // ********************************* loginCards   API********************************************* //
@@ -391,3 +405,186 @@ export const changePasswordCard = ({ data, access_token }) => {
         });
     };
 };
+// ********************************* vault card API********************************************* //
+
+export const sendPhoneOtp = ({data}) => {
+  return new Promise((resolve, reject) => {
+    APIClient.getInstance()
+      .postCards(SIGN_UP, data)
+      .then(response => {
+        let result = response;
+        resolve(result);
+      })
+      .catch(error => {
+        reject(error);
+      });
+  });
+};
+
+export const resendPhoneOtp = ({data}) => {
+  return new Promise((resolve, reject) => {
+    APIClient.getInstance()
+      .postCards(RESEND_OTP, data)
+      .then(response => {
+        let result = response;
+        resolve(result);
+      })
+      .catch(error => {
+        reject(error);
+      });
+  });
+};
+export const confirmPhoneOtp = ({data}) => {
+  return new Promise((resolve, reject) => {
+    APIClient.getInstance()
+      .postCards(CONFIRM_PHONE, data)
+      .then(response => {
+        let result = response;
+        resolve(result);
+      })
+      .catch(error => {
+        reject(error);
+      });
+  });
+};
+export const registerEmailAdded = ({data, token}) => {
+  return new Promise((resolve, reject) => {
+    APIClient.getInstance()
+      .postCards(EMAIL_ADD, data, `Bearer ${token}`)
+      .then(response => {
+        let result = response;
+        resolve(result);
+      })
+      .catch(error => {
+        reject(error);
+      });
+  });
+};
+export const setUserProfile = ({data, token}) => {
+    return new Promise((resolve, reject) => {
+      APIClient.getInstance()
+        .postCards(SET_USER_DETAIL, data, `Bearer ${token}`)
+        .then(response => {
+          let result = response;
+          resolve(result);
+        })
+        .catch(error => {
+          reject(error);
+        });
+    });
+  };
+  export const cardUserdata = (dispatch, data) => {
+    dispatch({
+      type: CARD_USER_DETAIL,
+      payload: data,
+    });
+  };
+  export const userLogOut = ({data, token}) => {
+    return new Promise((resolve, reject) => {
+      APIClient.getInstance()
+        .postCards(USER_LOGOUT, data, `Bearer ${token}`)
+        .then(response => {
+          let result = response;
+          resolve(result);
+        })
+        .catch(error => {
+          reject(error);
+        });
+    });
+  };
+  export const userLogIn = ({data}) => {
+    return new Promise((resolve, reject) => {
+      APIClient.getInstance()
+        .postCards(USER_LOGIN, data)
+        .then(response => {
+          let result = response;
+          resolve(result);
+        })
+        .catch(error => {
+          reject(error);
+        });
+    });
+  };
+  export const getUserProfile = ({token}) => {
+    return new Promise((resolve, reject) => {
+      APIClient.getInstance()
+        .getCards(GET_USER_PROFILE, `Bearer ${token}`)
+        .then(response => {
+          let result = response;
+          resolve(result);
+        })
+        .catch(error => {
+          reject(error);
+        });
+    });
+  };
+  export const getKycId = ({data, token}) => {
+    return new Promise((resolve, reject) => {
+      APIClient.getInstance()
+        .postCards(GET_KYC_ID, data, `Bearer ${token}`)
+        .then(response => {
+          let result = response;
+          resolve(result);
+        })
+        .catch(error => {
+          reject(error);
+        });
+    });
+  };
+  export const requestVaultCard = ({data, token}) => {
+    return new Promise((resolve, reject) => {
+      APIClient.getInstance()
+        .postCards(REQUEST_VAULT_CARD, data, `Bearer ${token}`)
+        .then(response => {
+          let result = response;
+          resolve(result);
+        })
+        .catch(error => {
+          reject(error);
+        });
+    });
+  };
+
+
+  export const forgetOtpSend = ({data}) => {
+    return new Promise((resolve, reject) => {
+      APIClient.getInstance()
+        .postCards(FORGET_OTP_SEND, data)
+        .then(response => {
+          let result = response;
+          resolve(result);
+        })
+        .catch(error => {
+          reject(error);
+        });
+    });
+  };
+
+  export const forgetOtpConfirm = ({data}) => {
+    console.log('data:::',data);
+    return new Promise((resolve, reject) => {
+      APIClient.getInstance()
+        .postCards(FORGET_OTP_CONFIRM, data)
+        .then(response => {
+          let result = response;
+          resolve(result);
+        })
+        .catch(error => {
+          reject(error);
+        });
+    });
+  };
+
+  export const forgetPasswordConfirm = ({data}) => {
+    return new Promise((resolve, reject) => {
+      APIClient.getInstance()
+        .postCards(FORGET_PASSWORD_CONFIRM, data)
+        .then(response => {
+          let result = response;
+          resolve(result);
+        })
+        .catch(error => {
+          reject(error);
+        });
+    });
+  };

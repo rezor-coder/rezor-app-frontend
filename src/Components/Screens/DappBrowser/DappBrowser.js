@@ -1,56 +1,46 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, {Component, useRef, useState, useEffect} from 'react';
+import { Wallet } from 'ethers';
+import React, { Component } from 'react';
 import {
-  View,
-  Image,
-  Text,
-  SafeAreaView,
-  TouchableOpacity,
-  Dimensions,
-  ScrollView,
-  Platform,
-  Animated,
-  Modal,
-  ActivityIndicator,
-  TextInput,
-  Linking,
-  Keyboard,
+  Alert,
   BackHandler,
+  Keyboard,
+  Modal,
+  Platform,
+  SafeAreaView,
+  Text,
+  TouchableOpacity,
+  View
 } from 'react-native';
-import styles from './DappBrowserStyle';
-import {Actions, ActionConst} from 'react-native-router-flux';
-import {Inputtext, ButtonPrimary} from '../../common';
+import { EventRegister } from 'react-native-event-listeners';
+import FastImage from 'react-native-fast-image';
 import RNFS from 'react-native-fs';
 import WebView from 'react-native-webview';
-import {Wallet} from 'ethers';
+import createInvoke from 'react-native-webview-invoke/native';
+import { connect } from 'react-redux';
 import web3 from 'web3';
-import Loader from '../Loader/Loader';
-import Images from '../../../theme/Images';
+import { ThemeManager } from '../../../../ThemeManager';
+import * as Constants from '../../../Constant';
+import { DAPP_IMG_URL, IS_PRODUCTION } from '../../../Endpoints';
+import { getBnbGasEstimate, getBnbNonce, saveFromDapp, sendBNB } from '../../../Redux/Actions';
+import { onWalletSwitch } from '../../../Redux/Actions/WallectConnectActions';
+import Singleton from '../../../Singleton';
+import { heightDimen, widthDimen } from '../../../Utils/themeUtils';
+import { getCurrentRouteName, goBack } from '../../../navigationsService';
+import { Colors, Fonts } from '../../../theme';
+import { default as Images, default as images } from '../../../theme/Images';
 import {
-  getTotalGasFeeDapp,
-  getPriorityDapp,
-  getNonceValueDapp,
-  getEthBaseFeeDapp,
   getDappSignedTxn,
+  getEthBaseFeeDapp,
+  getNonceValueDapp,
+  getPriorityDapp,
+  getTotalGasFeeDapp,
   getsignRawTxnDappBnb,
   getsignRawTxnDappMatic,
-
 } from '../../../utils';
-import {getBnbNonce, getBnbGasEstimate, sendBNB,saveFromDapp} from '../../../Redux/Actions';
-import {connect} from 'react-redux';
-import Singleton from '../../../Singleton';
-import * as Constants from '../../../Constant';
-import {Colors, Fonts} from '../../../theme';
-import {DAPP_IMG_URL, IS_PRODUCTION} from '../../../Endpoints';
-import FastImage from 'react-native-fast-image';
-import createInvoke from 'react-native-webview-invoke/native';
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scrollview';
-import images from '../../../theme/Images';
-import {Alert} from 'react-native';
-import {ThemeManager} from '../../../../ThemeManager';
-import {onWalletSwitch} from '../../../Redux/Actions/WallectConnectActions';
-import {heightDimen, widthDimen} from '../../../Utils/themeUtils';
-import {EventRegister} from 'react-native-event-listeners';
+import { ButtonPrimary, Inputtext } from '../../common';
+import Loader from '../Loader/Loader';
+import styles from './DappBrowserStyle';
 var web3BscUrl =
   IS_PRODUCTION == 0
     ? 'https://data-seed-prebsc-1-s1.binance.org:8545/'
@@ -67,21 +57,21 @@ class DappBrowser extends Component {
   constructor(props) {
     //console.warn('MM','===>>>>', props.url);
     super(props);
-    console.warn('MM','this.props.item.blockChainType:::::', this.props.item, this.props.chain);
+    console.warn('MM','this.props?.route?.params?.item.blockChainType:::::', this.props?.route?.params?.item, this.props?.route?.params?.chain);
     this.state = {
       content: '',
       jsContent: '',
-      address: this.props.item
-        ? this.props.item?.coin_family == 6
+      address: this.props?.route?.params?.item
+        ? this.props?.route?.params?.item?.coin_family == 6
           ? Singleton.getInstance().defaultBnbAddress
           : Singleton.getInstance().defaultEthAddress
         : Singleton.getInstance().defaultEthAddress,
-      chainId: this.props.item
-        ? this.props.item?.coin_family == 6
+      chainId: this.props?.route?.params?.item
+        ? this.props?.route?.params?.item?.coin_family == 6
           ? IS_PRODUCTION == 0
             ? '97'
             : '56'
-          : this.props.item?.coin_family == 1
+          : this.props?.route?.params?.item?.coin_family == 1
           ? IS_PRODUCTION == 0
             ? '5'
             : '1'
@@ -89,12 +79,12 @@ class DappBrowser extends Component {
           ? 80001
           : 137
         : '1',
-      rpcUrl: this.props.item
-        ? this.props.item?.coin_family == 6
+      rpcUrl: this.props?.route?.params?.item
+        ? this.props?.route?.params?.item?.coin_family == 6
           ? IS_PRODUCTION == 0
             ? Constants.testnetBnb
             : Singleton.getInstance().bnbLink
-          : this.props.item?.coin_family == 1
+          : this.props?.route?.params?.item?.coin_family == 1
           ? IS_PRODUCTION == 0
             ? Constants.testnetEth
             : Singleton.getInstance().ethLink
@@ -114,27 +104,27 @@ class DappBrowser extends Component {
       canGoForward: false,
       isLoading: false,
       mnemonics: '',
-      selectedNetwork: this.props.item
-        ? this.props.item?.coin_family == 6
+      selectedNetwork: this.props?.route?.params?.item
+        ? this.props?.route?.params?.item?.coin_family == 6
           ? 'Binance'
-          : this.props.item?.coin_family == 1
+          : this.props?.route?.params?.item?.coin_family == 1
           ? 'Ethereum'
           : 'Polygon'
         : 'Ethereum',
-      selectedNetworkImageUri: this.props.item
-        ? this.props.item?.coin_family == 6
+      selectedNetworkImageUri: this.props?.route?.params?.item
+        ? this.props?.route?.params?.item?.coin_family == 6
           ? `${DAPP_IMG_URL}/images/bnb.png`
-          : this.props.item?.coin_family == 1
+          : this.props?.route?.params?.item?.coin_family == 1
           ? `${DAPP_IMG_URL}/images/eth.png`
           : `${DAPP_IMG_URL}/images/matic.png`
         : `${DAPP_IMG_URL}/images/eth.png`,
       url: '',
-      enteredURL: this.props.url
-        ? this.props.url
+      enteredURL: this.props?.route?.params?.url
+        ? this.props?.route?.params?.url
         : 'https://app.compound.finance',
-      startUrl: this.props.url.includes('https://')
-        ? this.props.url
-        : 'https://www.google.com/search?q=' + this.props.url,
+      startUrl: this.props?.route?.params?.url.includes('https://')
+        ? this.props?.route?.params?.url
+        : 'https://www.google.com/search?q=' + this.props?.route?.params?.url,
       isNetworkModalVisible: false,
       advanceModalVisible: false,
       favoriteArray: [],
@@ -196,8 +186,8 @@ class DappBrowser extends Component {
       });
   }
   componentDidMount() {
-    this.props.navigation.addListener('didBlur', this.screenBlur);
-    this.props.navigation.addListener('didFocus', this.screenFocus);
+    this.props.navigation.addListener('blur', this.screenBlur);
+    this.props.navigation.addListener('focus', this.screenFocus);
     that = this;
     EventRegister.addEventListener('downModal', data1 => {
       if(this.state.isVisible){
@@ -312,7 +302,7 @@ class DappBrowser extends Component {
   };
   backAction = () => {
     //console.warn('MM','i dapp browser');
-    Actions.pop();
+    goBack();
     return true;
   };
   signTronTx(txn) {
@@ -361,7 +351,7 @@ class DappBrowser extends Component {
     //   global.stop_pin=true
     //   global.isCamera=true
     //   this.props.saveFromDapp(true)
-    //   Actions.currentScene !== 'ConnectWithDapp' &&
+    //   getCurrentRouteName() !== 'ConnectWithDapp' &&
     //   Actions.ConnectWithDapp({ url: data.url });
     // }
 
@@ -463,7 +453,7 @@ class DappBrowser extends Component {
       let mmid = message.id;
       // if(IS_PRODUCTION == 1){
       // console.log(this.webview.);
-      if ((chainId == 137 || chainId == 80001) && (this.props.chain == 'matic' || this.props.chain == '') ) {
+      if ((chainId == 137 || chainId == 80001) && (this.props?.route?.params?.chain == 'matic' || this.props?.route?.params?.chain == '') ) {
         // console.log('in 137 ...');
         // let js = `var config = {
         // 	ethereum: {
@@ -481,11 +471,11 @@ class DappBrowser extends Component {
         this.changeNetwork('Polygon');
         let js1 = `trustwallet.${message?.network}.sendResponse(${mmid}, null)`;
         this.webview.injectJavaScript(js1);
-      } else if ((chainId == 56 || chainId == 97) && (this.props.chain == 'bnb' || this.props.chain == '')) {
+      } else if ((chainId == 56 || chainId == 97) && (this.props?.route?.params?.chain == 'bnb' || this.props?.route?.params?.chain == '')) {
         this.changeNetwork('Binance');
         let js1 = `trustwallet.${message?.network}.sendResponse(${mmid}, null)`;
         this.webview.injectJavaScript(js1);
-      } else if ((chainId == 1 || chainId == 5) && (this.props.chain == 'eth' || this.props.chain == '')) {
+      } else if ((chainId == 1 || chainId == 5) && (this.props?.route?.params?.chain == 'eth' || this.props?.route?.params?.chain == '')) {
         this.changeNetwork('Ethereum');
         let js1 = `trustwallet.${message?.network}.sendResponse(${mmid}, null)`;
         this.webview.injectJavaScript(js1);
@@ -722,7 +712,7 @@ class DappBrowser extends Component {
     //   this.state.gasPrice,
     //   ';;;;',
     //   this.state.priorityFees,
-    //   this.props.item,
+    //   this.props?.route?.params?.item,
     //   );
     if (this.state.selectedNetwork == 'Ethereum') {
       const wallet = await Wallet.fromMnemonic(this.state.mnemonics);
@@ -1139,7 +1129,7 @@ class DappBrowser extends Component {
                 <TouchableOpacity
                   style={{width: '8%', marginLeft: 10}}
                   onPress={() => {
-                    Actions.pop();
+                    goBack();
                   }}>
                   <FastImage
                     style={{height: 15, width: 15}}
@@ -1392,7 +1382,7 @@ class DappBrowser extends Component {
                 onLoadEnd={this.onLoadEnd}
                 onError={err => {
                   console.log('errrrrrr');
-                  Actions.currentScene == 'DappBrowser' &&
+                  getCurrentRouteName() == 'DappBrowser' &&
                     Singleton.showAlert('Unable to load');
                   console.warn('MM', 'chk err in webview');
                   // this.webview.reload();
@@ -1402,7 +1392,7 @@ class DappBrowser extends Component {
             {this.state.isNetworkModalVisible && (
               <View style={styles.dropdown}>
                   {
-               (this.props.chain=='eth' || this.props.chain=='') &&   <TouchableOpacity
+               (this.props?.route?.params?.chain=='eth' || this.props?.route?.params?.chain=='') &&   <TouchableOpacity
                   style={{padding: 10}}
                   onPress={() => {
                     this.changeNetwork('Ethereum');
@@ -1427,7 +1417,7 @@ class DappBrowser extends Component {
                   </View>
                 </TouchableOpacity>}
               {
-               (this.props.chain=='bnb' || this.props.chain=='') && <TouchableOpacity
+               (this.props?.route?.params?.chain=='bnb' || this.props?.route?.params?.chain=='') && <TouchableOpacity
                   style={{padding: 10}}
                   onPress={() => {
                     this.changeNetwork('Binance');
@@ -1453,7 +1443,7 @@ class DappBrowser extends Component {
                 </TouchableOpacity>
               }
                 {
-               (this.props.chain=='matic' || this.props.chain=='') &&  <TouchableOpacity
+               (this.props?.route?.params?.chain=='matic' || this.props?.route?.params?.chain=='') &&  <TouchableOpacity
                   style={{padding: 10}}
                   onPress={() => {
                     this.changeNetwork('Polygon');

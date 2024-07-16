@@ -2,39 +2,44 @@
 /* eslint-disable react/self-closing-comp */
 import React, { Component } from 'react';
 import {
-  View,
-  Text,
-  ScrollView,
-  SafeAreaView,
-  TouchableOpacity,
-  Platform,
-  PermissionsAndroid,
-  Linking,
+  ActivityIndicator,
   BackHandler,
+  Image,
+  Linking,
+  Modal,
+  PermissionsAndroid,
+  Platform,
+  SafeAreaView,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
-import styles from './MultiSenderStyle';
+import DocumentPicker from 'react-native-document-picker';
+import { EventRegister } from 'react-native-event-listeners';
+import FastImage from 'react-native-fast-image';
+import SelectDropdown from 'react-native-select-dropdown';
+import { connect } from 'react-redux';
+import Web3 from 'web3';
+import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
+import * as constants from '../../../Constant';
+import { NavigationStrings } from '../../../Navigation/NavigationStrings';
+import { getMyWallets, uploadCsvFile } from '../../../Redux/Actions';
+import Singleton from '../../../Singleton';
+import { areaDimen, heightDimen, widthDimen } from '../../../Utils/themeUtils';
+import { getCurrentRouteName, goBack, navigate } from '../../../navigationsService';
+import { Colors, Fonts, Images } from '../../../theme';
+import images from '../../../theme/Images';
 import {
   BasicButton,
   BorderLine,
   SimpleHeader,
   Wrap,
 } from '../../common';
-import { Fonts, Images, Colors } from '../../../theme';
-import * as constants from '../../../Constant';
-import { Actions } from 'react-native-router-flux';
-import Singleton from '../../../Singleton';
-import { uploadCsvFile } from '../../../Redux/Actions';
-import { connect } from 'react-redux';
-import Loader from '../Loader/Loader';
-import FastImage from 'react-native-fast-image';
-import DocumentPicker from 'react-native-document-picker';
-import Web3 from 'web3';
-import SelectDropdown from 'react-native-select-dropdown';
-import images from '../../../theme/Images';
 import { CoustomModal } from '../../common/CoustomModal';
-import { EventRegister } from 'react-native-event-listeners';
-import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
-import { areaDimen, heightDimen, widthDimen } from '../../../Utils/themeUtils';
+import Loader from '../Loader/Loader';
+import styles from './MultiSenderStyle';
+import ListModal from '../SwapSelected/ListModal';
 let isInvalid = false
 let refAddress = '0x0000000000000000000000000000000000000000';
 class MultiSender extends Component {
@@ -53,6 +58,11 @@ class MultiSender extends Component {
       modalVisible: false,
       leftIconVisible: true,
       isInvalid: false,
+      showAssetList: false,
+      bottomLoading:false,
+      page: 1,
+      totalPages:0,
+      totalLength:0
     };
   }
 
@@ -62,18 +72,18 @@ class MultiSender extends Component {
       .then(access_token => {
         Singleton.getInstance().access_token = access_token;
       });
-    this.focus = this.props.navigation.addListener('didFocus', () => {
+    this.focus = this.props.navigation.addListener('focus', () => {
       EventRegister.addEventListener('downModal', data1 => {
         this.setState.modalVisible = false;
       });
       BackHandler.addEventListener('hardwareBackPress', this.backAction);
     });
-    this.blur = this.props.navigation.addListener('didBlur', () => {
+    this.blur = this.props.navigation.addListener('blur', () => {
       if (this.dropDownRef) {
         this.dropDownRef?.closeDropdown();
       }
     });
-    let coinsData = this.props.walletList;
+    let coinsData = this.props?.route?.params?.walletList;
     let tempList = [];
     let tempList1 = [];
     coinsData.map(item => {
@@ -96,17 +106,19 @@ class MultiSender extends Component {
     console.warn('MM', '-------tempList1----------', tempList1);
     console.warn('MM', '-------tempList----------', tempList);
 
-    this.setState({ coinData: tempList, dropDownList: tempList1 });
+    this.setState({ coinData: tempList, dropDownList: tempList1,totalLength:tempList?.[0].totalRecords });
   }
   componentWillUnmount() {
-    this.blur?.remove();
-    this.focus?.remove();
+    this.blur();
+    this.focus();
   }
   screenBlur = () => {
+   console.log("called::::::");
     BackHandler.removeEventListener('hardwareBackPress', this.backAction);
   };
   backAction = () => {
-    Actions.pop();
+    console.log("backAction:::::::called");
+    goBack();
     return true;
   };
   async requestExternalStoreageRead() {
@@ -165,15 +177,17 @@ class MultiSender extends Component {
         this.setState({ isLoading: false });
         let resArr = res;
         //TEMP
-        let validationLength = 300;
-        if (resArr.length > validationLength) {
-          Singleton.showAlert(
-            `Csv file addresses length can't exceed ${validationLength}.`,
-          );
-          this.setState({ csvFile: '', csvName: '' });
-          return;
-        }
+        // let validationLength = 300;
+        // if (resArr.length > validationLength) {
+        //   Singleton.showAlert(
+        //     `Csv file addresses length can't exceed ${validationLength}.`,
+        //   );
+        //   this.setState({ csvFile: '', csvName: '' });
+        //   return;
+        // }
+        console.log("res[0]:::::",res[0]);
         if (res[0]?.address != undefined && res[0]?.address != '') {
+       
           resArr = resArr.map((item, index) => {
             this.setState({ amount: item.amount });
             if (!item?.amount || !item?.address) {
@@ -296,8 +310,8 @@ class MultiSender extends Component {
       ) {
         if (selectedCoin.balance > 0) {
           if (selectedCoin.is_token == 0) {
-            Actions.currentScene != 'MultiSenderEth' &&
-              Actions.MultiSenderEth({
+            getCurrentRouteName() != 'MultiSenderEth' &&
+            navigate(NavigationStrings.MultiSenderEth,{
                 selectedCoin: selectedCoin,
                 csvArray: this.state.csvJSON,
                 referralAddress: refAddress,
@@ -323,17 +337,19 @@ class MultiSender extends Component {
                       'ether',
                     )
                   ) {
+                    console.log("MultiSenderEth:::::::::::");
                     this.setState({ isLoading: false });
-                    Actions.currentScene != 'MultiSenderEth' &&
-                      Actions.MultiSenderEth({
+                    getCurrentRouteName() != 'MultiSenderEth' &&
+                    navigate(NavigationStrings.MultiSenderEth,{
                         selectedCoin: selectedCoin,
                         csvArray: this.state.csvJSON,
                         referralAddress: refAddress,
                       });
                   } else {
+                    console.log("MultiSenderEthToken:::::::::::");
                     this.setState({ isLoading: false });
-                    Actions.currentScene != 'MultiSenderEthToken' &&
-                      Actions.MultiSenderEthToken({
+                    getCurrentRouteName() != 'MultiSenderEthToken' &&
+                    navigate(NavigationStrings.MultiSenderEthToken,{
                         selectedCoin: selectedCoin,
                         csvArray: this.state.csvJSON,
                         referralAddress: refAddress,
@@ -366,8 +382,8 @@ class MultiSender extends Component {
       ) {
         if (selectedCoin.balance > 0) {
           if (selectedCoin.is_token == 0) {
-            Actions.currentScene != 'MultiSenderBNB' &&
-              Actions.MultiSenderBNB({
+            getCurrentRouteName() != 'MultiSenderBNB' &&
+            navigate(NavigationStrings.MultiSenderBNB,{
                 selectedCoin: selectedCoin,
                 csvArray: this.state.csvJSON,
                 referralAddress: refAddress,
@@ -406,16 +422,16 @@ class MultiSender extends Component {
                     )
                   ) {
                     this.setState({ isLoading: false });
-                    Actions.currentScene != 'MultiSenderBNB' &&
-                      Actions.MultiSenderBNB({
+                    getCurrentRouteName() != 'MultiSenderBNB' &&
+                    navigate(NavigationStrings.MultiSenderBNB,{
                         selectedCoin: selectedCoin,
                         csvArray: this.state.csvJSON,
                         referralAddress: refAddress,
                       });
                   } else {
                     this.setState({ isLoading: false });
-                    Actions.currentScene != 'MultiSenderEthToken' &&
-                      Actions.MultiSenderEthToken({
+                    getCurrentRouteName() != 'MultiSenderEthToken' &&
+                    navigate(NavigationStrings.MultiSenderEthToken,{
                         selectedCoin: selectedCoin,
                         csvArray: this.state.csvJSON,
                         referralAddress: refAddress,
@@ -452,8 +468,8 @@ class MultiSender extends Component {
       ) {
         if (selectedCoin.balance > 0) {
           if (selectedCoin.is_token == 0) {
-            Actions.currentScene != 'MultiSenderMatic' &&
-              Actions.MultiSenderMatic({
+            getCurrentRouteName() != 'MultiSenderMatic' &&
+            navigate(NavigationStrings.MultiSenderMatic,{
                 selectedCoin: selectedCoin,
                 csvArray: this.state.csvJSON,
                 referralAddress: refAddress,
@@ -492,16 +508,16 @@ class MultiSender extends Component {
                     )
                   ) {
                     this.setState({ isLoading: false });
-                    Actions.currentScene != 'MultiSenderMatic' &&
-                      Actions.MultiSenderMatic({
+                    getCurrentRouteName() != 'MultiSenderMatic' &&
+                    navigate(NavigationStrings.MultiSenderMatic,{
                         selectedCoin: selectedCoin,
                         csvArray: this.state.csvJSON,
                         referralAddress: refAddress,
                       });
                   } else {
                     this.setState({ isLoading: false });
-                    Actions.currentScene != 'MultiSenderEthToken' &&
-                      Actions.MultiSenderEthToken({
+                    getCurrentRouteName() != 'MultiSenderEthToken' &&
+                    navigate(NavigationStrings.MultiSenderEthToken,{
                         selectedCoin: selectedCoin,
                         csvArray: this.state.csvJSON,
                         referralAddress: refAddress,
@@ -533,8 +549,8 @@ class MultiSender extends Component {
       ) {
         if (selectedCoin.balance > 0) {
           if (selectedCoin.is_token == 0) {
-            Actions.currentScene != 'MultiSenderSTC' &&
-              Actions.MultiSenderSTC({
+            getCurrentRouteName() != 'MultiSenderSTC' &&
+            navigate(NavigationStrings.MultiSenderSTC,{
                 selectedCoin: selectedCoin,
                 csvArray: this.state.csvJSON,
                 referralAddress: refAddress,
@@ -562,16 +578,16 @@ class MultiSender extends Component {
                     )
                   ) {
                     this.setState({ isLoading: false });
-                    Actions.currentScene != 'MultiSenderSTC' &&
-                      Actions.MultiSenderSTC({
+                    getCurrentRouteName() != 'MultiSenderSTC' &&
+                    navigate(NavigationStrings.MultiSenderSTC,{
                         selectedCoin: selectedCoin,
                         csvArray: this.state.csvJSON,
                         referralAddress: refAddress,
                       });
                   } else {
                     this.setState({ isLoading: false });
-                    Actions.currentScene != 'MultiSenderEthToken' &&
-                      Actions.MultiSenderEthToken({
+                    getCurrentRouteName() != 'MultiSenderEthToken' &&
+                    navigate(NavigationStrings.MultiSenderEthToken,{
                         selectedCoin: selectedCoin,
                         csvArray: this.state.csvJSON,
                         referralAddress: refAddress,
@@ -592,6 +608,46 @@ class MultiSender extends Component {
         );
       }
     }
+  }
+  getMyWalletsData() {
+    let page = this.state.page;
+    let limit = 25;
+    let access_token = Singleton.getInstance().access_token;
+    Singleton.getInstance()
+      .newGetData(constants.addresKeyList)
+      .then(addresKeyList => {
+        Singleton.getInstance()
+          .newGetData(constants.coinFamilyKeys)
+          .then(coinFamilyKey => {
+            let addrsListKeys = JSON.parse(addresKeyList);
+            let coinFamilyKeys = coinFamilyKey?.split(',');
+
+            this.props
+              .getMyWallets({
+                page,
+                limit,
+                addrsListKeys,
+                coinFamilyKeys,
+                access_token,
+              })
+              .then(response => {
+                let data =
+                  page == 1 ? response : [...this.state.coinData, ...response];
+                this.setState({
+                  isLoading: false,
+                  totalLength: data[0]?.totalRecords,
+                  bottomLoading: false,
+                  coinData:data
+                });
+              })
+              .catch(error => {
+                this.setState({isLoading: false, bottomLoading: false});
+              });
+          })
+          .catch(err => {
+            this.setState({isLoading: false, bottomLoading: false});
+          });
+      });
   }
   render() {
     return (
@@ -719,21 +775,24 @@ class MultiSender extends Component {
                         Approve
                       </Text>
                     </View>
-                    <View style={[styles.step_Item, { alignItems: 'flex-end' }]}>
+                    <View style={[styles.step_Item, {alignItems: 'flex-end'}]}>
                       <View
                         style={[
                           styles.viewStatusDottedStyle,
-                          { left: widthDimen(-20), width: widthDimen(105), borderColor: ThemeManager.colors.dotLine },
+                          {
+                            left: widthDimen(-20),
+                            width: widthDimen(105),
+                            borderColor: ThemeManager.colors.dotLine,
+                          },
                         ]}
                       />
 
-                      <View style={{ alignItems: 'center' }}>
+                      <View style={{alignItems: 'center'}}>
                         <View
                           style={[
                             styles.step_item_title_view,
                             {
-                              backgroundColor:
-                                ThemeManager.colors.dotLine,
+                              backgroundColor: ThemeManager.colors.dotLine,
                             },
                           ]}>
                           <Text
@@ -754,12 +813,10 @@ class MultiSender extends Component {
                       </View>
                     </View>
                   </View>
-                  <View style={{ marginHorizontal: widthDimen(22) }}>
+                  <View style={{marginHorizontal: widthDimen(22)}}>
                     {this.state.dropDownList.length > 0 && (
                       <SelectDropdown
-                        disabled={
-                          this.state.dropDownList?.length > 0 ? false : true
-                        }
+                        disabled={true}
                         data={this.state.dropDownList}
                         ref={ref => (this.dropDownRef = ref)}
                         label="Select Coin"
@@ -791,11 +848,11 @@ class MultiSender extends Component {
                           paddingLeft: 20,
                           backgroundColor: ThemeManager.colors.mnemonicsView,
                         }}
-                        defaultButtonText={this.state.dropDownList[0]}
+                        defaultButtonText={this.state.coinData[0]}
                         onSelect={(item, index) => {
                           let a = this.state.coinData[index];
                           //console.warn('MM','-====', a);
-                          this.setState({ selectedCoinIndex: index });
+                          this.setState({selectedCoinIndex: index});
                         }}
                         renderDropdownIcon={() => (
                           <FastImage
@@ -806,26 +863,31 @@ class MultiSender extends Component {
                               tintColor: ThemeManager.colors.lightTextColor,
                               marginRight: widthDimen(18),
                             }}
+                            resizeMode="contain"
                             tintColor={ThemeManager.colors.lightTextColor}
                           />
                         )}
                         renderCustomizedButtonChild={(item, index) => {
                           //console.warn('MM','checkItem', index);
-                          let a = this.state.coinData[index];
+                          let a = this.state.coinData[this.state.selectedCoinIndex]
+                          
                           // console.log('item======', item);
-                          // console.log('item=a==', a);
+                          console.log('item=a==', a);
 
                           return (
-                            <View
+                            <TouchableOpacity
                               style={{
                                 flexDirection: 'row',
                                 alignItems: 'center',
+                              }}
+                              onPress={() => {
+                                this.setState({showAssetList: true});
                               }}>
                               {/* {a?.coin_image?.includes('http') ? ( */}
                               {item ? (
                                 a?.coin_image?.includes('http') ? (
-                                  <FastImage
-                                    source={{ uri: a?.coin_image }}
+                                  <Image
+                                    source={{uri: a?.coin_image}}
                                     style={{
                                       // borderRadius: widthDimen(14),
                                       // width: widthDimen(25),
@@ -835,7 +897,7 @@ class MultiSender extends Component {
                                       height: widthDimen(30),
                                       resizeMode: 'contain',
                                     }}
-                                    resizeMode='contain'
+                                    resizeMode="contain"
                                   />
                                 ) : (
                                   <View
@@ -857,9 +919,9 @@ class MultiSender extends Component {
                                   </View>
                                 )
                               ) : (
-                                <FastImage
+                                <Image
                                   source={{
-                                    uri: this.state.coinData[0].coin_image,
+                                    uri: a.coin_image,
                                   }}
                                   style={{
                                     borderRadius: widthDimen(20),
@@ -867,7 +929,7 @@ class MultiSender extends Component {
                                     height: widthDimen(30),
                                     resizeMode: 'contain',
                                   }}
-                                  resizeMode='contain'
+                                  resizeMode="contain"
                                 />
                               )}
 
@@ -881,79 +943,10 @@ class MultiSender extends Component {
                                 {a?.coin_symbol.toUpperCase() ||
                                   this.state.coinData[0].coin_symbol.toUpperCase()}
                               </Text>
-                            </View>
+                            </TouchableOpacity>
                           );
                         }}
-                        renderCustomizedRowChild={(item, index) => {
-                          let a = this.state.coinData[index];
-                          console.log('a=======', a);
-                          return (
-                            <View
-                              style={{
-                                flexDirection: 'row',
-                                alignItems: 'center',
-                              }}>
-                              {a?.coin_image?.includes('http') ? (
-                                <FastImage
-                                  source={{ uri: a.coin_image }}
-                                  style={{
-                                    borderRadius: widthDimen(15),
-                                    width: widthDimen(28),
-                                    height: widthDimen(28),
-                                    resizeMode: 'contain',
-                                  }}
-                                  resizeMode='contain'
-                                />
-                              ) : (
-                                <View
-                                  style={{
-                                    width: widthDimen(28),
-                                    height: widthDimen(28),
-                                    backgroundColor: Colors.buttonColor2,
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    borderRadius: areaDimen(40),
-                                  }}>
-                                  <Text
-                                    style={{
-                                      color: 'white',
-                                      textTransform: 'uppercase',
-                                    }}>
-                                    {a?.coin_symbol.charAt(0)}
-                                  </Text>
-                                </View>
-                              )}
 
-                              <Text
-                                style={{
-                                  fontFamily: Fonts.medium,
-                                  fontSize: areaDimen(14),
-                                  color: ThemeManager.colors.textColor,
-                                  paddingStart: widthDimen(8),
-                                }}>
-                                {a?.coin_symbol.toUpperCase() ||
-                                  this.state.coinData[0].coin_symbol.toUpperCase()}
-                              </Text>
-                              <Text
-                                style={{
-                                  fontFamily: Fonts.medium,
-                                  color: ThemeManager.colors.lightTextColor,
-                                  paddingStart: widthDimen(8),
-                                  fontSize: areaDimen(11),
-                                }}>
-                                {a?.is_token == 1
-                                  ? a?.coin_family == 1
-                                    ? 'ETH'
-                                    : a?.coin_family == 6
-                                      ? 'BNB'
-                                      : a?.coin_family == 4
-                                      ? 'STC'
-                                      : 'MATIC'
-                                  : ''}
-                              </Text>
-                            </View>
-                          );
-                        }}
                       />
                     )}
 
@@ -967,30 +960,33 @@ class MultiSender extends Component {
                       <Text
                         style={[
                           styles.balanceLabelStyle,
-                          { color: ThemeManager.colors.lightTextColor },
+                          {color: ThemeManager.colors.lightTextColor},
                         ]}>
                         {LanguageManager.available + ': '}
                       </Text>
                       <Text
                         style={[
                           styles.balanceValueStyle,
-                          { color: ThemeManager.colors.headingText },
+                          {color: ThemeManager.colors.headingText},
                         ]}>
                         {this.state.coinData.length > 0
-                          ?
-                          // Singleton.getInstance().toFixed(
-                          // this.state.coinData[this.state.selectedCoinIndex]
-                          //   .balance,
-                          //     5,
-                          //   ) +
-                          //   Singleton.getInstance().exponentialToDecimal(
-                          //     Singleton.getInstance().toFixed( this.state.coinData[this.state.selectedCoinIndex].balance, constants.CRYPTO_DECIMALS ),
-                          // ) +
-                          this.toFixedExp(this.state.coinData[this.state.selectedCoinIndex].balance, 8) +
-                          ' ' +
-                          this.state.coinData[
-                            this.state.selectedCoinIndex
-                          ].coin_symbol.toUpperCase()
+                          ? // Singleton.getInstance().toFixed(
+                            // this.state.coinData[this.state.selectedCoinIndex]
+                            //   .balance,
+                            //     5,
+                            //   ) +
+                            //   Singleton.getInstance().exponentialToDecimal(
+                            //     Singleton.getInstance().toFixed( this.state.coinData[this.state.selectedCoinIndex].balance, constants.CRYPTO_DECIMALS ),
+                            // ) +
+                            this.toFixedExp(
+                              this.state.coinData[this.state.selectedCoinIndex]
+                                .balance,
+                              8,
+                            ) +
+                            ' ' +
+                            this.state.coinData[
+                              this.state.selectedCoinIndex
+                            ].coin_symbol.toUpperCase()
                           : ''}
                       </Text>
                     </View>
@@ -1017,7 +1013,7 @@ class MultiSender extends Component {
                   <Text
                     style={[
                       styles.downloadCSVText,
-                      { color: ThemeManager.colors.textColor },
+                      {color: ThemeManager.colors.textColor},
                     ]}>
                     {' '}
                     (Sample Format)
@@ -1034,7 +1030,7 @@ class MultiSender extends Component {
                     height: heightDimen(111),
                     borderRadius: heightDimen(16),
                     borderStyle: 'dashed',
-                    borderWidth: 1
+                    borderWidth: 1,
                   }}>
                   {this.state.csvFile == '' ? (
                     <TouchableOpacity
@@ -1054,11 +1050,11 @@ class MultiSender extends Component {
                         resizeMode={'contain'}
                         source={Images.upload_file_icon}
                       />
-                      <View style={{ flexDirection: 'row', marginLeft: 5 }}>
+                      <View style={{flexDirection: 'row', marginLeft: 5}}>
                         <Text
                           style={[
                             styles.uploadCSVText,
-                            { color: ThemeManager.colors.lightTextColor },
+                            {color: ThemeManager.colors.lightTextColor},
                           ]}>
                           {LanguageManager.upLoadCsv}
                         </Text>
@@ -1083,8 +1079,12 @@ class MultiSender extends Component {
                       </Text>
                       <TouchableOpacity
                         onPress={() => {
-                          isInvalid=false
-                          this.setState({ csvFile: '', csvName: '', csvJSON: '' });
+                          isInvalid = false;
+                          this.setState({
+                            csvFile: '',
+                            csvName: '',
+                            csvJSON: '',
+                          });
                         }}>
                         <FastImage
                           style={{
@@ -1112,7 +1112,51 @@ class MultiSender extends Component {
             {this.state.isLoading && <Loader color="white" />}
           </SafeAreaView>
         </Wrap>
-        <SafeAreaView style={{ backgroundColor: Colors.bulkTransBg }} />
+        <SafeAreaView style={{backgroundColor: Colors.bulkTransBg}} />
+        <Modal
+          visible={this.state.showAssetList}
+          animationType="slide"
+          transparent={true}
+          statusBarTranslucent
+          style={{flex: 1, justifyContent: 'flex-end'}}>
+          <ListModal
+            list={this.state.coinData}
+            onClose={() => this.setState({showAssetList: false})}
+            onPressItem={(item, index) => {
+              this.setState({selectedCoin: item});
+              this.setState({selectedCoinIndex: index});
+            }}
+            onEndReached={() => {
+              if (
+                this.state.totalLength > this.state.coinData?.length &&
+                !this.state.bottomLoading
+              ) {
+                this.setState({page: this.state.page + 1, bottomLoading: true});
+                this.getMyWalletsData();
+              }
+            }}
+            onEndReachedThreshold={0.5}
+            listFooterComponent={() => {
+              if (this.state.bottomLoading) {
+                return (
+                  <View
+                    style={{
+                      padding: areaDimen(20),
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      paddingBottom: areaDimen(30),
+                    }}>
+                    <ActivityIndicator
+                      color={ThemeManager.colors.headingText}
+                    />
+                  </View>
+                );
+              } else {
+                return null;
+              }
+            }}
+          />
+        </Modal>
       </>
     );
   }
@@ -1120,4 +1164,4 @@ class MultiSender extends Component {
 const mapStateToProp = state => {
   return {};
 };
-export default connect(mapStateToProp, { uploadCsvFile })(MultiSender);
+export default connect(mapStateToProp, { uploadCsvFile,getMyWallets })(MultiSender);

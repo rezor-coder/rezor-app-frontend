@@ -1,32 +1,33 @@
 /* eslint-disable react/self-closing-comp */
 /* eslint-disable react-native/no-inline-styles */
-import { View, Text, Image, Alert, BackHandler, PermissionsAndroid, SafeAreaView } from 'react-native';
-import React, { useState, useEffect, useRef } from 'react';
-import { styles } from './AddTokenStyle';
-import {
-  Wrap,
-  BasicButton,
-  SimpleHeader,
-  MainStatusBar,
-  BorderLine,
-  Inputtext
-} from '../../common';
-import { Actions } from 'react-native-router-flux';
-import { Images, Colors, Fonts } from '../../../theme/index';
+import React, { useEffect, useRef, useState } from 'react';
+import { Alert, BackHandler, Image, PermissionsAndroid, SafeAreaView, Text, View } from 'react-native';
+import { TextInput, TouchableOpacity } from 'react-native-gesture-handler';
 import SelectDropdown from 'react-native-select-dropdown';
-import Singleton from '../../../Singleton';
-import * as constants from '../../../Constant';
-import Loader from './../Loader/Loader';
-import {
-  searchToken,
-  getCoinGeckoSymbols,
-  addToken,
-} from '../../../Redux/Actions';
 import { connect } from 'react-redux';
 import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
+import * as constants from '../../../Constant';
+import { NavigationStrings } from '../../../Navigation/NavigationStrings';
+import {
+  addToken,
+  getCoinGeckoSymbols,
+  searchToken,
+} from '../../../Redux/Actions';
+import Singleton from '../../../Singleton';
 import { areaDimen, heightDimen, widthDimen } from '../../../Utils/themeUtils';
-import { TextInput, TouchableOpacity } from 'react-native-gesture-handler';
+import { getCurrentRouteName, goBack, navigate } from '../../../navigationsService';
+import { Colors, Fonts, Images } from '../../../theme/index';
+import {
+  BasicButton,
+  BorderLine,
+  Inputtext,
+  MainStatusBar,
+  SimpleHeader,
+  Wrap
+} from '../../common';
 import QRReaderModal from '../../common/QRReaderModal';
+import Loader from './../Loader/Loader';
+import { styles } from './AddTokenStyle';
 let scanner = false
 const AddToken = props => {
   const [isLoading, setisLoading] = useState(false);
@@ -41,16 +42,16 @@ const AddToken = props => {
   let timer = useRef();
   let dropDownRef = useRef()
   useEffect(() => {
-    if(props.from=='swap'){
+    if(props?.route?.params?.from=='swap'){
       setCurrencyData(["Ethereum", "Binance", "SaitaChain"])
     }
-    if(props.coin_family==4){
+    if(props?.route?.params?.coin_family==4){
       setCurrencyData(["SaitaChain"])
       setselectedCurrency("SaitaChain")
-    }else if(props.coin_family==1){
+    }else if(props?.route?.params?.coin_family==1){
       setCurrencyData(["Ethereum"])
       setselectedCurrency("Ethereum")
-    }else if(props.coin_family==6){
+    }else if(props?.route?.params?.coin_family==6){
       setCurrencyData(["Binance"])
       setselectedCurrency("Binance")
     }
@@ -61,7 +62,7 @@ const AddToken = props => {
         scanner = false
         return true;
       } else {
-        Actions.pop();
+        goBack();
         return true;
       }
     };
@@ -95,7 +96,7 @@ const AddToken = props => {
   }, []);
   useEffect(() => {
 
-    let blur = props.navigation.addListener('didBlur', () => {
+    let blur = props.navigation.addListener('blur', () => {
       if (dropDownRef?.current) {
         console.log('called.....from.. ');
         dropDownRef?.current?.closeDropdown()
@@ -103,7 +104,7 @@ const AddToken = props => {
     })
 
     return () => {
-      blur?.remove()
+      blur()
     }
   }, [])
 
@@ -282,15 +283,15 @@ const AddToken = props => {
 
       ,
       wallet_name: Singleton.getInstance().walletName,
-      is_swap_list:props.from=='swap'?1:0
+      is_swap_list:props?.route?.params?.from=='swap'?1:0
     };
     let access_token = Singleton.getInstance().access_token;
     props
       .addToken({ data, access_token })
       .then(res => {
         setisLoading(false);
-       if(props.from=='swap'){
-        Actions.currentScene=='AddToken' && Actions.Trade({from:'AddToken'})
+       if(props?.route?.params?.from=='swap'){
+        getCurrentRouteName()=='AddToken' && navigate(NavigationStrings.Trade,{from:'AddToken'})
         Alert.alert(
           constants.APP_NAME,
           res.message,
@@ -302,14 +303,14 @@ const AddToken = props => {
                 // setNoOfdecimals('');
                 // setContractAddress('');
                 // setname('');
-                // Actions.currentScene != 'Wallet' && Actions.jump('Wallet');
+                // getCurrentRouteName() != 'Wallet' && Actions.jump('Wallet');
               },
             },
           ],
           { cancelable: false },
         );
        }else{
-        Actions.currentScene != 'Wallet' && Actions.jump('Wallet');
+        getCurrentRouteName() != 'Wallet' && navigate(NavigationStrings.Wallet);
         Alert.alert(
           constants.APP_NAME,
           res.message,
@@ -321,7 +322,7 @@ const AddToken = props => {
                 // setNoOfdecimals('');
                 // setContractAddress('');
                 // setname('');
-                // Actions.currentScene != 'Wallet' && Actions.jump('Wallet');
+                // getCurrentRouteName() != 'Wallet' && Actions.jump('Wallet');
               },
             },
           ],

@@ -20,6 +20,7 @@ const IconText = props => {
             },
             props.styleIconText,
           ]}
+          disabled={props.disabled}
           onPress={props.onPress}>
           <FastImage
             style={{height: areaDimen(25), width: areaDimen(25), alignSelf: 'center'}}
@@ -54,6 +55,7 @@ const IconText = props => {
             },
             props.styleIconText,
           ]}
+          disabled={props.disabled}
           onPress={props.onPress}>
           <FastImage
             style={{height: areaDimen(25), width: areaDimen(25), alignSelf: 'center'}}

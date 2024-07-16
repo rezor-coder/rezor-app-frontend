@@ -1,13 +1,14 @@
 /* eslint-disable react/self-closing-comp */
-import React, {useState} from 'react';
-import {Wrap} from '../../common/index';
-import {MainStatusBar, SimpleHeader, BasicButton} from '../../common';
-import {Colors} from '../../../theme';
+import React from 'react';
+import { Text, TextInput, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
+import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
+import { NavigationStrings } from '../../../Navigation/NavigationStrings';
+import { getCurrentRouteName, navigate } from '../../../navigationsService';
+import { Colors } from '../../../theme';
+import { BasicButton, MainStatusBar, SimpleHeader } from '../../common';
+import { Wrap } from '../../common/index';
 import styles from './SaveContactStyle';
-import {View, Text, TextInput} from 'react-native';
-import {Actions} from 'react-native-router-flux';
-import {LanguageManager, ThemeManager} from '../../../../ThemeManager';
 
 const SaveContact = props => {
   return (
@@ -60,7 +61,7 @@ const SaveContact = props => {
           <Text style={styles.numOfCoins}>2 BTC</Text>
           <BasicButton
             onPress={() =>
-              Actions.currentScene != 'Dashboard' && Actions.Dashboard()
+              getCurrentRouteName() != 'Dashboard' && navigate(NavigationStrings.Dashboard)
             }
             btnStyle={styles.btnStyle}
             text="Save Contact"

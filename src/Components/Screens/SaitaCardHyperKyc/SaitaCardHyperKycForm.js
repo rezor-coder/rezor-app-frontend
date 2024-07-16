@@ -1,39 +1,39 @@
-import {
-  View,
-  Text,
-  Platform,
-  Image,
-  TouchableOpacity,
-  PermissionsAndroid,
-  Modal,
-  Alert,
-} from 'react-native';
-import React, { useEffect } from 'react';
-import { BasicButton, BasicInputBox, BorderLine, SimpleHeader, Wrap } from '../../common';
-import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
-import { ActionConst, Actions } from 'react-native-router-flux';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scrollview';
-import fonts from '../../../theme/Fonts';
-import * as Constants from '../../../Constant';
-import { useState } from 'react';
 import moment from 'moment';
-import { Colors, Fonts, Images } from '../../../theme';
-import LinearGradient from 'react-native-linear-gradient';
-import Singleton from '../../../Singleton';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import React, { useEffect, useState } from 'react';
+import {
+  Alert,
+  Image,
+  Modal,
+  PermissionsAndroid,
+  Platform,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
+} from 'react-native';
 import DatePicker from 'react-native-date-picker';
+import FastImage from 'react-native-fast-image';
+import ImageCropPicker from 'react-native-image-crop-picker';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scrollview';
+import LinearGradient from 'react-native-linear-gradient';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
 import { APIClient } from '../../../Api';
-import Loader from '../Loader/Loader';
+import * as Constants from '../../../Constant';
 import {
   API_CARD_PHYSICAL_FORM_KYC,
   API_GET_COUNTRYLIST,
 } from '../../../Endpoints';
-import ImageCropPicker from 'react-native-image-crop-picker';
-import FastImage from 'react-native-fast-image';
-import CountryCodes from '../CountryCodes/CountryCodes';
-import { TouchableWithoutFeedback } from 'react-native';
-import { StyleSheet } from 'react-native';
+import { NavigationStrings } from '../../../Navigation/NavigationStrings';
+import Singleton from '../../../Singleton';
 import { areaDimen, heightDimen, widthDimen } from '../../../Utils/themeUtils';
+import { goBack, navigate, reset } from '../../../navigationsService';
+import { Colors, Fonts, Images } from '../../../theme';
+import fonts from '../../../theme/Fonts';
+import { BasicButton, BasicInputBox, BorderLine, SimpleHeader, Wrap } from '../../common';
+import CountryCodes from '../CountryCodes/CountryCodes';
+import Loader from '../Loader/Loader';
 const ImgaeBelowText = ({ text }) => {
   return (
     <View style={{ flexDirection: 'row', marginTop: 5 }}>
@@ -104,18 +104,18 @@ const SaitaCardHyperKycForm = props => {
     width: null,
   });
   const [dob, setDOB] = useState(new Date());
-  const { userDetail, cardDetail, selectedItem } = props;
+  const { userDetail, cardDetail, selectedItem } = props?.route?.params;
   useEffect(() => {
     console.log(props);
     setFirstName(userDetail?.first_name || '');
     setLastName(userDetail?.last_name || '');
-    let onBlur = props.navigation.addListener('didBlur', () => {
+    let onBlur = props.navigation.addListener('blur', () => {
       setCountryListModal(false);
       setDateModal(false);
     });
     getCountryList();
     return () => {
-      onBlur && onBlur?.remove();
+      onBlur && onblur();
     };
   }, []);
 
@@ -134,7 +134,7 @@ const SaitaCardHyperKycForm = props => {
     } catch (error) {
       setLoading(false);
       Singleton.showAlert('Unable to fetch data');
-      Actions.pop();
+      goBack();
     }
   };
 
@@ -258,7 +258,7 @@ const SaitaCardHyperKycForm = props => {
         [{ text: 'OK', onPress: () => { } }],
         { cancelable: false, onDismiss: () => { } },
       );
-      Actions.Main({ type: ActionConst.RESET });
+      reset(NavigationStrings.Main);
     } catch (error) {
       setLoading(false);
       console.log('err:::::::', error);
@@ -456,7 +456,7 @@ const SaitaCardHyperKycForm = props => {
         <SimpleHeader
           back={false}
           backPressed={() => {
-            Actions.pop();
+            goBack();
           }}
           title={'KYC'}
         />

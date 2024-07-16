@@ -1,25 +1,25 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, {useState, useEffect, useRef, useCallback} from 'react';
-import {BorderLine, Wrap} from '../../common/index';
-import {
-  MainStatusBar,
-  SimpleHeader,
-  BasicButton,
-  BasicInputBox,
-  WalletItem,
-} from '../../common';
-import {Colors} from '../../../theme';
-import {View, Text, TextInput, Linking, Image, FlatList} from 'react-native';
-import {Actions} from 'react-native-router-flux';
-import Singleton from '../../../Singleton';
+import React, { useEffect, useState } from 'react';
+import { FlatList, View } from 'react-native';
+import { ThemeManager } from '../../../../ThemeManager';
 import * as Constants from '../../../Constant';
+import { BASE_IMAGE } from '../../../Endpoints';
+import { NavigationStrings } from '../../../Navigation/NavigationStrings';
+import Singleton from '../../../Singleton';
+import { heightDimen } from '../../../Utils/themeUtils';
+import { getCurrentRouteName, goBack, navigate } from '../../../navigationsService';
+import { Colors } from '../../../theme';
 import Images from '../../../theme/Images';
-import {LanguageManager, ThemeManager} from '../../../../ThemeManager';
-import {BASE_IMAGE} from '../../../Endpoints';
-import {heightDimen} from '../../../Utils/themeUtils';
+import {
+  SimpleHeader,
+  WalletItem
+} from '../../common';
+import { BorderLine, Wrap } from '../../common/index';
+import Loader from '../Loader/Loader';
 
 const MultiWalletOptions = () => {
   const [List, setList] = useState([]);
+  const [isLoader,setIsLoader] = useState(true);
 
   useEffect(() => {
     Singleton.getInstance()
@@ -30,8 +30,11 @@ const MultiWalletOptions = () => {
           'chk withoutTokenList:::::',
           JSON.parse(withoutTokenList),
         );
+        setIsLoader(false)
         setList(JSON.parse(withoutTokenList));
         //  this.setState({ wallet_Array: JSON.parse(withoutTokenList) })
+      }).catch(error=>{
+        setIsLoader(false)
       });
   }, []);
 
@@ -39,7 +42,7 @@ const MultiWalletOptions = () => {
     <Wrap style={{backgroundColor: ThemeManager.colors.backgroundColor}}>
       <SimpleHeader
         back={false}
-        backPressed={() => Actions.pop()}
+        backPressed={() => goBack()}
         title={'Import Wallet'}
       />
       <BorderLine
@@ -48,8 +51,8 @@ const MultiWalletOptions = () => {
       <WalletItem
         style={{borderBottomWidth: 0, marginBottom: heightDimen(-10)}}
         onPress={() =>
-          Actions.currentScene != 'ImportWallet' &&
-          Actions.ImportWallet({isFrom: 'multiWallet'})
+          getCurrentRouteName() != 'ImportWallet' &&
+          navigate(NavigationStrings.ImportWallet,{isFrom: 'multiWallet'})
         }
         imgbck={Colors.saitabg}
         iconimg={Images.walletIcon}
@@ -65,12 +68,17 @@ const MultiWalletOptions = () => {
           data={List}
           keyExtractor={(item, index) => index.toString()}
           ItemSeparatorComponent={()=><BorderLine/>}
-          ListFooterComponent={()=><BorderLine/>}
+          ListFooterComponent={()=>{
+            if(!isLoader){
+             return   <BorderLine />;
+            }
+          
+        }}
           renderItem={({item, index}) => (
             <WalletItem
               onPress={() =>
-                Actions.currentScene != 'MultiWalletImportSingleCoin' &&
-                Actions.MultiWalletImportSingleCoin({
+                getCurrentRouteName() != 'MultiWalletImportSingleCoin' &&
+                navigate(NavigationStrings.MultiWalletImportSingleCoin,{
                   coin_symbol: item.coin_symbol,
                 })
               }
@@ -89,6 +97,7 @@ const MultiWalletOptions = () => {
           )}
         />
       </View>
+      {isLoader && <Loader/>}
     </Wrap>
   );
 };

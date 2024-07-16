@@ -1,15 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, Dimensions, Image, ImageBackground, Modal, TouchableOpacity } from 'react-native';
-import { Wrap, Multibtn, BasicButton, MainStatusBar, ImageBackgroundComponent, SimpleHeader, BorderLine, ModalHeader } from '../../common';
-import HeaderwithBackIcon from '../../common/HeaderWithBackIcon';
+import React, { useEffect, useState } from 'react';
+import { Dimensions, ImageBackground, Modal, Text, View } from 'react-native';
 import images from '../../../theme/Images';
+import { BasicButton, BorderLine, ImageBackgroundComponent, MainStatusBar, SimpleHeader, Wrap } from '../../common';
 import { styles } from './SaitaCardPayOptionStyle';
-import { Actions } from 'react-native-router-flux';
 
-import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
-import { Fonts, Images } from '../../../theme';
-import { SettingBar } from '../../common/SettingBar';
 import LottieView from 'lottie-react-native';
+import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
+import { NavigationStrings } from '../../../Navigation/NavigationStrings';
+import { getCurrentRouteName, goBack, navigate } from '../../../navigationsService';
+import { Fonts } from '../../../theme';
+import { SettingBar } from '../../common/SettingBar';
 
 const windowHeight = Dimensions.get('window').height;
 
@@ -44,7 +44,7 @@ const SaitaCardPayOption = props => {
                 imageShow
                 back={false}
                 backPressed={() => {
-                    Actions.pop()
+                    goBack()
                 }}
             />
 
@@ -118,7 +118,7 @@ const SaitaCardPayOption = props => {
                                 onPress={() => {
                                     setApplyModal(false)
                                     //  setReviewModal(true)
-                                    Actions.currentScene != "KycShufti" && Actions.KycShufti({ "email": props.email })
+                                    getCurrentRouteName() != "KycShufti" && navigate(NavigationStrings.KycShufti,{ "email": props.route?.params?.email })
                                 }}
                                 btnStyle={styles.btnStyle}
                                 customGradient={styles.customGrad}

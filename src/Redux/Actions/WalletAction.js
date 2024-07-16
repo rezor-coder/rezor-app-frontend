@@ -53,6 +53,7 @@ import {
   STC_GAS_LIMIT,
   API_SWAP_NEW,
   CHECK_EXIST_CONTACT,
+  UPDATE_WALLET_BALANCES,
 } from '../../Endpoints';
 
 import { APIClient } from '../../Api/APIClient';
@@ -163,7 +164,6 @@ export const getMyWallets = ({
       APIClient.getInstance()
         .post(API_MYWALLETS, data, access_token)
         .then(response => {
-          console.log('API_MYWALLETS===', response);
           var newArray = [];
           let price = 0;
           let totalBalance = 0;
@@ -256,7 +256,6 @@ export const getMyWallets = ({
               );
             })
             let finalArray = stcCoin?.coin_id?[stcCoin, ...filteredArray]:[...filteredArray]
-            console.log("finalArray:::::::", finalArray);
             resolve(finalArray);
             Singleton.getInstance().newSaveData(
               Constants.WALLET_LIST,
@@ -764,7 +763,7 @@ export const getDexUrls = access_token => {
               data.liquidityUrl = item.url;
             } else if (item.name.toUpperCase() == 'EPAY') {
               data.epayUrl = item.url;
-            } else if (item.name.toUpperCase() == 'STAKE') {
+            } else if (item.name.toUpperCase() == 'NEW_STAKE') {
               data.stakeUrl = item.url;
             } else if (item.name.toUpperCase() == 'BSC_PUBLIC_URL') {
               data.publicBscUrl = item.url;
@@ -776,6 +775,7 @@ export const getDexUrls = access_token => {
             } else if (item?.name?.toUpperCase() == 'SAITACHAIN_NODE') {
               Constants.mainnetInfuraLinkSTC = item.url;
               Singleton.getInstance().stcLink = item.url;
+              data.publicStcUrl = item.url;
             } else if (item?.name?.toUpperCase() == 'SAITACHAIN_EXPLORER') {
               if (item.url) {
                 console.log("item.url:::::", item.url);
@@ -1016,6 +1016,26 @@ export const checkMaintenance = () => {
   };
 };
 
+
+export const updateListBalances=()=>{
+  return dispatch => {
+    return new Promise((resolve, reject) => {
+      console.warn('MM updateListBalances');
+      let access_token = Singleton.getInstance().access_token;
+      APIClient.getInstance()
+        .get(UPDATE_WALLET_BALANCES,access_token)
+        .then(response => {
+          console.warn('MM','respone updateListBalances--- ', response);
+          let result = response;
+          resolve(result);
+        })
+        .catch(error => {
+          console.warn('MM','error updateListBalances+-- ', error);
+          reject(error);
+        });
+    });
+  };
+}
 export const coinListSuccess = (dispatch, result) => {
   dispatch({
     type: COIN_LIST,

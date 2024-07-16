@@ -1,48 +1,43 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { BorderLine, KeyboardDigit, Wrap } from '../../common/index';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
-  MainStatusBar,
-  SimpleHeader,
-  BasicButton,
-  BasicInputBox,
-} from '../../common';
-import { Colors, Fonts } from '../../../theme';
-import LinearGradient from 'react-native-linear-gradient';
-import styles from './EpayStyle';
-import {
-  View,
-  Text,
-  TextInput,
-  Linking,
-  Image,
+  BackHandler,
+  Modal,
   PermissionsAndroid,
   Platform,
-  Modal,
+  Text,
   TouchableOpacity,
-  BackHandler
+  View
 } from 'react-native';
-import { Actions } from 'react-native-router-flux';
-import {
-  epayMerchant,
-  getCryptoPrice,
-  getBuyRAte,
-  getDexUrls,
-  checkMaintenance,
-} from '../../../Redux/Actions';
-import { connect, useDispatch, useSelector } from 'react-redux';
-import Loader from '../Loader/Loader';
-import Singleton from '../../../Singleton';
-import RnHash, { CONSTANTS, JSHmac, JSHash } from 'react-native-hash';
-import * as Constants from '../../../Constant';
-import SelectDropdown from 'react-native-select-dropdown';
-import Images from '../../../theme/Images';
-import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
-import Toast, { DURATION } from 'react-native-easy-toast';
-import { areaDimen, heightDimen, widthDimen } from '../../../Utils/themeUtils';
+import Toast from 'react-native-easy-toast';
 import FastImage from 'react-native-fast-image';
-import ListModal from '../SwapSelected/ListModal';
+import SelectDropdown from 'react-native-select-dropdown';
+import { useDispatch, useSelector } from 'react-redux';
+import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
+import * as Constants from '../../../Constant';
+import { NavigationStrings } from '../../../Navigation/NavigationStrings';
+import {
+  checkMaintenance,
+  epayMerchant,
+  getBuyRAte,
+  getCryptoPrice,
+  getDexUrls,
+} from '../../../Redux/Actions';
+import Singleton from '../../../Singleton';
+import { areaDimen, heightDimen, widthDimen } from '../../../Utils/themeUtils';
+import { getCurrentRouteName, goBack, navigate } from '../../../navigationsService';
+import { Colors, Fonts } from '../../../theme';
+import Images from '../../../theme/Images';
 import { CommaSeprator3 } from '../../../utils';
+import {
+  BasicButton,
+  MainStatusBar,
+  SimpleHeader
+} from '../../common';
+import { BorderLine, KeyboardDigit, Wrap } from '../../common/index';
+import Loader from '../Loader/Loader';
+import ListModal from '../SwapSelected/ListModal';
+import styles from './EpayStyle';
 var debounce = require('lodash.debounce');
 const currency = [];
 // const Epay = ({ navigation }) => {
@@ -113,7 +108,7 @@ const Epay = props => {
       backAction,
     );
     getCryptoPriceApi(true);
-    let focus = props.navigation.addListener('didFocus', () => {
+    let focus = props.navigation.addListener('focus', () => {
       backHandle = BackHandler.addEventListener('hardwareBackPress', backAction);
       let access_token = Singleton.getInstance().access_token;
       if (epayUrl == '') {
@@ -128,7 +123,7 @@ const Epay = props => {
             if (url?.length > 0) {
               setEpayUrl(url);
             } else {
-              Actions.currentScene == 'Epay' && Singleton.showAlert(
+              getCurrentRouteName() == 'Epay' && Singleton.showAlert(
                 'Something went wrong. Please try after sometime.',
               );
             }
@@ -137,7 +132,7 @@ const Epay = props => {
           })
           .catch(error => {
             setisLoading(false);
-            Actions.currentScene == 'Epay' && Singleton.showAlert(
+            getCurrentRouteName() == 'Epay' && Singleton.showAlert(
               error?.toString() ||
               'Something went wrong. Please try after sometime.',
             );
@@ -153,7 +148,7 @@ const Epay = props => {
           if (epayCheck?.value == 1) {
             setIsOnMaintainanceMsg(epayCheck?.msg);
             setIsOnMaintainance(true);
-            Actions.currentScene == 'Epay' && Singleton.showAlert(epayCheck?.msg);
+            getCurrentRouteName() == 'Epay' && Singleton.showAlert(epayCheck?.msg);
           } else {
             setIsOnMaintainance(false);
           }
@@ -162,7 +157,7 @@ const Epay = props => {
           console.log('err::::checkMaintenance', err);
         });
     });
-    let blur = props.navigation.addListener('didBlur', () => {
+    let blur = props.navigation.addListener('blur', () => {
       backHandle?.remove()
       if (dropDownRef?.current) {
         dropDownRef?.current?.closeDropdown();
@@ -170,12 +165,12 @@ const Epay = props => {
     });
     return () => {
       backHandle?.remove()
-      blur?.remove();
-      focus?.remove();
+      blur();
+      focus();
     };
   }, []);
   const backAction = () => {
-    Actions.pop();
+    goBack();
     return true;
   }
   const handler = useCallback(
@@ -188,7 +183,7 @@ const Epay = props => {
         setconverted(0)
         console.log("limitData",limitData);
         setisLoading(false);
-        Actions.currentScene == 'Epay' && Singleton.showAlert(`Unable to process your request. Please enter amount between ${limitData[0]?.min_price == undefined
+        getCurrentRouteName() == 'Epay' && Singleton.showAlert(`Unable to process your request. Please enter amount between ${limitData[0]?.min_price == undefined
           ? 0
           : CommaSeprator3(limitData[0]?.min_price)} USD and ${limitData[0]?.max_price == undefined
             ? 0
@@ -231,7 +226,7 @@ const Epay = props => {
         console.log('err', err);
         setIsfetching(false);
         setisLoading(false);
-        Actions.currentScene == 'Epay' && Singleton.showAlert(err?.message || err);
+        getCurrentRouteName() == 'Epay' && Singleton.showAlert(err?.message || err);
         console.warn('MM', 'getRate mercahantdata:::::::::', err);
       });
   };
@@ -300,27 +295,27 @@ const Epay = props => {
   };
   const checkpermission = () => {
     if (global.disconnected) {
-      Actions.currentScene == 'Epay' && Singleton.showAlert(Constants.NO_NETWORK);
+      getCurrentRouteName() == 'Epay' && Singleton.showAlert(Constants.NO_NETWORK);
       return;
     }
     global.isCamera = true;
 
     if (coinType == '') {
-      Actions.currentScene == 'Epay' && Singleton.showAlert(LanguageManager.selectcrypto);
+      getCurrentRouteName() == 'Epay' && Singleton.showAlert(LanguageManager.selectcrypto);
       return;
     }
     if (isfetching) {
-      Actions.currentScene == 'Epay' && Singleton.showAlert(LanguageManager.fetching_prices_please_wait);
+      getCurrentRouteName() == 'Epay' && Singleton.showAlert(LanguageManager.fetching_prices_please_wait);
       return;
     }
 
     if (fiatamount == '') {
-      Actions.currentScene == 'Epay' && Singleton.showAlert(LanguageManager.pleaseEnterAmount);
+      getCurrentRouteName() == 'Epay' && Singleton.showAlert(LanguageManager.pleaseEnterAmount);
       return;
     }
 
     if (converted == '' || converted == 0) {
-      Actions.currentScene == 'Epay' && Singleton.showAlert(LanguageManager.invalidamount);
+      getCurrentRouteName() == 'Epay' && Singleton.showAlert(LanguageManager.invalidamount);
       return;
     }
 
@@ -337,10 +332,10 @@ const Epay = props => {
           if (granted === PermissionsAndroid.RESULTS.GRANTED) {
             checkpermissionStorage();
           } else {
-            Actions.currentScene == 'Epay' && Singleton.showAlert(LanguageManager.cameraPermissionDenied);
+            getCurrentRouteName() == 'Epay' && Singleton.showAlert(LanguageManager.cameraPermissionDenied);
           }
         } catch (err) {
-          Actions.currentScene == 'Epay' && Singleton.showAlert(LanguageManager.cameraPermissionError, err);
+          getCurrentRouteName() == 'Epay' && Singleton.showAlert(LanguageManager.cameraPermissionError, err);
           console.warn(err);
         }
       }
@@ -369,10 +364,10 @@ const Epay = props => {
           if (granted === PermissionsAndroid.RESULTS.GRANTED) {
             getMerchantData();
           } else {
-            Actions.currentScene == 'Epay' && Singleton.showAlert('File Permission Denied.');
+            getCurrentRouteName() == 'Epay' && Singleton.showAlert('File Permission Denied.');
           }
         } catch (err) {
-          Actions.currentScene == 'Epay' && Singleton.showAlert('File Permission error.');
+          getCurrentRouteName() == 'Epay' && Singleton.showAlert('File Permission error.');
           console.warn(err);
         }
       }
@@ -384,11 +379,11 @@ const Epay = props => {
   const getMerchantData = () => {
     global.isCamera = true;
     if (coinType == '') {
-      Actions.currentScene == 'Epay' && Singleton.showAlert(LanguageManager.selectcrypto);
+      getCurrentRouteName() == 'Epay' && Singleton.showAlert(LanguageManager.selectcrypto);
       return;
     }
     if (fiatamount == '') {
-      Actions.currentScene == 'Epay' && Singleton.showAlert(LanguageManager.invalidamount);
+      getCurrentRouteName() == 'Epay' && Singleton.showAlert(LanguageManager.invalidamount);
       return;
     }
     setisLoading(true);
@@ -420,18 +415,18 @@ const Epay = props => {
           //   console.warn('MM', 'hashhh', hash);
           //   let link = `${epayUrl}?customerId=${res.data.customer_id}&orderID=${res.data.order_id}&orderDescription=${res.data.description}&orderAmount=${res.data.amount}`;
           //   console.log('link::::::::::epay', link);
-          Actions.Linkview({
+          navigate(NavigationStrings.Linkview,{
             linkhash: res.data,
           });
           // });
         } else {
-          Actions.currentScene == 'Epay' && Singleton.showAlert(res.message);
+          getCurrentRouteName() == 'Epay' && Singleton.showAlert(res.message);
         }
         setisLoading(false);
       })
       .catch(err => {
         setisLoading(false);
-        Actions.currentScene == 'Epay' && Singleton.showAlert(err);
+        getCurrentRouteName() == 'Epay' && Singleton.showAlert(err);
         console.warn('MM', 'err mercahantdata:::::::::', err);
       });
   };
@@ -441,14 +436,14 @@ const Epay = props => {
         return;
       }
       if (coinType == '') {
-        Actions.currentScene == 'Epay' && Singleton.showAlert('Select crypto first');
+        getCurrentRouteName() == 'Epay' && Singleton.showAlert('Select crypto first');
         return;
       }
       if (
         fiatamount + item >
         (limitData[0]?.max_price == undefined ? 0 : limitData[0]?.max_price)
       ) {
-        Actions.currentScene == 'Epay' && Singleton.showAlert('Entered Amount should be less than max amount.');
+        getCurrentRouteName() == 'Epay' && Singleton.showAlert('Entered Amount should be less than max amount.');
         return;
       } else {
         setIsfetching(true);
@@ -483,13 +478,13 @@ const Epay = props => {
       <SimpleHeader
         history={false}
         onPressHistory={() =>
-          Actions.currentScene != 'BuyHistory' && Actions.BuyHistory()
+          getCurrentRouteName() != 'BuyHistory' && navigate(NavigationStrings.BuyHistory)
         }
         titleStyle={{ textTransform: 'none' }}
         imageShow
         back={false}
         backPressed={() => {
-          Actions.pop();
+          goBack();
         }}
         customIcon={ThemeManager.ImageIcons.history}
         backImage={ThemeManager.ImageIcons.iconBack}

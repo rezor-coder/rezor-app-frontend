@@ -1,66 +1,64 @@
 /* eslint-disable react/self-closing-comp */
 /* eslint-disable handle-callback-err */
 /* eslint-disable react-native/no-inline-styles */
-import React, { useState, useEffect } from 'react';
+import { BigNumber } from 'bignumber.js';
+import React, { useEffect, useState } from 'react';
 import {
-  View,
-  Text,
-  TouchableOpacity,
-  Modal,
   Alert,
-  SafeAreaView,
   Dimensions,
   ImageBackground,
   Keyboard,
   Linking,
+  Modal,
+  Platform,
   Pressable,
+  SafeAreaView,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
-import { Actions } from 'react-native-router-flux';
-import styles from './SaitaCardApplyFormStyle';
-import { Colors, Fonts, Images } from '../../../theme';
-import {
-  BasicInputBox,
-  BasicInputBoxSelect,
-  Wrap,
-  SimpleHeader,
-  BasicButton,
-  BorderLine,
-  CheckBox,
-  ImageBackgroundComponent,
-  BasicInputBoxPassword,
-} from '../../common';
+import { EventRegister } from 'react-native-event-listeners';
+import FastImage from 'react-native-fast-image';
+import { ScrollView } from 'react-native-gesture-handler';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import {
-  signupCards,
-  verifyOtpCards,
-  getUserCardDetail,
-  sendOtpCard,
-  sendCardPaymentrx,
-  applyAnotherCard,
-} from '../../../Redux/Actions/SaitaCardAction';
-import Singleton from '../../../Singleton';
-import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
-import fonts from '../../../theme/Fonts';
 import SmoothPinCodeInput from 'react-native-smooth-pincode-input';
-import { countryData } from '../../../countryCodes';
-import CountryCodes from '../CountryCodes/CountryCodes';
-import Loader from '../Loader/Loader';
-import * as Constants from '../../../Constant';
 import { useDispatch } from 'react-redux';
+import Web3 from 'web3';
 import SmartCardAbi from '../../../../ABI/SmartCardAbi.json';
 import tokenCardAbi from '../../../../ABI/tokenCardAbi.json';
-import { EventRegister } from 'react-native-event-listeners';
-import { BigNumber } from 'bignumber.js';
-import Web3 from 'web3';
-import { ModalCardTrx } from '../../common/ModalCardTrx';
-import { BASE_URL, BASE_URL_CARD_EPAY } from '../../../Endpoints';
-import { fetch } from 'react-native-ssl-pinning';
-import { APIClient, disableAllSecurity, sslCertificateList } from '../../../Api';
+import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
+import { APIClient } from '../../../Api';
+import * as Constants from '../../../Constant';
+import { BASE_URL_CARD_EPAY } from '../../../Endpoints';
+import { NavigationStrings } from '../../../Navigation/NavigationStrings';
+import {
+  applyAnotherCard,
+  getUserCardDetail,
+  sendCardPaymentrx,
+  sendOtpCard,
+  signupCards
+} from '../../../Redux/Actions/SaitaCardAction';
+import Singleton from '../../../Singleton';
+import { areaDimen, heightDimen, widthDimen } from '../../../Utils/themeUtils';
+import { countryData } from '../../../countryCodes';
+import { getCurrentRouteName, goBack, navigate } from '../../../navigationsService';
+import { Colors, Fonts, Images } from '../../../theme';
+import fonts from '../../../theme/Fonts';
 import { createOrderForSaitaCard, createOrderForSaitaCard_Binance } from '../../../utils';
-import { Platform } from 'react-native';
-import { heightDimen, widthDimen, areaDimen } from '../../../Utils/themeUtils';
-import { ScrollView } from 'react-native-gesture-handler';
-import FastImage from 'react-native-fast-image';
+import {
+  BasicButton,
+  BasicInputBox,
+  BasicInputBoxPassword,
+  BasicInputBoxSelect,
+  BorderLine,
+  CheckBox,
+  SimpleHeader,
+  Wrap
+} from '../../common';
+import { ModalCardTrx } from '../../common/ModalCardTrx';
+import CountryCodes from '../CountryCodes/CountryCodes';
+import Loader from '../Loader/Loader';
+import styles from './SaitaCardApplyFormStyle';
 let routerAddressCards =
   Constants.network == 'testnet'
     ? '0xBd5EB4F64C5c9D87e1a33B08AD3FFf8D821da48E'
@@ -134,7 +132,7 @@ const SaitaCardApplyForm = props => {
         setSwapModal(true);
       }, 500);
     });
-    console.warn('MM', 'selected Item::::::>>', props.selectedItem);
+    console.warn('MM', 'selected Item::::::>>', props?.route?.params?.selectedItem);
     Singleton.getInstance()
       .newGetData(`${Singleton.getInstance().defaultEthAddress}_pk`)
       .then(ethPvtKey => {
@@ -153,7 +151,7 @@ const SaitaCardApplyForm = props => {
         Constants.access_token_cards,
       );
       let req = {
-        card_table_id: props.selectedItem?.card_table_id,
+        card_table_id: props?.route?.params?.selectedItem?.card_table_id,
         address: Singleton.getInstance().defaultEthAddress,
       };
       console.log('req...', req);
@@ -166,7 +164,7 @@ const SaitaCardApplyForm = props => {
           if (res?.status) {
             if (res.data.customerId && res.data.orderId && res.data.amount) {
               let url = `${BASE_URL_CARD_EPAY}?customerId=${res.data.customerId}&orderID=${res.data.orderId}&orderDescription=${props?.selectedItem?.name}&orderAmount=${res.data.amount}`;
-              Actions.SaitaCardEpay({ linkhash: url });
+              navigate(NavigationStrings.SaitaCardEpay,{ linkhash: url });
             } else {
               Singleton.showAlert('Unable to process your request');
             }
@@ -195,9 +193,9 @@ const SaitaCardApplyForm = props => {
       setisLoading(true);
       createOrderForSaitaCard_Binance(
         {
-          card_table_id: props.selectedItem?.card_table_id,
+          card_table_id: props?.route?.params?.selectedItem?.card_table_id,
           bnb_pay_order_type,
-          card_category: props.selectedItem.card_type,
+          card_category: props?.route?.params?.selectedItem.card_type,
         },
         token,
       )
@@ -205,8 +203,8 @@ const SaitaCardApplyForm = props => {
           setisLoading(false);
           console.log('resssss', res);
           if (res?.status) {
-            Actions.currentScene != 'SaitaCardBinanceQr' &&
-              Actions.replace('SaitaCardBinanceQr', {data: res?.data});
+            getCurrentRouteName() != 'SaitaCardBinanceQr' &&
+            navigate(NavigationStrings.SaitaCardBinanceQr, {data: res?.data});
           } else {
             Singleton.showAlert(res?.message || Constants.SOMETHING_WRONG);
           }
@@ -284,11 +282,11 @@ const SaitaCardApplyForm = props => {
       console.warn('MM', '+++++++++++', result);
       setTokenResultAddress(result);
       const cardType =
-        props.selectedItem.name?.toLowerCase() == 'black'
+        props?.route?.params?.selectedItem.name?.toLowerCase() == 'black'
           ? 0
-          : props.selectedItem.name?.toLowerCase() == 'diamond'
+          : props?.route?.params?.selectedItem.name?.toLowerCase() == 'diamond'
             ? 1
-            : props.selectedItem.name?.toLowerCase() == 'gold'
+            : props?.route?.params?.selectedItem.name?.toLowerCase() == 'gold'
               ? 2
               : 0;
       setUserCardType(cardType);
@@ -344,11 +342,11 @@ const SaitaCardApplyForm = props => {
             };
 
             const cardName =
-              props.selectedItem.name?.toLowerCase() == 'black'
+              props?.route?.params?.selectedItem.name?.toLowerCase() == 'black'
                 ? 'Black'
-                : props.selectedItem.name?.toLowerCase() == 'diamond'
+                : props?.route?.params?.selectedItem.name?.toLowerCase() == 'diamond'
                   ? 'Diamond'
-                  : props.selectedItem.name?.toLowerCase() == 'gold'
+                  : props?.route?.params?.selectedItem.name?.toLowerCase() == 'gold'
                     ? 'Gold'
                     : 'Black';
             let allowanceFees = Singleton.getInstance().toFixed(
@@ -453,7 +451,7 @@ const SaitaCardApplyForm = props => {
             {
               text: 'Ok',
               onPress: () => {
-                Actions.jump('SaitaCardsInfo');
+                navigate(NavigationStrings.SaitaCardsInfo);
               },
             },
           ],
@@ -651,7 +649,7 @@ const SaitaCardApplyForm = props => {
       .newGetData(Constants.access_token_cards)
       .then(access_token => {
         let data = {
-          card_table_id: props.cardType,
+          card_table_id: props?.route?.params?.cardType,
           from_adrs: userAddress,
           to_adrs: null,
           tx_id: tx_id,
@@ -761,7 +759,7 @@ const SaitaCardApplyForm = props => {
         Singleton.showAlert('Accept Email & SMS Communication');
         return;
       }
-      const selectedItem = props.selectedItem;
+      const selectedItem = props?.route?.params?.selectedItem;
       console.warn('MM', 'selectedItem::::::::::', selectedItem);
       if (selectedItem.fee_status == 'complete') {
         if (selectedItem.kyc_status == 0) {
@@ -793,7 +791,7 @@ const SaitaCardApplyForm = props => {
         {
           text: 'Ok',
           onPress: () => {
-            Actions.jump('SaitaCardLogin');
+            navigate(NavigationStrings.SaitaCardLogin);
           },
         },
       ],
@@ -806,20 +804,20 @@ const SaitaCardApplyForm = props => {
       .newGetData(Constants.access_token_cards)
       .then(access_token => {
         let data = {
-          card_table_id: props.selectedItem.card_table_id,
-          card_type_id: props.selectedItem.card_type_id,
-          card_name: props.selectedItem.name,
+          card_table_id: props?.route?.params?.selectedItem.card_table_id,
+          card_type_id: props?.route?.params?.selectedItem.card_type_id,
+          card_name: props?.route?.params?.selectedItem.name,
         };
         dispatch(applyAnotherCard({ data, access_token }))
           .then(res => {
             console.warn('MM', 'apply card res:::::', res);
             setisLoading(false);
             const cardName =
-              props.selectedItem.name?.toLowerCase() == 'black'
+              props?.route?.params?.selectedItem.name?.toLowerCase() == 'black'
                 ? 'Black'
-                : props.selectedItem.name?.toLowerCase() == 'diamond'
+                : props?.route?.params?.selectedItem.name?.toLowerCase() == 'diamond'
                   ? 'Diamond'
-                  : props.selectedItem.name?.toLowerCase() == 'gold'
+                  : props?.route?.params?.selectedItem.name?.toLowerCase() == 'gold'
                     ? 'Gold'
                     : 'Black';
             Alert.alert(
@@ -829,7 +827,7 @@ const SaitaCardApplyForm = props => {
                 {
                   text: 'Ok',
                   onPress: () => {
-                    Actions.jump('SaitaCardsInfo');
+                    navigate(NavigationStrings.SaitaCardsInfo);
                   },
                 },
               ],
@@ -921,10 +919,10 @@ const SaitaCardApplyForm = props => {
       zip_code: zipcode,
       email: email,
       password: password,
-      card_type_id: props.selectedItem.card_type_id,
-      card_table_id: props.cardType,
+      card_type_id: props?.route?.params?.selectedItem.card_type_id,
+      card_table_id: props?.route?.params?.cardType,
       otp: Pin,
-      card_name: props.selectedItem.name,
+      card_name: props?.route?.params?.selectedItem.name,
       device_token: Singleton.getInstance().device_token,
     };
     dispatch(signupCards({ data }))
@@ -954,7 +952,7 @@ const SaitaCardApplyForm = props => {
       .then(res => {
         console.warn('MM', 'MM', 'getUserCardDetail ::::::: ApplyForm', res);
 
-        const selectedData = props.selectedItem;
+        const selectedData = props?.route?.params?.selectedItem;
         if (
           selectedData.fee_status == 'complete' &&
           selectedData.kyc_status == 2 &&
@@ -991,8 +989,8 @@ const SaitaCardApplyForm = props => {
           console.warn('MM', '>>>> selectedData', selectedData);
           if (selectedData.fee_status == 'complete') {
             setApplyModal(false);
-            Actions.currentScene != 'KycShufti' &&
-              Actions.KycShufti({ email: email });
+            getCurrentRouteName() != 'KycShufti' &&
+            navigate(NavigationStrings.KycShufti,{ email: email });
           } else if (selectedData.fee_status == 'failed') {
             Singleton.showAlert('Payment Failed, Please try again.');
           } else {
@@ -1144,11 +1142,11 @@ const SaitaCardApplyForm = props => {
     <>
       <Wrap style={{ backgroundColor: ThemeManager.colors.bg }}>
         <SimpleHeader
-          title={`SaitaCard ${props.selectedItem.name?.toLowerCase() == 'black'
+          title={`SaitaCard ${props?.route?.params?.selectedItem.name?.toLowerCase() == 'black'
               ? 'Black'
-              : props.selectedItem.name?.toLowerCase() == 'diamond'
+              : props?.route?.params?.selectedItem.name?.toLowerCase() == 'diamond'
                 ? 'Diamond'
-                : props.selectedItem.name?.toLowerCase() == 'gold'
+                : props?.route?.params?.selectedItem.name?.toLowerCase() == 'gold'
                   ? 'Gold'
                   : 'Black'
             }`}
@@ -1157,7 +1155,7 @@ const SaitaCardApplyForm = props => {
           imageShow
           back={false}
           backPressed={() => {
-            Actions.pop();
+            goBack();
           }}
         />
         <BorderLine
@@ -1224,7 +1222,7 @@ const SaitaCardApplyForm = props => {
                     fontSize: 13,
                     fontFamily: fonts.semibold,
                   }}
-                  title={LanguageManager.phone}
+                  title={LanguageManager.phoneNumber}
                   mainStyle={{
                     borderColor: ThemeManager.colors.viewBorderColor,
                     borderRadius: 100,
@@ -1709,7 +1707,7 @@ const SaitaCardApplyForm = props => {
               <ImageBackground
                 resizeMode="contain"
                 style={styles.imgcards}
-                source={{uri: props.selectedItem.card_image}}>
+                source={{uri: props?.route?.params?.selectedItem.card_image}}>
                 <View
                   style={{
                     backgroundColor: 'rgba(57, 57, 57, 0.7)',
@@ -1746,7 +1744,7 @@ const SaitaCardApplyForm = props => {
                       textTransform: 'capitalize',
                     },
                   ]}>
-                  {props.selectedItem.name}
+                  {props?.route?.params?.selectedItem.name}
                 </Text>
               </Text>
               <Text style={[styles.txtkyc]}>
@@ -1799,7 +1797,7 @@ const SaitaCardApplyForm = props => {
           style={{ flex: 1 }}
           onRequestClose={() => {
             setPaymentMethodModal(false)
-            Actions.pop();
+            goBack();
           }}>
           <Pressable
             style={{
@@ -1809,7 +1807,7 @@ const SaitaCardApplyForm = props => {
             }}
             onPress={() => {
               setPaymentMethodModal(false)
-              Actions.pop();
+              goBack();
             }}>
             <View
               style={{

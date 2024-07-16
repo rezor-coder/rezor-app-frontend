@@ -1,22 +1,20 @@
-import React, { createRef, useEffect, useState } from 'react';
+import React, { createRef, useEffect } from 'react';
 import {
-  View,
-  Text,
-  StyleSheet,
-  Image,
-  ImageBackground,
-  ScrollView,
-  TouchableOpacity,
   BackHandler,
+  Image,
+  Text,
+  TouchableOpacity,
+  View
 } from 'react-native';
-import { Actions } from 'react-native-router-flux';
-import colors from '../../../theme/Colors';
-import { Wrap } from '../../common/Wrap';
-import images from '../../../theme/Images';
-import { styles } from './FaceIDStyle';
 import ReactNativeBiometrics from 'react-native-biometrics';
-import Toast, { DURATION } from 'react-native-easy-toast';
+import Toast from 'react-native-easy-toast';
 import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
+import { NavigationStrings } from '../../../Navigation/NavigationStrings';
+import { getCurrentRouteName, goBack, navigate } from '../../../navigationsService';
+import colors from '../../../theme/Colors';
+import images from '../../../theme/Images';
+import { Wrap } from '../../common/Wrap';
+import { styles } from './FaceIDStyle';
 
 const FaceID = props => {
   const toastRef = createRef();
@@ -26,7 +24,7 @@ const FaceID = props => {
 
     const backAction = () => {
       //console.warn('MM','i FaceID');
-      Actions.pop();
+      goBack();
       return true;
     };
     const backHandler = BackHandler.addEventListener(
@@ -67,8 +65,8 @@ const FaceID = props => {
           if (success) {
             toastRef.current.show(LanguageManager.Approved);
             setTimeout(() => {
-              Actions.currentScene != 'CreatePIN' &&
-                Actions.replace('CreatePIN');
+              getCurrentRouteName() != 'CreatePIN' &&
+              navigate(NavigationStrings.CreatePIN);
             }, 200);
             //console.warn('MM','successful biometrics provided');
           } else {
@@ -90,7 +88,7 @@ const FaceID = props => {
           <Image source={images.faceID} style={styles.img} />
         </View>
         <Text style={styles.textApprove}></Text>
-        <TouchableOpacity onPress={() => Actions.pop()} style={styles.btnView2}>
+        <TouchableOpacity onPress={() => goBack()} style={styles.btnView2}>
           <Text style={{ color: colors.white, paddingHorizontal: 15 }}>
             {LanguageManager.Back}
           </Text>

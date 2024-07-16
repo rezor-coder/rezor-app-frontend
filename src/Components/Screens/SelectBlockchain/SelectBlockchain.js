@@ -1,22 +1,23 @@
+import * as shape from 'd3-shape';
 import React, { Component } from 'react';
 import {
-  View,
   FlatList,
-  TouchableOpacity,
-  SafeAreaView,
   Image,
+  SafeAreaView,
   Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
-import styles from './SelectBlockchainStyle';
-import { Wrap, SimpleHeader, SearchBar, BorderLine } from '../../common';
-import { Images, Colors } from '../../../theme';
-import { Actions } from 'react-native-router-flux';
-import { BASE_IMAGE } from '../../../Endpoints';
-import Singleton from '../../../Singleton';
 import { AreaChart, Path } from 'react-native-svg-charts';
-import * as shape from 'd3-shape';
 import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
 import * as Constants from '../../../Constant';
+import { BASE_IMAGE } from '../../../Endpoints';
+import { NavigationStrings } from '../../../Navigation/NavigationStrings';
+import Singleton from '../../../Singleton';
+import { getCurrentRouteName, navigate } from '../../../navigationsService';
+import { Colors, Images } from '../../../theme';
+import { BorderLine, SearchBar, SimpleHeader, Wrap } from '../../common';
+import styles from './SelectBlockchainStyle';
 const GreenGraph = ({ line }) => (
   <Path key={'line'} d={line} stroke={'green'} fill={'none'} />
 );
@@ -37,7 +38,7 @@ class SelectBlockchain extends Component {
 
   onItemSelect(item) {
     // //console.warn('MM','item', item);
-    Actions.currentScene != 'ScanQr' && Actions.ScanQr({ item: item });
+    getCurrentRouteName() != 'ScanQr' && navigate(NavigationStrings.ScanQr,{ item: item });
   }
 
   searchBlockchain = text => {
@@ -58,7 +59,7 @@ class SelectBlockchain extends Component {
             title={LanguageManager.select}
             history={true}
             onpress={() =>
-              Actions.currentScene != 'History' && Actions.History()
+              getCurrentRouteName() != 'History' && navigate(NavigationStrings.History)
             }
           />
 

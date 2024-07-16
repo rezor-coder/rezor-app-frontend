@@ -1,19 +1,15 @@
 /* eslint-disable react/self-closing-comp */
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
-  View,
-  Image,
-  Text,
-  SafeAreaView,
-  TouchableOpacity,
   KeyboardAvoidingView,
-  Platform,
+  Platform
 } from 'react-native';
-import { Actions } from 'react-native-router-flux';
 import { WebView } from 'react-native-webview';
 import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
+import { NavigationStrings } from '../../../Navigation/NavigationStrings';
 import Singleton from '../../../Singleton';
-import { Wrap, SimpleHeader, BorderLine } from '../../common';
+import { getCurrentRouteName, navigate } from '../../../navigationsService';
+import { BorderLine, SimpleHeader, Wrap } from '../../common';
 
 const SaitaCardEpay = props => {
   const [isLoading, setisLoading] = useState(false);
@@ -64,24 +60,24 @@ const SaitaCardEpay = props => {
               if (data.status == 'success') {
                 if (data.message == 'Order confirmed successfully') {
                   setTimeout(() => {
-                    Actions.currentScene != 'Dashboard' &&
-                      Actions.jump('Dashboard');
+                    getCurrentRouteName() != 'Dashboard' &&
+                    navigate(NavigationStrings.Dashboard);
                     Singleton.showAlert(
                       'Card payment fees paid successfully. Kindly complete the KYC to apply the card.',
                     );
                   }, 2000);
                 } else {
                   setTimeout(() => {
-                    Actions.currentScene != 'Dashboard' &&
-                      Actions.jump('Dashboard');
+                    getCurrentRouteName() != 'Dashboard' &&
+                    navigate(NavigationStrings.Dashboard);
                     Singleton.showAlert(data.message);
                   }, 2000);
                 }
               }
               if (data.status == 'failed') {
                 setTimeout(() => {
-                  Actions.currentScene != 'Dashboard' &&
-                    Actions.jump('Dashboard');
+                  getCurrentRouteName() != 'Dashboard' &&
+                  navigate(NavigationStrings.Dashboard);
                   Singleton.showAlert('Transaction Failed.');
                 }, 2000);
               }
@@ -92,7 +88,7 @@ const SaitaCardEpay = props => {
               //   }, 2000);
               // }
             }}
-            source={{ uri: props.linkhash }}
+            source={{ uri: props.route?.params.linkhash }}
             javaScriptEnabled={true}
             onLoadEnd={() => {
               setisLoading(false);

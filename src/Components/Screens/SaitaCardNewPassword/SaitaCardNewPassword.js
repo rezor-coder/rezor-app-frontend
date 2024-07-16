@@ -1,47 +1,33 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, {useState, useEffect} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
-  View,
-  Text,
-  TouchableOpacity,
   Alert,
-  Image,
-  Linking,
   Dimensions,
-  Modal,
-  ImageBackground,
-  SafeAreaView,
+  View
 } from 'react-native';
-import {Actions} from 'react-native-router-flux';
-import {
-  MainStatusBar,
-  BasicButton,
-  Header,
-  Wrap,
-  CheckBox,
-  ImageBackgroundComponent,
-  BasicInputBox,
-  BasicInputBoxPassword,
-  SimpleHeader,
-  SimpleHeaderNew,
-  BorderLine,
-} from '../../common/index';
-import styles from './SaitaCardNewPasswordStyle';
-import {LanguageManager, ThemeManager} from '../../../../ThemeManager';
-import Singleton from '../../../Singleton';
-import {Fonts, Images, Colors} from '../../../theme';
-import HeaderwithBackIcon from '../../common/HeaderWithBackIcon';
+import { useDispatch } from 'react-redux';
+import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
 import * as Constants from '../../../Constant';
-import {useDispatch} from 'react-redux';
+import { changePasswordCard } from '../../../Redux/Actions/SaitaCardAction';
+import Singleton from '../../../Singleton';
+import { Fonts } from '../../../theme';
+import {
+  BasicButton,
+  BasicInputBoxPassword,
+  BorderLine,
+  MainStatusBar,
+  SimpleHeaderNew,
+  Wrap
+} from '../../common/index';
 import Loader from '../Loader/Loader';
-import {changePasswordCard} from '../../../Redux/Actions/SaitaCardAction';
+import styles from './SaitaCardNewPasswordStyle';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-import {Platform} from 'react-native';
-import {heightDimen, widthDimen} from '../../../Utils/themeUtils';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { heightDimen, widthDimen } from '../../../Utils/themeUtils';
+import { goBack } from '../../../navigationsService';
 
 const SaitaCardNewPassword = props => {
   const dispatch = useDispatch();
@@ -60,7 +46,7 @@ const SaitaCardNewPassword = props => {
     // setPassword('')
     // setConfirmPassword('')
     // setOldPassword('')
-    Actions.pop();
+    goBack();
     Alert.alert(
       'Success',
       msg,
@@ -68,7 +54,7 @@ const SaitaCardNewPassword = props => {
         {
           text: 'Ok',
           onPress: () => {
-            // Actions.currentScene != 'ConfirmPin' && Actions.pop()
+            // getCurrentRouteName() != 'ConfirmPin' && goBack()
           },
         },
       ],

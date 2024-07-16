@@ -1,63 +1,70 @@
-import React, { Component } from 'react';
+import React, { memo } from 'react';
 import {
-  View,
-  Text,
   FlatList,
   SafeAreaView,
+  Text,
+  View,
 } from 'react-native';
-import { BorderLine, Header, SimpleHeader, Wrap } from '../../common';
-import styles from './RecipientStyle';
-import { Fonts, Images, Colors } from '../../../theme';
 import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
 import { heightDimen } from '../../../Utils/themeUtils';
+import { BorderLine, SimpleHeader, Wrap } from '../../common';
+import styles from './RecipientStyle';
 
-class Recipient extends Component {
-  render() {
-    console.log("this.props.csvData",this.props.csvData);
+const Recipient = (props) => {
+  // console.log("this.props.csvData", props.csvData?.length);
+  const keyExtractor = item => item.index?.toString();
+  const RenderItem =
+  memo(({ item ,index}) => {
     return (
-      <>
-        <Wrap style={{ backgroundColor: ThemeManager.colors.bg }}>
-          <SimpleHeader
-            title={LanguageManager.listOfRecipients}
-            // rightImage={[styles.rightImgStyle]}
-            backImage={ThemeManager.ImageIcons.iconBack}
-            titleStyle
-            imageShow
-            back={false}
-            backPressed={() => {
-              // props.navigation.state.params.onGoBack();
-              this.props.navigation.goBack();
-            }}
-          />
+      <View style={[styles.recipient_list, {
+        borderBottomColor: ThemeManager.colors.viewBorderColor,
+      }]}>
+        <Text style={[styles.addressLabelTextStyle, { color: ThemeManager.colors.textColor }]}>Address</Text>
+        <Text style={[styles.addressTextStyle, { color: ThemeManager.colors.lightTextColor }]}>{item.address}</Text>
+        <Text style={[styles.addressLabelTextStyle, { color: ThemeManager.colors.textColor, marginTop: heightDimen(10) }]}>
+          Total Amount
+        </Text>
+        <Text style={[styles.amountTextStyle, { color: ThemeManager.colors.textColor }]}>{item.amount}</Text>
+      </View>
+    )
+  })
+  return (
+    <>
+      <Wrap style={{ backgroundColor: ThemeManager.colors.bg }}>
+        <SimpleHeader
+          title={LanguageManager.listOfRecipients}
+          backImage={ThemeManager.ImageIcons.iconBack}
+          titleStyle
+          imageShow
+          back={false}
+          backPressed={() => {
+            // props.navigation.state.params.onGoBack();
+            props.navigation.goBack();
+          }}
+        />
 
-          <BorderLine
-            borderColor={{ backgroundColor: ThemeManager.colors.viewBorderColor }}
+        <BorderLine
+          borderColor={{ backgroundColor: ThemeManager.colors.viewBorderColor }}
+        />
+        <View style={styles.searchBarStyle}>
+          <FlatList
+            data={props.route?.params?.csvData}
+            initialNumToRender={20}
+            maxToRenderPerBatch={20}
+            windowSize={5}
+            updateCellsBatchingPeriod={5}
+            keyExtractor={keyExtractor}
+            ItemSeparatorComponent={() => <BorderLine />}
+            removeClippedSubviews={true}
+            renderItem={({item,index})=><RenderItem item={item} index={index}/>}
+            getItemLayout={(data, index) => (
+              {length: heightDimen(150), offset: heightDimen(150) * index, index}
+            )}
           />
-          <View style={styles.searchBarStyle}>
-            <FlatList
-              data={this.props.csvData}
-              keyExtractor={item => item.address}
-              ItemSeparatorComponent={()=><BorderLine/>}
-              renderItem={({ item, index }) => (
-                <View style={[styles.recipient_list, {
-                  borderBottomColor: ThemeManager.colors.viewBorderColor,
-                  // borderBottomWidth: this.props.csvData?.length - 1 > index ? 1 : 0,
-                }]}>
-                  <Text style={[styles.addressLabelTextStyle, { color: ThemeManager.colors.textColor }]}>Address </Text>
-                  <Text style={[styles.addressTextStyle, { color: ThemeManager.colors.lightTextColor }]}>{item.address}</Text>
-                  <Text style={[styles.addressLabelTextStyle, { color: ThemeManager.colors.textColor, marginTop: heightDimen(10) }]}>
-                    Total Amount
-                  </Text>
-                  <Text style={[styles.amountTextStyle, { color: ThemeManager.colors.textColor }]}>{item.amount}</Text>
-                </View>
-              )}
-            />
-          </View>
-        </Wrap>
-        <SafeAreaView style={{ backgroundColor: ThemeManager.colors.backgroundColor }} />
-      </>
-    );
-  }
+        </View>
+      </Wrap>
+      <SafeAreaView style={{ backgroundColor: ThemeManager.colors.backgroundColor }} />
+    </>
+  );
 }
-
 export default Recipient;

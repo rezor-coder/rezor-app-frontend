@@ -1,53 +1,53 @@
 /* eslint-disable react/self-closing-comp */
 /* eslint-disable react-native/no-inline-styles */
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
-  View,
-  Text,
-  Image,
-  TouchableOpacity,
-  FlatList,
-  ScrollView,
   Alert,
-  Linking,
-  NativeModules,
   BackHandler,
-  Dimensions
+  Dimensions,
+  FlatList,
+  Image,
+  Linking,
+  Modal,
+  NativeModules,
+  Platform,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View
 } from 'react-native';
-import { Wrap } from '../../common/Wrap';
+import { EventRegister } from 'react-native-event-listeners';
+import { connect, useDispatch, useSelector } from 'react-redux';
+import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
+import { DAPP_IMG_URL } from '../../../Endpoints';
+import { NavigationStrings } from '../../../Navigation/NavigationStrings';
+import {
+  changeThemeAction,
+  checkMaintenance,
+  clearReducer,
+  enableDisableNoti,
+  getEnableDisableNotiStatus,
+  getSocialList,
+  logoutUser,
+} from '../../../Redux/Actions';
+import { onWalletSwitch } from '../../../Redux/Actions/WallectConnectActions';
+import Singleton from '../../../Singleton';
+import { areaDimen, heightDimen, widthDimen } from '../../../Utils/themeUtils';
+import { getCurrentRouteName, goBack, navigate, reset } from '../../../navigationsService';
+import { Images } from '../../../theme';
+import images from '../../../theme/Images';
 import {
   BorderLine,
   MainStatusBar,
   SimpleHeader,
 } from '../../common';
-import { Actions } from 'react-native-router-flux';
-import images from '../../../theme/Images';
-import styles from './SettingStyle';
-import {
-  logoutUser,
-  enableDisableNoti,
-  getEnableDisableNotiStatus,
-  getSocialList,
-  changeThemeAction,
-  checkMaintenance,
-  clearReducer,
-} from '../../../Redux/Actions';
-import { Images } from '../../../theme';
-import { SettingBar } from '../../common/SettingBar';
-import * as constants from './../../../Constant';
-import { ActionConst } from 'react-native-router-flux';
-import Singleton from '../../../Singleton';
-import { connect, useDispatch, useSelector } from 'react-redux';
-import Loader from '../Loader/Loader';
-import { DAPP_IMG_URL, BASE_IMAGE } from '../../../Endpoints';
-import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
-import { EventRegister } from 'react-native-event-listeners';
-import { Platform } from 'react-native';
-import { onWalletSwitch } from '../../../Redux/Actions/WallectConnectActions';
-import { Modal } from 'react-native';
-import { areaDimen, heightDimen, widthDimen } from '../../../Utils/themeUtils';
-import DappBrowserSwap from '../DappBrowserSwap/DappBrowserSwap';
 import SelectNetworkPopUp from '../../common/SelectNetworkPopUp';
+import { SettingBar } from '../../common/SettingBar';
+import { Wrap } from '../../common/Wrap';
+import DappBrowserSwap from '../DappBrowserSwap/DappBrowserSwap';
+import Loader from '../Loader/Loader';
+import * as constants from './../../../Constant';
+import styles from './SettingStyle';
 let socialList_init = [
   {
     created_at: '2022-05-20T09:22:31.000Z',
@@ -103,6 +103,7 @@ const Setting = props => {
   const liquidityUrl = useSelector(
     state => state?.walletReducer?.dex_data?.liquidityUrl,
   );
+  console.log(liquidityUrl,'liquidityUrl:::::');
   const dispatch = useDispatch();
   const [linkList, setlinkList] = useState(socialList_init);
   const [isLoading, setisLoading] = useState(false);
@@ -113,6 +114,13 @@ const Setting = props => {
   const [showSelectChainLiq, setshowSelectChainLiq] = useState(false);
   const [showLiquidity, setShowLiquidity] = useState(false);
   const [languageIndex, setLanguageIndex] = useState(-1);
+  const [theme, setTheme] = useState(1);
+
+  useEffect(() => {
+    EventRegister.addEventListener('themeChanged', data => {
+      setTheme(data);
+    });
+  }, [theme]);
   useEffect(() => {
     if (walletList?.length > 0) {
       setLoader(false);
@@ -125,12 +133,12 @@ const Setting = props => {
   }, [walletList]);
   useEffect(() => {
     BackHandler.addEventListener('hardwareBackPress', backAction)
-    props.navigation.addListener('didFocus', () => {
+    props.navigation.addListener('focus', () => {
       setShowLiquidity(false)
       setshowSelectChain(false)
       setshowSelectChainLiq(false)
       EventRegister.addEventListener('downModal', () => {
-        setShowLiquidity(false)
+        // setShowLiquidity(false)
         setshowSelectChain(false)
         setshowSelectChainLiq(false)
       })
@@ -164,7 +172,7 @@ const Setting = props => {
     }
   }, []);
   const backAction = () => {
-    Actions.pop()
+    goBack()
     return true
   }
 
@@ -183,6 +191,7 @@ const Setting = props => {
           let access_token = Singleton.getInstance().access_token;
           //console.warn('MM',data, 'access_token', access_token);
           try {
+            Singleton?.getInstance()?.walletConnectRef?.showWalletData?.(false)
             dispatch(onWalletSwitch());
           } catch (error) {
             console.log('eror waletswitch', error);
@@ -204,7 +213,7 @@ const Setting = props => {
                 const clearApplicationData = NativeModules.RootModule;
               await  clearApplicationData.clearApplicationData();
               }
-              Actions.Splash({ type: ActionConst.RESET }, () => { });
+              reset(NavigationStrings.WelcomeScreen);
             })
             .catch(err => {
               setisLoading(false);
@@ -229,7 +238,7 @@ const Setting = props => {
       });
   };
   const onSelectChain = chain => {
-    Actions.currentScene !== 'Stake' && Actions.Stake({ chain: chain });
+    getCurrentRouteName() !== 'Stake' && navigate(NavigationStrings.Stake,{ chain: chain });
   };
   const onSelectChainLiq = chainSelected => {
     chain = chainSelected;
@@ -259,7 +268,7 @@ const Setting = props => {
     }
     ThemeManager.setLanguage(val);
     dispatch(changeThemeAction(themeValue));
-    Actions.refresh();
+    // Actions.refresh();
    setTimeout(() => {
     EventRegister.emit('themeChanged',val)
    }, 100);
@@ -283,12 +292,14 @@ const Setting = props => {
     Singleton.getInstance()
       .newGetData(constants.IS_PRIVATE_WALLET)
       .then(isPrivate => {
-        if (isPrivate == 'btc' || isPrivate == 'matic' || isPrivate == 'trx' || isPrivate=='stc') {
+        if (isPrivate == 'btc' || isPrivate == 'matic' || isPrivate == 'trx' ) {
           Singleton.showAlert(constants.UNCOMPATIBLE_WALLET);
         } else if (isPrivate == 'eth') {
           onSelectChainLiq('eth');
         } else if (isPrivate == 'bnb') {
-          onSelectChainLiq('bnb');
+          onSelectChainLiq('bsc');
+        }else if (isPrivate == 'stc') {
+          onSelectChainLiq('sbc');
         } else {
           setshowSelectChainLiq(true);
         }
@@ -312,7 +323,7 @@ const Setting = props => {
             imageShow
             back={false}
             backPressed={() => {
-              Actions.currentScene == 'Setting' && props.navigation.goBack();
+              getCurrentRouteName() == 'Setting' && props.navigation.goBack();
             }}
             secondRightImage={ThemeManager.ImageIcons.themeLight}
             plusIconStyle={{
@@ -355,8 +366,8 @@ const Setting = props => {
                     setTimeout(() => {
                       setPressActive(false);
                     }, 200);
-                    Actions.currentScene != 'MultiWalletList' &&
-                      Actions.MultiWalletList();
+                    getCurrentRouteName() != 'MultiWalletList' &&
+                    navigate(NavigationStrings.MultiWalletList);
                   }}
                   style={{ borderBottomWidth: 0 }}
                   arrowIcon={ThemeManager.ImageIcons.forwardArrowIcon}
@@ -445,8 +456,8 @@ const Setting = props => {
                       setPressActive(false);
                     }, 200);
                     global.currentScreen = 'Settings';
-                    Actions.currentScene != 'HistoryComponent' &&
-                      Actions.HistoryComponent({ fromSetting: true });
+                    getCurrentRouteName() != 'HistoryComponent' &&
+                    navigate(NavigationStrings.HistoryComponent,{ fromSetting: true });
                   }}
                   style={{ borderBottomWidth: 0 }}
                   imgStyle={[styles.img]}
@@ -469,8 +480,8 @@ const Setting = props => {
                     setTimeout(() => {
                       setPressActive(false);
                     }, 200);
-                    Actions.currentScene != 'CurrencyPreference' &&
-                      Actions.CurrencyPreference();
+                    getCurrentRouteName() != 'CurrencyPreference' &&
+                    navigate(NavigationStrings.CurrencyPreference);
                   }}
                   style={{ borderBottomWidth: 0 }}
                   imgStyle={[styles.img]}
@@ -499,8 +510,8 @@ const Setting = props => {
                     setTimeout(() => {
                       setPressActive(false);
                     }, 200);
-                    Actions.currentScene != 'ChooseLanguage' &&
-                      Actions.ChooseLanguage({ from: 'setting' });
+                    getCurrentRouteName() != 'ChooseLanguage' &&
+                    navigate(NavigationStrings.ChooseLanguage,{ from: 'setting' });
                   }}
                   style={{ borderBottomWidth: 0 }}
                   imgStyle={[styles.img]}
@@ -521,7 +532,7 @@ const Setting = props => {
                       setPressActive(false);
                     }, 200);
 
-                    Actions.currentScene != 'Security' && Actions.Security();
+                    getCurrentRouteName() != 'Security' && navigate(NavigationStrings.Security);
                   }}
                   style={{ borderBottomWidth: 0 }}
                   imgStyle={[styles.img]}
@@ -548,8 +559,8 @@ const Setting = props => {
                         if (isPrivate == 'btc' || isPrivate == 'trx' ) {
                           Singleton.showAlert(constants.UNCOMPATIBLE_WALLET);
                         } else {
-                          Actions.currentScene != 'ConnectWithDapp' &&
-                            Actions.ConnectWithDapp();
+                          getCurrentRouteName() != 'ConnectWithDapp' &&
+                          navigate(NavigationStrings.ConnectWithDapp);
                         }
                       });
                   }}
@@ -576,8 +587,8 @@ const Setting = props => {
                             Singleton.showAlert(constants.UNCOMPATIBLE_WALLET);
                           } else {
                             console.log('walletList=======', walletList);
-                            Actions.currentScene != 'MultiSender' &&
-                              Actions.MultiSender({ walletList: walletList });
+                            getCurrentRouteName() != 'MultiSender' &&
+                            navigate(NavigationStrings.MultiSender,{ walletList: walletList });
                           }
                         });
                     } else {
@@ -606,8 +617,8 @@ const Setting = props => {
                   title={LanguageManager.saitaProSupport}
                   titleStyle={{ color: ThemeManager.colors.lightTextColor }}
                   onPress={() => {
-                    Actions.currentScene != 'SaitaProSupport' &&
-                      Actions.SaitaProSupport();
+                    getCurrentRouteName() != 'SaitaProSupport' &&
+                    navigate(NavigationStrings.SaitaProSupport);
                   }}
                   style={{ borderBottomWidth: 0 }}
                   imgStyle={[styles.img]}
@@ -686,6 +697,7 @@ const Setting = props => {
               }}
               style={{ flex: 1, justifyContent: 'flex-end' }}>
               <SelectNetworkPopUp
+              isDisableStc={true}
                 onClose={() => setshowSelectChain(false)}
                 onPressEth={() => {
                   setshowSelectChain(false);
@@ -697,7 +709,7 @@ const Setting = props => {
                 }}
                 onPressStc={()=>{
                   setshowSelectChain(false);
-                  Singleton.showAlert('Coming soon!')
+                  onSelectChain('stc');
                 }}
               />
             </Modal>
@@ -718,11 +730,11 @@ const Setting = props => {
                 }}
                 onPressBnb={() => {
                   setshowSelectChainLiq(false);
-                  onSelectChainLiq('bnb');
+                  onSelectChainLiq('bsc');
                 }}
                 onPressStc={()=>{
                   setshowSelectChainLiq(false);
-                  Singleton.showAlert('Coming soon!')
+                  onSelectChainLiq('sbc');
                 }}
               />
             </Modal>
@@ -763,8 +775,9 @@ const Setting = props => {
             <View style={{ flex: 1 }}>
               <DappBrowserSwap
               chain={chain}
-                url={liquidityUrl + `?chain=${chain}`}
-                item={{ coin_family: chain=='eth'?1:chain=='stc'?4:6 }}
+                url={liquidityUrl + `?chainId=${chain}`}
+                // url={'https://www.new-dex.saita.pro/liquidity/liquidity-form' + `?chainId=${chain}`}
+                item={{ coin_family: chain=='eth'?1:chain=='sbc'?4:6 }}
               />
             </View>
           </Wrap>

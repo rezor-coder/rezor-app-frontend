@@ -1,7 +1,6 @@
 import React from 'react';
-import {StyleSheet, View, TouchableOpacity, Image, Text} from 'react-native';
-import {Actions} from 'react-native-router-flux';
-import {Colors, Images} from './../../theme/index';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Colors, Images } from './../../theme/index';
 
 const MenuBar = props => {
   return (
@@ -59,4 +58,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export {MenuBar};
+export { MenuBar };

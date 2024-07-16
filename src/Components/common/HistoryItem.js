@@ -1,13 +1,12 @@
-import {View, Text, TouchableOpacity, Image, StyleSheet} from 'react-native';
 import React from 'react';
-import {heightDimen, widthDimen, areaDimen} from '../../Utils/themeUtils';
-import {Actions} from 'react-native-router-flux';
-import {ThemeManager} from '../../../ThemeManager';
-import {Images} from '../../theme';
-import fonts from '../../theme/Fonts';
-import Singleton from '../../Singleton';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
-import {CommaSeprator3, exponentialToDecimalWithoutComma} from '../../utils';
+import { ThemeManager } from '../../../ThemeManager';
+import Singleton from '../../Singleton';
+import { areaDimen, heightDimen, widthDimen } from '../../Utils/themeUtils';
+import { Images } from '../../theme';
+import fonts from '../../theme/Fonts';
+import { CommaSeprator3 } from '../../utils';
 import { BorderLine } from './BorderLine';
 
 const HistoryItem = ({item, onPress}) => {

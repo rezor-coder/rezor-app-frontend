@@ -1,19 +1,18 @@
-import { View, Text, Image, TextInput, TouchableOpacity, Dimensions, Alert } from 'react-native';
-import React, { useState, useEffect } from 'react';
-import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
-import styles from './style';
-import { BasicInputBox, ButtonPrimary, Inputtext, InputtextAddress, PercentBtn, SimpleHeader, Wrap, } from '../../common';
-import { Actions } from 'react-native-router-flux';
-import { Colors } from '../../../theme';
-import { PERCENTAGE_VALUES } from '../../../Constant';
-import { RevomeConfirmation } from './RevomeConfirmation';
-import Singleton from '../../../Singleton';
-import Web3 from 'web3';
-import { ethers } from 'ethers';
 import { BigNumber } from 'bignumber.js';
-import * as constants from '../../../Constant';
-import Loader from '../Loader/Loader';
+import { ethers } from 'ethers';
+import React, { useEffect, useState } from 'react';
+import { Alert, Dimensions, Image, Text, View } from 'react-native';
 import { EventRegister } from 'react-native-event-listeners';
+import Web3 from 'web3';
+import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
+import * as constants from '../../../Constant';
+import { PERCENTAGE_VALUES } from '../../../Constant';
+import Singleton from '../../../Singleton';
+import { Colors } from '../../../theme';
+import { ButtonPrimary, PercentBtn, SimpleHeader, Wrap } from '../../common';
+import Loader from '../Loader/Loader';
+import { RevomeConfirmation } from './RevomeConfirmation';
+import styles from './style';
 
 //const web3 = new Web3(new Web3.providers.HttpProvider('https://mainnet.infura.io/v3/39f09bbfb5754cd480eee6c763227883'));
 const web3 = new Web3(constants.mainnetInfuraLink);
@@ -22,10 +21,11 @@ const web3 = new Web3(constants.mainnetInfuraLink);
 // const SLIPPERAGE_PERCENTAGE = 7.5;
 
 // let userAddress = Singleton.getInstance().defaultEthAddress;
-import ROUTER_ABI from '../../../../ABI/router.ABI.json';
 import PAIR_ABI from '../../../../ABI/Pair.ABI.json';
-import { BASE_URL } from '../../../Endpoints';
+import ROUTER_ABI from '../../../../ABI/router.ABI.json';
 import { APIClient } from '../../../Api';
+import { NavigationStrings } from '../../../Navigation/NavigationStrings';
+import { getCurrentRouteName, navigate } from '../../../navigationsService';
 
 const GAS_FEE_MULTIPLIER = 0.000000000000000001;
 const GAS_BUFFER = 10000;
@@ -53,7 +53,7 @@ const RmLiquidityConfirm = props => {
   let TXN_COMPLETE_MAX_TIME = Singleton.getInstance().slipageTimeout; //in minutes
   const balance = 90;
   const { selectedToCoin, selectedFromCoin, pairBalance, secondTokenSupply, firstTokenSupply, poolSupply, resultPair,
-    pairNonce, FilteredCoinOne, FilteredCoinTwo } = props;
+    pairNonce, FilteredCoinOne, FilteredCoinTwo } =props?.route?.params;
   const [selectedPercentage, setSelectedPercent] = useState(0);
   const [isShowConfirm, setShowConfirm] = useState(false);
   const [amountValue, setAmountValue] = useState('');
@@ -406,7 +406,7 @@ const RmLiquidityConfirm = props => {
         {
           text: 'Ok',
           onPress: () => {
-            Actions.jump("SwapNew")
+            navigate(NavigationStrings.SwapNew)
           },
         },
       ],
@@ -561,7 +561,7 @@ const RmLiquidityConfirm = props => {
         back
         history
         onPressHistory={() => {
-          Actions.currentScene != 'SwapSettings' && Actions.SwapSettings({
+          getCurrentRouteName() != 'SwapSettings' && navigate(NavigationStrings.SwapSettings,{
             onGoBack: data => {
               //console.warn('MM','DATA======');
             },
@@ -727,4 +727,5 @@ const RmLiquidityConfirm = props => {
   );
 };
 
-export { RmLiquidityConfirm, LiquidityValue };
+export { LiquidityValue, RmLiquidityConfirm };
+

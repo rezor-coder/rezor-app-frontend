@@ -1,13 +1,13 @@
 import { StyleSheet } from 'react-native';
 import { ThemeManager } from '../../../../ThemeManager';
-import { Colors } from '../../../theme';
+import { Colors, Fonts } from '../../../theme';
 import fonts from '../../../theme/Fonts';
 import { windowWidth } from '../../../Constant';
+import { areaDimen, heightDimen, width } from '../../../Utils/themeUtils';
 
 export default StyleSheet.create({
   container: {
     flex: 1,
-
   },
 
   containerScroll: {
@@ -42,19 +42,19 @@ export default StyleSheet.create({
     textAlign: 'center',
   },
   btnStyle: {
-
     // height: 50,
     marginTop: 20,
     marginBottom: 40,
-    marginHorizontal: 15
+    marginHorizontal: 15,
   },
 
   headerStyle: {
     // color: Colors.White,
     color: ThemeManager.colors.textColor,
     fontSize: 30,
-    fontFamily: fonts.bold, marginTop: 75,
-    alignSelf: 'center'
+    fontFamily: fonts.bold,
+    marginTop: 75,
+    alignSelf: 'center',
   },
 
   BYsaita: {
@@ -77,7 +77,7 @@ export default StyleSheet.create({
     lineHeight: 25,
   },
 
-  imgFlag: { width: 20, height: 20, marginEnd: 5 },
+  imgFlag: {width: 20, height: 20, marginEnd: 5},
 
   customGrad: {
     // borderRadius: 100,
@@ -103,11 +103,13 @@ export default StyleSheet.create({
     marginTop: 10,
   },
 
-
-
   imgcards: {
-    height: "100%", width: "100%", borderRadius: 20, overflow: 'hidden', alignItems: 'center', justifyContent: 'center',
-
+    height: '100%',
+    width: '100%',
+    borderRadius: 20,
+    overflow: 'hidden',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   txtone: {
     color: Colors.White,
@@ -115,12 +117,11 @@ export default StyleSheet.create({
     fontSize: 8,
   },
   txttwo: {
-    color: "#8F939E",
+    color: '#8F939E',
     fontFamily: fonts.bold,
     fontSize: 14,
   },
   txtthree: {
-
     color: Colors.White,
     fontFamily: fonts.bold,
     fontSize: 16,
@@ -134,17 +135,42 @@ export default StyleSheet.create({
   txtkyc: {
     fontFamily: fonts.regular,
     fontSize: 15,
-    color: "#989898",
+    color: '#989898',
     marginHorizontal: 40,
     alignSelf: 'center',
     textAlign: 'center',
     marginTop: 10,
-    lineHeight: 22
+    lineHeight: 22,
   },
 
   btnStylekyc: {
     width: windowWidth * 0.8,
     height: 50,
     marginTop: '15%',
+  },
+  inputTextStyle: {
+    fontFamily: Fonts.medium,
+    fontSize: areaDimen(14),
+  },
+  dialCodeView: {
+    left: 5,
+    marginRight: 10,
+    flexGrow: 0.04,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  codeTextStyle: {
+    fontFamily: Fonts.medium,
+    fontSize: areaDimen(14),
+    lineHeight: heightDimen(18),
+    textAlign: 'right',
+  },
+  sendcodeView: {alignSelf: 'flex-end', marginTop: areaDimen(16)},
+  buttonView: {
+    width: width - 44,
+    height: heightDimen(60),
+    borderRadius: areaDimen(30),
+    alignSelf: 'center',
+    marginBottom: areaDimen(32),
   },
 });

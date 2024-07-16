@@ -1,18 +1,19 @@
 import React from 'react';
-import {View, Text} from 'react-native';
-import {Actions} from 'react-native-router-flux';
-import {BasicInputBox, Wrap, BasicButton} from '../../common/index';
+import { Text, View } from 'react-native';
+import { NavigationStrings } from '../../../Navigation/NavigationStrings';
+import { getCurrentRouteName, navigate } from '../../../navigationsService';
 import images from '../../../theme/Images';
+import { BasicButton, BasicInputBox, Wrap } from '../../common/index';
 import styles from './LoginStyle';
 
 const Login = () => {
   return (
     <Wrap>
       <View style={styles.container}>
-        <View style={styles.upperTextWrapStyle}>
+        <View style={styles.upperTextWrapSty=le}>
           <Text style={styles.textSimple}>Don’t have an account?</Text>
           <Text
-            onPress={() => Actions.currentScene != 'Signup' && Actions.Signup()}
+            onPress={() => getCurrentRouteName() != 'Signup' && navigate(NavigationStrings.Signup)}
             style={styles.signupText}>
             {' '}
             SIGN UP
@@ -33,7 +34,7 @@ const Login = () => {
         />
         <BasicButton
           onPress={() =>
-            Actions.currentScene != 'VerifyPhrase' && Actions.VerifyPhrase()
+            getCurrentRouteName() != 'VerifyPhrase' && navigate(NavigationStrings.VerifyPhrase)
           }
           btnStyle={styles.btnStyle}
           text="Log in"

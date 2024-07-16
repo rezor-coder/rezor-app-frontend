@@ -1,27 +1,25 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, { useState, useEffect, Component } from 'react';
+import React, { Component } from 'react';
 import {
-  View,
-  Image,
-  Text,
-  SafeAreaView,
-  ScrollView,
   BackHandler,
-  TouchableOpacity,
   FlatList,
+  SafeAreaView,
+  Text,
+  TouchableOpacity,
+  View
 } from 'react-native';
-import styles from './CurrencyPreferenceStyle';
-import { Fonts, Images, Colors } from '../../../theme';
-import { Actions } from 'react-native-router-flux';
-import { connect } from 'react-redux';
-import Singleton from '../../../Singleton';
-import * as Constants from '../../../Constant';
-import { BorderLine, SimpleHeader, TitleHeader, Wrap } from '../../common';
-import Loader from '../Loader/Loader';
-import { getCurrencyPreferenceList } from '../../../Redux/Actions/index';
 import FastImage from 'react-native-fast-image';
+import { connect } from 'react-redux';
 import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
+import * as Constants from '../../../Constant';
+import { getCurrencyPreferenceList } from '../../../Redux/Actions/index';
+import Singleton from '../../../Singleton';
 import { widthDimen } from '../../../Utils/themeUtils';
+import { Images } from '../../../theme';
+import { BorderLine, SimpleHeader, Wrap } from '../../common';
+import Loader from '../Loader/Loader';
+import styles from './CurrencyPreferenceStyle';
+import { goBack } from '../../../navigationsService';
 
 class CurrencyPreference extends Component {
   constructor() {
@@ -38,8 +36,8 @@ class CurrencyPreference extends Component {
   }
   getCurrencyList() {
     this.setState({ isLoading: true });
-    this.props.navigation.addListener('didBlur', this.screenBlur);
-    this.props.navigation.addListener('didFocus', this.screenFocus);
+    this.props.navigation.addListener('blur', this.screenBlur);
+    this.props.navigation.addListener('focus', this.screenFocus);
     let access_token = Singleton.getInstance().access_token;
     this.props
       .getCurrencyPreferenceList({ access_token })
@@ -59,7 +57,7 @@ class CurrencyPreference extends Component {
   };
   backAction = () => {
     //console.warn('MM','i preferences');
-    Actions.pop();
+    goBack();
     return true;
   };
   itemPressed(item, index) {

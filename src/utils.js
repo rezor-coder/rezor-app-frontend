@@ -15,6 +15,7 @@ import { ThemeManager } from '../ThemeManager';
 const Tx = require('ethereumjs-tx');
 import BigNumber from 'bignumber.js'
 import { PERMISSIONS } from 'react-native-permissions';
+import { showMessage } from 'react-native-flash-message';
 // https://rinkeby.infura.io/v3/ef700abe941041fe8556c43d40f131ab https://ropsten.infura.io/v3/2436cc78200f432aa2d847a7ba486391
 const testnetUrlEth =
   constants.network == 'testnet'
@@ -24,7 +25,9 @@ const testnetUrlEth =
 const testnetUrlMatic =
   constants.network == 'testnet'
     ? 'https://polygon-mumbai.infura.io/v3/4458cf4d1689497b9a38b1d6bbf05e78'
-    : 'https://rpc-mainnet.maticvigil.com/'     //Singleton.getInstance().maticLink;
+    :  Singleton.getInstance().maticLink;
+    //  'https://rpc-mainnet.maticvigil.com/'   
+   
 const urlBnb = constants.network == 'testnet'
   ? 'https://data-seed-prebsc-1-s1.binance.org:8545/'
   : Singleton.getInstance().bnbLink;
@@ -236,7 +239,7 @@ export const createSignedNewMaticTransaction = async (
     amount,
     'test amount::::::::',
     Singleton.getInstance().exponentialToDecimal(amount * 10 ** 18),
-    testnetUrlMatic
+    'testnetUrlMatic:::',testnetUrlMatic
   );
   const web3 = new Web3(testnetUrlMatic);
   let amountNew = Singleton.getInstance().exponentialToDecimal(amount * 10 ** 18);
@@ -812,7 +815,7 @@ export const getDappSignedTxn = async (
     type: '0x02',
   };
 
-  //console.warn('MM','RAW__------', rawTransaction);
+  console.warn('MM','RAW__------', rawTransaction);
   //console.warn('MM','PRIVATE------', pKey);
 
   const common = new Common({
@@ -893,8 +896,9 @@ export const getsignRawTxnDappStc = async (
     stcRPCURL
   );
   //console.warn('MM','this.props.toAmount', toAmount);
-  var amountToSend = web3Stc.utils.toWei(toAmount ? toAmount : '0', 'ether');
-  //console.warn('MM','amountToSend', amountToSend);
+  console.warn('MM','amountToSend', exponentialToDecimalWithoutComma(toAmount))
+  var amountToSend = web3Stc.utils.toWei(toAmount ? exponentialToDecimalWithoutComma(toAmount) : '0', 'ether');
+  console.log('data>>>>>>',web3Stc);
   var amount = web3Stc.utils.toHex(amountToSend);
   return new Promise((resolve, reject) => {
     const rawTransaction = {
@@ -907,15 +911,15 @@ export const getsignRawTxnDappStc = async (
       data: data,
       chainId: chainId,
     };
-    //console.warn('MM','RAW-----', rawTransaction);
+    console.warn('MM','RAW-----', rawTransaction);
     web3Stc.eth.accounts
       .signTransaction(rawTransaction, pKey)
       .then(res => {
-        ////console.log(
-        // '------------raw txn-----------',
-        //   res.rawTransaction.slice(2),
-        // );
-        //console.warn('MM','------------raw txn-----------nonce', nonce);
+        console.log(
+        '------------raw txn-----------',
+          res.rawTransaction.slice(2),
+        );
+        console.warn('MM','------------raw txn-----------nonce', nonce);
         resolve(res.rawTransaction.slice(2));
       })
       .catch(error => {
@@ -1350,4 +1354,23 @@ const faceIdPermission = Platform.select({
 export const testCheckPermission = async () => {
   // Throws if face id is locked out
   return await check(faceIdPermission);
+};
+
+export const showSuccess = (message, description) => {
+  showMessage({
+    message,
+    description,
+    type: 'success',
+    floating: true,
+    icon: 'success',
+  });
+};
+export const showError = (message, description) => {
+  showMessage({
+    message,
+    description,
+    type: 'danger',
+    floating: true,
+    icon: 'auto',
+  });
 };

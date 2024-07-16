@@ -6,6 +6,8 @@ import {
   PermissionsAndroid,
   FlatList,
   SafeAreaView,
+  BackHandler,
+  Alert,
 } from 'react-native';
 import styles from './ConnectWithDappStyles';
 import QRReaderModal from '../../common/QRReaderModal';
@@ -20,7 +22,6 @@ import {
 } from '../../../Redux/Actions/WallectConnectActions';
 import { connect, useDispatch } from 'react-redux';
 import ApproveConnection from './ApproveConnection';
-import { Actions } from 'react-native-router-flux';
 import Loader from '../Loader/Loader';
 import CurrencyCard2 from '../../common/CurrencyCard2';
 import { Fonts } from '../../../theme';
@@ -39,6 +40,7 @@ import { useState } from 'react';
 import { useEffect } from 'react';
 import { areaDimen, heightDimen, widthDimen } from '../../../Utils/themeUtils';
 import WalletConnect from '../../../Utils/WalletConnect';
+import { getCurrentRouteName, goBack } from '../../../navigationsService';
 let isPrivateKey = null
 const ConnectWithDapp2 = props => {
   const [visible, setvisible] = useState(false);
@@ -51,12 +53,28 @@ const ConnectWithDapp2 = props => {
   const [is_private_wallet, setis_private_wallet] = useState('0');
   let clickDocument = false;
   const [activeSessions, setActiveSessions] = useState([]);
+
+  useEffect(() => {
+    console.log(visible,'visiblevisiblevisible');
+    let backHandle = null;
+    backHandle = BackHandler.addEventListener('hardwareBackPress', backAction);
+    return () => {
+      backHandle?.remove();
+    };
+  }, []);
+  const backAction = () => {
+
+    setvisible(false);
+    Singleton.visible = false;
+    setShowDisconnect(false);
+    return true;
+  };
   useEffect(() => {
     Singleton.getInstance()
     .newGetData(Constants.IS_PRIVATE_WALLET)
     .then(isPrivateWallet => {
       setis_private_wallet(isPrivateWallet)
-      isPrivateKey=isPrivateWallet
+      isPrivateKey=isPrivateWallet || '0'
     });
     getActiveConnections();
     EventRegister.addEventListener('wallet_connect_event', link => {
@@ -80,27 +98,27 @@ const ConnectWithDapp2 = props => {
       console.log('----------------sessionDeleted');
       getActiveConnections();
     });
-    let focus = props.navigation.addListener('didFocus', () => {
+    let focus = props.navigation.addListener('focus', () => {
       Singleton.getInstance()
         .newGetData(Constants.IS_PRIVATE_WALLET)
         .then(isPrivateWallet => {
           setis_private_wallet(isPrivateWallet)
-          isPrivateKey=isPrivateWallet
+          isPrivateKey=isPrivateWallet || '0'
         });
       getActiveConnections();
-      if (props?.url) {
+      if (props?.route?.params?.url) {
         Singleton.getInstance()
           .newGetData(Constants.IS_PRIVATE_WALLET)
           .then(isPrivateWallet => {
             if (isPrivateWallet != 'btc' && isPrivateWallet != 'trx') {
-              initializingWalletConnect(props?.url, true);
+              initializingWalletConnect(props?.route?.params?.url, true);
             }
           });
       }
     });
 
     return () => {
-      focus?.remove();
+      focus();
     };
   }, []);
   const getActiveConnections = async () => {
@@ -197,7 +215,7 @@ const ConnectWithDapp2 = props => {
         console.log('User tapped custom button: ', response.customButton);
       } else {
         if (response.assets[0].uri.includes('.gif')) {
-          Actions.currentScene == 'ConnectWithDapp' &&
+          getCurrentRouteName() == 'ConnectWithDapp' &&
             Singleton.showAlert('this media type is not supported');
           return;
         } else {
@@ -249,7 +267,7 @@ const ConnectWithDapp2 = props => {
       if (granted == PermissionsAndroid.RESULTS.GRANTED) {
         return true;
       } else {
-        Actions.currentScene == 'ConnectWithDapp' &&
+        getCurrentRouteName() == 'ConnectWithDapp' &&
           Singleton.showAlert('Grant storage permission in settings');
         return false;
       }
@@ -324,7 +342,7 @@ const ConnectWithDapp2 = props => {
   };
 
   const onConnectionConfirm = async (currency, sessionRequestPayload) => {
-    console.log('sessionRequestPayload::::', sessionRequestPayload);
+    console.log('sessionRequestPayload::::', JSON.stringify(sessionRequestPayload?.params?.optionalNamespaces.eip155));
     setLoading(true);
 
     if (global.disconnected) {
@@ -575,7 +593,7 @@ const ConnectWithDapp2 = props => {
                   global.deepLinkUrl = '';
                   global.requestFromDeepLink = false;
                   global.sessionRequest == false;
-                  Actions.pop();
+                  goBack();
                 }}
               />
               <BorderLine

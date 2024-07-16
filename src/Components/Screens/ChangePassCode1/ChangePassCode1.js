@@ -1,13 +1,12 @@
 import React, { Component } from 'react';
-import { View, Image, Text } from 'react-native';
-import Toast, { DURATION } from 'react-native-easy-toast';
-import { Actions, ActionConst } from 'react-native-router-flux';
-import styles from './ChangePassCode1Style';
-import Singleton from '../../../Singleton';
-import * as Constants from './../../../Constant';
-import { Wrap, SimpleHeader } from '../../common';
+import { Text, View } from 'react-native';
+import Toast from 'react-native-easy-toast';
 import SmoothPinCodeInput from 'react-native-smooth-pincode-input';
 import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
+import Singleton from '../../../Singleton';
+import { SimpleHeader, Wrap } from '../../common';
+import * as Constants from './../../../Constant';
+import styles from './ChangePassCode1Style';
 
 class ChangePassCode1 extends Component {
   constructor(props) {
@@ -26,7 +25,7 @@ class ChangePassCode1 extends Component {
       .then(pin => {
         this.pinCode = pin;
       });
-    this.props.navigation.addListener('didFocus', () => {
+    this.props.navigation.addListener('focus', () => {
       this.setState({ pin: '' });
     });
   }
@@ -39,7 +38,7 @@ class ChangePassCode1 extends Component {
     if (pin.length == 6) {
       if (pin == this.pinCode) {
         // alert('DONE')
-        // this.props.screen == 'WalletManageEdit' ? Actions.currentScene != 'RecoveryPhrase' && Actions.RecoveryPhrase({ mnemonics: this.props.mnemonics }) : Actions.ChangePin2()
+        // this.props.screen == 'WalletManageEdit' ? getCurrentRouteName() != 'RecoveryPhrase' && Actions.RecoveryPhrase({ mnemonics: this.props.mnemonics }) : Actions.ChangePin2()
       } else {
         this.refs.toast.show('Wrong PIN');
         this.setState({ pin: '' });

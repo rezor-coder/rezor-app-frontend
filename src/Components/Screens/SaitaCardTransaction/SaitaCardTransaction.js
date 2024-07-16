@@ -1,19 +1,16 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, { useEffect, useState, createRef } from 'react';
-import { Dimensions, Share, TextInput, Modal } from 'react-native';
-import { BorderLine, Wrap } from '../../common/index';
-import { MainStatusBar, SimpleHeader, BasicButton } from '../../common';
-import { Colors, Fonts, Images } from '../../../theme';
-import LinearGradient from 'react-native-linear-gradient';
-import styles from './SaitaCardTransactionStyle';
-import { View, Image, Text, TouchableOpacity } from 'react-native';
-import Singleton from '../../../Singleton';
-import QRCode from 'react-native-qrcode-image';
-import Toast, { DURATION } from 'react-native-easy-toast';
 import Clipboard from '@react-native-community/clipboard';
+import React, { createRef, useEffect, useState } from 'react';
+import { Share, Text, View } from 'react-native';
+import Toast from 'react-native-easy-toast';
+import { ThemeManager } from '../../../../ThemeManager';
 import * as constants from '../../../Constant';
-import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
-import { Actions } from 'react-native-router-flux';
+import { NavigationStrings } from '../../../Navigation/NavigationStrings';
+import Singleton from '../../../Singleton';
+import { goBack, navigate } from '../../../navigationsService';
+import { BasicButton, MainStatusBar, SimpleHeader } from '../../common';
+import { BorderLine, Wrap } from '../../common/index';
+import styles from './SaitaCardTransactionStyle';
 
 var qrBase64 = '';
 const QrCode = prop => {
@@ -68,7 +65,7 @@ const QrCode = prop => {
         back={false}
         backPressed={() => {
 
-          Actions.pop();
+          goBack();
         }}
       />
       <BorderLine
@@ -95,7 +92,7 @@ const QrCode = prop => {
       <View style={{ marginBottom: 30 }}>
         <BasicButton
           onPress={() => {
-            Actions.jump("SaitaCardWelcome")
+            navigate(NavigationStrings.SaitaCardWelcome)
           }}
           btnStyle={styles.btnStyle}
           customGradient={[styles.customGrad]}

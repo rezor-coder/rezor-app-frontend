@@ -1,37 +1,45 @@
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react/self-closing-comp */
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import {
-  View,
-  ScrollView,
-  FlatList,
-  TouchableOpacity,
-  SafeAreaView,
+  ActivityIndicator,
+  Alert,
+  AppState,
   BackHandler,
-  Image,
+  FlatList,
+  SafeAreaView,
   Text,
+  View,
 } from 'react-native';
-import styles from './SendStyle';
-import { Wrap, SimpleHeader, SearchBar, SimpleHeaderNew, BorderLine } from '../../common';
-import { Fonts, Images, Colors } from '../../../theme';
-import { connect } from 'react-redux';
-import images from '../../../theme/Images';
-import { Actions } from 'react-native-router-flux';
-import { BASE_IMAGE } from '../../../Endpoints';
+import {Path} from 'react-native-svg-charts';
+import {connect} from 'react-redux';
+import {LanguageManager, ThemeManager} from '../../../../ThemeManager';
+import {NavigationStrings} from '../../../Navigation/NavigationStrings';
+import {
+  changeThemeAction,
+  getDashboardWallets,
+  getMyWallets,
+  myWalletListSuccess,
+  walletDataUpdate,
+} from '../../../Redux/Actions';
 import Singleton from '../../../Singleton';
-import { AreaChart, Grid, YAxis, Path, XAxis } from 'react-native-svg-charts';
-import * as shape from 'd3-shape';
-import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
-import { constants } from 'buffer';
-import * as Constants from '../../../Constant';
-import { changeThemeAction } from '../../../Redux/Actions';
-import { areaDimen, heightDimen, widthDimen } from '../../../Utils/themeUtils';
+import {areaDimen, heightDimen, widthDimen} from '../../../Utils/themeUtils';
+import {
+  getCurrentRouteName,
+  goBack,
+  navigate,
+} from '../../../navigationsService';
+import {Fonts} from '../../../theme';
+import {BorderLine, SearchBar, SimpleHeaderNew, Wrap} from '../../common';
 import WalletCard from '../Wallet/WalletCard';
+import styles from './SendStyle';
+import * as constants from '../../../Constant';
+import Loader from '../Loader/Loader';
 
-const Line = ({ line }) => (
+const Line = ({line}) => (
   <Path key={'line'} d={line} stroke={'green'} fill={'none'} />
 );
-const Line1 = ({ line }) => (
+const Line1 = ({line}) => (
   <Path key={'line'} d={line} stroke={'red'} fill={'none'} />
 );
 
@@ -41,78 +49,143 @@ class Send extends Component {
     this.state = {
       search: '',
       searchData: [],
-      coinData: props.walletList,
+      coinData: this.props.coinData,
+      Page: 1,
+      Limit: 30,
+      totalLength: this?.props?.coinData?.[0]?.totalRecords,
+      isLoading: true,
     };
   }
   componentDidMount() {
+    AppState.addEventListener('change', state => {
+      if (state === 'inactive' || state === 'background') {
+        this.setState({
+          Page: 1,
+          bottomLoading: false,
+          isLoading: false,
+        });
+      }
+    });
     this.backHandle = BackHandler.addEventListener('hardwareBackPress', () => {
-      Actions.pop()
-      return true
-    })
-    this.props.navigation.addListener('didFocus', () => {
-      this.backHandle = BackHandler.addEventListener('hardwareBackPress', () => {
-        Actions.pop()
-        return true
-      })
-    })
-    this.props.navigation.addListener('didBlur',()=>{
-      this.backHandle?.remove()
-    })
+      goBack();
+      return true;
+    });
+    this.props.navigation.addListener('focus', () => {
+      this.setState({Page: 1, bottomLoading: false,isLoading:true});
+      this.getMyWalletsData();
+      this.backHandle = BackHandler.addEventListener(
+        'hardwareBackPress',
+        () => {
+          goBack();
+          return true;
+        },
+      );
+    });
+    this.props.navigation.addListener('blur', () => {
+      this.backHandle?.remove();
+    });
   }
   componentWillUnmount() {
-    this.backHandle?.remove()
+    this.backHandle?.remove();
   }
   onItemSelect(item) {
     // console.log("item===", item)
-    Singleton.getInstance().updateBalance(item?.coin_id, item?.wallet_address)
-    if (this.props.from == 'Receive') {
-      Actions.currentScene != 'QrCode' && Actions.QrCode({ item: item });
+    Singleton.getInstance().updateBalance(item?.coin_id, item?.wallet_address);
+    if (this.props?.route?.params?.from == 'Receive') {
+      getCurrentRouteName() != 'QrCode' &&
+        navigate(NavigationStrings.QrCode, {item: item});
     } else {
       if (item.coin_family == 1) {
-        Actions.currentScene != 'SendETH' &&
-          Actions.SendETH({ walletData: item });
+        getCurrentRouteName() != 'SendETH' &&
+          navigate(NavigationStrings.SendETH, {walletData: item});
       } else if (item.coin_family == 6) {
-        Actions.currentScene != 'SendBNB' &&
-          Actions.SendBNB({ walletData: item });
+        getCurrentRouteName() != 'SendBNB' &&
+          navigate(NavigationStrings.SendBNB, {walletData: item});
       } else if (item.coin_family == 11) {
-        Actions.currentScene != 'SendMATIC' &&
-          Actions.SendMATIC({ walletData: item });
+        getCurrentRouteName() != 'SendMATIC' &&
+          navigate(NavigationStrings.SendMATIC, {walletData: item});
       } else if (item.coin_family == 2) {
-        Actions.currentScene != 'SendBTC' &&
-          Actions.SendBTC({ walletData: item });
+        getCurrentRouteName() != 'SendBTC' &&
+          navigate(NavigationStrings.SendBTC, {walletData: item});
       } else if (item.coin_family == 3) {
-        Actions.currentScene != 'SendTRX' &&
-          Actions.SendTRX({ walletData: item });//Pending
+        getCurrentRouteName() != 'SendTRX' &&
+          navigate(NavigationStrings.SendTRX, {walletData: item}); //Pending
       } else if (item.coin_family == 4) {
-        Actions.currentScene != 'SendSTC' &&
-          Actions.SendSTC({ walletData: item });//Pending
+        getCurrentRouteName() != 'SendSTC' &&
+          navigate(NavigationStrings.SendSTC, {walletData: item}); //Pending
       }
     }
-
   }
 
   searchCurrency = text => {
-    console.log("aaaa=", this.props.from)
-    let coinsData = this.props.walletList;
+    let coinsData = this.state.coinData;
     let lowerCaseText = text.toLowerCase();
-    //console.warn('MM','checkTextLower---->', lowerCaseText);
-    coinsData = coinsData.filter(item => {
-      return item.coin_name.toLowerCase().includes(text.toLowerCase());
+  
+    if (text === '') {
+      this.setState({ searchData: [] });
+      return;
+    }
+  
+    let filteredData = coinsData.filter(item => {
+      return item.coin_name.toLowerCase().includes(lowerCaseText);
     });
-
-    this.setState({ coinData: coinsData });
+  
+    this.setState({ searchData: filteredData });
   };
+  getMyWalletsData() {
+    let page = this.state.Page;
+    let limit = this.state.Limit;
+    let access_token = Singleton.getInstance().access_token;
+    Singleton.getInstance()
+      .newGetData(constants.addresKeyList)
+      .then(addresKeyList => {
+        Singleton.getInstance()
+          .newGetData(constants.coinFamilyKeys)
+          .then(coinFamilyKey => {
+            let addrsListKeys = JSON.parse(addresKeyList);
+            let coinFamilyKeys = coinFamilyKey?.split(',');
 
+            this.props
+              .getMyWallets({
+                page,
+                limit,
+                addrsListKeys,
+                coinFamilyKeys,
+                access_token,
+              })
+              .then(response => {
+                let data =
+                  page == 1 ? response : [...this.state.coinData, ...response];
+                this.setState({
+                  isLoading: false,
+                  totalLength: data[0]?.totalRecords,
+                  bottomLoading: false,
+                  coinData: data,
+                });
+              })
+              .catch(error => {
+                this.setState({isLoading: false, bottomLoading: false});
+              });
+          })
+          .catch(err => {
+            this.setState({isLoading: false, bottomLoading: false});
+          });
+      });
+  }
   render() {
-    console.warn('MM', 'this.state.coinDat0000000-----------', this.state.coinData);
+    console.log(
+      'MM',
+      'this.state.coinDat0000000-----------',
+      this.state.coinData.length
+    );
 
     return (
       <>
-        <Wrap style={{ backgroundColor: ThemeManager.colors.bg }}>
+        <Wrap style={{backgroundColor: ThemeManager.colors.bg}}>
           <SimpleHeaderNew
             title={
               'Select Assets'
-              // this.props.from == 'Receive' ? 'Receive' : LanguageManager.send
+              // this.props?.route?.params?.from == 'Receive' ? 'Receive' : LanguageManager.send
             }
             backImage={ThemeManager.ImageIcons.iconBack}
             titleStyle
@@ -121,26 +194,27 @@ class Send extends Component {
             backPressed={() => {
               this.props.navigation.goBack();
             }}
-          // img3={ThemeManager.ImageIcons.setting}//TODO: - Hide Setting button as per new design
-          // onPress3={() => {
-          //   Actions.currentScene != 'Setting' && Actions.Setting();
-          // }}
+            // img3={ThemeManager.ImageIcons.setting}//TODO: - Hide Setting button as per new design
+            // onPress3={() => {
+            //   getCurrentRouteName() != 'Setting' && Actions.Setting();
+            // }}
           />
 
           <BorderLine
-            borderColor={{ backgroundColor: ThemeManager.colors.viewBorderColor }}
+            borderColor={{backgroundColor: ThemeManager.colors.viewBorderColor}}
           />
 
-          <View style={{
-            paddingHorizontal: widthDimen(17),
-            marginTop: heightDimen(24)
-          }}>
+          <View
+            style={{
+              paddingHorizontal: widthDimen(17),
+              marginTop: heightDimen(24),
+            }}>
             <SearchBar
               onChangeText={this.searchCurrency}
               width="100%"
               placeholder={LanguageManager.search}
               icon={ThemeManager.ImageIcons.searchIcon}
-              ImageStyle={{tintColor:ThemeManager.colors.iconColor}}
+              ImageStyle={{tintColor: ThemeManager.colors.iconColor}}
             />
           </View>
           <View style={styles.listView}>
@@ -151,123 +225,73 @@ class Send extends Component {
                 paddingBottom: heightDimen(70),
                 flexGrow: 1,
               }}
-              data={this.state.coinData}
-              renderItem={({ item, index }) => (
-                <WalletCard item={item} onPress={(item) => this.onItemSelect(item)} />
+              data={
+                this.state.searchData.length > 0
+                  ? this.state.searchData
+                  : this.state.coinData
+              }
+              renderItem={({item, index}) => (
+                <WalletCard
+                  item={item}
+                  onPress={item => this.onItemSelect(item)}
+                />
               )}
               ListEmptyComponent={() => {
                 return (
-                  <View style={{ width: '100%', alignItems: 'center', height:"80%", alignItems:'center', justifyContent:'center'}}>
-                    <Text style={{ fontFamily: Fonts.medium, fontSize: areaDimen(16), color: ThemeManager.colors.lightTextColor, }}>
+                  <View
+                    style={{
+                      width: '100%',
+                      alignItems: 'center',
+                      height: '80%',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}>
+                    <Text
+                      style={{
+                        fontFamily: Fonts.medium,
+                        fontSize: areaDimen(16),
+                        color: ThemeManager.colors.lightTextColor,
+                      }}>
                       No search results
                     </Text>
                   </View>
-                )
+                );
+              }}
+              ListFooterComponent={() => {
+                if (this.state.bottomLoading) {
+                  return (
+                    <View
+                      style={{
+                        padding: areaDimen(20),
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        paddingBottom: areaDimen(30),
+                      }}>
+                      <ActivityIndicator
+                        color={ThemeManager.colors.headingText}
+                      />
+                    </View>
+                  );
+                } else {
+                  return null;
+                }
+              }}
+              onEndReached={() => {
+                if (
+                  this.state.totalLength > this.state.coinData?.length &&
+                  !this.state.bottomLoading
+                ) {
+                  this.setState({
+                    Page: this.state.Page + 1,
+                    bottomLoading: true,
+                  });
+                  this.getMyWalletsData();
+                }
               }}
             />
-
-            {/* <FlatList
-              showsVerticalScrollIndicator={false}
-              contentContainerStyle={{
-                marginTop: heightDimen(12),
-                paddingBottom: heightDimen(70),
-                flexGrow: 1,
-              }}
-              data={this.state.coinData}
-              renderItem={({ item, index }) => (
-                <TouchableOpacity
-                  onPress={() => this.onItemSelect(item)}
-                  style={[
-                    styles.coinsListStyle,
-                    { backgroundColor: ThemeManager.colors.mnemonicsView },
-                  ]}>
-                  <View style={{ flexDirection: 'row', width: '44%', alignItems: 'center' }}>
-                    {item.coin_image ? (
-                      <Image
-                        source={{
-                          uri: item.coin_image.includes('https')
-                            ? item.coin_image
-                            : BASE_IMAGE + item.coin_image,
-                        }}
-                        style={styles.coinStyle}
-                      />
-                    ) : (
-                      <View style={[styles.charAtimg]}>
-                        <Text style={styles.charIconTextStyle}>
-                          {item.coin_name.charAt(0)}
-                        </Text>
-                      </View>
-                    )}
-
-                    <View style={{ marginLeft: widthDimen(12) }}>
-                      <Text style={[styles.nameTextStyle, { color: ThemeManager.colors.textColor }]}>
-                        {item.coin_name.toString().length > 13
-                          ? item.coin_name.substring(0, 13) + '...'
-                          : item.coin_name}
-                      </Text>
-                      <View style={{ flexDirection: 'row' }}>
-                        <Text style={[styles.fiatValueTextStyle, { color: ThemeManager.colors.lightTextColor }]}>
-                          {Singleton.getInstance().CurrencySymbol}{' '}
-                          {Singleton.getInstance().exponentialToDecimal(
-                            Singleton.getInstance().toFixed(
-                              item.perPrice_in_fiat,
-                              4,
-                            ),
-                          )
-                            || '0.0'
-                          }
-                        </Text>
-                      </View>
-                    </View>
-                  </View>
-
-                  <View style={styles.balanceViewStyle}>
-                    <Text
-                      style={[
-                        styles.balanceText,
-                        { color: ThemeManager.colors.textColor },
-                      ]}
-                      numberOfLines={1}
-                    >
-                      {' '}
-                      {item.balance != 0
-                        ? Singleton.getInstance().exponentialToDecimal(
-                          Singleton.getInstance().toFixed(
-                            Singleton.getInstance().exponentialToDecimal(
-                              item.balance,
-                            ),
-                            Constants.CRYPTO_DECIMALS,
-                          ),
-                        )
-                        : item.balance}{' '}
-                      {item.coin_symbol.toUpperCase()}
-                    </Text>
-                    <Text style={[styles.coinGrowthStyle, {}]}>
-                      {Singleton.getInstance().CurrencySymbol}{' '}
-                      {Singleton.getInstance().toFixed(
-                        item.perPrice_in_fiat * item.balance,
-                        2,
-                      )}
-                    </Text>
-                  </View>
-                </TouchableOpacity>
-              )}
-              ListEmptyComponent={() => {
-                return (
-                  <View style={{ width: '100%', alignItems: 'center', padding: 15, }}>
-                    <Text style={{ fontFamily: Fonts.medium, fontSize: areaDimen(16), color: ThemeManager.colors.lightTextColor, }}>
-                      No Coin found
-                    </Text>
-                  </View>
-                )
-              }}
-            /> */}
           </View>
+          {this.state.isLoading && <Loader loader={this.state.isLoading} />}
         </Wrap>
-        <SafeAreaView
-          style={{
-            backgroundColor: ThemeManager.colors.bg,
-          }}></SafeAreaView>
       </>
     );
   }
@@ -275,7 +299,14 @@ class Send extends Component {
 
 // export default Send;
 const mapStateToProp = state => {
-  const { currentTheme } = state.mnemonicreateReducer;
-  return { currentTheme };
+  const {currentTheme} = state.mnemonicreateReducer;
+  const coinData = state?.walletReducer?.dashboardWallets;
+  return {currentTheme, coinData};
 };
-export default connect(mapStateToProp, { changeThemeAction })(Send);
+export default connect(mapStateToProp, {
+  changeThemeAction,
+  getDashboardWallets,
+  walletDataUpdate,
+  getMyWallets,
+  myWalletListSuccess,
+})(Send);

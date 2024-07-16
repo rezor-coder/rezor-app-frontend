@@ -17,10 +17,25 @@ import fonts from '../../../theme/Fonts';
 import { BasicButton } from '../../common';
 import { Colors } from '../../../theme';
 
-const ListModal = ({ list, onClose, onPressItem, isEpay, isSearch, changeText, searchText, onScroll, isAddCustom,onPressAddCustomToken }) => {
+const ListModal = ({
+  list,
+  onClose,
+  onPressItem,
+  isEpay,
+  isSearch,
+  changeText,
+  searchText,
+  onScroll,
+  isAddCustom,
+  onPressAddCustomToken,
+  title='Asset',
+  listFooterComponent,
+  onEndReached,
+  onEndReachedThreshold
 
+}) => {
   return (
-    <View style={{ flex: 1, justifyContent: 'flex-end' }}>
+    <View style={{flex: 1, justifyContent: 'flex-end'}}>
       <BlurView
         style={styles.blurView}
         blurType={ThemeManager.colors.themeColor === 'dark' ? 'dark' : 'light'}
@@ -28,16 +43,14 @@ const ListModal = ({ list, onClose, onPressItem, isEpay, isSearch, changeText, s
         reducedTransparencyFallbackColor="white"
       />
       <>
-        <View style={[styles.centeredView,]}>
-          <TouchableOpacity
-            onPress={onClose}
-            style={[styles.centeredView1]}
-          />
+        <View style={[styles.centeredView]}>
+          <TouchableOpacity onPress={onClose} style={[styles.centeredView1]} />
           <View
-            style={[styles.mainView, { backgroundColor: ThemeManager.colors.backgroundColor }]}>
-            <TouchableOpacity
-              style={styles.imageTouchable}
-              onPress={onClose}>
+            style={[
+              styles.mainView,
+              {backgroundColor: ThemeManager.colors.backgroundColor},
+            ]}>
+            <TouchableOpacity style={styles.imageTouchable} onPress={onClose}>
               <Image
                 source={images.cross}
                 style={{
@@ -55,46 +68,50 @@ const ListModal = ({ list, onClose, onPressItem, isEpay, isSearch, changeText, s
                 textAlign: 'center',
                 marginHorizontal: heightDimen(70),
                 marginTop: heightDimen(-28),
-                paddingBottom: heightDimen(12)
+                paddingBottom: heightDimen(12),
               }}>
-              Select Asset
+              {`Select ${title}`}
             </Text>
-            {isSearch && <View
-              style={styles.textInputOuter}>
-              <View
-                style={[styles.textInputView, { backgroundColor: ThemeManager.colors.bg }]}>
-                <TextInput
-                  maxLength={85}
-                  placeholder="Search "
-                  placeholderTextColor={ThemeManager.colors.lightTextColor}
-                  style={{
-                    fontSize: areaDimen(14),
-                    fontFamily: fonts.medium,
-                    flexGrow: 1,
-                    color: ThemeManager.colors.textColor,
-                  }}
-                  onChangeText={changeText}
-                  searchText={searchText}
-                />
-                <FastImage
-                  source={images.searchIconDark}
-                  style={{ height: areaDimen(18), width: areaDimen(18) }}
-                  resizeMode="contain"
-                />
+            {isSearch && (
+              <View style={styles.textInputOuter}>
+                <View
+                  style={[
+                    styles.textInputView,
+                    {backgroundColor: ThemeManager.colors.bg},
+                  ]}>
+                  <TextInput
+                    maxLength={85}
+                    placeholder="Search "
+                    placeholderTextColor={ThemeManager.colors.lightTextColor}
+                    style={{
+                      fontSize: areaDimen(14),
+                      fontFamily: fonts.medium,
+                      flexGrow: 1,
+                      color: ThemeManager.colors.textColor,
+                    }}
+                    onChangeText={changeText}
+                    searchText={searchText}
+                  />
+                  <FastImage
+                    source={images.searchIconDark}
+                    style={{height: areaDimen(18), width: areaDimen(18)}}
+                    resizeMode="contain"
+                  />
+                </View>
               </View>
-            </View>}
+            )}
             <FlatList
               data={list}
               showsVerticalScrollIndicator={false}
-              style={{ marginBottom: heightDimen(40) }}
+              style={{marginBottom: heightDimen(40)}}
               onScroll={onScroll}
-              renderItem={({ item, index }) => {
+              renderItem={({item, index}) => {
                 return (
                   <TouchableOpacity
                     key={'index'}
                     onPress={() => {
-                      onClose()
-                      onPressItem(item, index)
+                      onClose();
+                      onPressItem(item, index);
                     }}
                     style={[
                       styles.networkBtnStyle,
@@ -103,49 +120,65 @@ const ListModal = ({ list, onClose, onPressItem, isEpay, isSearch, changeText, s
                         borderColor: ThemeManager.colors.tabBorder,
                       },
                     ]}>
-                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                      {item?.coin_image ? <FastImage
-                        style={styles.imgstyle}
-                        source={{ uri: item?.coin_image }}
-                        resizeMode="contain"
-                      /> : <View
-                        style={{
-                          borderRadius: widthDimen(20),
-                          width: widthDimen(36),
-                          height: widthDimen(36),
-                          backgroundColor: ThemeManager.colors.primary,
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                        }}>
-                        <Text
+                    <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                      {item?.coin_image ? (
+                        <FastImage
+                          style={styles.imgstyle}
+                          source={
+                            typeof item?.coin_image == 'string'
+                              ? {uri: item?.coin_image}
+                              : item?.coin_image
+                          }
+                          resizeMode="contain"
+                        />
+                      ) : (
+                        <View
                           style={{
-                            color: 'white',
-                            fontFamily: fonts.semibold,
-                            fontSize: areaDimen(15),
-                            lineHeight: heightDimen(18),
+                            borderRadius: widthDimen(20),
+                            width: widthDimen(36),
+                            height: widthDimen(36),
+                            backgroundColor: ThemeManager.colors.primary,
+                            alignItems: 'center',
+                            justifyContent: 'center',
                           }}>
-                          {item?.coin_name?.charAt(0)}
-                        </Text>
-                      </View>}
+                          <Text
+                            style={{
+                              color: 'white',
+                              fontFamily: fonts.semibold,
+                              fontSize: areaDimen(15),
+                              lineHeight: heightDimen(18),
+                            }}>
+                            {item?.coin_name?.charAt(0)}
+                          </Text>
+                        </View>
+                      )}
                       <Text
                         allowFontScaling={false}
                         style={[
                           styles.networkTextStyle,
-                          { color: ThemeManager.colors.textColor },
+                          {color: ThemeManager.colors.textColor},
                         ]}>
-                        {isEpay ? item?.coin_symbol?.toUpperCase() : item?.coin_name?.toUpperCase()}
+                        {isEpay
+                          ? item?.coin_symbol?.toUpperCase()
+                          : item?.coin_name?.toUpperCase()}
                       </Text>
-                      {item?.is_token == 1 && <Text
-                        allowFontScaling={false}
-                        style={[
-                          styles.networkTextStyle,
-                          {
-                            color: ThemeManager.colors.inActiveColor,
-                            fontSize: areaDimen(13),
-                          },
-                        ]}>
-                        {(item?.coin_family == 6 ? '(BNB)' : item?.coin_family == 4 ? '(STC)' : '(ETH)')}
-                      </Text>}
+                      {item?.is_token == 1 && (
+                        <Text
+                          allowFontScaling={false}
+                          style={[
+                            styles.networkTextStyle,
+                            {
+                              color: ThemeManager.colors.inActiveColor,
+                              fontSize: areaDimen(13),
+                            },
+                          ]}>
+                          {item?.coin_family == 6
+                            ? '(BNB)'
+                            : item?.coin_family == 4
+                            ? '(SBC)'
+                            : '(ETH)'}
+                        </Text>
+                      )}
                     </View>
                     <FastImage
                       source={ThemeManager.ImageIcons.forwardArrowIcon}
@@ -155,25 +188,37 @@ const ListModal = ({ list, onClose, onPressItem, isEpay, isSearch, changeText, s
                   </TouchableOpacity>
                 );
               }}
+              ListFooterComponent={listFooterComponent}
               ListEmptyComponent={() => {
                 if (isAddCustom) {
                   return (
-                    <View style={{justifyContent:'center',alignItems:'center',paddingVertical:heightDimen(30)}}>
-                      <Text style={[styles.noAssetText,{color:ThemeManager.colors.textColor}]}>{LanguageManager.assetsNotFound}</Text>
+                    <View
+                      style={{
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        paddingVertical: heightDimen(30),
+                      }}>
+                      <Text
+                        style={[
+                          styles.noAssetText,
+                          {color: ThemeManager.colors.textColor},
+                        ]}>
+                        {LanguageManager.assetsNotFound}
+                      </Text>
                       <BasicButton
                         onPress={onPressAddCustomToken}
                         btnStyle={styles.btnStyle}
                         customGradient={styles.customGrad}
-                        text={
-                         LanguageManager.addCustomToken
-                        }
+                        text={LanguageManager.addCustomToken}
                       />
                     </View>
-                  )
+                  );
                 } else {
-                  return null
+                  return null;
                 }
               }}
+              onEndReached={onEndReached}
+              onEndReachedThreshold={onEndReachedThreshold}
             />
           </View>
         </View>
@@ -207,8 +252,8 @@ const styles = StyleSheet.create({
   },
   imgstyle: {
     alignSelf: 'center',
-    height: heightDimen(35),
-    width: widthDimen(35),
+    height: heightDimen(36),
+    width: widthDimen(36),
     borderRadius: 30,
   },
   networkBtnStyle: {

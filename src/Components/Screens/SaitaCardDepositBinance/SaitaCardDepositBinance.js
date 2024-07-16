@@ -1,38 +1,30 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, { useState, createRef, useEffect, useRef } from 'react';
-import {
-  Keyboard,
-  Linking,
-  Modal,
-  Platform,
-  ScrollView,
-  Share,
-  TextInput,
-} from 'react-native';
-import { BasicInputBox, BorderLine, Wrap } from '../../common/index';
-import { MainStatusBar, SimpleHeader, BasicButton } from '../../common';
-import { Colors, Fonts, Images } from '../../../theme';
-import styles from './SaitaCardDepositBinanceStyle';
-import { View, Image, Text, TouchableOpacity } from 'react-native';
-import Singleton from '../../../Singleton';
-import QRCode from 'react-native-qrcode-image';
-import Toast from 'react-native-easy-toast';
 import Clipboard from '@react-native-community/clipboard';
-import * as constants from '../../../Constant';
-import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
-import { Actions } from 'react-native-router-flux';
-import SelectDropdown from 'react-native-select-dropdown';
-import Loader from '../Loader/Loader';
-import { APIClient } from '../../../Api';
+import React, { createRef, useRef, useState } from 'react';
 import {
-  BINANCE_PRICE_CONVERSION,
-  LIMINAL_COIN_LIST,
-  LIMINAL_PRICE_CONVERSION,
-} from '../../../Endpoints';
+  Image,
+  Linking,
+  Share,
+  Text, TouchableOpacity,
+  View
+} from 'react-native';
+import Toast from 'react-native-easy-toast';
 import FastImage from 'react-native-fast-image';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
-import fonts from '../../../theme/Fonts';
+import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
+import { APIClient } from '../../../Api';
+import * as constants from '../../../Constant';
+import {
+  BINANCE_PRICE_CONVERSION
+} from '../../../Endpoints';
+import Singleton from '../../../Singleton';
+import { getCurrentRouteName, goBack } from '../../../navigationsService';
+import { Colors, Fonts, Images } from '../../../theme';
 import images from '../../../theme/Images';
+import { BasicButton, MainStatusBar, SimpleHeader } from '../../common';
+import { BorderLine, Wrap } from '../../common/index';
+import Loader from '../Loader/Loader';
+import styles from './SaitaCardDepositBinanceStyle';
 
 var qrBase64 = '';
 const SaitaCardDepositBinance = prop => {
@@ -56,7 +48,7 @@ const SaitaCardDepositBinance = prop => {
     }
     setIsLoading(true);
     // let token = await Singleton.getInstance().newGetData(constants.black_access_token)
-    let token = prop.token;
+    let token = prop?.route?.params?.token;
     let req = { amount: val };
     console.log(req);
     // fetch('http://10.1.5.89:3000/api/v1/liminal/Calculator', {
@@ -207,7 +199,7 @@ const SaitaCardDepositBinance = prop => {
               setAmount('0')
               setBpayData({})
             } else
-              Actions.currentScene != 'SaitaCardsInfo' && Actions.pop();
+              getCurrentRouteName() != 'SaitaCardsInfo' && goBack();
           }}
           // rightIcon={images.infoBPay}
           onPressHistory={() => {

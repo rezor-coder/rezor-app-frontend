@@ -104,7 +104,7 @@ const WalletCard = props => {
               {
                 color: ThemeManager.colors.textColor,
                 bottom: showBalance ? 0 :heightDimen(2),
-                fontSize: showBalance ? areaDimen(16) : areaDimen(24),
+                fontSize: showBalance ? areaDimen(15) : areaDimen(24),
               },
             ]}>
               {/* {'00000000000000000000'?.length>8?'00000000000000000000'?.slice(0,7)+'...':'00000000000000000000'}  */}
@@ -117,13 +117,13 @@ const WalletCard = props => {
                       ),
                       Constants.CRYPTO_DECIMALS,
                     ),
-                  )?.length>8?
+                  )?.length>7?
                     Singleton.getInstance().toFixednew(
                       Singleton.getInstance().exponentialToDecimal(
                         item.balance,
                       ),
                       Constants.CRYPTO_DECIMALS,
-                    )?.slice(0,8)+'...':
+                    )?.slice(0,7)+'...':
                     Singleton.getInstance().toFixednew(
                       Singleton.getInstance().exponentialToDecimal(
                         item.balance,

@@ -1,20 +1,23 @@
+import { BigNumber } from 'bignumber.js';
+import LottieView from 'lottie-react-native';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Alert,
+  BackHandler,
   Image,
   Modal,
   Text,
   TouchableOpacity,
-  View,
-  BackHandler
+  View
 } from 'react-native';
-import React, { useRef, useState } from 'react';
-import {
-  BasicButton,
-  BorderLine,
-  MainStatusBar,
-  SimpleHeader,
-  Wrap,
-} from '../../common';
+import { getStatusBarHeight } from 'react-native-iphone-x-helper';
+import Web3 from 'web3';
+import HOUBI_ABI from '../../../../ABI/Houbi.ABI.json';
+import TOKEN_ABI from '../../../../ABI/tokenContract.ABI.json';
+import { ThemeManager } from '../../../../ThemeManager';
+import Done from '../../../../assets/images/Done.json';
+import { APIClient } from '../../../Api';
+import * as constants from '../../../Constant';
 import {
   HUOBI_CHECK_SWAP,
   HUOBI_FETCH_CHAIN,
@@ -22,25 +25,21 @@ import {
   HUOBI_FIND_TOKEN_FOR_CURRENCY,
   HUOBI_SWAP,
 } from '../../../Endpoints';
-import { ThemeManager } from '../../../../ThemeManager';
-import styles from './TradeStyle';
-import { Colors, Fonts, Images } from '../../../theme';
-import { Actions } from 'react-native-router-flux';
-import Done from '../../../../assets/images/Done.json';
-import LottieView from 'lottie-react-native';
-import { APIClient } from '../../../Api';
-import * as constants from '../../../Constant';
-import { useEffect } from 'react';
 import Singleton from '../../../Singleton';
-import Loader from '../Loader/Loader';
-import TOKEN_ABI from '../../../../ABI/tokenContract.ABI.json';
-import HOUBI_ABI from '../../../../ABI/Houbi.ABI.json';
-import { BigNumber } from 'bignumber.js';
-import Web3 from 'web3';
-import { ModalTradeTx } from '../../common/ModalTradeTx';
+import { areaDimen, heightDimen } from '../../../Utils/themeUtils';
+import { getCurrentRouteName, goBack } from '../../../navigationsService';
+import { Colors, Fonts, Images } from '../../../theme';
 import { CommaSeprator3, exponentialToDecimalWithoutComma } from '../../../utils';
-import { getStatusBarHeight } from 'react-native-iphone-x-helper';
-import { areaDimen, heightDimen, widthDimen } from '../../../Utils/themeUtils';
+import {
+  BasicButton,
+  BorderLine,
+  MainStatusBar,
+  SimpleHeader,
+  Wrap,
+} from '../../common';
+import { ModalTradeTx } from '../../common/ModalTradeTx';
+import Loader from '../Loader/Loader';
+import styles from './TradeStyle';
 
 const SWAP_CONTRACT_ADDRESS = constants.network == 'testnet' ? '0x01c3fD2d4367cc4f85276E9E1638BF1E149f3eFe' : "0x28C4b64A442a31C9E743d65c7FECAC9E7B8D3Dcd";
 const GAS_PRICE_BUFFER = 4000000000;
@@ -55,7 +54,7 @@ const GAS_FEE_MULTIPLIER = 0.000000000000000001;
 export default function Trade(props) {
   const [tab, setTab] = useState('buy');
   const [isPopUp, setIsPopUp] = useState(false);
-  const [selectedCoin, setSelectedCoin] = useState(props?.item);
+  const [selectedCoin, setSelectedCoin] = useState(props?.route?.params?.item);
   const [isLoading, setIsLoading] = useState(false);
   const [minBuyAmount, setMinBuyAmount] = useState(0);
   const [minSellAmount, setMinSellAmount] = useState(0);
@@ -90,21 +89,21 @@ export default function Trade(props) {
     backHandle = BackHandler.addEventListener('hardwareBackPress', backAction);
     setuserAddress(Singleton.getInstance().defaultEthAddress);
     balance(Singleton.getInstance().defaultEthAddress);
-    let focus = props.navigation.addListener('didFocus', () => {
+    let focus = props.navigation.addListener('focus', () => {
       backHandle = BackHandler.addEventListener('hardwareBackPress', backAction);
       setIsPopUp(false)
       setSwapModal(false)
     })
-    let blur = props.navigation.addListener('didBlur', () => {
+    let blur = props.navigation.addListener('blur', () => {
       backHandle?.remove()
     })
     return () => {
-      focus?.remove()
+      focus()
       backHandle?.remove();
     }
   }, []);
   const backAction=()=>{
-    Actions.pop();
+    goBack();
     return true;
   }
   /******************************************************************************************/
@@ -266,7 +265,7 @@ export default function Trade(props) {
                   {
                     text: 'Cancel',
                     onPress: () => {
-                      // Actions.pop()
+                      // goBack()
                     },
                   },
                   ],
@@ -577,7 +576,7 @@ export default function Trade(props) {
         titleStyle={{ textTransform: 'none' }}
         imageShow
         back={false}
-        backPressed={() => { Actions.currentScene != 'Market' && Actions.pop() }}
+        backPressed={() => { getCurrentRouteName() != 'Market' && goBack() }}
       />
       <BorderLine />
       {/* <View style={{ marginTop: heightDimen(23), marginBottom: heightDimen(25), paddingHorizontal: widthDimen(15), alignItems: 'center', width: '100%', borderBottomWidth: 1, borderColor: ThemeManager.colors.viewBorderColor, }} /> */}

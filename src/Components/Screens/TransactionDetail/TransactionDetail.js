@@ -1,29 +1,25 @@
+import moment from 'moment';
 import React, { Component } from 'react';
 import {
-  View,
-  Text,
-  Image,
-  TouchableOpacity,
-  SafeAreaView,
-  Linking,
-  Dimensions,
   BackHandler,
+  Linking,
+  SafeAreaView,
+  Text,
+  View
 } from 'react-native';
-import styles from './TransactionDetailStyle';
-import { Actions, ActionConst } from 'react-native-router-flux';
-import { Images, Colors, Fonts } from '../../../theme';
-import Singleton from '../../../Singleton';
-import * as Constants from '../../../Constant';
 import { connect } from 'react-redux';
-import moment from 'moment';
-import { Wrap, SimpleHeader, BorderLine, BasicButton } from '../../common';
-import Loader from '../Loader/Loader';
-import { getTransactionDetail } from '../../../Redux/Actions';
-import FastImage from 'react-native-fast-image';
 import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
+import * as Constants from '../../../Constant';
+import { getTransactionDetail } from '../../../Redux/Actions';
+import Singleton from '../../../Singleton';
 import { areaDimen, heightDimen, widthDimen } from '../../../Utils/themeUtils';
+import { Colors, Images } from '../../../theme';
 import fonts from '../../../theme/Fonts';
 import { CommaSeprator3 } from '../../../utils';
+import { BasicButton, BorderLine, SimpleHeader, Wrap } from '../../common';
+import Loader from '../Loader/Loader';
+import styles from './TransactionDetailStyle';
+import { goBack } from '../../../navigationsService';
 class TransactionDetail extends Component {
   constructor(props) {
     super(props);
@@ -31,7 +27,7 @@ class TransactionDetail extends Component {
       transType: 'DEPOSIT',
       txnDetail: [],
       setImgStyle: false,
-      data: this.props?.TxnData,
+      data: this.props?.route?.params?.TxnData,
     };
   }
   componentDidMount() {
@@ -40,18 +36,18 @@ class TransactionDetail extends Component {
 
     global.isCamera = false;
     //console.warn('MM','Chk txnData::::::::::::', this.props.TxnData);
-    this.props.navigation.addListener('didFocus', () => {
-      this.getTxnDetail(this.props.TxnData?.table_id, this.props.TxnData?.type);
+    this.props.navigation.addListener('focus', () => {
+      this.getTxnDetail(this.props.route?.params.TxnData?.table_id, this.props.route?.params.TxnData?.type);
       BackHandler.addEventListener('hardwareBackPress', this.backAction);
     });
-    this.props.navigation.addListener('didBlur', this.screenBlur);
+    this.props.navigation.addListener('blur', this.screenBlur);
   }
   screenBlur = () => {
     BackHandler.removeEventListener('hardwareBackPress', this.backAction);
   };
   backAction = () => {
     //console.warn('MM','i detail');
-    Actions.pop();
+    goBack();
     return true;
   };
   getTxnDetail(table_id, trnx_type) {
@@ -65,7 +61,7 @@ class TransactionDetail extends Component {
       .getTransactionDetail({ data, access_token })
       .then(res => {
         console.log("res===",res);
-        console.log("native_coin_fiat_price===",res?.data[0]?.native_coin_fiat_price);
+        console.log("native_coin_fiat_price===",res?.data[0]);
         this.setState({ isLoading: false, txnDetail: res.data[0] });
       })
       .catch(err => {
@@ -110,16 +106,18 @@ class TransactionDetail extends Component {
       );
       return;
     }else if (this.state.txnDetail.coin_family == 4) {
+      console.log(Constants.network,'Constants.network ');
       Linking.openURL(
         Constants.network == 'testnet'
-          ? 'https://saitascan.io/tx/' + this.state.txnDetail.tx_id
-          : Singleton.getInstance().stcExplorerLink + this.state.txnDetail.tx_id,
+        ? 'https://testnet.saitascan.io/tx/' + this.state.txnDetail.tx_id
+        : 'https://saitascan.io/tx/' + this.state.txnDetail.tx_id
+          // : Singleton.getInstance().stcExplorerLink + this.state.txnDetail.tx_id,
       );
       return;
     }
   }
   getStatusImage(item) {
-    var trx_type = this.props.TxnData?.type.toLowerCase();
+    var trx_type = this.props.route?.params.TxnData?.type.toLowerCase();
     var status = item?.status?.toLowerCase();
     var blockChain_status =
       item.blockchain_status != null
@@ -147,7 +145,7 @@ class TransactionDetail extends Component {
     }
   }
   getStatus(item) {
-    var trx_type = this.props.TxnData?.type.toLowerCase();
+    var trx_type = this.props.route?.params.TxnData?.type.toLowerCase();
     var status = item?.status?.toLowerCase();
     var blockChain_status =
       item.blockchain_status != null

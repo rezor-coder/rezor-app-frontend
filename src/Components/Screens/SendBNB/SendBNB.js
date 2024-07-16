@@ -3,77 +3,73 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, { Component } from 'react';
 import {
-  View,
-  Text,
-  ScrollView,
-  Image,
-  TouchableOpacity,
-  Modal,
-  Platform,
-  PermissionsAndroid,
-  SafeAreaView,
   BackHandler,
+  Image,
+  Modal,
+  PermissionsAndroid,
+  Platform,
+  SafeAreaView,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
-import styles from './SendBNBStyle';
-import {
-  Wrap,
-  ButtonTransaction,
-  ButtonPrimary,
-  SimpleHeader,
-  BasicInputBox,
-  InputtextAddress,
-  BasicModal,
-  BorderLine,
-  BasicButton,
-  PinInput,
-  KeyboardDigit,
-} from '../../common';
-import SmoothPinCodeInput from 'react-native-smooth-pincode-input';
-import { Images, Colors, Fonts } from '../../../theme/index';
-import { Actions } from 'react-native-router-flux';
-import Singleton from '../../../Singleton';
 import { connect } from 'react-redux';
 import * as constants from '../../../Constant';
-import { CameraScreen } from 'react-native-camera-kit';
-import Loader from '../Loader/Loader';
+import Singleton from '../../../Singleton';
+import { Colors, Fonts, Images } from '../../../theme/index';
+import {
+  BasicButton,
+  BasicInputBox,
+  BasicModal,
+  BorderLine,
+  ButtonPrimary,
+  ButtonTransaction,
+  InputtextAddress,
+  KeyboardDigit,
+  PinInput,
+  SimpleHeader,
+  Wrap,
+} from '../../common';
+import styles from './SendBNBStyle';
+// import { CameraScreen } from 'react-native-camera-kit';
+import { Clipboard } from 'react-native';
+import { EventRegister } from 'react-native-event-listeners';
+import FastImage from 'react-native-fast-image';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
+import * as Constants from '../../../Constant';
+import { NavigationStrings } from '../../../Navigation/NavigationStrings';
 import {
-  getBnbNonce,
-  getBnbGasPrice,
+  CheckIsContactExist,
   getBnbGasEstimate,
+  getBnbGasPrice,
+  getBnbNonce,
   getEthTokenRaw,
-  walletFormUpdate,
   sendBNB,
-  CheckIsContactExist
+  walletFormUpdate
 } from '../../../Redux/Actions';
-import { BASE_IMAGE } from '../../../Endpoints';
-import moment from 'moment';
+import { areaDimen, heightDimen, widthDimen } from '../../../Utils/themeUtils';
+import { getCurrentRouteName, goBack, navigate } from '../../../navigationsService';
+import fonts from '../../../theme/Fonts';
 import {
-  bnbDataEncode,
-  sendTokenBNB,
-  getBnbRaw,
-  exponentialToDecimalWithoutComma,
   CommaSeprator3,
   bigNumberSafeMath,
+  bnbDataEncode,
+  exponentialToDecimalWithoutComma,
+  getBnbRaw,
+  sendTokenBNB,
 } from '../../../utils';
-import FastImage from 'react-native-fast-image';
-import LinearGradient from 'react-native-linear-gradient';
-import { AddressBox } from '../../common/AddressBox';
-import * as Constants from '../../../Constant';
-import fonts from '../../../theme/Fonts';
-import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
-import { areaDimen, heightDimen, widthDimen } from '../../../Utils/themeUtils';
-import { Clipboard } from 'react-native';
 import { DetailOption } from '../../common/DetailOption';
 import QRReaderModal from '../../common/QRReaderModal';
-import { EventRegister } from 'react-native-event-listeners';
+import Loader from '../Loader/Loader';
 const gwei_multi = 1000000000;
 class SendBNB extends Component {
   constructor(props) {
     super(props);
     this.state = {
       blockChain: 'binancesmartchain',
-      walletData: this.props.walletData,
+      walletData: this.props.route?.params?.walletData,
       isLoading: false,
       gasPriceForTxn: 1000000000,
       gasPriceForTxnSlow: 1000000000,
@@ -116,8 +112,8 @@ class SendBNB extends Component {
     // this.setState({BasicModall:true})
     // console.warn('MM','walletData-- ', this.state.walletData?.coin_image);
     console.log('walletData===', this.state.walletData);
-    this.props.navigation.addListener('didFocus', this.onScreenFocus);
-    this.props.navigation.addListener('didBlur', this.screenBlur);
+    this.props.navigation.addListener('focus', this.onScreenFocus);
+    this.props.navigation.addListener('blur', this.screenBlur);
     Singleton.getInstance()
       .newGetData(`${Singleton.getInstance().defaultBnbAddress}_pk`)
       .then(bnbPvtKey => {
@@ -143,23 +139,24 @@ class SendBNB extends Component {
   onScreenFocus = () => {
     global.firstLogin = true;
     BackHandler.addEventListener('hardwareBackPress', this.backAction);
-    EventRegister.addEventListener('downModal', () => {
+    this.eventListener =  EventRegister.addEventListener('downModal', () => {
+      console.log('heree::::::::1');
       if (this.state.BasicModall) {
         this.setState({ BasicModall: false })
-        Actions.currentScene != 'Wallet' && Actions.Wallet()
+        getCurrentRouteName() != 'Wallet' && navigate(NavigationStrings.Wallet)
       }
     });
   };
   screenBlur = () => {
     BackHandler.removeEventListener('hardwareBackPress', this.backAction);
-    EventRegister.removeEventListener('downModal')
+    EventRegister.removeEventListener(this.eventListener)
   };
   backAction = () => {
     if (this.state.Start_Scanner) {
       this.setState({ Start_Scanner: false });
       return true;
     } else {
-      Actions.pop();
+      goBack();
       return true;
     }
   };
@@ -706,8 +703,8 @@ class SendBNB extends Component {
             history={true}
             customIcon={Images.address}
             onPressHistory={() =>
-              Actions.currentScene != 'SendCryptoContacts' &&
-              Actions.SendCryptoContacts({
+              getCurrentRouteName() != 'SendCryptoContacts' &&
+              navigate(NavigationStrings.SendCryptoContacts,{
                 item: this.state.walletData,
                 blockChain: this.state.blockChain,
                 getAddress: this.getAddress,
@@ -1424,7 +1421,7 @@ class SendBNB extends Component {
               amount={this.state.amount}
               contact={() => {
                 this.setState({ BasicModall: false });
-                Actions.AddNewContacts({
+                navigate(NavigationStrings.AddNewContacts,{
                   address: this.state.to_Address,
                   coinFamily: this.state.walletData.coin_family,
                 });

@@ -18,7 +18,6 @@ import {
   ImageBackgroundComponent,
 } from '../../common/index';
 import {TouchableOpacity} from 'react-native-gesture-handler';
-import {ActionConst, Actions} from 'react-native-router-flux';
 import styles from './VerifyPhraseStyle';
 import Singleton from '../../../Singleton';
 import * as Constants from '../../../Constant';
@@ -32,6 +31,8 @@ import {Fonts} from '../../../theme';
 import {ifIphoneX} from 'react-native-iphone-x-helper';
 import RNPreventScreenshot from 'react-native-screenshot-prevent';
 import {areaDimen, heightDimen, widthDimen} from '../../../Utils/themeUtils';
+import { getCurrentRouteName, navigate } from '../../../navigationsService';
+import { NavigationStrings } from '../../../Navigation/NavigationStrings';
 const windowHeight = Dimensions.get('window').height;
 
 let a = ' ';
@@ -54,12 +55,12 @@ const VerifyPhrase = props => {
   const [selectedArray, setSelectedArray] = useState([]);
 
   useEffect(() => {
-    //     props.navigation.addListener('didFocus', () => {
+    //     props.navigation.addListener('focus', () => {
     //       // if (Platform.OS == "android")
     //       // RNPreventScreenshot?.enabled(true)
     //  //  console.warn('MM','did Blur called verify phrase::::::');
     //     });
-    //     props.navigation.addListener('didBlur', () => {
+    //     props.navigation.addListener('blur', () => {
     //       // if (Platform.OS == "android")
     //       // RNPreventScreenshot?.enabled(false)
     //  //  console.warn('MM','did Blur called secure Wallet::::::');
@@ -79,7 +80,7 @@ const VerifyPhrase = props => {
   };
   function checkExistingWallet() {
     //nextPressed()
-    if (props.isFrom == 'multiWallet') {
+    if (props.route?.params?.isFrom == 'multiWallet') {
       Singleton.getInstance()
         .newGetData(Constants.multi_wallet_array)
         .then(res => {
@@ -171,7 +172,7 @@ const VerifyPhrase = props => {
               walletName: walletName,
               mnemonics: DATA.mnemonics,
               loginRequest: data,
-              defaultWallet: props.isFrom == 'multiWallet' ? false : true,
+              defaultWallet: props.route?.params?.isFrom == 'multiWallet' ? false : true,
               user_jwtToken: response.data?.token,
               blockChain: 'all',
               login_data,
@@ -180,7 +181,7 @@ const VerifyPhrase = props => {
             let Wallet_Array = existingWallets;
             Wallet_Array.push(WalletData);
 
-            if (props.isFrom != 'multiWallet') {
+            if (props.route?.params?.isFrom != 'multiWallet') {
               Singleton.getInstance().newSaveData(
                 Constants.addresKeyList,
                 JSON.stringify(addrsListKeys),
@@ -205,6 +206,10 @@ const VerifyPhrase = props => {
                 Constants.ACTIVE_WALLET,
                 JSON.stringify(WalletData),
               );
+              Singleton.getInstance().newSaveData(
+                Constants.IS_PRIVATE_WALLET,
+                '0',
+              );
               Singleton.getInstance().access_token = response.data.token;
               Singleton.getInstance().defaultEthAddress = DATA.ethAddress;
               Singleton.getInstance().defaultMaticAddress = DATA.ethAddress;
@@ -224,16 +229,15 @@ const VerifyPhrase = props => {
             );
 
             // Singleton.showAlert('Wallet created successfully.');
-            // if (props.isFrom == 'multiWallet') Actions.jump("MultiWalletList");
-            // else Actions.Main({type: ActionConst.RESET});
-            if (props.isFrom == 'multiWallet') {
-              Actions.currentScene != 'MultiWalletList' &&
-                Actions.jump('MultiWalletList');
+            // if (props.route?.params?.isFrom == 'multiWallet') Actions.jump("MultiWalletList");
+            if (props.route?.params?.isFrom == 'multiWallet') {
+              getCurrentRouteName() != 'MultiWalletList' &&
+                navigate(NavigationStrings.MultiWalletList);
             } else {
-              // Actions.currentScene != 'Main' &&
+              // getCurrentRouteName() != 'Main' &&
               //   Actions.Main({ type: ActionConst.RESET });
               // Actions.jump('Wallet');
-              Actions.currentScene != 'Congrats' && Actions.jump('Congrats');
+              getCurrentRouteName() != 'Congrats' && navigate(NavigationStrings.Congrats);
             }
           })
           .catch(err => {

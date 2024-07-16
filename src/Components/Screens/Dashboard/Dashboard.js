@@ -9,9 +9,9 @@ import {
   Linking,
   AppState,
   BackHandler,
-  StatusBar
+  StatusBar,
+  ActivityIndicator
 } from 'react-native';
-import { Actions } from 'react-native-router-flux';
 import { Images, Colors } from '../../../theme/';
 import { MainHeader, IconText } from '../../common';
 import styles from './DashboardStyle';
@@ -34,6 +34,7 @@ import {
   getSocialList,
   getMyWallets,
   getDexUrls,
+  cardUserdata,
 } from '../../../Redux/Actions';
 import messaging from '@react-native-firebase/messaging';
 import Loader from '../Loader/Loader';
@@ -43,6 +44,8 @@ import { FlatList } from 'react-native';
 import { BASE_IMAGE } from '../../../Endpoints';
 import { showMessage } from 'react-native-flash-message';
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { NavigationStrings } from '../../../Navigation/NavigationStrings';
+import { getCurrentRouteName, goBack, navigate, reset } from '../../../navigationsService';
 const Dashboard = props => {
   const [viewKey,setViewKey]=useState(new Date())
   const insets = useSafeAreaInsets();
@@ -54,6 +57,10 @@ const Dashboard = props => {
   const [Limit, setLimit] = useState(25);
   const [isLoading, setisLoading] = useState(true);
   const [showLoader, setShowLoader] = useState(false);
+  const [onPressActive, setPressActive] = useState(false);
+  const [bottomLoading, setBottomLoading] = useState(false)
+  const [totalLength, setTotalLength] = useState(CoinData?.length)
+console.log(CoinData.length,'CoinDataCoinDataCoinData');
   useEffect(() => {
     EventRegister.addEventListener('themeChanged',()=>{
       setViewKey(new Date())
@@ -63,25 +70,28 @@ const Dashboard = props => {
     Bannerimg();
     let backHandle
     backHandle = BackHandler.addEventListener('hardwareBackPress', () => {
-      if (Actions.currentScene == 'Dashboard') {
-        Actions.currentScene != 'Main' && Actions.reset("Main")
+      if (getCurrentRouteName() == 'Dashboard') {
+        getCurrentRouteName() != 'Main' && reset(NavigationStrings.Main)
       } else {
-        Actions.pop()
+        goBack()
       }
       return true
     })
     EventRegister.addEventListener('walletAPIEvent', data1 => {
       getWalletData();
     });
-    let focus = props.navigation.addListener('didFocus', () => {
+    let focus = props.navigation.addListener('focus', () => {
+      setPage(0)
+      setBottomLoading(false)
       backHandle = BackHandler.addEventListener('hardwareBackPress', () => {
-        if (Actions.currentScene == 'Dashboard') {
-          Actions.currentScene != 'Main' && Actions.reset("Main")
+        if (getCurrentRouteName() == 'Dashboard') {
+          getCurrentRouteName() != 'Main' && reset(NavigationStrings.Main)
         } else {
-          Actions.pop()
+          goBack()
         }
         return true
       })
+    
       Singleton.getInstance().currentCard = 'black';
       getInfuraMainLink();
       getBNBLink();
@@ -99,13 +109,13 @@ const Dashboard = props => {
         .catch(error => { });
       dispatch(walletFormUpdate({ prop: 'selectedAddress', value: '' }));
     });
-    let blur = props.navigation.addListener('didBlur', () => {
+    let blur = props.navigation.addListener('blur', () => {
       backHandle?.remove();
     })
     return () => {
       backHandle?.remove();
-      blur?.remove();
-      focus?.remove();
+      blur();
+      focus();
       EventRegister.removeEventListener('themeChanged')
     };
   }, []);
@@ -166,6 +176,8 @@ const Dashboard = props => {
               value: JSON.parse(wallet_list),
             }),
           );
+
+          setisLoading(true)
         getMyWalletsData();
       });
   };
@@ -212,7 +224,7 @@ const Dashboard = props => {
   const getMyWalletsData = () => {
     walletListCall();
     let page = Page;
-    let limit = 100;
+    let limit = 25;
     let access_token = Singleton.getInstance().access_token;
     Singleton.getInstance()
       .newGetData(constants.addresKeyList)
@@ -222,7 +234,7 @@ const Dashboard = props => {
           .then(coinFamilyKey => {
             let addrsListKeys = JSON.parse(addresKeyList);
             let coinFamilyKeys = coinFamilyKey?.split(',');
-            showLoader == true ? setisLoading(true) : setisLoading(false);
+            // showLoader == true ? setisLoading(true) : setisLoading(false);
             dispatch(
               getDashboardWallets({
                 page,
@@ -233,11 +245,14 @@ const Dashboard = props => {
               }),
             )
               .then(response => {
+                let data = page == 1 ? response : [...CoinData, ...response]
+                setBottomLoading(false);
+                setTotalLength(data[0]?.totalRecords)
                 setisLoading(false);
                 dispatch(
                   walletDataUpdate({
                     prop: 'dashboardWallets',
-                    value: response,
+                    value: data,
                   }),
                 );
               })
@@ -250,6 +265,21 @@ const Dashboard = props => {
           });
       });
   };
+  const isCloseToBottom = async ({
+    layoutMeasurement,
+    contentOffset,
+    contentSize,
+  }) => {
+    const paddingToBottom = 20;
+    let bottomReached =
+    layoutMeasurement.height + contentOffset.y >=
+    contentSize.height - paddingToBottom;
+    if (bottomReached && (totalLength > CoinData?.length) && !bottomLoading) {
+      setBottomLoading(true)
+      setPage(Page + 1)
+      getMyWalletsData(false, false)
+    }
+  }
   const CardItem = ({ item, index }) => {
     return (
       <View
@@ -342,8 +372,8 @@ const Dashboard = props => {
                         constants.UNCOMPATIBLE_WALLET,
                       );
                     } else {
-                      Actions.currentScene !== 'Stake' &&
-                        Actions.Stake({
+                      getCurrentRouteName() !== 'Stake' &&
+                      navigate(NavigationStrings.Stake,{
                           chain: item.coin_family == 1 ? 'eth' : 'bnb',
                         });
                     }
@@ -371,7 +401,7 @@ const Dashboard = props => {
                         constants.UNCOMPATIBLE_WALLET,
                       );
                     } else {
-                      Actions.currentScene != 'Epay' &&
+                      getCurrentRouteName() != 'Epay' &&
                         Actions.Epay({ selectedItem: item });
                     }
                   });
@@ -400,10 +430,10 @@ const Dashboard = props => {
         onChangedText={text => { }}
         containerStyle={{ backgroundColor: ThemeManager.colors.dashboardBg }}
         onpress3={() => {
-          Actions.currentScene != 'Notification' && Actions.Notification();
+          getCurrentRouteName() != 'Notification' && navigate(NavigationStrings.Notification);
         }}
         onpress2={() => {
-          Actions.currentScene != 'Setting' &&
+          getCurrentRouteName() != 'Setting' &&
             props.navigation.navigate('Setting', {
               onGoBack: () => { },
             });
@@ -415,8 +445,8 @@ const Dashboard = props => {
               if (isPrivate == 'btc' || isPrivate == 'trx') {
                 Singleton.showAlert(constants.UNCOMPATIBLE_WALLET);
               } else {
-                Actions.currentScene != 'ConnectWithDapp' &&
-                  Actions.ConnectWithDapp();
+                getCurrentRouteName() != 'ConnectWithDapp' &&
+                navigate(NavigationStrings.ConnectWithDapp);
               }
             });
         }}
@@ -440,7 +470,11 @@ const Dashboard = props => {
         bounces={false}
         stickyHeaderIndices={[2]}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 20 }}>
+        contentContainerStyle={{ paddingBottom: 20 }}
+        onScroll={({ nativeEvent }) => {
+          isCloseToBottom(nativeEvent);
+        }}
+        scrollEventThrottle={200}>
         <View
           style={{
             width: '100%',
@@ -496,7 +530,7 @@ const Dashboard = props => {
                     ) {
                       Singleton.showAlert(constants.UNCOMPATIBLE_WALLET);
                     } else {
-                      Actions.currentScene != 'Epay' && Actions.Epay();
+                      getCurrentRouteName() != 'Epay' && Actions.Epay();
                     }
                   });
               }}
@@ -507,6 +541,7 @@ const Dashboard = props => {
 
             <IconText
               tintColor={ThemeManager.colors.headingText}
+              disabled={onPressActive}
               onPress={() => {
                 if (global.disconnected) {
                   Singleton.showAlert(constants.NO_NETWORK);
@@ -528,14 +563,21 @@ const Dashboard = props => {
                       Singleton.getInstance()
                         .newGetData(constants.access_token_cards)
                         .then(access_token_cards => {
-                          if (access_token_cards == null) {
-                            Actions.currentScene != 'SaitaCardWelcome' &&
-                              Actions.SaitaCardWelcome();
-                          } else {
-                            Actions.currentScene != 'SaitaCardsInfo' &&
-                              Actions.SaitaCardsInfo({ from: 'Dashboard' });
-                          }
+                          // if (access_token_cards == null) {
+                          //   getCurrentRouteName() != 'SaitaCardWelcome' &&
+                          //     Actions.SaitaCardWelcome();
+                          // } else {
+                          //   getCurrentRouteName() != 'SaitaCardsInfo' &&
+                          //     Actions.SaitaCardsInfo({ from: 'Dashboard' });
+                          // }
+                          Singleton.showAlert('Coming soon!')
+                          // navigate(NavigationStrings.SaitaCardDashBoard)
                         });
+                        setPressActive(true);
+                        setTimeout(() => {
+                          setPressActive(false);
+                        }, 200);
+                        
                     }
                   });
               }}
@@ -557,8 +599,8 @@ const Dashboard = props => {
                     ) {
                       Singleton.showAlert(constants.UNCOMPATIBLE_WALLET);
                     } else {
-                      Actions.currentScene != 'Trade' &&
-                        Actions.Trade({ chain: isPrivate });
+                      getCurrentRouteName() != 'Trade' &&
+                      navigate(NavigationStrings.Trade,{ chain: isPrivate });
                     }
                   });
               }}
@@ -573,8 +615,8 @@ const Dashboard = props => {
                   Singleton.showAlert('Please enable your wallet for Send.');
                   return;
                 }
-                Actions.currentScene != 'Send' &&
-                  Actions.Send({ walletList: CoinDataMain, from: 'Send' });
+                getCurrentRouteName() != 'Send' &&
+                navigate(NavigationStrings.Send,{ walletList: CoinDataMain, from: 'Send' });
               }}
               styleIconText={{ backgroundColor: ThemeManager.colors.iconBg }}
               imageIcon={Images.send}
@@ -628,10 +670,21 @@ const Dashboard = props => {
           contentContainerStyle={{ paddingVertical: heightDimen(10) }}
           style={{ paddingBottom: heightDimen(80) }}
           renderItem={CardItem}
+          ListFooterComponent={() => {
+            if (bottomLoading) {
+              return (
+                <View style={{ padding: areaDimen(20), justifyContent: 'center', alignItems: 'center', paddingBottom: areaDimen(30) }}>
+                  <ActivityIndicator color={ThemeManager.colors.headingText} />
+                </View>
+              )
+            } else {
+              return null
+            }
+          }}
         />
       </ScrollView>
 
-      {isLoading && <Loader />}
+      {isLoading && <Loader  loader={isLoading}/>}
     </View>
   );
 };

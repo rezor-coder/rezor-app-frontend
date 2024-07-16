@@ -1,55 +1,46 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
-  View,
-  Text,
-  TouchableOpacity,
-  BackHandler,
-  Image,
-  Linking,
-  ImageBackground,
-  Dimensions,
-  StyleSheet,
-  FlatList,
-  TextInput,
-  ScrollView,
   Alert,
+  Dimensions,
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
 } from 'react-native';
-import { Actions } from 'react-native-router-flux';
-import { ThemeManager, LanguageManager } from '../../../../ThemeManager';
-import {
-  SimpleHeader,
-  Wrap,
-  MainHeader,
-  SimpleHeaderNew,
-  BasicButton,
-} from '../../common';
-import { Fonts, Images, Colors } from '../../../theme';
-import LinearGradient from 'react-native-linear-gradient';
-import Singleton from '../../../Singleton';
-import SelectDropdown from 'react-native-select-dropdown';
-import { getSwapList, getSwapBnbList } from '../../../Redux/Actions';
 import { EventRegister } from 'react-native-event-listeners';
-import { connect, useDispatch, useSelector } from 'react-redux';
+import SelectDropdown from 'react-native-select-dropdown';
+import { useDispatch } from 'react-redux';
+import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
+import { getSwapList } from '../../../Redux/Actions';
+import Singleton from '../../../Singleton';
+import { Colors, Fonts, Images } from '../../../theme';
+import {
+  BasicButton,
+  Wrap
+} from '../../common';
 import Loader from '../Loader/Loader';
 
-import Web3 from 'web3';
 import { BigNumber } from 'bignumber.js';
+import Web3 from 'web3';
 // let routerAddress = '0x0c17e776CD218252ADFca8D4e761D3fe757e9778'; // mainnet saitaswap router address
 // let factoryAddress = '0x35113a300ca0D7621374890ABFEAC30E88f214b1';
 // let WETH = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'; // Using Wrapped Ether (WETH) contract address to get ETH equivalent balance
 
 
 
-import TOKEN_ABI from '../../../../ABI/tokenContract.ABI.json';
+import PAIR_ABI from '../../../../ABI/Pair.ABI.json';
 import ROUTER_ABI from '../../../../ABI/router.ABI.json';
 import SAITAROUTER_ABI from '../../../../ABI/saitaFactory.ABI.json';
-import PAIR_ABI from '../../../../ABI/Pair.ABI.json';
-import { ModalSwap } from '../../common/ModalSwap';
-import * as constants from '../../../Constant';
-import { BASE_URL } from '../../../Endpoints';
+import TOKEN_ABI from '../../../../ABI/tokenContract.ABI.json';
 import { APIClient } from '../../../Api';
+import * as constants from '../../../Constant';
+import { getCurrentRouteName, goBack, navigate } from '../../../navigationsService';
 import { bigNumberSafeMath } from '../../../utils';
+import { ModalSwap } from '../../common/ModalSwap';
 
 const GAS_FEE_MULTIPLIER = 0.000000000000000001;
 
@@ -1078,7 +1069,7 @@ let WETH = Singleton.getInstance().SwapWethAddress; // Using Wrapped Ether (WETH
     ).then(resultApprove => {
       //console.warn('MM','approve send transaction response ==>>', resultApprove);
       Alert.alert(constants.APP_NAME, "Please wait for blockchain confirmation, Once Approved You can start Adding Liquidity.",
-        [{ text: 'OK', onPress: () => { Actions.pop() } }],
+        [{ text: 'OK', onPress: () => { goBack() } }],
         { cancelable: false },
       );
       setUserApproval(true);
@@ -1767,8 +1758,8 @@ let WETH = Singleton.getInstance().SwapWethAddress; // Using Wrapped Ether (WETH
           </Text>
           <TouchableOpacity
             onPress={() => {
-              Actions.currentScene != 'LiquiditySelectToken' &&
-                Actions.LiquiditySelectToken({ coinList });
+              getCurrentRouteName() != 'LiquiditySelectToken' &&
+              navigate(NavigationStrings.LiquiditySelectToken,{ coinList });
             }}
             style={styles.removeView1}>
             <Image

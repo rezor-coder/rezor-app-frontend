@@ -1,30 +1,29 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, { useState, useEffect, useCallback } from 'react';
+import { BigNumber } from 'bignumber.js';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
-  View,
-  Text,
   Alert,
-  TouchableOpacity,
   FlatList,
   ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
-import { Actions } from 'react-native-router-flux';
+import Web3 from 'web3';
+import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
+import { APIClient } from '../../../Api';
+import * as constants from '../../../Constant';
+import Singleton from '../../../Singleton';
+import Colors from '../../../theme/Colors';
+import { default as Fonts, default as fonts } from '../../../theme/Fonts';
 import { BasicButton, CustomSwitch, SimpleHeader } from '../../common';
 import { Wrap } from '../../common/Wrap';
-import fonts from '../../../theme/Fonts';
-import Colors from '../../../theme/Colors';
-import * as constants from '../../../Constant';
-import styles from './StakeStyle';
-import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
-import Fonts from '../../../theme/Fonts';
-import Web3 from 'web3';
-import Singleton from '../../../Singleton';
-import TOKEN_CONTRACT_ABI from './tokenContract.ABI.json';
-import STAKING_CONTRACT_ABI from './SaitaABI.json';
-import { BigNumber } from 'bignumber.js';
 import Loader from '../Loader/Loader';
+import STAKING_CONTRACT_ABI from './SaitaABI.json';
+import styles from './StakeStyle';
 import StakeView from './StakeView';
-import { APIClient } from '../../../Api';
+import TOKEN_CONTRACT_ABI from './tokenContract.ABI.json';
+import { goBack } from '../../../navigationsService';
 
 const debounce = require('lodash.debounce');
 const RowData = ({ text, customStyle }) => {
@@ -564,7 +563,7 @@ const Stake = props => {
           {
             text: 'Ok',
             onPress: () => {
-              Actions.pop()
+              goBack()
             },
           },
         ],

@@ -1,44 +1,43 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
-  View,
+  Alert,
+  BackHandler,
+  Dimensions,
+  Image,
+  ImageBackground,
+  Linking,
+  Modal,
+  SafeAreaView,
   Text,
   TouchableOpacity,
-  Alert,
-  Image,
-  Linking,
-  Dimensions,
-  Modal,
-  ImageBackground,
-  SafeAreaView,
-  BackHandler
+  View
 } from 'react-native';
-import { Actions } from 'react-native-router-flux';
+import { useDispatch } from 'react-redux';
+import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
+import * as Constants from '../../../Constant';
 import {
-  MainStatusBar,
+  cardUserdata,
+  getUserCardDetail,
+  getUserProfile,
+  loginCards,
+  sendCardPaymentrx,
+  userLogIn,
+} from '../../../Redux/Actions/SaitaCardAction';
+import Singleton from '../../../Singleton';
+import { Colors, Fonts, Images } from '../../../theme';
+import HeaderwithBackIcon from '../../common/HeaderWithBackIcon';
+import {
   BasicButton,
-  Header,
-  Wrap,
+  BasicInputBoxSelect,
   CheckBox,
   ImageBackgroundComponent,
-  BasicInputBoxPassword,
-  BasicInputBox,
+  MainStatusBar,
   SimpleHeader,
-  BasicInputBoxSelect,
+  Wrap
 } from '../../common/index';
-import styles from './SaitaCardLoginStyle';
-import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
-import Singleton from '../../../Singleton';
-import { Fonts, Images, Colors } from '../../../theme';
-import HeaderwithBackIcon from '../../common/HeaderWithBackIcon';
-import * as Constants from '../../../Constant';
-import { useDispatch } from 'react-redux';
 import Loader from '../Loader/Loader';
-import {
-  loginCards,
-  getUserCardDetail,
-  sendCardPaymentrx,
-} from '../../../Redux/Actions/SaitaCardAction';
+import styles from './SaitaCardLoginStyle';
 //main
 import SmartCardAbi from '../../../../ABI/SmartCardAbi.json';
 import tokenCardAbi from '../../../../ABI/tokenCardAbi.json';
@@ -46,8 +45,29 @@ import tokenCardAbi from '../../../../ABI/tokenCardAbi.json';
 // import SmartCardAbi from '../../../../ABI/SmartCardAbitest.json';
 // import tokenCardAbi from '../../../../ABI/tokenCardAbitest.json';
 import { BigNumber } from 'bignumber.js';
+import { Platform } from 'react-native';
+import DeviceInfo from 'react-native-device-info';
+import FastImage from 'react-native-fast-image';
 import Web3 from 'web3';
+import { APIClient } from '../../../Api';
+import {
+  API_UPDATE_MOBILE,
+  BASE_URL_CARD_EPAY
+} from '../../../Endpoints';
+import { NavigationStrings } from '../../../Navigation/NavigationStrings';
+import { numberValidation } from '../../../Utils/Validation';
+import { areaDimen, heightDimen, widthDimen } from '../../../Utils/themeUtils';
+import { countryData } from '../../../countryCodes';
+import { getCurrentRouteName, goBack, navigate } from '../../../navigationsService';
+import images from '../../../theme/Images';
+import {
+  createOrderForSaitaCard,
+  createOrderForSaitaCard_Binance
+} from '../../../utils';
+import GradientButton from '../../common/GradientButton';
 import { ModalCardTrx } from '../../common/ModalCardTrx';
+import TextInputWithLabel from '../../common/TextInputWithLabel';
+import CountryCodes from '../CountryCodes/CountryCodes';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
@@ -60,28 +80,9 @@ let routerAddressCards =
     : '0x12f939E4FB9d9ccd955a1793A39D87672649706f';
 let toAddress = '0x17F72CF26042Cf58a43fEe2250b49Dd2B3bb1C05';
 const routerDecimals = Constants.ismainnet ? 6 : 6;
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import images from '../../../theme/Images';
-import {
-  API_UPDATE_MOBILE,
-  BASE_URL,
-  BASE_URL_CARD_EPAY,
-} from '../../../Endpoints';
-import { APIClient } from '../../../Api';
-import CountryCodes from '../CountryCodes/CountryCodes';
-import { countryData } from '../../../countryCodes';
-import {
-  createOrderForSaitaCard,
-  createOrderForSaitaCard_Binance,
-} from '../../../utils';
-import { Platform } from 'react-native';
-import { areaDimen, heightDimen, widthDimen } from '../../../Utils/themeUtils';
-import fonts from '../../../theme/Fonts';
-import DeviceInfo from 'react-native-device-info';
-import FastImage from 'react-native-fast-image';
 let hasNotch = DeviceInfo.hasNotch();
 const SaitaCardLogin = props => {
-  console.log("props::>>>", props.from);
+  console.log("props::>>>", props?.route?.params?.from);
   const GAS_FEE_MULTIPLIER = 0.000000000000000001;
   const GAS_BUFFER = 35000;
   let gasPriceAllowance;
@@ -116,7 +117,8 @@ const SaitaCardLogin = props => {
   const [cardId, setCardId] = useState('');
   const [swapModal, setSwapModal] = useState(false);
 
-  const [showPassword, setShowPassword] = useState(true);
+  const [showPassword, setShowPassword] = useState(false);
+  const [phoneNumber,setPhoneNumber]= useState('');
 
   useEffect(() => {
     //console.warn('MM',"???>>>>> ThemeManager", ThemeManager.colors.themeColor);
@@ -127,10 +129,10 @@ const SaitaCardLogin = props => {
         setPrivateKey(ethPvtKey);
       });
     let backhandle = BackHandler.addEventListener('hardwareBackPress', () => {
-      Actions.pop();
+      goBack();
       return true
     })
-    let blur = props.navigation.addListener('didBlur', () => {
+    let blur = props.navigation.addListener('blur', () => {
       setPaymentMethodModal(false);
     });
     Singleton.getInstance()
@@ -152,7 +154,7 @@ const SaitaCardLogin = props => {
     balance();
     getGasPriceValue();
     return () => {
-      blur?.remove();
+      blur();
       backhandle?.remove();
     };
   }, []);
@@ -168,7 +170,7 @@ const SaitaCardLogin = props => {
 
   //       //             {"amount": null, "customerId": 160, "orderId": "66d994c6-8fb0-49c1-95f9-5976f5c68875"}, "message": "Card", "status": true}
   //       //  WARN  - resssss {"data": {"amount": null, "customerId": 160, "orderId": "66d994c6-8fb0-49c1-95f9-5976f5c68875"},
-  //                   Actions.SaitaCardEpay({linkhash:`https://epay-saitapro-prod.herokuapp.com/?customerId=${res.data.customer_id}&orderID=${res.data.order_id}&orderDescription=${props?.selectedItem?.name}&orderAmount=${res.data.amount}`})
+  //                   Actions.SaitaCardEpay({linkhash:`https://epay-saitapro-prod.herokuapp.com/?customerId=${res.data.customer_id}&orderID=${res.data.order_id}&orderDescription=${props?.route?.params?.selectedItem?.name}&orderAmount=${res.data.amount}`})
   //                   // `https://epay-saitapro-prod.herokuapp.com/?customerId=${res.data.customer_id}&orderID=${res.data.order_id}&orderDescription=${res.data.description}&orderAmount=${res.data.amount}`
   //                 }else{
 
@@ -200,8 +202,8 @@ const SaitaCardLogin = props => {
             // https://epay-saitacard-stage.herokuapp.com/?customerId=167&orderID2b974f13-cd33-4123-94f5-283f6a7408c7=&orderDescription=black&orderAmount=20
             //  WARN  - resssss {"data": {"amount": null, "customerId": 160, "orderId": "66d994c6-8fb0-49c1-95f9-5976f5c68875"},
             if (res.data.customerId && res.data.orderId && res.data.amount) {
-              let url = `${BASE_URL_CARD_EPAY}?customerId=${res.data.customerId}&orderID=${res.data.orderId}&orderDescription=${props?.selectedItem?.name}&orderAmount=${res.data.amount}`;
-              Actions.SaitaCardEpay({ linkhash: url });
+              let url = `${BASE_URL_CARD_EPAY}?customerId=${res.data.customerId}&orderID=${res.data.orderId}&orderDescription=${props?.route?.params?.selectedItem?.name}&orderAmount=${res.data.amount}`;
+              navigate(NavigationStrings.SaitaCardEpay,{ linkhash: url });
             } else {
               Singleton.showAlert('Unable to process your request');
             }
@@ -268,37 +270,66 @@ const SaitaCardLogin = props => {
 
   const proceedLogin = () => {
     console.log('::::::::::1::::', email);
-    if (email == '') {
-      Singleton.showAlert('Email field is required.');
+    if (phoneNumber == '') {
+      Singleton.showAlert('Number field is required.');
       return;
     }
-    console.log('::::::::::11::::', password);
+    if (!numberValidation(phoneNumber)
+    ) {
+      Singleton.showAlert('Invalid phone number');
+      return;
+    }
     if (password == '') {
       Singleton.showAlert('Password field is required.');
       return;
     }
     let regx = /^[^\s@]+@[^\s@.]+\.[^\s@]{2,}$/
-    if (
-      regx.test(
-        email,
-      ) == false
-    ) {
-      Singleton.showAlert('Please provide valid email.');
-      return;
-    }
-    console.log('::::::::::13::::', toggleCheckBox);
+ 
     if (!toggleCheckBox) {
       Singleton.showAlert('Please accept terms of service');
       return;
     }
-    console.log('::::::::::2::::');
     setisLoading(true);
     let data = {
-      email: email,
+      number: `${countryCode}${phoneNumber}`,
       password: password,
       device_token: Singleton.getInstance().device_token,
+      grant_type:"mobile_phone"
     };
-    console.log(':::::3:::::::::');
+    console.log(':::::3:::::::::', data);
+    userLogIn({data})
+      .then(res => {
+        getUserProfile({token: res?.data?.access_token})
+          .then(response => {
+            let newUserData = {
+              ...response?.data,
+              access_token: res?.data?.access_token,
+            };
+            console.log('newUserData::',newUserData);
+            if (isRemember) {
+              Singleton.getInstance().newSaveData(
+                Constants.CARD_CREDENTIALS,
+                JSON.stringify({ phoneNumber, password }),
+              );
+            }
+            Singleton.getInstance().newSaveData(
+              Constants.USER_DATA,
+              JSON.stringify(newUserData),
+            );
+            cardUserdata(dispatch, newUserData);
+            setisLoading(false);
+            goBack();
+          })
+          .catch(error => {
+            Singleton.showAlert(err?.message || 'Something went wrong');
+            setisLoading(false);
+          });
+      })
+      .catch(error => {
+        setisLoading(false);
+        Singleton.showAlert(err?.message || 'Something went wrong');
+      });
+    return
     dispatch(loginCards({ data }))
       .then(res => {
         if (isRemember) {
@@ -415,9 +446,9 @@ const SaitaCardLogin = props => {
           {
             text: 'Ok',
             onPress: () => {
-              // Actions.pop();
-              Actions.currentScene != 'Dashboard' &&
-                Actions.replace('Dashboard');
+              // goBack();
+              getCurrentRouteName() != 'Dashboard' &&
+              navigate(NavigationStrings.Dashboard);
             },
           },
         ],
@@ -478,7 +509,7 @@ const SaitaCardLogin = props => {
               {
                 text: 'Cancel',
                 onPress: () => {
-                  // Actions.pop()
+                  // goBack()
                 },
               },
             ],
@@ -788,13 +819,13 @@ const SaitaCardLogin = props => {
           setisLoading(false);
           console.log('resssss', res);
           if (res?.status) {
-            Actions.currentScene != 'SaitaCardBinanceQr' &&
-              Actions.SaitaCardBinanceQr({ data: res?.data });
+            getCurrentRouteName() != 'SaitaCardBinanceQr' &&
+            navigate(NavigationStrings.SaitaCardBinanceQr,{ data: res?.data });
             //        {"amount": null, "customerId": 167, "orderId": "2b974f13-cd33-4123-94f5-283f6a7408c7"}
             // https://epay-saitacard-stage.herokuapp.com/?customerId=167&orderID2b974f13-cd33-4123-94f5-283f6a7408c7=&orderDescription=black&orderAmount=20
             //  WARN  - resssss {"data": {"amount": null, "customerId": 160, "orderId": "66d994c6-8fb0-49c1-95f9-5976f5c68875"},
             // if (res.data.customerId && res.data.orderId && res.data.amount) {
-            //   let url = `${BASE_URL_CARD_EPAY}?customerId=${res.data.customerId}&orderID=${res.data.orderId}&orderDescription=${props?.selectedItem?.name}&orderAmount=${res.data.amount}`;
+            //   let url = `${BASE_URL_CARD_EPAY}?customerId=${res.data.customerId}&orderID=${res.data.orderId}&orderDescription=${props?.route?.params?.selectedItem?.name}&orderAmount=${res.data.amount}`;
             //   Actions.SaitaCardEpay({linkhash: url});
             // } else {
             //   Singleton.showAlert('Unable to process your request');
@@ -868,10 +899,10 @@ const SaitaCardLogin = props => {
   };
 
   const getUserDetail = access_token => {
-    console.log("props::>>>", props.from);
+    console.log("props::>>>", props?.route?.params?.from);
     setisLoading(false);
-    Actions.currentScene != 'SaitaCardWelcome' && Actions.pop();
-    Actions.replace('SaitaCardsInfo', { from: props?.from });
+    getCurrentRouteName() != 'SaitaCardWelcome' && goBack();
+    navigate(NavigationStrings.SaitaCardsInfo, { from: props?.route?.params?.from });
 
     return;
     dispatch(getUserCardDetail({ access_token }))
@@ -885,8 +916,8 @@ const SaitaCardLogin = props => {
           if (res.kyc_status == 0) {
             return setApplyModal(true);
           } else {
-            Actions.currentScene != 'SaitaCardsInfo' &&
-              Actions.SaitaCardsInfo();
+            getCurrentRouteName() != 'SaitaCardsInfo' &&
+            navigate(NavigationStrings.SaitaCardsInfo);
           }
         } else {
           if (res.fee_status == 'pending') {
@@ -904,15 +935,14 @@ const SaitaCardLogin = props => {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: ThemeManager.colors.bg }}>
-      <Wrap style={{ backgroundColor: ThemeManager.colors.bg }}>
-        <View
-          style={{ flex: 1 }}>
+    <SafeAreaView style={{flex: 1, backgroundColor: ThemeManager.colors.bg}}>
+      <Wrap style={{backgroundColor: ThemeManager.colors.bg}}>
+        <View style={{flex: 1}}>
           <HeaderwithBackIcon
-            style={{ position: 'absolute', zIndex: 1 }}
+            style={{position: 'absolute', zIndex: 1}}
             iconLeft={ThemeManager.ImageIcons.iconBack}
           />
-          <View style={{ flex: 1 }}>
+          <View style={{flex: 1}}>
             <View style={styles.container}>
               <MainStatusBar
                 backgroundColor={ThemeManager.colors.bg}
@@ -928,69 +958,84 @@ const SaitaCardLogin = props => {
                   justifyContent: 'flex-start',
                   marginTop: heightDimen(66),
                 }}>
-                <Text
-                  style={[
-                    styles.lablePrefLang,
-                    { color: ThemeManager.colors.headingText },
-                  ]}>
-                  Welcome to SaitaPro
-                </Text>
+                <View style={styles.loginTextView}>
+                  <Image source={images.splashLogo} style={styles.logoStyle} />
+                  <Text style={[styles.straproStyle]}>
+                    {LanguageManager.saitaPro}
+                  </Text>
+                </View>
                 <Text
                   style={[
                     {
-                      color: ThemeManager.colors.inActiveColor,
-                      fontSize: areaDimen(14),
-                      fontFamily: fonts.regular,
-                      alignSelf: 'flex-start',
-                      lineHeight: heightDimen(24),
+                      color: ThemeManager.colors.textColor,
+                      ...styles.loginDiscription,
                     },
                   ]}>
-                  Login to continue
+                  {LanguageManager.loginToAccessYourAccount}
                 </Text>
-                <BasicInputBox
+                {/* <BasicInputBox
                   titleStyle={{
                     color: ThemeManager.colors.textColor,
                     fontSize: areaDimen(14),
-                    fontFamily: Fonts.medium,
+                    fontFamily: Fonts.semibold,
                     marginTop: heightDimen(20),
                     lineHeight: heightDimen(18),
                   }}
-                  maxLength={64}
-                  title={LanguageManager.emailid}
-                  keyboardType={
-                    Platform.OS == 'ios' ? 'email-address' : 'visible-password'
-                  }
+                  maxLength={10}
+                  title={LanguageManager.phone}
+                  keyboardType={'numeric'}
                   width="92%"
-                  text={email}
+                  text={phoneNumber}
                   style={{
                     fontSize: areaDimen(14),
                     lineHeight: heightDimen(18),
                     fontFamily: Fonts.medium,
                   }}
-                  mainStyle={{ borderColor: ThemeManager.colors.viewBorderColor }}
+                  mainStyle={{borderColor: ThemeManager.colors.viewBorderColor}}
                   onChangeText={text => {
-                    // let regx = /^[^\s@]+@[^\s@.]+\.[^\s@]{2,}$/
-                    // if(regx.test(text)){
-                    //   if (text) {
-                    //     text = text?.trim();
-                    //   }
-                    //   setEmail(text);
-                    // }
-                    let regx = /^.*?$/
-                    console.log("regx.test(value)::::", regx.test(text), text);
-                    if (regx.test(text?.trim())) {
-                      setEmail(text?.trim());
+                    console.log('regx.test(value)::::', numberValidation(text?.trim()) || text.length < 0)
+                    if (numberValidation(text?.trim()) || text.length < 1) {
+                      setPhoneNumber(text?.trim());
                     }
                   }}
-                  placeholder={'Enter Email ID'}
+                  placeholder={`${LanguageManager.enterhere}`}
                   numberOfLines={1}
                   multiline={false}
+                  phoneCode={countryCode}
+                  pressphoneCode={()=>setCountryModal(true)}
+                /> */}
+                <TextInputWithLabel
+                  label={LanguageManager.phone}
+                  placeHolder={LanguageManager.enterhere}
+                  value={phoneNumber}
+                  keyboardType={'numeric'}
+                  onChangeText={text => {
+                    if (numberValidation(text) || text.length < 1) {
+                      setPhoneNumber(text.trimStart());
+                    }
+                  }}
+                  maxLength={10}
+                  labelStyle={{marginTop: areaDimen(24)}}
+                  editable={true}
+                  customLeftIcon={() => (
+                    <TouchableOpacity
+                      style={styles.dialCodeView}
+                      onPress={() => setCountryModal(true)}>
+                      <Text
+                        style={[
+                          styles.inputTextStyle,
+                          {color: ThemeManager.colors.textColor},
+                        ]}>
+                        {countryCode}
+                      </Text>
+                    </TouchableOpacity>
+                  )}
                 />
-                <BasicInputBoxPassword
+                {/* <BasicInputBoxPassword
                   titleStyle={{
                     color: ThemeManager.colors.textColor,
                     fontSize: areaDimen(14),
-                    fontFamily: Fonts.medium,
+                    fontFamily: Fonts.semibold,
                     marginTop: heightDimen(16),
                     lineHeight: heightDimen(18),
                   }}
@@ -1002,19 +1047,35 @@ const SaitaCardLogin = props => {
                   keyboardType="ascii-capable"
                   secureTextEntry={showPassword}
                   onChangeText={text => setPassword(text)}
-                  mainContainerStyle={{ paddingHorizontal: 0 }}
+                  mainContainerStyle={{paddingHorizontal: 0}}
                   mainStyle={{
                     borderColor: ThemeManager.colors.viewBorderColor,
                     borderRadius: 100,
                   }}
                   numberOfLines={1}
-                  placeholder={'Enter Password'}
+                  iconStyle={{tintColor: Colors.buttonColor1}}
+                  placeholder={`${LanguageManager.enterhere}`}
+                /> */}
+                <TextInputWithLabel
+                  label={LanguageManager.password}
+                  placeHolder={LanguageManager.enterPassword}
+                  value={password}
+                  onChangeText={text => {
+                    setPassword(text.trimStart());
+                  }}
+                  labelStyle={{marginTop: areaDimen(16)}}
+                  onPressRightIcon={() => setShowPassword(!showPassword)}
+                  rightIcon={
+                    !!showPassword ? Images.eyeOpened : Images.eyeClosed
+                  }
+                  secureTextEntry={!showPassword}
+                  editable={true}
                 />
 
                 <View
                   style={{
                     flexDirection: 'row',
-                    marginTop: 15,
+                    marginTop: areaDimen(15),
                     justifyContent: 'space-between',
                   }}>
                   <CheckBox
@@ -1022,6 +1083,8 @@ const SaitaCardLogin = props => {
                     checkboxstyle={{
                       height: areaDimen(16),
                       width: areaDimen(16),
+                      marginTop:
+                        Platform.OS == 'ios' ? areaDimen(1) : areaDimen(2),
                     }}
                     checkboxColor={ThemeManager.colors.checkBoxColor}
                     isStored={isRemember}
@@ -1039,8 +1102,8 @@ const SaitaCardLogin = props => {
                   />
                   <TouchableOpacity
                     onPress={() =>
-                      Actions.currentScene != 'SaitaCardForgot' &&
-                      Actions.SaitaCardForgot()
+                      getCurrentRouteName() != 'SaitaCardForgot' &&
+                      navigate(NavigationStrings.SaitaCardForgot)
                     }
                     style={{
                       alignItems: 'flex-end',
@@ -1048,18 +1111,23 @@ const SaitaCardLogin = props => {
                     }}>
                     <Text
                       style={{
-                        fontFamily: Fonts.regular,
+                        fontFamily: Fonts.medium,
                         fontSize: areaDimen(14),
-                        color: ThemeManager.colors.textColor,
+                        // color: ThemeManager.colors.textColor,
+                        color: Colors.buttonColor1,
                       }}>
-                      Forgot Password
+                      Forgot Password?
                     </Text>
                   </TouchableOpacity>
                 </View>
               </View>
             </View>
-            <View style={{ flex: 1, justifyContent: 'flex-end' }}>
-              <View style={{ marginHorizontal: widthDimen(20), marginBottom: heightDimen(10) }}>
+            <View style={{flex: 1, justifyContent: 'flex-end'}}>
+              <View
+                style={{
+                  marginHorizontal: widthDimen(20),
+                  marginBottom: heightDimen(10),
+                }}>
                 <View
                   style={{
                     flexDirection: 'row',
@@ -1067,7 +1135,7 @@ const SaitaCardLogin = props => {
                     alignItems: 'center',
                   }}>
                   <TouchableOpacity
-                    style={{ bottom: -1 }}
+                    style={{bottom: -1}}
                     onPress={() => {
                       setToggleCheckBox(!toggleCheckBox);
                     }}>
@@ -1078,7 +1146,9 @@ const SaitaCardLogin = props => {
                       }}
                       resizeMode={FastImage.resizeMode.contain}
                       source={
-                        toggleCheckBox ? Images.toggleOn : ThemeManager.ImageIcons.toggleOff
+                        toggleCheckBox
+                          ? Images.toggleOn
+                          : ThemeManager.ImageIcons.toggleOff
                       }
                     />
                   </TouchableOpacity>
@@ -1125,7 +1195,25 @@ const SaitaCardLogin = props => {
                   </View>
                 </View>
               </View>
-              <BasicButton
+
+              <GradientButton
+                onPress={proceedLogin}
+                title={LanguageManager.proceed}
+                buttonStyle={styles.buttonView}
+              />
+              <TouchableOpacity
+                activeOpacity={1}
+                onPress={() => navigate(NavigationStrings.RegisterNow)}>
+                <Text
+                  style={[
+                    styles.registerText,
+                    {color: ThemeManager.colors.textColor},
+                  ]}>
+                  Don't have an account?{' '}
+                  <Text style={{color: Colors.buttonColor1}}>Register Now</Text>
+                </Text>
+              </TouchableOpacity>
+              {/* <BasicButton
                 onPress={() => proceedLogin()}
                 btnStyle={[
                   styles.btnStyle,
@@ -1135,7 +1223,7 @@ const SaitaCardLogin = props => {
                   },
                 ]}
                 text="Login"
-              />
+              /> */}
             </View>
           </View>
           {/* *********************************************************** MODAL FOR Apply ********************************************************************** */}
@@ -1145,8 +1233,8 @@ const SaitaCardLogin = props => {
             visible={applyModal}
             onRequestClose={() => setApplyModal(false)}>
             <Wrap
-              style={{ backgroundColor: ThemeManager.colors.backgroundColor }}>
-              <ImageBackgroundComponent style={{ height: windowHeight }}>
+              style={{backgroundColor: ThemeManager.colors.backgroundColor}}>
+              <ImageBackgroundComponent style={{height: windowHeight}}>
                 <SimpleHeader
                   back={false}
                   backPressed={() => setApplyModal(false)}
@@ -1178,11 +1266,11 @@ const SaitaCardLogin = props => {
                     </View>
                   </ImageBackground>
                 </View>
-                <View style={{ height: '20%' }}>
+                <View style={{height: '20%'}}>
                   <Text
                     style={[
                       styles.txtWelcome,
-                      { color: ThemeManager.colors.textColor, marginTop: 15 },
+                      {color: ThemeManager.colors.textColor, marginTop: 15},
                     ]}>
                     Thank you for applying for{'\n'}SaitaCard{' '}
                     <Text
@@ -1202,17 +1290,17 @@ const SaitaCardLogin = props => {
                     (KYC) to start{'\n'}using SaitaCard
                   </Text>
                 </View>
-                <View style={{ alignItems: 'center', height: '30%' }}>
+                <View style={{alignItems: 'center', height: '30%'}}>
                   <BasicButton
                     onPress={() => {
                       setApplyModal(false);
-                      Actions.currentScene != 'KycShufti' &&
-                        Actions.KycShufti({ email: email });
+                      getCurrentRouteName() != 'KycShufti' &&
+                      navigate(NavigationStrings.KycShufti,{email: email});
                     }}
                     btnStyle={styles.btnStylekyc}
                     customGradient={styles.customGrad}
                     text={'Start KYC Process'}
-                    textStyle={{ fontSize: 16, fontFamily: Fonts.medium }}
+                    textStyle={{fontSize: 16, fontFamily: Fonts.medium}}
                   />
                 </View>
               </ImageBackgroundComponent>
@@ -1246,7 +1334,7 @@ const SaitaCardLogin = props => {
           animationType="slide"
           onRequestClose={() => {
             setMobileModal(false);
-            Actions.pop();
+            goBack();
           }}
           transparent>
           <View
@@ -1272,7 +1360,7 @@ const SaitaCardLogin = props => {
                 }}
                 onPress={() => {
                   setMobileModal(false);
-                  Actions.pop();
+                  goBack();
                 }}>
                 <Text
                   style={{
@@ -1311,8 +1399,8 @@ const SaitaCardLogin = props => {
                   fontSize: 13,
                   fontFamily: Fonts.semibold,
                 }}
-                title={LanguageManager.phone}
-                mainStyle={{ borderColor: ThemeManager.colors.inputBoxColor }}
+                title={LanguageManager.phoneNumber}
+                mainStyle={{borderColor: ThemeManager.colors.inputBoxColor}}
                 keyboardType="number-pad"
                 onChangeText={text => {
                   if (Constants.NUMBER_ONLY_REGEX.test(text)) {
@@ -1332,7 +1420,7 @@ const SaitaCardLogin = props => {
                 btnStyle={styles.btnStylekyc}
                 customGradient={[styles.customGrad]}
                 text={'Confirm'}
-                textStyle={{ fontSize: 16, fontFamily: Fonts.medium }}
+                textStyle={{fontSize: 16, fontFamily: Fonts.medium}}
               />
             </View>
           </View>
@@ -1344,20 +1432,17 @@ const SaitaCardLogin = props => {
           visible={countryModal}
           onRequestClose={() => {
             setCountryModal(false);
-            setMobileModal(true);
           }}>
-          <SafeAreaView style={{ backgroundColor: Colors.White, flex: 1 }}>
+          <SafeAreaView style={{backgroundColor: Colors.White, flex: 1}}>
             <CountryCodes
               List={countryData}
               twoItems={true}
               onPress={item => {
                 setCountryCode(item.dial_code);
                 setCountryModal(false);
-                setMobileModal(true);
               }}
               closeModal={() => {
                 setCountryModal(false);
-                setMobileModal(true);
               }}
             />
           </SafeAreaView>
@@ -1368,7 +1453,7 @@ const SaitaCardLogin = props => {
           animationType="fade"
           onRequestClose={() => {
             setPaymentMethodModal(false);
-            Actions.pop();
+            goBack();
           }}
           transparent>
           <View
@@ -1401,7 +1486,7 @@ const SaitaCardLogin = props => {
                 }}
                 onPress={() => {
                   setPaymentMethodModal(false);
-                  Actions.pop();
+                  goBack();
                 }}>
                 <Text
                   style={{
@@ -1426,7 +1511,7 @@ const SaitaCardLogin = props => {
                   borderRadius: 12,
                 }}
                 text={'Pay using USDT(ERC20)'}
-                textStyle={{ fontSize: 16, fontFamily: Fonts.medium }}
+                textStyle={{fontSize: 16, fontFamily: Fonts.medium}}
               />
               <BasicButton
                 onPress={() => {

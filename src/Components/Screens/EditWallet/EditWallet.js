@@ -1,47 +1,34 @@
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable eqeqeq */
 /* eslint-disable react/self-closing-comp */
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
-  View,
-  Text,
-  StyleSheet,
-  ImageBackground,
-  Image,
-  TouchableOpacity,
-  TextInput,
-  ScrollView,
-  Dimensions,
   BackHandler,
+  Dimensions,
+  Platform,
+  ScrollView,
+  Text,
+  TextInput,
+  View
 } from 'react-native';
-import {Wrap} from '../../common/Wrap';
+import { useDispatch, useSelector } from 'react-redux';
+import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
+import * as Constants from '../../../Constant';
+import { NavigationStrings } from '../../../Navigation/NavigationStrings';
+import { getColorList, walletFormUpdate } from '../../../Redux/Actions';
+import Singleton from '../../../Singleton';
+import { areaDimen, heightDimen, widthDimen } from '../../../Utils/themeUtils';
+import { getCurrentRouteName, goBack, navigate, navigation } from '../../../navigationsService';
+import fonts from '../../../theme/Fonts';
 import {
   BasicButton,
   BorderLine,
-  ImageBackgroundComponent,
-  SimpleHeader,
-  SubHeader,
+  SimpleHeader
 } from '../../common';
-import {Actions} from 'react-native-router-flux';
-import colors from '../../../theme/Colors';
-import LinearGradient from 'react-native-linear-gradient';
-import {DotPagination} from '../../common/DotPagination';
-import {ButtonPrimary} from '../../common/ButtonPrimary';
-import {FlatList} from 'react-native-gesture-handler';
-import {styles} from './EditWalletStyle';
-import {walletFormUpdate} from '../../../Redux/Actions';
-import {connect, useSelector, useDispatch} from 'react-redux';
-import Singleton from '../../../Singleton';
-import * as Constants from '../../../Constant';
+import { SettingBar } from '../../common/SettingBar';
+import { Wrap } from '../../common/Wrap';
 import Loader from '../Loader/Loader';
-import {getColorList} from '../../../Redux/Actions';
-import {LanguageManager, ThemeManager} from '../../../../ThemeManager';
-import images from '../../../theme/Images';
-import HeaderwithBackIcon from '../../common/HeaderWithBackIcon';
-import {SettingBar} from '../../common/SettingBar';
-import fonts from '../../../theme/Fonts';
-import {Platform} from 'react-native';
-import {areaDimen, heightDimen, widthDimen} from '../../../Utils/themeUtils';
+import { styles } from './EditWalletStyle';
 const windowHeight = Dimensions.get('window').height;
 const EditWallet = props => {
   const dispatch = useDispatch();
@@ -87,9 +74,9 @@ const EditWallet = props => {
           //console.warn('MM','create wallet res--------', res);
           dispatch(walletFormUpdate({prop: 'walletData', value: res}));
           if (props.isFrom == 'multiWallet') {
-            Actions.replace('SecureWallet', {isFrom: props.isFrom});
+            navigate(NavigationStrings.SecureWallet, {isFrom: props.isFrom});
           } else {
-            Actions.currentScene != 'SecureWallet' && Actions.SecureWallet();
+            getCurrentRouteName() != 'SecureWallet' && navigate(NavigationStrings.SecureWallet);
           }
 
           setLoading(false);
@@ -117,7 +104,7 @@ const EditWallet = props => {
 
       if (isNameExist?.length > 0) {
         if (
-          props?.walletData?.walletName?.trim()?.toLowerCase() !=
+          props?.route?.params?.walletData?.walletName?.trim()?.toLowerCase() !=
           text?.trim().toLowerCase()
         ) {
           Singleton.showAlert(Constants.wallet_name_already_exist);
@@ -132,7 +119,7 @@ const EditWallet = props => {
           }
 
           setLoading(false);
-          Actions.jump('MultiWalletList');
+          navigate(NavigationStrings.MultiWalletList);
 
           return;
         }
@@ -144,6 +131,7 @@ const EditWallet = props => {
       } else {
         setLoading(true);
         setTimeout(() => {
+          var defaultElement = { }
           let newArray = [];
           console.log(
           'response::::::www',
@@ -155,8 +143,8 @@ const EditWallet = props => {
             const element = walletsDetailData[i];
             if (
               // element.loginRequest.address ==
-              // props.walletData.loginRequest.address
-              i == props.index
+              // props.route?.params?.walletData.loginRequest.address
+              i == props.route?.params?.index
             ) {
               console.warn('MM','response::::::www 1111');
               element.walletName = walletNames?.trim();
@@ -170,12 +158,20 @@ const EditWallet = props => {
             //   //console.warn('MM','response::::::www 1111222');
             //   // element['walletName'] = element.walletName;
             // }
+            if(!!element.defaultWallet){
+              defaultElement = element
+            }
             newArray.push(element);
           
           }
-
-          if (props.walletData.defaultWallet == true) {
           
+
+          if (props.route?.params?.walletData.defaultWallet == true) {
+            
+           Singleton.getInstance().newSaveData(
+                Constants.ACTIVE_WALLET,
+                JSON.stringify(defaultElement),
+              );
             Singleton.getInstance().walletName = walletNames?.trim();
             //  this.props.walletFormUpdate({ prop: 'walletName', value: walletNames, });
             Singleton.getInstance()
@@ -195,14 +191,17 @@ const EditWallet = props => {
                   JSON.stringify(login_data),
                 );
               });
+             
+      
           }
+         
           Singleton.getInstance().newSaveData(
             Constants.multi_wallet_array,
             JSON.stringify(newArray),
           );
-          //console.warn('MM','newArray wallet options::::::', newArray);
+          console.warn('MM','newArray wallet options::::::', newArray);
           setLoading(false);
-          Actions.jump('MultiWalletList');
+          navigate(NavigationStrings.MultiWalletList);
         }, 500);
       }
     } else {
@@ -211,7 +210,7 @@ const EditWallet = props => {
   };
 
   const backAction = () => {
-    Actions.pop();
+    goBack();
     return true;
   };
 
@@ -219,24 +218,24 @@ const EditWallet = props => {
     let backHandle = null;
     backHandle = BackHandler.addEventListener('hardwareBackPress', backAction);
 
-    props.navigation.addListener('didFocus', () => {
+    props.navigation.addListener('focus', () => {
       backHandle = BackHandler.addEventListener(
         'hardwareBackPress',
         backAction,
       );
 
-      props.navigation.addListener('didBlur', () => {
+      props.navigation.addListener('blur', () => {
         backHandle?.remove();
       });
-      // //console.warn('MM','wallet data=-=-=+++-=-=>>walletData>111', props.walletData);
+      // //console.warn('MM','wallet data=-=-=+++-=-=>>walletData>111', props.route?.params?.walletData);
 
       //console.warn('MM','wallet data=-=-=+++-=-===>>>', props);
-      // console.warn('MM','wallet name=-=-=-=-=>>>3333', props.walletData);
-      setWalletNames(props?.walletData?.loginRequest?.wallet_name || props?.walletData?.loginRequest?.walletName);
-      setWalletMnemonics(props?.walletData?.mnemonics);
+      // console.warn('MM','wallet name=-=-=-=-=>>>3333', props.route?.params?.walletData);
+      setWalletNames(props?.route?.params?.walletData?.loginRequest?.wallet_name || props?.route?.params?.walletData?.loginRequest?.walletName);
+      setWalletMnemonics(props?.route?.params?.walletData?.mnemonics);
       ////console.log(
       // 'wallet name=-=-=-=-=>>>3333 mmmm',
-      //   props?.walletData?.mnemonics,
+      //   props?.route?.params?.walletData?.mnemonics,
       //   );
       Singleton.getInstance()
         .newGetData(Constants.multi_wallet_array)
@@ -412,7 +411,7 @@ const EditWallet = props => {
               borderRadius: 14,
               paddingBottom:heightDimen(20)
             }}>
-            {!props?.walletData?.privateKey && (
+            {!props?.route?.params?.walletData?.privateKey && (
               <View
                 style={[
                   styles.backupOptionsViewStyle,
@@ -438,11 +437,12 @@ const EditWallet = props => {
                     fontFamily: fonts.semibold,
                   }}
                   onPress={() => {
-                    Actions.currentScene != 'ConfirmPin' &&
-                      Actions.ConfirmPin({
+                    getCurrentRouteName() != 'ConfirmPin' &&
+                    navigate(NavigationStrings.ConfirmPin,{
                         redirectTo: 'RecoveryPhrase',
                         screenType: 'Editwallet',
-                        walletItem: props.walletData,
+                        walletItem: props.route?.params?.walletData,
+                        isFrom:'ManageWallet',
                         goBack: true,
                       });
                   }}
@@ -484,15 +484,15 @@ const EditWallet = props => {
                   // lineHeight:heightDimen(19)
                 }}
                 onPress={() => {
-                  Actions.currentScene != 'ConfirmPin' &&
-                    Actions.ConfirmPin({
+                  getCurrentRouteName() != 'ConfirmPin' &&
+                  navigate(NavigationStrings.ConfirmPin,{
                       redirectTo: 'ExportPrivateKeys',
                       screenType: 'Editwallet',
-                      walletItem: props.walletData,
+                      walletItem: props.route?.params?.walletData,
                       goBack: true,
                     });
-                  // Actions.currentScene != 'ExportPrivateKeys' &&
-                  //   Actions.ExportPrivateKeys({ walletItem: props.walletData });
+                  // getCurrentRouteName() != 'ExportPrivateKeys' &&
+                  //   Actions.ExportPrivateKeys({ walletItem: props.route?.params?.walletData });
                 }}
                 style={{
                   borderBottomWidth: 0,
@@ -509,7 +509,7 @@ const EditWallet = props => {
 
           {/* <View style={{}}>
             <TouchableOpacity
-              onPress={() => Actions.pop()}
+              onPress={() => goBack()}
               style={styles.btnView2}>
               <Text style={{color: colors.white}}>{LanguageManager.Back}</Text>
             </TouchableOpacity>
@@ -519,7 +519,7 @@ const EditWallet = props => {
       </ScrollView>
       <BasicButton
         onPress={() => {
-          // Actions.currentScene != 'WalletOption' && Actions.WalletOption();
+          // getCurrentRouteName() != 'WalletOption' && Actions.WalletOption();
           walletNameInputChanged(walletNames);
           // onColorChange()
           // Singleton.getInstance().dynamicColor = btn;
@@ -541,4 +541,5 @@ const mapStateToProp = state => {
   return {};
 };
 // export default connect(mapStateToProp, {getColorList})(WalletOption);
-export {EditWallet};
+export { EditWallet };
+

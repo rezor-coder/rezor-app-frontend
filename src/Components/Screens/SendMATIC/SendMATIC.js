@@ -1,76 +1,64 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, { useState, useEffect, createRef } from 'react';
+import React, { createRef, useEffect, useState } from 'react';
 import {
-  View,
-  ScrollView,
-  Text,
   BackHandler,
-  Modal,
+  Clipboard,
   Image,
-  TouchableOpacity,
+  Modal,
+  PermissionsAndroid,
   Platform,
   SafeAreaView,
-  PermissionsAndroid,
-  Clipboard,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
-import confirmTransaction from '../confirmTransaction/confirmTransaction';
+import { connect, useDispatch } from 'react-redux';
 import {
-  Wrap,
-  InputtextAddress,
-  BorderLine,
-  PinInput,
-  KeyboardDigit,
-} from '../../common/index';
-import Singleton from '../../../Singleton';
-import SmoothPinCodeInput from 'react-native-smooth-pincode-input';
-import {
-  getEthNonce,
-  getEthGasPrice,
-  sendETH,
+  CheckIsContactExist,
   getEthGasEstimate,
+  getEthGasPrice,
+  getEthNonce,
   getEthTokenRaw,
-  walletFormUpdate,
-  CheckIsContactExist
+  sendETH,
+  walletFormUpdate
 } from '../../../Redux/Actions';
-import { AddressBox } from '../../common/AddressBox';
+import Singleton from '../../../Singleton';
+import { Colors, Fonts, Images } from '../../../theme/index';
+import { BasicModal, SimpleHeader } from '../../common';
+import { BasicInputBox } from '../../common/BasicInputBox';
+import { ButtonPrimary } from '../../common/ButtonPrimary';
+import {
+  BorderLine,
+  InputtextAddress,
+  KeyboardDigit,
+  PinInput,
+  Wrap,
+} from '../../common/index';
+import Loader from '../Loader/Loader';
 import * as constants from './../../../Constant';
 import styles from './SendMATICStyle';
-import { Images, Colors, Fonts } from '../../../theme/index';
-import { SimpleHeader, BasicModal } from '../../common';
-import { BasicInputBox } from '../../common/BasicInputBox';
-import { Actions } from 'react-native-router-flux';
-import { ButtonTransaction } from '../../common/ButtonTransaction';
-import LinearGradient from 'react-native-linear-gradient';
-import { ButtonPrimary } from '../../common/ButtonPrimary';
-import { connect } from 'react-redux';
-import { AdvanceOptions } from '../../common/AdvanceOptions';
-import { useSelector, useDispatch } from 'react-redux';
-import Loader from '../Loader/Loader';
-import { BASE_IMAGE } from '../../../Endpoints';
-import { CameraScreen } from 'react-native-camera-kit';
-import {
-  createSignedNewEthTransaction,
-  getEthBaseFee,
-  getTotalGasFee,
-  createSignedNewEthTokenTransaction,
-  getMaticBaseFee,
-  createSignedNewMaticTransaction,
-  createSignedNewMaticTokenTransaction,
-  getTotalGasFeeMatic,
-  exponentialToDecimalWithoutComma,
-  CommaSeprator3,
-  bigNumberSafeMath,
-} from '../../../utils';
-import fonts from '../../../theme/Fonts';
-import * as Constants from '../../../Constant';
+// import { CameraScreen } from 'react-native-camera-kit';
+import { EventRegister } from 'react-native-event-listeners';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
-import { color } from 'react-native-reanimated';
+import * as Constants from '../../../Constant';
+import { NavigationStrings } from '../../../Navigation/NavigationStrings';
 import { areaDimen, heightDimen, widthDimen } from '../../../Utils/themeUtils';
+import { getCurrentRouteName, goBack, navigate } from '../../../navigationsService';
+import fonts from '../../../theme/Fonts';
+import {
+  CommaSeprator3,
+  bigNumberSafeMath,
+  createSignedNewMaticTokenTransaction,
+  createSignedNewMaticTransaction,
+  exponentialToDecimalWithoutComma,
+  getMaticBaseFee,
+  getTotalGasFeeMatic
+} from '../../../utils';
 import { DetailOption } from '../../common/DetailOption';
 import QRReaderModal from '../../common/QRReaderModal';
-import { EventRegister } from 'react-native-event-listeners';
 let scanner = false;
 let maxClicked = false;
 let totalFee = '';
@@ -79,6 +67,7 @@ let gaslimitForTxn = 0;
 let api_gas_fee = 0;
 let basicModal = false
 let isContact = false
+let eventListener
 const SendMATIC = props => {
   const dispatch = useDispatch();
   let timer = createRef();
@@ -94,9 +83,9 @@ const SendMATIC = props => {
   const [pvtKey, setpvtKey] = useState('');
 
   // ========Ancrypto =============
-  const [walletData, setwalletData] = useState(props.walletData);
+  const [walletData, setwalletData] = useState(props.route?.params?.walletData);
   const decim =
-    props.walletData?.no_of_decimals > 8 ? 8 : props.walletData?.no_of_decimals;
+    props.route?.params?.walletData?.no_of_decimals > 8 ? 8 : props.route?.params?.walletData?.no_of_decimals;
   const [gasPriceForTxn, setgasPriceForTxn] = useState(1000000000);
   // const [gaslimitForTxn, setgaslimitForTxn] = useState(21000);
   const [gasFeeMultiplier, setgasFeeMultiplier] =
@@ -120,23 +109,23 @@ const SendMATIC = props => {
   const [gasEstimate, setGasEstimate] = useState(21000);
   useEffect(() => {
     basicModal = false
-    // //console.warn('MM','****************i walletData', props.walletData);
+    // //console.warn('MM','****************i walletData', props.route?.params?.walletData);
     console.log('walletData===', walletData);
-    props.navigation.addListener('didFocus', onScreenFocus);
-    props.navigation.addListener('didBlur', onScreenBlur);
+    props.navigation.addListener('focus', onScreenFocus);
+    props.navigation.addListener('blur', onScreenBlur);
   }, [props]);
 
   const onScreenFocus = () => {
     basicModal = false
     console.warn('MM', '***************focus');
     BackHandler.addEventListener('hardwareBackPress', backAction);
-    EventRegister.addEventListener('downModal', () => {
-      console.log('downModal:::');
+    eventListener= EventRegister.addEventListener('downModal', () => {
+      console.log('heree::::::::4');
       setisLoading(false)
       if (basicModal) {
         setBasicModal(false)
         basicModal = false
-        Actions.currentScene != 'Wallet' && Actions.Wallet()
+        getCurrentRouteName() != 'Wallet' && navigate(NavigationStrings.Wallet)
       }
     })
   };
@@ -144,7 +133,7 @@ const SendMATIC = props => {
     basicModal = false
     console.warn('MM', '***************blur');
     BackHandler.removeEventListener('hardwareBackPress', backAction);
-    EventRegister.removeEventListener('downModal')
+    EventRegister.removeEventListener(eventListener)
   };
 
   const backAction = () => {
@@ -153,7 +142,7 @@ const SendMATIC = props => {
       scanner = false;
       return true;
     } else {
-      Actions.pop();
+      goBack();
       return true;
     }
   };
@@ -657,16 +646,16 @@ const SendMATIC = props => {
             history={true}
             customIcon={Images.address}
             onPressHistory={() =>
-              Actions.currentScene != 'SendCryptoContacts' &&
-              Actions.SendCryptoContacts({
+              getCurrentRouteName() != 'SendCryptoContacts' &&
+              navigate(NavigationStrings.SendCryptoContacts,{
                 item: walletData,
                 blockChain: blockChain,
                 getAddress,
               })
             }
             onpress={() =>
-              Actions.currentScene != 'CoinHistory' &&
-              Actions.CoinHistory({ Data: walletData })
+              getCurrentRouteName() != 'CoinHistory' &&
+              navigate(NavigationStrings.CoinHistory,{ Data: walletData })
             }
             backImage={ThemeManager.ImageIcons.iconBack}
             titleStyle={{ textTransform: 'none' }}
@@ -811,7 +800,7 @@ const SendMATIC = props => {
                       <TouchableOpacity
                         style={styles.addressIcon}
                         onPress={() =>
-                          // Actions.currentScene != 'SendCryptoContacts' &&
+                          // getCurrentRouteName() != 'SendCryptoContacts' &&
                           // Actions.SendCryptoContacts({
                           //   item: walletData,
                           //   blockChain: blockChain,
@@ -1065,7 +1054,7 @@ const SendMATIC = props => {
               onClose={()=>{
                 console.log("closed::::::");
                 basicModal=false
-                Actions.currentScene != 'Wallet' && Actions.Wallet()
+                getCurrentRouteName() != 'Wallet' && navigate(NavigationStrings.Wallet)
               }}
               coinSymbolStyle={{ color: ThemeManager.colors.textColor }}
               textStyle={{ color: ThemeManager.colors.textColor }}
@@ -1084,8 +1073,8 @@ const SendMATIC = props => {
               contact={() => {
                 setBasicModal(false);
                 basicModal = false
-                Actions.currentScene != 'AddNewContacts' &&
-                  Actions.AddNewContacts({
+                getCurrentRouteName() != 'AddNewContacts' &&
+                navigate(NavigationStrings.AddNewContacts,{
                     address: toAddress,
                     coinFamily: walletData.coin_family,
                   });

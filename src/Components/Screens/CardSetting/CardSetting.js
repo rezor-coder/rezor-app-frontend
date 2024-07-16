@@ -1,54 +1,33 @@
 /* eslint-disable react/self-closing-comp */
 /* eslint-disable react-native/no-inline-styles */
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
-  View,
-  Text,
-  StyleSheet,
-  ImageBackground,
-  Image,
-  TouchableOpacity,
-  FlatList,
-  ScrollView,
   Alert,
-  Linking,
-  BackHandler
+  BackHandler,
+  ScrollView,
+  View
 } from 'react-native';
-import { Wrap } from '../../common/Wrap';
-import {
-  BasicButton,
-  BorderLine,
-  MainHeader,
-  MainStatusBar,
-  SimpleHeader,
-  SubHeader,
-} from '../../common';
-import { Actions } from 'react-native-router-flux';
-import images from '../../../theme/Images';
-import styles from './CardSettingStyle';
-import {
-  logoutUser,
-  enableDisableNoti,
-  getEnableDisableNotiStatus,
-  getSocialList,
-  changeThemeAction,
-} from '../../../Redux/Actions';
-import { Colors } from '../../../theme';
-import { SettingBar } from '../../common/SettingBar';
-import fonts from '../../../theme/Fonts';
-import * as constants from '../../../Constant';
-import { ActionConst } from 'react-native-router-flux';
-import Singleton from '../../../Singleton';
-import { connect, useDispatch, useSelector } from 'react-redux';
-import Loader from '../Loader/Loader';
 import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
+import * as constants from '../../../Constant';
+import { NavigationStrings } from '../../../Navigation/NavigationStrings';
+import Singleton from '../../../Singleton';
+import { getCurrentRouteName, goBack, navigate, reset } from '../../../navigationsService';
+import {
+  BorderLine,
+  MainStatusBar,
+  SimpleHeader
+} from '../../common';
+import { SettingBar } from '../../common/SettingBar';
+import { Wrap } from '../../common/Wrap';
+import Loader from '../Loader/Loader';
+import styles from './CardSettingStyle';
 
 
 const CardSetting = props => {
   const [isLoading, setisLoading] = useState(false);
 useEffect(()=>{
 let backHandle= BackHandler.addEventListener('hardwareBackPress',()=>{
-Actions.pop()
+goBack()
 return true
 })
 return()=>{
@@ -71,7 +50,7 @@ return()=>{
         onPress: () => {
           // Singleton.getInstance().removeItemNew(constants.CARD_CREDENTIALS);
           Singleton.getInstance().removeItemNew(constants.access_token_cards).then(res=>{
-             Actions.Main({ type: ActionConst.RESET });
+            reset(NavigationStrings.Main);
           })
 
         },
@@ -97,7 +76,7 @@ return()=>{
         imageShow
         back={false}
         backPressed={() => {
-          Actions.pop()
+         goBack()
         }}
       />
       <BorderLine
@@ -112,7 +91,7 @@ return()=>{
               title={LanguageManager.cardpassword}
               titleStyle={{ color: ThemeManager.colors.textColor }}
               onPress={() => {
-                Actions.currentScene != "SaitaCardNewPassword" && Actions.SaitaCardNewPassword()
+                getCurrentRouteName() != "SaitaCardNewPassword" && navigate(NavigationStrings.SaitaCardNewPassword)
               }}
               style={{ borderBottomWidth: 0 }}
               imgStyle={[styles.img]}

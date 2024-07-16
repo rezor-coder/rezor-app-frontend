@@ -1,27 +1,22 @@
 /* eslint-disable react/self-closing-comp */
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
-  View,
-  Image,
-  Text,
-  SafeAreaView,
-  TouchableOpacity,
+  BackHandler,
   KeyboardAvoidingView,
-  Platform,
-  BackHandler
+  Platform
 } from 'react-native';
-import { Actions } from 'react-native-router-flux';
 import { WebView } from 'react-native-webview';
 import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
+import { NavigationStrings } from '../../../Navigation/NavigationStrings';
 import Singleton from '../../../Singleton';
-import { Wrap, SimpleHeader, BorderLine } from '../../common';
-import Loader from '../Loader/Loader';
+import { getCurrentRouteName, goBack, navigate } from '../../../navigationsService';
+import { BorderLine, SimpleHeader, Wrap } from '../../common';
 
 const Linkview = props => {
   const [isLoading, setisLoading] = useState(false);
   useEffect(() => {
     let backHandle=BackHandler.addEventListener('hardwareBackPress',()=>{
-      Actions.pop();
+      goBack();
       return true;
     })
     return()=>{
@@ -73,24 +68,24 @@ const Linkview = props => {
               if (data.status == 'success') {
                 if (data.message == 'Order confirmed successfully') {
                   setTimeout(() => {
-                    Actions.currentScene != 'Dashboard' &&
-                      Actions.jump('Dashboard');
+                    getCurrentRouteName() != 'Dashboard' &&
+                    navigate(NavigationStrings.Dashboard);
                     Singleton.showAlert(
                       'Transaction completed. Your crypto will be funded soon',
                     );
                   }, 2000);
                 } else {
                   setTimeout(() => {
-                    Actions.currentScene != 'Dashboard' &&
-                      Actions.jump('Dashboard');
+                    getCurrentRouteName() != 'Dashboard' &&
+                    navigate(NavigationStrings.Dashboard);
                     Singleton.showAlert(data.message);
                   }, 2000);
                 }
               }
               if (data.status == 'failed') {
                 setTimeout(() => {
-                  Actions.currentScene != 'Dashboard' &&
-                    Actions.jump('Dashboard');
+                  getCurrentRouteName() != 'Dashboard' &&
+                  navigate(NavigationStrings.Dashboard);
                   Singleton.showAlert('Transaction Failed.');
                 }, 2000);
               }
@@ -101,7 +96,7 @@ const Linkview = props => {
               //   }, 2000);
               // }
             }}
-            source={{ uri: props.linkhash }}
+            source={{ uri: props.route?.params.linkhash }}
             javaScriptEnabled={true}
             // onLoadStart={()=>{
             //   setisLoading(true)

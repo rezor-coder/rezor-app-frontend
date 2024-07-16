@@ -1,31 +1,30 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, { Component } from 'react';
 import {
-  View,
-  Image,
-  Text,
-  SafeAreaView,
-  TouchableOpacity,
-  Dimensions,
-  ScrollView,
   FlatList,
+  Image,
   Keyboard,
+  SafeAreaView,
+  Text,
+  TouchableOpacity,
+  View
 } from 'react-native';
-import styles from './DefiAccessMainStyle';
+import { connect } from 'react-redux';
+import { ThemeManager } from '../../../../ThemeManager';
+import * as Constants from '../../../Constants';
+import { NavigationStrings } from '../../../Navigation/NavigationStrings';
+import { requestDefiLinks } from '../../../Redux/Actions';
+import Singleton from '../../../Singleton';
+import { getCurrentRouteName, navigate } from '../../../navigationsService';
+import { Colors, Fonts, Images } from '../../../theme';
 import {
   DefiAccessMainList,
-  TabIcon,
   InputCustom,
   LeadAlert,
   LoaderView,
+  TabIcon,
 } from '../../common';
-import { Fonts, Images, Colors } from '../../../theme';
-import { ThemeManager } from '../../../../ThemeManager';
-import Singleton from '../../../Singleton';
-import * as Constants from '../../../Constants';
-import { Actions } from 'react-native-router-flux';
-import { requestDefiLinks } from '../../../Redux/Actions';
-import { connect } from 'react-redux';
+import styles from './DefiAccessMainStyle';
 
 class DefiAccessMain extends Component {
   constructor(props) {
@@ -87,7 +86,7 @@ class DefiAccessMain extends Component {
           });
       });
 
-    this.props.navigation.addListener('didFocus', event => {
+    this.props.navigation.addListener('focus', event => {
       this.setState({ refresh: !this.state.refresh, enteredURL: '' });
       Singleton.getInstance()
       .getData(Constants.PRIVATE_KEY_WALLET_COIN_FAMILY)
@@ -141,11 +140,11 @@ class DefiAccessMain extends Component {
         },
       );
     });
-    this.focus = this.props.navigation.addListener('didBlur', event => {
+    this.focus = this.props.navigation.addListener('blur', event => {
       if (this.keyboardDidShowListener) this.keyboardDidShowListener.remove();
       if (this.keyboardDidHideListener) this.keyboardDidHideListener.remove();
     });
-    this.props.navigation.addListener('didFocus', this.onScreenFocus);
+    this.props.navigation.addListener('focus', this.onScreenFocus);
   }
   componentWillUnmount() {
     if (this.keyboardDidShowListener) this.keyboardDidShowListener.remove();
@@ -242,7 +241,7 @@ class DefiAccessMain extends Component {
                 borderBottomWidth: 0.5,
                 borderColor: `rgba(0,0,0,0.3)`,
               }}
-              onPress={() => Actions.currentScene !== 'DappBrowser' && Actions.DappBrowser({ url: item.url })}>
+              onPress={() => getCurrentRouteName() !== 'DappBrowser' && navigate(NavigationStrings.DappBrowser,{ url: item.url })}>
               <View
                 style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
                 <View
@@ -346,7 +345,7 @@ class DefiAccessMain extends Component {
                   Keyboard.dismiss();
                 }
               }
-              Actions.currentScene !== 'DappBrowser' && Actions.DappBrowser({ url: url });
+              getCurrentRouteName() !== 'DappBrowser' && navigate(NavigationStrings.DappBrowser,{ url: url });
             }}
           />
           <TouchableOpacity
@@ -384,7 +383,7 @@ class DefiAccessMain extends Component {
                   Keyboard.dismiss();
                 }
               }
-              Actions.currentScene !== 'DappBrowser' && Actions.DappBrowser({ url: url });
+              getCurrentRouteName() !== 'DappBrowser' && navigate(NavigationStrings.DappBrowser,{ url: url });
             }}>
             <Image
               source={Images.icon_search_light}
@@ -420,7 +419,7 @@ class DefiAccessMain extends Component {
             alertTxt={this.state.alertTxt3}
             hideAlertDialog={() => {
               this.setState({ showAlertDialog3: false });
-              Actions.currentScene !== 'WalletMain' && Actions.jump('WalletMain');
+              getCurrentRouteName() !== 'WalletMain' && navigate(NavigationStrings.WalletMain);
             }}
           />
         )}

@@ -1,26 +1,23 @@
+import moment from 'moment';
 import React, { Component } from 'react';
 import {
-  View,
-  Text,
-  Image,
-  TouchableOpacity,
-  SafeAreaView,
-  Linking,
-  Dimensions,
   BackHandler,
+  Linking,
+  SafeAreaView,
+  Text,
+  TouchableOpacity,
+  View
 } from 'react-native';
-import styles from './BuyTransactionDetailStyle';
-import { Actions, ActionConst } from 'react-native-router-flux';
-import { Images, Colors, Fonts } from '../../../theme';
-import Singleton from '../../../Singleton';
-import * as Constants from '../../../Constant';
-import { connect } from 'react-redux';
-import moment from 'moment';
-import { Wrap, SimpleHeader, BorderLine } from '../../common';
-import Loader from '../Loader/Loader';
-import { getTransactionDetail } from '../../../Redux/Actions';
 import FastImage from 'react-native-fast-image';
+import { connect } from 'react-redux';
 import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
+import * as Constants from '../../../Constant';
+import { getTransactionDetail } from '../../../Redux/Actions';
+import { Colors, Images } from '../../../theme';
+import { BorderLine, SimpleHeader, Wrap } from '../../common';
+import Loader from '../Loader/Loader';
+import styles from './BuyTransactionDetailStyle';
+import { goBack } from '../../../navigationsService';
 class BuyTransactionDetail extends Component {
   constructor(props) {
     super(props);
@@ -28,25 +25,25 @@ class BuyTransactionDetail extends Component {
       transType: 'DEPOSIT',
       txnDetail: [],
       setImgStyle: false,
-      data: this.props?.TxnData,
+      data: this.props?.route?.params?.TxnData,
     };
   }
   componentDidMount() {
     global.isCamera = false;
     //console.warn('MM','Chk txnData::::::::::::', this.props.TxnData);
     //console.warn('MM','Chk txnData::::::::::::dataaa', this.state.data);
-    this.props.navigation.addListener('didFocus', () => {
+    this.props.navigation.addListener('focus', () => {
       //  this.getTxnDetail(this.props.TxnData?.table_id, this.props.TxnData?.type);
       BackHandler.addEventListener('hardwareBackPress', this.backAction);
     });
-    this.props.navigation.addListener('didBlur', this.screenBlur);
+    this.props.navigation.addListener('blur', this.screenBlur);
   }
   screenBlur = () => {
     BackHandler.removeEventListener('hardwareBackPress', this.backAction);
   };
   backAction = () => {
     //console.warn('MM','i detail');
-    Actions.pop();
+    goBack();
     return true;
   };
   // getTxnDetail(table_id, trnx_type) {

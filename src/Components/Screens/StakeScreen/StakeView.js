@@ -1,43 +1,35 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
-  View,
-  Text,
-  StyleSheet,
-  Image,
   Alert,
-  TouchableOpacity,
-  FlatList,
+  Image,
   ScrollView,
+  Text,
   TextInput,
+  TouchableOpacity,
+  View
 } from 'react-native';
-import { Actions } from 'react-native-router-flux';
 
 import colors from '../../../theme/Colors';
-import images from '../../../theme/Images';
-import { BasicButton, CustomSwitch, SimpleHeader, SubHeader } from '../../common';
-import LinearGradient from 'react-native-linear-gradient';
-import { Wrap } from '../../common/Wrap';
+import { BasicButton } from '../../common';
 // import {styles} from './StakingPoolsStyle';
 import fonts from '../../../theme/Fonts';
 
-import Colors from '../../../theme/Colors';
-import * as constants from '../../../Constant';
-import styles from './StakeStyle';
+import Web3 from 'web3';
 import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
+import * as constants from '../../../Constant';
+import Singleton from '../../../Singleton';
+import Colors from '../../../theme/Colors';
 import Fonts from '../../../theme/Fonts';
 import Images from '../../../theme/Images';
-import { color } from 'react-native-reanimated';
-import Web3 from 'web3';
-import Singleton from '../../../Singleton';
+import styles from './StakeStyle';
 
 import { BigNumber } from 'bignumber.js';
-import Loader from '../Loader/Loader';
-import TOKEN_CONTRACT_ABI from './tokenContract.ABI.json';
-import STAKING_CONTRACT_ABI from './SaitaABI.json';
 import debounce from 'lodash.debounce';
-import { BASE_URL } from '../../../Endpoints';
 import { APIClient } from '../../../Api';
 import { exponentialToDecimalWithoutComma } from '../../../utils';
+import STAKING_CONTRACT_ABI from './SaitaABI.json';
+import TOKEN_CONTRACT_ABI from './tokenContract.ABI.json';
+import { goBack } from '../../../navigationsService';
 let isStakeButtonClicked = false;
 
 const StakeView = props => {
@@ -224,7 +216,7 @@ const StakeView = props => {
       //   "Please wait for blockchain confirmation",
       //   [{
       //     text: 'OK', onPress: () => {
-      //       Actions.pop()
+      //       goBack()
 
       //     }
       //   }
@@ -287,7 +279,7 @@ const StakeView = props => {
         {
           text: 'Ok',
           onPress: () => {
-            Actions.pop()
+            goBack()
           },
         },
       ],
@@ -547,7 +539,7 @@ const StakeView = props => {
             {
               text: 'OK',
               onPress: () => {
-                Actions.pop();
+                goBack();
               },
             },
           ],
@@ -597,7 +589,7 @@ const StakeView = props => {
     //             resultApprove?.message,
     //             [{
     //               text: 'OK', onPress: () => {
-    //                 Actions.pop()
+    //                 goBack()
 
     //               }
     //             }
@@ -619,7 +611,7 @@ const StakeView = props => {
     //           "Please wait for blockchain confirmation",
     //           [{
     //             text: 'OK', onPress: () => {
-    //               Actions.pop()
+    //               goBack()
 
     //             }
     //           }

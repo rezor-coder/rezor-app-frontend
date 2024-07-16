@@ -1,29 +1,24 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
-  Alert,
   Modal,
-  Image,
+  SafeAreaView,
   StyleSheet,
   Text,
   TouchableOpacity,
-  View,
-  Pressable,
-  SafeAreaView,
+  View
 } from 'react-native';
-import {BasicButton} from '.';
-import {LanguageManager, ThemeManager} from '../../../ThemeManager';
-import {SimpleHeaderNew} from './SimpleHeaderNew';
-import {Fonts, Colors, Images} from '../../theme';
-import {Actions} from 'react-native-router-flux';
-import {areaDimen, heightDimen, widthDimen} from '../../Utils/themeUtils';
 import FastImage from 'react-native-fast-image';
-import images from '../../theme/Images';
-import fonts from '../../theme/Fonts';
-import {Item} from 'native-base';
-import {exponentialToDecimalWithoutComma} from '../../utils';
+import { BasicButton } from '.';
+import { LanguageManager, ThemeManager } from '../../../ThemeManager';
 import Singleton from '../../Singleton';
-import {BorderLine} from './BorderLine'
+import { areaDimen, heightDimen, widthDimen } from '../../Utils/themeUtils';
+import { Colors, Fonts } from '../../theme';
+import fonts from '../../theme/Fonts';
+import images from '../../theme/Images';
+import { exponentialToDecimalWithoutComma } from '../../utils';
+import { BorderLine } from './BorderLine';
+import { SimpleHeaderNew } from './SimpleHeaderNew';
 const ModalSwap = props => {
   const {
     toCoinName,
@@ -302,4 +297,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export {ModalSwap};
+export { ModalSwap };

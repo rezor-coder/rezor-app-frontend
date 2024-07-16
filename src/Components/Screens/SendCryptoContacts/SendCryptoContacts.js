@@ -1,38 +1,37 @@
 /* eslint-disable handle-callback-err */
 /* eslint-disable react-native/no-inline-styles */
+import React, { useEffect, useRef, useState } from 'react';
 import {
-  View,
-  Text,
-  Image,
-  FlatList,
-  Animated,
   Alert,
+  Animated,
+  FlatList,
+  Text,
   TouchableOpacity,
+  View
 } from 'react-native';
-import React, {useEffect, useRef, useState} from 'react';
-import {Wrap, MainHeader, BasicButton, BorderLine} from '../../common';
-import {SimpleHeader} from '../../common/SimpleHeader';
-import LinearGradient from 'react-native-linear-gradient';
-import images from '../../../theme/Images';
-import {styles} from './SendCryptoContactsStyle';
-import {Actions} from 'react-native-router-flux';
-import {Colors, Fonts} from '../../../theme';
-import Singleton from '../../../Singleton';
-import {connect, useSelector, useDispatch} from 'react-redux';
+import FastImage from 'react-native-fast-image';
+import { SwipeListView } from 'react-native-swipe-list-view';
+import { connect, useDispatch, useSelector } from 'react-redux';
+import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
+import { APP_NAME } from '../../../Constant';
+import { CryptoColors } from '../../../CryptoColors';
+import { BASE_IMAGE } from '../../../Endpoints';
+import { NavigationStrings } from '../../../Navigation/NavigationStrings';
+import { walletFormUpdate } from '../../../Redux/Actions';
 import {
+  deleteWalletContact,
   getWalletContactList,
   getWalletContactRecentList,
-  deleteWalletContact,
 } from '../../../Redux/Actions/ContactsAction';
-import {walletFormUpdate} from '../../../Redux/Actions';
-import {CryptoColors} from '../../../CryptoColors';
-import {SwipeListView} from 'react-native-swipe-list-view';
-import {APP_NAME} from '../../../Constant';
+import Singleton from '../../../Singleton';
+import { areaDimen, heightDimen, widthDimen } from '../../../Utils/themeUtils';
+import { getCurrentRouteName, goBack, navigate } from '../../../navigationsService';
+import { Colors, Fonts } from '../../../theme';
+import images from '../../../theme/Images';
+import { BasicButton, BorderLine, Wrap } from '../../common';
+import { SimpleHeader } from '../../common/SimpleHeader';
 import Loader from '../Loader/Loader';
-import FastImage from 'react-native-fast-image';
-import {LanguageManager, ThemeManager} from '../../../../ThemeManager';
-import {BASE_IMAGE} from '../../../Endpoints';
-import {areaDimen, heightDimen, widthDimen} from '../../../Utils/themeUtils';
+import { styles } from './SendCryptoContactsStyle';
 const rowSwipeAnimatedValues = {};
 Array(500)
   .fill('')
@@ -54,17 +53,17 @@ const SendCryptoContacts = props => {
 
   useEffect(() => {
     //  getScreenData();
-    let focus = props.navigation.addListener('didFocus', () => {
+    let focus = props.navigation.addListener('focus', () => {
       getScreenData();
     });
     return () => {
-      focus?.remove();
+      focus();
     };
   }, []);
 
   const getRecent = () => {
     setIsLoading(true);
-    let coin_family = props?.item.coin_family;
+    let coin_family = props?.route?.params?.item.coin_family;
     let access_token = Singleton.getInstance().access_token;
     props
       .getWalletContactRecentList({coin_family, access_token})
@@ -97,15 +96,15 @@ const SendCryptoContacts = props => {
     setIsLoading(true);
     let access_token = Singleton.getInstance().access_token;
     let network =
-      props?.item.coin_family == 1
+      props?.route?.params?.item.coin_family == 1
         ? 'ethereum'
-        : props?.item.coin_family == 6
+        : props?.route?.params?.item.coin_family == 6
         ? 'binance'
-        : props?.item.coin_family == 11
+        : props?.route?.params?.item.coin_family == 11
         ? 'polygon'
-        : props?.item.coin_family == 3
+        : props?.route?.params?.item.coin_family == 3
         ? 'tron'
-        : props?.item.coin_family == 4
+        : props?.route?.params?.item.coin_family == 4
         ? 'saitachain'
         : 'bitcoin';
 
@@ -174,7 +173,7 @@ const SendCryptoContacts = props => {
             {
               text: LanguageManager.ok,
               onPress: () => {
-                Actions.currentScene != 'Dashboard' && Actions.Dashboard();
+                getCurrentRouteName() != 'Dashboard' && navigate(NavigationStrings.Dashboard);
               },
             },
           ],
@@ -211,7 +210,7 @@ const SendCryptoContacts = props => {
       {/* <SimpleHeader
         title={LanguageManager.sendCrypto}
         onpress={() =>
-          Actions.AddNewContacts({coinFamily: props?.item.coin_family})
+          Actions.AddNewContacts({coinFamily: props?.route?.params?.item.coin_family})
         }
         hamOnpress={() => alert('jj')}
         plusIcon={noOfContacts > 4 ? true : false}
@@ -235,8 +234,8 @@ const SendCryptoContacts = props => {
           resizeMode: 'contain',
         }}
         onPressHistory={() => {
-          Actions.currentScene != 'AddNewContacts' &&
-            Actions.AddNewContacts({coinFamily: props?.item.coin_family});
+          getCurrentRouteName() != 'AddNewContacts' &&
+          navigate(NavigationStrings.AddNewContacts,{coinFamily: props?.route?.params?.item.coin_family});
         }}
       />
       <BorderLine
@@ -259,8 +258,8 @@ const SendCryptoContacts = props => {
             </View>
             <BasicButton
               onPress={() =>
-                Actions.currentScene != 'AddNewContacts' &&
-                Actions.AddNewContacts({ coinFamily: props?.item.coin_family })
+                getCurrentRouteName() != 'AddNewContacts' &&
+                Actions.AddNewContacts({ coinFamily: props?.route?.params?.item.coin_family })
               }
               btnStyle={styles.btnStyle}
               customGradient={styles.customGrad}
@@ -282,8 +281,8 @@ const SendCryptoContacts = props => {
                 // disabled={true}
                 onPress={() => {
                   //console.warn('MM','chk data:::::', data);
-                  props?.getAddress(item?.address);
-                  Actions.pop();
+                  props?.route?.params?.getAddress(item?.address);
+                  goBack();
                 }}
                 style={[
                   styles.flatlistViewHorizontal,
@@ -377,8 +376,8 @@ const SendCryptoContacts = props => {
                   activeOpacity={1}
                   onPress={() => {
                     //console.warn('MM','chk data:::::', data);
-                    props?.getAddress(data?.item?.address);
-                    Actions.pop();
+                    props?.route?.params?.getAddress(data?.item?.address);
+                    goBack();
                   }}
                   style={{
                     flexDirection: 'row',
@@ -453,9 +452,9 @@ const SendCryptoContacts = props => {
                     <View>
                       <FastImage
                         source={{
-                          uri: props?.item?.coin_image.includes('https')
-                            ? props?.item?.coin_image
-                            : BASE_IMAGE + props?.item?.coin_image,
+                          uri: props?.route?.params?.item?.coin_image.includes('https')
+                            ? props?.route?.params?.item?.coin_image
+                            : BASE_IMAGE + props?.route?.params?.item?.coin_image,
                         }}
                         resizeMode={'contain'}
                         style={{
@@ -473,8 +472,8 @@ const SendCryptoContacts = props => {
                 <View style={[styles.rowBack]}>
                   <TouchableOpacity
                     onPress={() => {
-                      Actions.currentScene != 'EditContact' &&
-                        Actions.EditContact({contactItem: item});
+                      getCurrentRouteName() != 'EditContact' &&
+                      navigate(NavigationStrings.EditContact,{contactItem: item});
                       setTimeout(() => {
                         openRowRef.current.manuallyOpenAllRows(0);
                       }, 250);
@@ -560,9 +559,9 @@ const SendCryptoContacts = props => {
           <View>
             <BasicButton
               onPress={() =>
-                Actions.currentScene != 'AddNewContacts' &&
-                Actions.AddNewContacts({
-                  coinFamily: props?.item.coin_family,
+                getCurrentRouteName() != 'AddNewContacts' &&
+                navigate(NavigationStrings.AddNewContacts,{
+                  coinFamily: props?.route?.params?.item.coin_family,
                   isPop: true,
                 })
               }

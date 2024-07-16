@@ -1,38 +1,28 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
-  View,
-  Text,
-  Image,
-  TouchableOpacity,
   BackHandler,
   Dimensions,
-  ImageBackground,
   ScrollView,
+  Text,
+  View
 } from 'react-native';
-import { Wrap } from '../../common/Wrap';
-import { Actions } from 'react-native-router-flux';
-import images from '../../../theme/Images';
-import { styles } from './ConfirmSecurityPinStyle';
 import ReactNativeBiometrics from 'react-native-biometrics';
 import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
+import Singleton from '../../../Singleton';
 import {
-  SubHeader,
-  SimpleHeader,
   BasicButton,
+  BorderLine,
+  KeyboardDigit,
   MainStatusBar,
   PinInput,
-  KeyboardDigit,
-  BorderLine,
+  SimpleHeader
 } from '../../common';
-import colors from '../../../theme/Colors';
-import fonts from '../../../theme/Fonts';
-import SmoothPinCodeInput from 'react-native-smooth-pincode-input';
+import { Wrap } from '../../common/Wrap';
 import * as constants from './../../../Constant';
-import Singleton from '../../../Singleton';
-import HeaderwithBackIcon from '../../common/HeaderWithBackIcon';
-import { ifIphoneX } from 'react-native-iphone-x-helper';
-import { heightDimen } from '../../../Utils/themeUtils';
+import { styles } from './ConfirmSecurityPinStyle';
+import { goBack, navigate } from '../../../navigationsService';
+import { NavigationStrings } from '../../../Navigation/NavigationStrings';
 
 const windowHeight = Dimensions.get('window').height;
 const ConfirmSecurityPin = props => {
@@ -42,7 +32,7 @@ const ConfirmSecurityPin = props => {
   const [confirmPin, setconfirmPin] = useState('');
   const [btnColor, setBtnColor] = useState('');
   useEffect(() => {
-    props.navigation.addListener('didFocus', () => {
+    props.navigation.addListener('focus', () => {
       setBtnColor(Singleton.getInstance().dynamicColor);
     });
     //console.warn('MM','props=-=-=-=-=-=-=>>>>', props);
@@ -50,7 +40,7 @@ const ConfirmSecurityPin = props => {
   useEffect(() => {
     const backAction = () => {
       // //console.warn('MM','i WalletSequrityConfirm');
-      Actions.pop();
+      goBack();
       // Actions.jump('Security');//Go to security screen
       return true;
     };
@@ -68,7 +58,7 @@ const ConfirmSecurityPin = props => {
     //   .getData(constants.PIN)
     //   .then(pin => {
     // //console.warn('MM','saved pin::::', pin);
-    setPin(props.pinFrom);
+    setPin(props?.route?.params.pinFrom);
     //   });
 
     detectBiometricType();
@@ -125,12 +115,11 @@ const ConfirmSecurityPin = props => {
       //     //   // this.setState({pinFromStorage: pin});
       //     //   // global.isOnPinScreen = true;
       //     // });
-      //     Actions.currentScene != 'ConfirmPin' && Actions.ConfirmPin();
       //   }
     } else {
       Singleton.getInstance().newSaveData(constants.PIN, pin);
       // Singleton.getInstance().newSaveData(constants.ENABLE_PIN, 'true');
-      Actions.jump('Security');
+      navigate(NavigationStrings.Security);
     }
   };
 
@@ -233,7 +222,7 @@ const ConfirmSecurityPin = props => {
         {/* </ImageBackgroundComponent> */}
       {/* </View> */}
       <View>
-        {/* <TouchableOpacity onPress={() => Actions.pop()} style={styles.btnView2}>
+        {/* <TouchableOpacity onPress={() => goBack()} style={styles.btnView2}>
           <Text style={{color: colors.white}}>{LanguageManager.Back}</Text>
         </TouchableOpacity> */}
       </View>

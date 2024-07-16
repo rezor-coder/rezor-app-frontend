@@ -32,7 +32,8 @@ const INITIAL_STATE = {
     liquidityUrl: '',
     stakeUrl: '',
     publicBscUrl: '',
-    publicEthUrl: ''
+    publicEthUrl: '',
+    publicStcUrl:''
   }
 };
 

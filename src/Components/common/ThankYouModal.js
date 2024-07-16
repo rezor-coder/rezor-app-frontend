@@ -1,10 +1,11 @@
 import React from 'react';
-import {Text, StyleSheet, View} from 'react-native';
-import {Fonts} from '../../theme';
+import { StyleSheet, Text, View } from 'react-native';
+import { ThemeManager } from '../../../ThemeManager';
+import { NavigationStrings } from '../../Navigation/NavigationStrings';
+import { getCurrentRouteName, navigate } from '../../navigationsService';
+import { Fonts } from '../../theme';
 import Colors from '../../theme/Colors';
-import {BasicButton} from './index';
-import {Actions} from 'react-native-router-flux';
-import {ThemeManager} from '../../../ThemeManager';
+import { BasicButton } from './index';
 
 const ThankYouModal = props => {
   return (
@@ -17,7 +18,7 @@ const ThankYouModal = props => {
       </Text>
       <BasicButton
         onPress={() => {
-          Actions.currentScene != 'Dashboard' && Actions.Dashboard();
+          getCurrentRouteName() != 'Dashboard' && navigate(NavigationStrings.Dashboard);
         }}
         btnStyle={styles.btnStyle}
         text="Close"
@@ -57,4 +58,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export {ThankYouModal};
+export { ThankYouModal };

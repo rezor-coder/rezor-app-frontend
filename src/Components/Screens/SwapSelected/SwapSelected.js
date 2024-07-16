@@ -1,40 +1,41 @@
 /* eslint-disable no-lone-blocks */
 /* eslint-disable react-native/no-inline-styles */
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { View, Text, TouchableOpacity, Dimensions, StyleSheet, TextInput, ScrollView, Alert, Modal, Platform, } from 'react-native';
-import { ThemeManager, LanguageManager } from '../../../../ThemeManager';
-import { Wrap, BasicButton } from '../../common';
-import { Fonts, Images, Colors } from '../../../theme';
-import Singleton from '../../../Singleton';
-import SelectDropdown from 'react-native-select-dropdown';
-import * as constants from '../../../Constant';
-import Web3 from 'web3';
-import Loader from '../Loader/Loader';
-import { APIClient } from '../../../Api';
-import { getSwapListAll, saveSwapItem, checkMaintenance, } from '../../../Redux/Actions';
-import { useDispatch, useSelector } from 'react-redux';
-import { areaDimen, heightDimen, widthDimen } from '../../../Utils/themeUtils';
-import TOKEN_ABI from '../../../../ABI/tokenContract.ABI.json';
-import ROUTER_ABI from '../../../../ABI/router.ABI.json';
-import { ModalSwap } from '../../common/ModalSwap';
 import { BigNumber } from 'bignumber.js';
+import debounce from 'lodash.debounce';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { Alert, Dimensions, Modal, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, } from 'react-native';
+import { EventRegister } from 'react-native-event-listeners';
+import FastImage from 'react-native-fast-image';
+import SelectDropdown from 'react-native-select-dropdown';
+import { useDispatch, useSelector } from 'react-redux';
+import Web3 from 'web3';
+import ROUTER_ABI from '../../../../ABI/router.ABI.json';
+import TOKEN_ABI from '../../../../ABI/tokenContract.ABI.json';
+import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
+import { APIClient } from '../../../Api';
+import * as constants from '../../../Constant';
+import { IS_PRODUCTION } from '../../../Endpoints';
+import { NavigationStrings } from '../../../Navigation/NavigationStrings';
+import { checkMaintenance, getSwapListAll, saveSwapItem, } from '../../../Redux/Actions';
+import Singleton from '../../../Singleton';
+import { areaDimen, heightDimen, widthDimen } from '../../../Utils/themeUtils';
+import { getCurrentRouteName, navigate } from '../../../navigationsService';
+import { Colors, Fonts, Images } from '../../../theme';
+import images from '../../../theme/Images';
+import {
+  CommaSeprator3,
+  bigNumberSafeMath,
+  convertToInternationalCurrencySystem,
+  exponentialToDecimalWithoutComma,
+} from '../../../utils';
+import { BasicButton, Wrap } from '../../common';
+import { ModalSwap } from '../../common/ModalSwap';
+import Loader from '../Loader/Loader';
+import ListModal from './ListModal';
 const GAS_FEE_MULTIPLIER = 0.000000000000000001;
 const GAS_PRICE_EXTRA_BUFFER = 2000000000;
 const SELECTED_INPUT = { firstInput: 'firstInput', secondInput: 'secondInput' };
 const GAS_BUFFER = 25000;
-import { EventRegister } from 'react-native-event-listeners';
-import {
-  exponentialToDecimalWithoutComma,
-  CommaSeprator3,
-  convertToInternationalCurrencySystem,
-  bigNumberSafeMath,
-} from '../../../utils';
-import FastImage from 'react-native-fast-image';
-import images from '../../../theme/Images';
-import ListModal from './ListModal';
-import { IS_PRODUCTION } from '../../../Endpoints';
-import debounce from 'lodash.debounce';
-import { Actions } from 'react-native-router-flux';
 let fromSetting = false;
 let typeGlobal = SELECTED_INPUT.firstInput;
 let tokenOneValue = 0;
@@ -134,7 +135,7 @@ const SwapSelected = props => {
           data?.timeout || Singleton.getInstance().slipageTimeout;
       }
     });
-    let focus = props.navigation.addListener('didFocus', () => {
+    let focus = props.navigation.addListener('focus', () => {
       setIsOnMaintainanceMsg('');
       dispatch(checkMaintenance())
         .then(res => {
@@ -175,7 +176,7 @@ const SwapSelected = props => {
         setActiveButton(0);
       }
     });
-    let blur = props.navigation.addListener('didBlur', () => {
+    let blur = props.navigation.addListener('blur', () => {
       fromSetting = false;
       setSwapModal(false);
       if (dropDownRefFrom?.current) {
@@ -188,8 +189,8 @@ const SwapSelected = props => {
       }
     });
     return () => {
-      blur?.remove();
-      focus?.remove();
+      blur();
+      focus();
       EventRegister.removeEventListener(eventListner);
     };
   }, [props]);
@@ -213,6 +214,7 @@ const SwapSelected = props => {
         tokenSecond: tokenSecond,
         type: selectedInput,
         value: amount,
+        isError:false,
       });
       setShouldUpdateCalculation(false);
     }
@@ -745,6 +747,7 @@ const SwapSelected = props => {
                     tokenSecond,
                     type: SELECTED_INPUT.firstInput,
                     value: tokenOneValue,
+                    isError:false,
                   });
                   getUserBalSecond(tokenSecond);
                 } else {
@@ -753,6 +756,7 @@ const SwapSelected = props => {
                     tokenSecond,
                     type: SELECTED_INPUT.secondInput,
                     value: tokenTwoValue,
+                    isError:false,
                   });
                   getUserBalSecond(tokenSecond);
                 }
@@ -982,7 +986,7 @@ const SwapSelected = props => {
     });
   };
 
-  const onChangeText = async ({ tokenFirst, tokenSecond, type, value }) => {
+  const onChangeText = async ({ tokenFirst, tokenSecond, type, value ,isError}) => {
     setTransferFailed(false)
     let routerAddress =
       tokenFirst?.coin_family == 1
@@ -1183,7 +1187,8 @@ const SwapSelected = props => {
         ) {
           setUserApproval(true);
           let swapTransaction;
-          if (tokenSecond.is_fee == 1) {
+          if (isError) {
+            console.log('here:::::3')
             console.log(
               '-----swapExactETHForTokensSupportingFeeOnTransferTokens_tokenFirst -------',
             );
@@ -1195,6 +1200,7 @@ const SwapSelected = props => {
                 deadline,
               );
           } else {
+            console.log('here:::::4')
             if (type == SELECTED_INPUT.firstInput) {
               console.warn('MM', '-----swapExactETHForTokens  00 -------');
               swapTransaction =
@@ -1250,8 +1256,18 @@ const SwapSelected = props => {
               setLoading(false);
             })
             .catch(err => {
+              if (!isError) {
+                onChangeText({
+                  tokenFirst,
+                  tokenSecond,
+                  type,
+                  value,
+                  isError: true,
+                });
+              }
               console.warn('MM', 'hdhshs shsh hshs' + err?.message);
               setLoading(false);
+            if(isError){
               if (err?.message?.toLowerCase().includes('failed')) {
                 setTransferFailed(true);
               } else {
@@ -1259,8 +1275,11 @@ const SwapSelected = props => {
               }
               if (err?.message?.includes('INSUFFICIENT_OUTPUT_AMOUNT')) {
                 setIsInsufficientOutputAmount(true);
-                Singleton.showAlert('Insufficient output amount. Try increasing your slippage.')
+                Singleton.showAlert(
+                  'Insufficient output amount. Try increasing your slippage.',
+                );
               }
+            }
             });
         } else {
           let isApproved;
@@ -1319,11 +1338,8 @@ const SwapSelected = props => {
             (tokenSecond.coin_family == 4 && tokenSecond.coin_symbol.toLowerCase() == 'stc')
           ) {
             let swapTransaction;
-            if (tokenFirst.is_fee == 1) {
-              console.log(
-                'Token to ETH ======>>swapExactTokensForETHSupportingFeeOnTransferTokens',
-                amountAMin.toString(),
-                exponentialToDecimalWithoutComma(amountAMin - 1).toString(),
+            if (isError) {
+              console.log('here:::::1'
               );
               let amount = amountAMin.toString();
               console.warn(
@@ -1344,6 +1360,7 @@ const SwapSelected = props => {
                   deadline,
                 );
             } else {
+              console.log('here:::::2')
               if (type == SELECTED_INPUT.firstInput) {
                 console.warn(
                   'MM',
@@ -1397,7 +1414,17 @@ const SwapSelected = props => {
                 setLoading(false);
               })
               .catch(err => {
+                if(!isError){
+                  onChangeText({
+                    tokenFirst,
+                    tokenSecond,
+                    type,
+                    value,
+                    isError: true,
+                  });
+                }
                 console.warn('MM', 'wwwfsfdfsdf transfer failed', err, err?.message);
+               if(isError){
                 setLoading(false);
                 if (err?.message?.toLowerCase()?.includes('failed')) {
                   setTransferFailed(true);
@@ -1408,6 +1435,7 @@ const SwapSelected = props => {
                   setIsInsufficientOutputAmount(true);
                   Singleton.showAlert('Insufficient output amount. Try increasing your slippage.')
                 }
+               }
               });
           } else {
             let swapTransaction;
@@ -1817,6 +1845,7 @@ const SwapSelected = props => {
           tokenSecond,
           type: SELECTED_INPUT.firstInput,
           value: amount,
+          isError:false,
         });
       }
     }
@@ -1941,11 +1970,11 @@ const SwapSelected = props => {
   }
   const onPressAddCustomToken1 = () => {
     onCloseAllList()
-    Actions.currentScene != 'AddToken' && Actions.AddToken({ from: 'swap' });
+    getCurrentRouteName() != 'AddToken' && navigate(NavigationStrings.AddToken,{ from: 'swap' });
   }
   const onPressAddCustomToken2 = () => {
     onCloseSelectedList()
-    Actions.currentScene != 'AddToken' && Actions.AddToken({ from: 'swap', coin_family: tokenFirst?.coin_family });
+    getCurrentRouteName() != 'AddToken' && navigate(NavigationStrings.AddToken,{ from: 'swap', coin_family: tokenFirst?.coin_family });
   }
   const onCloseAllList = async () => {
 
@@ -2306,6 +2335,7 @@ const SwapSelected = props => {
                       ? exponentialToDecimalWithoutComma(tokenOneAmount)
                       : ''
                   }
+                  maxLength={20}
                   style={{
                     width: '92%',
                     alignSelf: 'center',
@@ -2351,6 +2381,7 @@ const SwapSelected = props => {
                           tokenSecond,
                           type: SELECTED_INPUT.firstInput,
                           value,
+                          isError:false,
                         });
                       }, 1000);
                     }
@@ -2723,6 +2754,7 @@ const SwapSelected = props => {
                       ? exponentialToDecimalWithoutComma(tokenTwoAmount)
                       : ''
                   }
+                  maxLength={20}
                   keyboardType={'numeric'}
                   placeholder={'0.0'}
                   placeholderTextColor={ThemeManager.colors.lightTextColor}
@@ -2762,6 +2794,7 @@ const SwapSelected = props => {
                           tokenSecond,
                           type: SELECTED_INPUT.secondInput,
                           value,
+                          isError:false,
                         });
                       }, 1000);
                     }

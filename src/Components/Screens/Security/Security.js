@@ -1,35 +1,29 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, { Component } from 'react';
 import {
-  TouchableOpacity,
-  FlatList,
-  Image,
-  ScrollView,
-  SafeAreaView,
-  BackHandler,
-  View,
+  Alert,
   Platform,
-  Alert
+  ScrollView,
+  View
 } from 'react-native';
-import styles from './SecurityStyle';
+import ReactNativeBiometrics from 'react-native-biometrics';
+import { openSettings } from "react-native-permissions";
+import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
+import * as constants from '../../../Constant';
+import { NavigationStrings } from '../../../Navigation/NavigationStrings';
+import Singleton from '../../../Singleton';
+import { areaDimen, heightDimen, widthDimen } from '../../../Utils/themeUtils';
+import { getCurrentRouteName, goBack, navigate } from '../../../navigationsService';
+import fonts from '../../../theme/Fonts';
+import { testCheckPermission } from '../../../utils';
 import {
+  BorderLine,
+  MainStatusBar,
+  SecurityLink,
   SecuritySwitch,
   SimpleHeader,
   Wrap,
-  SecurityLink,
-  MainStatusBar,
-  BorderLine,
 } from '../../common';
-import { Fonts, Images, Colors } from '../../../theme';
-import { Actions } from 'react-native-router-flux';
-import Singleton from '../../../Singleton';
-import * as constants from '../../../Constant';
-import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
-import fonts from '../../../theme/Fonts';
-import { areaDimen, heightDimen, widthDimen } from '../../../Utils/themeUtils';
-import { testCheckPermission } from '../../../utils';
-import { request, PERMISSIONS, openSettings } from "react-native-permissions";
-import ReactNativeBiometrics from 'react-native-biometrics';
 
 
 class Security extends Component {
@@ -40,7 +34,7 @@ class Security extends Component {
     };
   }
   componentDidMount() {
-    this.props.navigation.addListener('didFocus', () => {
+    this.props.navigation.addListener('focus', () => {
       Singleton.getInstance()
         .newGetData(constants.ENABLE_PIN)
         .then(enablePin => {
@@ -54,7 +48,7 @@ class Security extends Component {
   }
   backAction = () => {
     //console.warn('MM','i security');
-    Actions.pop();
+    goBack();
     return true;
   };
   enableDisableAppLock(status) {
@@ -132,9 +126,9 @@ class Security extends Component {
   }
   changeStatus() {
     // if (this.state.isEnabled) {
-    //   Actions.currentScene != 'ConfirmPin' && Actions.ConfirmPin({ redirectTo: 'disablepin', goBack: true, });
+    //   getCurrentRouteName() != 'ConfirmPin' && Actions.ConfirmPin({ redirectTo: 'disablepin', goBack: true, });
     // } else {
-    // Actions.currentScene != 'CreatePIN' &&
+    // getCurrentRouteName() != 'CreatePIN' &&
     //   Actions.CreatePIN({
     //     redirectTo: 'enablepin',
     //     goBack: true,
@@ -205,7 +199,7 @@ class Security extends Component {
                   let permit = testCheckPermission()
                   console.log(">>>>>>>>>>>", permit);
                   if (this.state.isEnabled) {
-                    Actions.currentScene != 'ConfirmPin' && Actions.ConfirmPin({ redirectTo: 'disablepin', goBack: true, });
+                    getCurrentRouteName() != 'ConfirmPin' && navigate(NavigationStrings.ConfirmPin,{ redirectTo: 'disablepin', goBack: true, });
                   } else {
                     this.checkBiometricAvailability()
                   }
@@ -243,8 +237,8 @@ class Security extends Component {
                 showIcon
                 title={LanguageManager.resetYourPin}
                 onPress={() =>
-                  Actions.currentScene != 'ResetConfirmPin' &&
-                  Actions.ResetConfirmPin({ screen: 'ResetConfirmPin' })
+                  getCurrentRouteName() != 'ResetConfirmPin' &&
+                  navigate(NavigationStrings.ResetConfirmPin,{ screen: 'ResetConfirmPin' })
                 }
               />
             </View>

@@ -1,34 +1,27 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, {useState, createRef, useEffect, useRef} from 'react';
-import {
-  Keyboard,
-  Linking,
-  Modal,
-  ScrollView,
-  Share,
-  TextInput,
-} from 'react-native';
-import {BorderLine, Wrap} from '../../common/index';
-import {MainStatusBar, SimpleHeader, BasicButton} from '../../common';
-import {Colors, Fonts, Images} from '../../../theme';
-import styles from './SaitaCardBinanceQrStyle';
-import {View, Image, Text, TouchableOpacity} from 'react-native';
-import Singleton from '../../../Singleton';
-import QRCode from 'react-native-qrcode-image';
-import Toast from 'react-native-easy-toast';
 import Clipboard from '@react-native-community/clipboard';
-import * as constants from '../../../Constant';
-import {LanguageManager, ThemeManager} from '../../../../ThemeManager';
-import {Actions} from 'react-native-router-flux';
-import SelectDropdown from 'react-native-select-dropdown';
-import Loader from '../Loader/Loader';
-import {APIClient} from '../../../Api';
-import {LIMINAL_COIN_LIST, LIMINAL_PRICE_CONVERSION} from '../../../Endpoints';
+import React, { createRef, useRef, useState } from 'react';
+import {
+  Image,
+  Linking,
+  Share,
+  Text, TouchableOpacity,
+  View
+} from 'react-native';
+import Toast from 'react-native-easy-toast';
 import FastImage from 'react-native-fast-image';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
+import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
+import * as constants from '../../../Constant';
+import Singleton from '../../../Singleton';
+import { Colors, Fonts, Images } from '../../../theme';
+import { BasicButton, MainStatusBar, SimpleHeader } from '../../common';
+import { BorderLine, Wrap } from '../../common/index';
+import styles from './SaitaCardBinanceQrStyle';
+import { getCurrentRouteName, goBack } from '../../../navigationsService';
 
 var qrBase64 = '';
-const SaitaCardBinanceQr = prop => {
+const SaitaCardBinanceQr = props => {
   // const [publicAddress, setPublicAddress] = useState(prop.myAddress);
   // const [walletData, setwalletData] = useState(prop.item);
 
@@ -52,19 +45,19 @@ const SaitaCardBinanceQr = prop => {
     
     //console.warn('MM',"????>>>>tokenListItem", prop.tokenListItem);
     // getCoinlist()
-    // let blur = prop.navigation.addListener('didBlur' , () =>{
-    //   console.warn('didBlur .... ');
+    // let blur = prop.navigation.addListener('blur' , () =>{
+    //   console.warn('blur .... ');
     //   setIsButtonPresses(false)
     // })
     // return ()=>{
-    //   blur?.remove()
+    //   blur()
     // }
   // }, []);
 
   const shareAction = () => {
     try {
       const result = Share.share({
-        message: `Please open this url to make payment ${prop?.data?.data?.universalUrl}`,
+        message: `Please open this url to make payment ${props?.route?.params?.data?.data?.universalUrl}`,
       });
       if (result.action === Share.sharedAction) {
         if (result.activityType) {
@@ -78,7 +71,7 @@ const SaitaCardBinanceQr = prop => {
   };
   const copyAction = () => {
     // console.warn('MM','---------', tokenFirst?.wallet_address);
-    Clipboard.setString(prop?.data?.data?.universalUrl);
+    Clipboard.setString(props?.route?.params?.data?.data?.universalUrl);
     toast.current.show(constants.COPIED);
   };
 
@@ -105,8 +98,8 @@ const SaitaCardBinanceQr = prop => {
           imageShow
           back={false}
           backPressed={() => {
-           Actions.currentScene != 'SaitaCardsInfo' && Actions.pop();
-          //  Actions.currentScene != 'SaitaCardsInfo' && Actions.pop();
+           getCurrentRouteName() != 'SaitaCardsInfo' && goBack();
+          //  getCurrentRouteName() != 'SaitaCardsInfo' && goBack();
           }}
         />
         <BorderLine
@@ -203,7 +196,7 @@ const SaitaCardBinanceQr = prop => {
                   // onLoadEnd={() => {
                   //   console.log('e');
                   // }}
-                  source={{uri: prop?.data?.data?.qrcodeLink}}
+                  source={{uri: props?.route?.params?.data?.data?.qrcodeLink}}
                   style={{
                     height: 156,
                     width: 156,
@@ -291,7 +284,7 @@ const SaitaCardBinanceQr = prop => {
                 // setAmount('')
                 // setConvertedAmount()
                 // shareAction();
-                Linking.openURL(prop?.data?.data?.deeplink)
+                Linking.openURL(props?.route?.params?.data?.data?.deeplink)
                   .then(res => {
                     console.log(res);
                   })
@@ -423,7 +416,7 @@ const SaitaCardBinanceQr = prop => {
               imageShow
               back={false}
               backPressed={() => {
-                // Actions.pop();
+                // goBack();
                 setIsButtonPresses(false);
               }}
             />

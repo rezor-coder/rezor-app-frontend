@@ -254,7 +254,7 @@ export default StyleSheet.create({
   coinBalanceFiat: {
     alignSelf: 'flex-end',
     lineHeight: heightDimen(19),
-    fontSize: areaDimen(16),
+    fontSize: areaDimen(15),
     fontFamily: Fonts.medium,
     textAlign: 'right',
   },

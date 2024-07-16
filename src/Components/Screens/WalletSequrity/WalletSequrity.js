@@ -1,31 +1,24 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { View, Text, BackHandler, Dimensions, ScrollView, TouchableOpacity, Image } from 'react-native';
-import { Wrap } from '../../common/Wrap';
-import { Actions } from 'react-native-router-flux';
-import images from '../../../theme/Images';
-import { styles } from './WalletSequrityStyle';
+import React, { useEffect, useRef, useState } from 'react';
+import { BackHandler, Dimensions, ScrollView, Text, View } from 'react-native';
 import ReactNativeBiometrics from 'react-native-biometrics';
 import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
 import {
-  SubHeader,
-  SimpleHeader,
   BasicButton,
-  MainStatusBar,
   KeyboardDigit,
-  KeyboardDigitImage,
-  PinInput,
+  MainStatusBar,
+  PinInput
 } from '../../common';
+import { Wrap } from '../../common/Wrap';
+import { styles } from './WalletSequrityStyle';
 
-import SmoothPinCodeInput from 'react-native-smooth-pincode-input';
-import * as constants from './../../../Constant';
-import Singleton from '../../../Singleton';
-import HeaderwithBackIcon from '../../common/HeaderWithBackIcon';
-import OTPTextView from 'react-native-otp-textinput';
-import { ifIphoneX } from 'react-native-iphone-x-helper';
-import { getInfuraBNBLink, getInfuraLink, getRouterDetails } from '../../../Redux/Actions';
 import { useDispatch } from 'react-redux';
-import { areaDimen, heightDimen, widthDimen } from '../../../Utils/themeUtils';
-import fonts from '../../../theme/Fonts';
+import { NavigationStrings } from '../../../Navigation/NavigationStrings';
+import { getInfuraBNBLink, getInfuraLink, getRouterDetails } from '../../../Redux/Actions';
+import Singleton from '../../../Singleton';
+import { widthDimen } from '../../../Utils/themeUtils';
+import { getCurrentRouteName, goBack, navigate } from '../../../navigationsService';
+import HeaderwithBackIcon from '../../common/HeaderWithBackIcon';
+import * as constants from './../../../Constant';
 
 const windowHeight = Dimensions.get('window').height;
 const WalletSequrity = props => {
@@ -45,7 +38,7 @@ const WalletSequrity = props => {
   };
 
   useEffect(() => {
-    props.navigation.addListener('didFocus', () => {
+    props.navigation.addListener('focus', () => {
       setBtnColor(Singleton.getInstance().dynamicColor);
     });
   }, []);
@@ -55,7 +48,7 @@ const WalletSequrity = props => {
     getBNBLink()
     const backAction = () => {
       //console.warn('MM','i WalletSequrity');
-      Actions.pop();
+      goBack();
       return true;
     };
 
@@ -144,7 +137,7 @@ const WalletSequrity = props => {
       if (props.redirectTo) {
         Singleton.getInstance().newSaveData(constants.ENABLE_PIN, 'true');
         Singleton.getInstance().newSaveData(constants.PIN, pin);
-        Actions.jump('Security');
+        navigate(NavigationStrings.Security);
       } else {
         Singleton.getInstance().newSaveData(constants.PIN, pin);
         Singleton.getInstance().newSaveData(constants.ENABLE_PIN, 'true');
@@ -157,8 +150,8 @@ const WalletSequrity = props => {
         //   // this.setState({pinFromStorage: pin});
         //   // global.isOnPinScreen = true;
         // });
-        Actions.currentScene != 'WalletSequrityConfirm' &&
-          Actions.replace('WalletSequrityConfirm');
+        getCurrentRouteName() != 'WalletSequrityConfirm' &&
+        navigate(NavigationStrings.WalletSequrityConfirm);
       }
     }
   };

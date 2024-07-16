@@ -1,37 +1,26 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  KeyboardAvoidingView,
-  ScrollView,
   Dimensions,
+  ScrollView,
+  Text,
+  View
 } from 'react-native';
-import { Actions } from 'react-native-router-flux';
-import colors from '../../../theme/Colors';
-import images from '../../../theme/Images';
+import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
+import * as constants from '../../../Constant';
+import { NavigationStrings } from '../../../Navigation/NavigationStrings';
+import Singleton from '../../../Singleton';
+import { getCurrentRouteName, navigate } from '../../../navigationsService';
 import {
   BasicButton,
   BorderLine,
   KeyboardDigit,
   MainStatusBar,
   PinInput,
-  SubHeader,
+  SimpleHeader
 } from '../../common';
-import SmoothPinCodeInput from 'react-native-smooth-pincode-input';
 import { Wrap } from '../../common/Wrap';
-import { ButtonPrimary } from '../../common/ButtonPrimary';
 import { styles } from './ResetCreatePINStyle';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import Singleton from '../../../Singleton';
-import * as constants from '../../../Constant';
-import { SimpleHeader } from '../../common';
-import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
-import HeaderwithBackIcon from '../../common/HeaderWithBackIcon';
-import { ifIphoneX } from 'react-native-iphone-x-helper';
-import ReactNativeBiometrics from 'react-native-biometrics';
 let length = 0;
 const windowHeight = Dimensions.get('window').height;
 const ResetCreatePIN = props => {
@@ -53,7 +42,7 @@ const ResetCreatePIN = props => {
   //     Singleton.getInstance().saveData(constants.PIN, pin);
   //     // Singleton.getInstance().saveData(constants.ENABLE_PIN, 'true');
   //     Singleton.showAlert(constants.UPDATEDPIN);
-  //     Actions.currentScene != 'Dashboard' && Actions.Dashboard();
+  //     getCurrentRouteName() != 'Dashboard' && Actions.Dashboard();
   //   }
   // };
   const updatePin = (item) => {
@@ -81,8 +70,9 @@ const ResetCreatePIN = props => {
       Singleton.showAlert(constants.ENTERPIN);
       return;
     } else {
-      Actions.currentScene != 'ConfirmSecurityPin' &&
-        Actions.replace('ConfirmSecurityPin', { pinFrom: pin });
+      getCurrentRouteName() != 'ConfirmSecurityPin' &&
+      navigate(NavigationStrings.ConfirmSecurityPin, { pinFrom: pin });
+      setPin('')
       // }
     }
   };
@@ -270,7 +260,7 @@ const ResetCreatePIN = props => {
               <Text style={styles.text}>{LanguageManager.PinReq}</Text>
             </View>
             <TouchableOpacity
-              onPress={() => Actions.pop()}
+              onPress={() => goBack()}
               style={styles.btnView2}>
               <Text style={{color: colors.white}}>{LanguageManager.Back}</Text>
             </TouchableOpacity>

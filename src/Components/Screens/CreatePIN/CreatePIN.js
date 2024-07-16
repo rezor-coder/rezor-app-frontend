@@ -1,33 +1,31 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
-  View,
+  BackHandler,
+  Dimensions,
+  ScrollView,
   Text,
   TouchableOpacity,
-  Dimensions,
-  BackHandler,
-  ScrollView,
+  View,
 } from 'react-native';
-import { Actions } from 'react-native-router-flux';
-import colors from '../../../theme/Colors';
+import ReactNativeBiometrics from 'react-native-biometrics';
+import { ifIphoneX } from 'react-native-iphone-x-helper';
+import SmoothPinCodeInput from 'react-native-smooth-pincode-input';
+import { useDispatch } from 'react-redux';
+import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
+import { NavigationStrings } from '../../../Navigation/NavigationStrings';
+import { getInfuraBNBLink, getInfuraLink, getRouterDetails } from '../../../Redux/Actions';
+import Singleton from '../../../Singleton';
+import { getCurrentRouteName, goBack, navigate } from '../../../navigationsService';
 import {
   BasicButton,
   ImageBackgroundComponent,
-  MainStatusBar,
-  SubHeader,
+  MainStatusBar
 } from '../../common';
-import SmoothPinCodeInput from 'react-native-smooth-pincode-input';
-import { Wrap } from '../../common/Wrap';
-import { ButtonPrimary } from '../../common/ButtonPrimary';
-import { styles } from './CreatePINStyle';
-import Singleton from '../../../Singleton';
-import * as constants from './../../../Constant';
-import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
-import { getInfuraLink, getInfuraBNBLink, getRouterDetails } from '../../../Redux/Actions';
-import { connect, useDispatch, useSelector } from 'react-redux';
 import HeaderwithBackIcon from '../../common/HeaderWithBackIcon';
-import { ifIphoneX } from 'react-native-iphone-x-helper';
-import ReactNativeBiometrics from 'react-native-biometrics';
+import { Wrap } from '../../common/Wrap';
+import * as constants from './../../../Constant';
+import { styles } from './CreatePINStyle';
 
 const windowHeight = Dimensions.get('window').height;
 let length = 0;
@@ -41,7 +39,7 @@ const CreatePIN = props => {
     getInfuraMainLink();
     const backAction = () => {
       //console.warn('MM','i CreatePIN');
-      Actions.pop();
+      goBack();
       return true;
     };
 
@@ -130,7 +128,7 @@ const CreatePIN = props => {
   //     //   //   // this.setState({pinFromStorage: pin});
   //     //   //   // global.isOnPinScreen = true;
   //     //   // });
-  //     //   Actions.currentScene != 'WalletSequrityConfirm' &&
+  //     //   getCurrentRouteName() != 'WalletSequrityConfirm' &&
   //     //     Actions.replace('WalletSequrityConfirm');
   //     // }
   //   }
@@ -165,8 +163,8 @@ const CreatePIN = props => {
       //   // this.setState({pinFromStorage: pin});
       //   // global.isOnPinScreen = true;
       // });
-      Actions.currentScene != 'ConfirmSecurityPin' &&
-        Actions.replace('ConfirmSecurityPin', { pinFrom: pin });
+      getCurrentRouteName() != 'ConfirmSecurityPin' &&
+      navigate(NavigationStrings.ConfirmSecurityPin, { pinFrom: pin });
       // }
     }
   };
@@ -201,11 +199,11 @@ const CreatePIN = props => {
   //     if (props.redirectTo) {
   //       Singleton.getInstance().saveData(constants.ENABLE_PIN, 'true');
   //       Singleton.getInstance().saveData(constants.PIN, pin);
-  //       Actions.currentScene != 'Security' && Actions.jump('Security');
+  //       getCurrentRouteName() != 'Security' && Actions.jump('Security');
   //     } else {
   //       Singleton.getInstance().saveData(constants.PIN, pin);
   //       Singleton.getInstance().saveData(constants.ENABLE_PIN, 'true');
-  //       Actions.currentScene != 'CreateWallet' && Actions.CreateWallet();
+  //       getCurrentRouteName() != 'CreateWallet' && Actions.CreateWallet();
   //     }
   //   }
   // };
@@ -479,7 +477,7 @@ const CreatePIN = props => {
               <Text style={styles.text}>{LanguageManager.PinReq}</Text>
             </View>
             <TouchableOpacity
-              onPress={() => Actions.pop()}
+              onPress={() => goBack()}
               style={styles.btnView2}>
               <Text style={{color: colors.white}}>{LanguageManager.Back}</Text>
             </TouchableOpacity>

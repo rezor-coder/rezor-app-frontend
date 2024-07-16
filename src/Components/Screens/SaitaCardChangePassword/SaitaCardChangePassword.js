@@ -1,23 +1,23 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, Alert, Image, Linking, Dimensions, Modal, ImageBackground, SafeAreaView, Platform } from 'react-native';
-import { Actions } from 'react-native-router-flux';
-import { MainStatusBar, BasicButton, Header, Wrap, CheckBox, ImageBackgroundComponent, BasicInputBox, BasicInputBoxPassword, SimpleHeader, SimpleHeaderNew, BorderLine } from '../../common/index';
-import styles from './SaitaCardChangePasswordStyle';
-import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
-import Singleton from '../../../Singleton';
-import { Fonts, Images, Colors } from '../../../theme';
-import HeaderwithBackIcon from '../../common/HeaderWithBackIcon';
-import * as Constants from '../../../Constant';
+import React, { useEffect, useState } from 'react';
+import { Alert, Dimensions, View } from 'react-native';
 import { useDispatch } from 'react-redux';
+import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
+import * as Constants from '../../../Constant';
+import { setNewPasswordCard } from '../../../Redux/Actions/SaitaCardAction';
+import Singleton from '../../../Singleton';
+import { Fonts } from '../../../theme';
+import { BasicButton, BasicInputBoxPassword, BorderLine, MainStatusBar, SimpleHeaderNew, Wrap } from '../../common/index';
 import Loader from '../Loader/Loader';
-import { setNewPasswordCard } from '../../../Redux/Actions/SaitaCardAction'
+import styles from './SaitaCardChangePasswordStyle';
 
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { NavigationStrings } from '../../../Navigation/NavigationStrings';
+import { navigate } from '../../../navigationsService';
 
 const SaitaCardChangePassword = props => {
 
@@ -42,7 +42,7 @@ const SaitaCardChangePassword = props => {
         {
           text: 'Ok',
           onPress: () => {
-            Actions.jump("SaitaCardLogin")
+            navigate(NavigationStrings.SaitaCardLogin)
           },
         },
 
@@ -96,8 +96,8 @@ const SaitaCardChangePassword = props => {
 
     setisLoading(true);
     let data = {
-      email: props.dataObj.email,
-      otp: props.dataObj.otp,
+      email: props?.route?.params?.dataObj.email,
+      otp: props?.route?.params?.dataObj.otp,
       newPwd: password,
       cnfrmPwd: confirmpassword,
       otp_type: "forget_pwd"

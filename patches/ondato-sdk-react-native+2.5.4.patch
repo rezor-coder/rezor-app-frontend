@@ -1,0 +1,15 @@
+diff --git a/node_modules/ondato-sdk-react-native/android/build.gradle b/node_modules/ondato-sdk-react-native/android/build.gradle
+index 8c6a4ff..6609713 100644
+--- a/node_modules/ondato-sdk-react-native/android/build.gradle
++++ b/node_modules/ondato-sdk-react-native/android/build.gradle
+@@ -83,7 +83,9 @@ dependencies {
+   implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+ 
+   // Custom
+-  implementation "com.kyc.ondato:sdk:2.5.4"
++  implementation ("com.kyc.ondato:sdk:2.5.3"){
++    exclude group: 'org.bouncycastle'
++  }
+   implementation 'com.google.code.gson:gson:2.10'
+ }
+ 

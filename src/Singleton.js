@@ -7,6 +7,7 @@ import Common from '@ethereumjs/common';
 const bitcoin = require('bitcoinjs-lib');
 import {
   addTrailingZeros,
+  bigNumberSafeMath,
   exponentialToDecimalWithoutComma,
   validateMnemonics,
 } from './utils';
@@ -50,8 +51,8 @@ export const multiSenderBnbContractAddress =
     : '0x090D5A53779c5C929E990716785De55E4BFaA519';
 export const MultiSenderMaticContractAddress =
   '0x16Bbd8e28FDbE9153234bCC87a5b0750fDBea598';
-export const multiSenderSTCContractAddress = '0x25324EA14bCfD1d75b9aa6869bacc9a62F9B9608';
-export const multiSenderSTCERC20ContractAddress = '0xC33272cb9a50b407CbddfC670B58467b7C56a611';
+export const multiSenderSTCContractAddress = '0x41BD4dD1Ec4bdd5A205078A5abbD939EE65bbb5e';
+export const multiSenderSTCERC20ContractAddress = '0xe6907a6FA8D543EDA16C5A0b410Bd09F7E521166';
 const web3BNB = new Web3(
   web3BscUrl,
 );
@@ -321,6 +322,7 @@ export default class Singleton {
     }
   }
   toFixednew(num, fixed) {
+    console.log("num", num, "fixed", fixed);
     if (num == undefined) {
       return (num = ' 0.00');
     } else if (num) {
@@ -345,7 +347,7 @@ export default class Singleton {
   /************************************************** toFixedExp **************************************************************/
   toFixedExp(num, fixed) {
     if (num) {
-      num = exponentialToDecimalNew(num);
+      num = this.exponentialToDecimalNew(num);
       let re = new RegExp('^-?\\d+(?:.\\d{0,' + (fixed || -1) + '})?');
       return num.toString().match(re)[0];
     }
@@ -940,7 +942,7 @@ export default class Singleton {
     }
   }
   // ********************************  CHECK FACTORY FOR PAIR  ************************************
-  checkFactoryForPair = (coin_family, tokenContractAddress) => {
+  checkFactoryForPair = (coin_family, tokenContractAddress,isDummy) => {
     return new Promise(async (resolve, reject) => {
       let factoryAddress, rpcUrl, wrappedCoin;
       if (coin_family == 1) {
@@ -965,7 +967,12 @@ export default class Singleton {
           if (pairAddress == '0x0000000000000000000000000000000000000000') {
             resolve(false)
           } else {
-            resolve(true)
+            if(isDummy){
+              resolve(pairAddress)
+            }else{
+              resolve(true)
+            }
+
           }
         })
       } catch (err) {
@@ -1116,29 +1123,29 @@ export default class Singleton {
           );
         }
         let amountArray = amount.map(item => {
-          return web3.utils.toWei(`${item}`, 'ether');
+          return web3.utils.toWei(`${this.toFixednew(item, 8)}`, 'ether');
           // return web3.utils.toWei("0.00001", "ether")
         });
-        //  console.warn('MM',amountArray);
+        console.warn('MM', amountArray);
 
         let data = contract.methods
           .multipleOutputs(addressArr, amountArray, referalAddress)
           .encodeABI();
 
-        //  console.warn('MM','data----------------', data);
+        console.warn('MM', 'data----------------', data);
         const commissionPercentage = await contract.methods
           .getCommissionPercentage()
           .call();
-        //  console.warn('MM','commissionPercentage----------------', commissionPercentage);
+        console.warn('MM', 'commissionPercentage----------------', commissionPercentage);
 
         const RefcommissionPercentage = await contract.methods
           .getRefferalCommissionPercentage()
           .call();
-        //  console.warn('MM','RefcommissionPercentage----------------', RefcommissionPercentage);
-        ////console.log(
-        // 'total value in gwei RefcommissionPercentage',
-        //   RefcommissionPercentage,
-        // );
+        console.warn('MM', 'RefcommissionPercentage----------------', RefcommissionPercentage);
+        console.log(
+          'total value in gwei RefcommissionPercentage',
+          RefcommissionPercentage,
+        );
 
         const commission = commissionPercentage / 100;
         const RefCommission =
@@ -1148,21 +1155,21 @@ export default class Singleton {
           parseFloat(totalAmount * (commission / 100)) +
           parseFloat(totalAmount * (RefCommission / 100))
         ).toString();
-        //  console.warn('MM','parseFloat(totalAmount * (commission / 100))----------------', parseFloat(totalAmount * (commission / 100)));
-        //  console.warn('MM','parseFloat(totalAmount * (RefCommission / 100))----------------', parseFloat(totalAmount * (RefCommission / 100)));
-        //  console.warn('MM','amountAfterCommission', amountAfterCommission);
+        console.warn('MM', 'parseFloat(totalAmount * (commission / 100))----------------', parseFloat(totalAmount * (commission / 100)));
+        console.warn('MM', 'parseFloat(totalAmount * (RefCommission / 100))----------------', parseFloat(totalAmount * (RefCommission / 100)));
+        console.warn('MM', 'amountAfterCommission', amountAfterCommission);
 
-        const amountToSend = web3.utils.toWei(amountAfterCommission, 'ether');
-        //  console.warn('MM','amountToSend', amountToSend);
+        const amountToSend = web3.utils.toWei(this.toFixednew(amountAfterCommission, 8), 'ether');
+        console.warn('MM', 'amountToSend', amountToSend);
         const gasLimit = await contract.methods
           .multipleOutputs(addressArr, amountArray, referalAddress)
-          .estimateGas({ value: amountToSend, from: myAddress });
-        // //console.warn('MM','total value in gwei', amountToSend);
-        // //console.warn('MM','amountAfterCommission', amountAfterCommission);
-        // //console.warn('MM','commission', commission);
-        // //console.warn('MM','RefCommission', RefCommission);
-        // //console.warn('MM','---comm', commissionPercentage);
-        // //console.warn('MM','---gasLimit', gasLimit);
+          .estimateGas({ value: amountToSend?.toString(), from: myAddress });
+        console.warn('MM', 'total value in gwei', amountToSend);
+        console.warn('MM', 'amountAfterCommission', amountAfterCommission);
+        console.warn('MM', 'commission', commission);
+        console.warn('MM', 'RefCommission', RefCommission);
+        console.warn('MM', '---comm', commissionPercentage);
+        console.warn('MM', '---gasLimit', gasLimit);
         // //console.warn('MM','let TOTT amount--- ', parseFloat(totalAmount));
         // ////console.log(
         //   'let comm amount--- ',
@@ -1178,7 +1185,7 @@ export default class Singleton {
         return resolve({
           data: data,
           commissionPercentage: commissionPercentage,
-          gasLimit: (gasLimit * 1.5).toFixed(0),
+          gasLimit: (gasLimit).toFixed(0),
           amountAfterCommission: amountAfterCommission,
           commissionAmt: this.exponentialToDecimal(
             parseFloat(totalAmount * (commission / 100)),
@@ -1215,118 +1222,7 @@ export default class Singleton {
     return new Promise(async (resolve, reject) => {
       const emptyAddress = /^0x0+$/.test(referalAddress);
       try {
-        let minAbi = [
-          {
-            anonymous: false,
-            inputs: [
-              {
-                indexed: true,
-                internalType: 'address',
-                name: 'previousOwner',
-                type: 'address',
-              },
-              {
-                indexed: true,
-                internalType: 'address',
-                name: 'newOwner',
-                type: 'address',
-              },
-            ],
-            name: 'OwnershipTransferred',
-            type: 'event',
-          },
-          {
-            inputs: [],
-            name: 'getCommisionAddress',
-            outputs: [{ internalType: 'address', name: '', type: 'address' }],
-            stateMutability: 'view',
-            type: 'function',
-          },
-          {
-            inputs: [],
-            name: 'getCommissionPercentage',
-            outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
-            stateMutability: 'view',
-            type: 'function',
-          },
-          {
-            inputs: [],
-            name: 'getRefferalCommissionPercentage',
-            outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
-            stateMutability: 'view',
-            type: 'function',
-          },
-          {
-            inputs: [
-              { internalType: 'address[]', name: 'addresses', type: 'address[]' },
-              { internalType: 'uint256[]', name: 'amt', type: 'uint256[]' },
-              {
-                internalType: 'address',
-                name: '_referralAddress',
-                type: 'address',
-              },
-            ],
-            name: 'multipleOutputs',
-            outputs: [],
-            stateMutability: 'payable',
-            type: 'function',
-          },
-          {
-            inputs: [],
-            name: 'owner',
-            outputs: [{ internalType: 'address', name: '', type: 'address' }],
-            stateMutability: 'view',
-            type: 'function',
-          },
-          {
-            inputs: [
-              { internalType: 'address', name: 'newOwner', type: 'address' },
-            ],
-            name: 'transferOwnership',
-            outputs: [],
-            stateMutability: 'nonpayable',
-            type: 'function',
-          },
-          {
-            inputs: [
-              {
-                internalType: 'address',
-                name: '_commissionAddress',
-                type: 'address',
-              },
-            ],
-            name: 'updateCommissionAddress',
-            outputs: [],
-            stateMutability: 'nonpayable',
-            type: 'function',
-          },
-          {
-            inputs: [
-              {
-                internalType: 'uint256',
-                name: '_commissionPercentage',
-                type: 'uint256',
-              },
-            ],
-            name: 'updateComssionPercentage',
-            outputs: [],
-            stateMutability: 'nonpayable',
-            type: 'function',
-          },
-          {
-            inputs: [
-              {
-                internalType: 'uint256',
-                name: '_refferalCommissionPercentage',
-                type: 'uint256',
-              },
-            ],
-            name: 'updateRefferalComssionPercentage',
-            outputs: [],
-            stateMutability: 'nonpayable',
-            type: 'function',
-          },
-        ];
+        let minAbi = [{ "anonymous": false, "inputs": [{ "indexed": true, "internalType": "address", "name": "previousOwner", "type": "address" }, { "indexed": true, "internalType": "address", "name": "newOwner", "type": "address" }], "name": "OwnershipTransferred", "type": "event" }, { "inputs": [], "name": "getCommisionAddress", "outputs": [{ "internalType": "address", "name": "", "type": "address" }], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "getCommissionPercentage", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" }, { "inputs": [{ "internalType": "address[]", "name": "addresses", "type": "address[]" }, { "internalType": "uint256[]", "name": "amt", "type": "uint256[]" }], "name": "multipleOutputs", "outputs": [], "stateMutability": "payable", "type": "function" }, { "inputs": [], "name": "owner", "outputs": [{ "internalType": "address", "name": "", "type": "address" }], "stateMutability": "view", "type": "function" }, { "inputs": [{ "internalType": "address", "name": "newOwner", "type": "address" }], "name": "transferOwnership", "outputs": [], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [{ "internalType": "address", "name": "_commissionAddress", "type": "address" }], "name": "updateCommissionAddress", "outputs": [], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [{ "internalType": "uint256", "name": "_commissionPercentage", "type": "uint256" }], "name": "updateComssionPercentage", "outputs": [], "stateMutability": "nonpayable", "type": "function" }];
 
         const web3Dapp = new Web3(this.stcLink);
         let contract = await new web3Dapp.eth.Contract(
@@ -1334,42 +1230,38 @@ export default class Singleton {
           multiSenderSTCContractAddress,
         );
         let amountArray = amount.map(item => {
-          return Web3.utils.toWei(`${item}`, 'ether');
+          return Web3.utils.toWei(`${this.toFixednew(item, 8)}`, 'ether');
         });
-        console.warn('MM', amountArray);
+        // console.warn('MM', amountArray);
 
         let data = contract.methods
-          .multipleOutputs(addressArr, amountArray, referalAddress)
+          .multipleOutputs(addressArr, amountArray)
           .encodeABI();
 
-        console.warn('MM', 'data----------------', data);
-        const commissionPercentage = await contract.methods
-          .getCommissionPercentage()
-          .call();
+        // console.warn('MM', 'data----------------', data);
+        const commissionPercentage = await contract.methods.getCommissionPercentage().call();
         console.warn('MM', 'commissionPercentage----------------', commissionPercentage);
 
-        const RefcommissionPercentage = await contract.methods
-          .getRefferalCommissionPercentage()
-          .call();
-        console.warn('MM', 'RefcommissionPercentage----------------', RefcommissionPercentage);
-        console.log(
-          'total value in gwei RefcommissionPercentage',
-          RefcommissionPercentage,
-          totalAmount
-        );
 
         const commission = commissionPercentage / 100;
-        const RefCommission =
-          emptyAddress == true ? 0 : RefcommissionPercentage / 100;
-        const amountAfterCommission = (
+        const RefCommission = 0;
+        const amountAfterCommissionOld = (
           parseFloat(totalAmount) +
           parseFloat(totalAmount * (commission / 100)) +
           parseFloat(totalAmount * (RefCommission / 100))
         ).toString();
-        const amountToSend = web3.utils.toWei(amountAfterCommission, 'ether');
+        console.log("amountAfterCommissionOld::::::", amountAfterCommissionOld);
+        let commisonFinal = bigNumberSafeMath(totalAmount, '*', bigNumberSafeMath(commission, '/', 100))
+        console.log("commisonFinal::::::", commisonFinal);
+        let RefCommissionFinal = bigNumberSafeMath(totalAmount, '*', bigNumberSafeMath(RefCommission, '/', 100))
+        console.log("RefCommissionFinal::::::", amountAfterCommissionOld);
+        const amountAfterCommission = bigNumberSafeMath(totalAmount, "+", bigNumberSafeMath(commisonFinal, "+", RefCommissionFinal))
+        console.warn('MM', 'amountAfterCommission', amountAfterCommission);
+        const amountToSend = web3.utils.toWei(this.toFixednew(amountAfterCommission, 8)?.toString(), 'ether');
+        console.log("amountToSend::::::", amountToSend);
         const gasLimit = await contract.methods
-          .multipleOutputs(addressArr, amountArray, referalAddress)
-          .estimateGas({ value: amountToSend, from: myAddress });
+          .multipleOutputs(addressArr, amountArray)
+          .estimateGas({ value: amountToSend?.toString(), from: myAddress });
         console.warn('MM', 'total value in gwei', amountToSend);
         console.warn('MM', 'amountAfterCommission', amountAfterCommission);
         console.warn('MM', 'commission', commission);
@@ -1391,7 +1283,7 @@ export default class Singleton {
         return resolve({
           data: data,
           commissionPercentage: commissionPercentage,
-          gasLimit: (gasLimit ).toFixed(0),
+          gasLimit: (gasLimit).toFixed(0),
           amountAfterCommission: amountAfterCommission,
           commissionAmt: this.exponentialToDecimal(
             parseFloat(totalAmount * (commission / 100)),
@@ -1569,7 +1461,7 @@ export default class Singleton {
       //   coin_family,
       // );
       let amountArray = amount.map(item => {
-        return web3.utils.toWei(`${item}`, 'ether');
+        return web3.utils.toWei(`${this.toFixednew(item, 8)}`, 'ether');
         // return web3.utils.toWei("0.00001", "ether")
       });
       // console.log(amountArray);
@@ -1603,11 +1495,11 @@ export default class Singleton {
         .toString();
       // console.log('amountAfterCommission', amountAfterCommission);
 
-      const amountToSend = web3.utils.toWei(amountAfterCommission, 'ether');
+      const amountToSend = web3.utils.toWei(this.toFixednew(amountAfterCommission, 8), 'ether');
       // console.log('amountToSend', amountToSend);
       const gasLimit = await contract.methods
         .multipleOutputs(addressArr, amountArray)
-        .estimateGas({ value: amountToSend, from: myAddress });
+        .estimateGas({ value: amountToSend?.toString(), from: myAddress });
       // //console.log('total value in gwei', amountToSend);
       // //console.log('amountAfterCommission', amountAfterCommission);
       // //console.log('commission', commission);
@@ -1672,7 +1564,7 @@ export default class Singleton {
     //   dataEncoded + 'dataEncoded',
     // );
     try {
-      var amountToSend = web3.utils.toWei(toAmount, 'ether');
+      var amountToSend = web3.utils.toWei(this.toFixednew(toAmount, 8), 'ether');
       var amount = web3.utils.toHex(amountToSend);
       const web3Raw = createAlchemyWeb3(testnetUrlEth);
       var priorityOrTip = await web3Raw.eth.getMaxPriorityFeePerGas();
@@ -1736,7 +1628,7 @@ export default class Singleton {
     // );
     var amountToSend;
     if (toAmount != '0x0') {
-      amountToSend = web3BNB.utils.toWei(toAmount, 'ether');
+      amountToSend = web3BNB.utils.toWei(this.toFixednew(toAmount, 8), 'ether');
     } else {
       amountToSend = toAmount;
     }
@@ -1751,30 +1643,30 @@ export default class Singleton {
         from: my_address,
         data: dataEncoded,
       };
-      //  console.warn('MM','RAW-----', rawTxn);
+      console.warn('MM', 'RAW-----', rawTxn);
 
       web3BNB.eth.accounts
         .signTransaction(rawTxn, pKey)
         .then(res => {
-          // ////console.log(
-          //   '------------raw txn-----------',
-          //   res.rawTransaction.slice(2),
-          // );
+          console.log(
+            '------------raw txn-----------',
+            res.rawTransaction.slice(2),
+          );
 
-          // //console.warn('MM','------------raw txn-----------nonce', nonce);
+          console.warn('MM', '------------raw txn-----------nonce', nonce);
           web3BNB.eth
             .sendSignedTransaction(res.rawTransaction)
             .then(res1 => {
-              // //console.warn('MM','---------------res111-------------', res1);
+              console.warn('MM', '---------------res111-------------', res1);
               resolve(res1);
             })
             .catch(err => {
-              //console.warn('MM','---------------err-------------', err);
+              console.warn('MM', '---------------err-------------', err);
               reject(err);
             });
         })
         .catch(error => {
-          //console.warn('MM','CATCH---------', error);
+          console.warn('MM', 'CATCH---------', error);
           reject(error);
         });
     });
@@ -1802,7 +1694,7 @@ export default class Singleton {
     );
     var amountToSend;
     if (toAmount != '0x0') {
-      amountToSend = Web3.utils.toWei(exponentialToDecimalWithoutComma(toAmount), 'ether');
+      amountToSend = Web3.utils.toWei(this.toFixednew(exponentialToDecimalWithoutComma(toAmount), 8), 'ether');
     } else {
       amountToSend = toAmount;
     }
@@ -1874,7 +1766,7 @@ export default class Singleton {
       );
       var amountToSend;
       if (toAmount != '0x0') {
-        amountToSend = web3Matic.utils.toWei(toAmount, 'ether');
+        amountToSend = web3Matic.utils.toWei(this.toFixednew(toAmount, 8), 'ether');
       } else {
         amountToSend = toAmount;
       }
@@ -2002,9 +1894,11 @@ export default class Singleton {
       var contract;
       let rpc;
       if (coin_family == 6) {
-        rpc = web3BscUrl
+        rpc = this.bnbLink
       } else if (coin_family == 4) {
         rpc = this.stcLink
+      } else if (coin_family == 1) {
+        rpc = this.ethLink
       }
       console.log("rpc::::", rpc);
       let web3Dapp = new Web3(rpc);
@@ -2017,11 +1911,6 @@ export default class Singleton {
         contract = await new web3Dapp.eth.Contract(
           minAbis,
           bep20MultiSenderContractAddress,
-        );
-      } else if (coin_family == 4) {
-        contract = await new web3Dapp.eth.Contract(
-          minAbis,
-          multiSenderSTCERC20ContractAddress,
         );
       }
       let amountArray = amount.map(item => {
@@ -2042,6 +1931,9 @@ export default class Singleton {
       const commission = commissionAmount;
       const amountAfterCommission = parseFloat(commission).toString();
       console.log('parseFloat(commission)  ', parseFloat(commission));
+      const gasLimit = await contract.methods
+        .makeTransfer(addressArr, amountArray, tokenAddress, referalAddress)
+        .estimateGas({ value: amountAfterCommission?.toString(), from: myAddress });
       return {
         data: data,
         commissionAmount: commissionAmount,
@@ -2049,6 +1941,7 @@ export default class Singleton {
           parseFloat(amountAfterCommission) /
           10 ** 18
         ).toString(),
+        gasLimit: (gasLimit * 1.5).toFixed(0),
         commissionAmt: this.exponentialToDecimal(parseFloat(commission)),
       };
     } catch (err) {
@@ -2075,20 +1968,20 @@ export default class Singleton {
     myAddress,
     referalAddress,
   ) {
-    let minAbis = multiSendTokenMaticAbi;
+    let minAbis =[ { "anonymous": false, "inputs": [ { "indexed": true, "internalType": "address", "name": "previousOwner", "type": "address" }, { "indexed": true, "internalType": "address", "name": "newOwner", "type": "address" } ], "name": "OwnershipTransferred", "type": "event" }, { "inputs": [], "name": "getCommisionAddress", "outputs": [ { "internalType": "address", "name": "", "type": "address" } ], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "getCommissionAmount", "outputs": [ { "internalType": "uint256", "name": "", "type": "uint256" } ], "stateMutability": "view", "type": "function" }, { "inputs": [ { "internalType": "address payable[]", "name": "addressArray", "type": "address[]" }, { "internalType": "uint256[]", "name": "amountArray", "type": "uint256[]" }, { "internalType": "address", "name": "contractAddress", "type": "address" } ], "name": "makeTransfer", "outputs": [], "stateMutability": "payable", "type": "function" }, { "inputs": [], "name": "owner", "outputs": [ { "internalType": "address", "name": "", "type": "address" } ], "stateMutability": "view", "type": "function" }, { "inputs": [ { "internalType": "address", "name": "newOwner", "type": "address" } ], "name": "transferOwnership", "outputs": [], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [ { "internalType": "address", "name": "_commissionAddress", "type": "address" } ], "name": "updateCommissionAddress", "outputs": [], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [ { "internalType": "uint256", "name": "_commissionAmount", "type": "uint256" } ], "name": "updateComssionAmount", "outputs": [], "stateMutability": "nonpayable", "type": "function" } ];
     try {
       let web3Dapp = new Web3(this.stcLink);
       let contract = new web3Dapp.eth.Contract(
-          minAbis,
-          multiSenderSTCERC20ContractAddress,
-        );
+        minAbis,
+        multiSenderSTCERC20ContractAddress,
+      );
       let amountArray = amount.map(item => {
         const amountToSend = item * decimals;
         const amountToSendwithouexpo = this.exponentialToDecimal(amountToSend);
         const removedDecimal = amountToSendwithouexpo.split('.')[0];
         return removedDecimal;
       });
-      console.warn('MM', 'amountArray---->', amountArray,"addressArr____",addressArr,"tokenAddress",tokenAddress,"referalAddress",referalAddress);
+      console.warn('MM', 'amountArray---->', amountArray, "addressArr____", addressArr, "tokenAddress", tokenAddress, "referalAddress", referalAddress);
       const data = contract.methods
         .makeTransfer(addressArr, amountArray, tokenAddress)
         .encodeABI();
@@ -2100,10 +1993,10 @@ export default class Singleton {
       const commission = commissionAmount;
       const amountAfterCommission = parseFloat(commission).toString();
       console.log('parseFloat(commission)  ', parseFloat(commission));
-    //   const gasLimit = await contract.methods
-    //   .makeTransfer(addressArr, amountArray, tokenAddress)
-    //   .estimateGas({ value: amountAfterCommission, from: myAddress });
-    // console.log('---gasLimit', gasLimit);
+      const gasLimit = await contract.methods
+        .makeTransfer(addressArr, amountArray, tokenAddress)
+        .estimateGas({ value: amountAfterCommission?.toString(), from: myAddress });
+      console.log('---gasLimit', gasLimit);
       return {
         data: data,
         commissionAmount: commissionAmount,
@@ -2111,7 +2004,7 @@ export default class Singleton {
           parseFloat(amountAfterCommission) /
           10 ** 18
         ).toString(),
-        // gasLimit: (gasLimit * 1.5).toFixed(0),
+        gasLimit: (gasLimit).toFixed(0),
         commissionAmt: this.exponentialToDecimal(parseFloat(commission)),
       };
     } catch (err) {
@@ -2199,7 +2092,7 @@ export default class Singleton {
       const amountAfterCommission = parseFloat(commission).toString();
       const gasLimit = await contract.methods
         .makeTransfer(addressArr, amountArray, tokenAddress)
-        .estimateGas({ value: amountAfterCommission, from: myAddress });
+        .estimateGas({ value: amountAfterCommission?.toString(), from: myAddress });
       //console.log('---gasLimit', gasLimit);
 
       //console.warn('MM','parseFloat(commission)  ', parseFloat(commission));
@@ -2248,7 +2141,7 @@ export default class Singleton {
     //   my_address + 'my_address----',
     //   dataEncoded + 'dataEncoded',
     // );
-    var amount = web3.utils.toWei(value, 'ether');
+    var amount = web3.utils.toWei(this.toFixednew(value, 8), 'ether');
     const web3Raw = createAlchemyWeb3(testnetUrlEth);
     var priorityOrTip = await web3Raw.eth.getMaxPriorityFeePerGas();
     //console.warn('MM','getMaxPriorityFeePerGas', priorityOrTip);
@@ -2341,7 +2234,7 @@ export default class Singleton {
       .encodeABI();
     if (coin_family == 1) {
       console.warn('MM', '_____ testnetUrlEth', testnetUrlEth);
-      const web3Approval = createAlchemyWeb3(testnetUrlEth);
+      const web3Approval = createAlchemyWeb3(this.ethLink);
       var priorityOrTip = await web3Approval.eth.getMaxPriorityFeePerGas();
       console.warn('MM', 'getMaxPriorityFeePerGas', priorityOrTip);
       var block = await web3Approval.eth.getBlock('pending');
@@ -2357,6 +2250,7 @@ export default class Singleton {
       ).toString(16)}`;
       console.warn('MM', 'totalgasPrice', `${totalgasPrice}`);
       var defaultgaslimit = gasLimit;
+      console.warn('MM', 'totalgasPrice', `${totalgasPrice}`);
       var transactionFeeSupplied =
         parseInt(totalgasPrice, 16) * 0.000000001 * 0.000000001 * 21000;
       console.warn('MM', 'transactionFeeSupplied', transactionFeeSupplied);
@@ -2364,7 +2258,7 @@ export default class Singleton {
         data: dataEncoded,
         gasLimit: web3Approval.utils.toHex(defaultgaslimit),
         maxPriorityFeePerGas: web3BNB.utils.toHex(priorityOrTip),
-        maxFeePerGas: web3BNB.utils.toHex(totalgasPrice),
+        maxFeePerGas: web3BNB.utils.toHex(gasPriceTxn),
         nonce: nonce,
         to: token_address,
         value: '0x0',
@@ -2372,6 +2266,7 @@ export default class Singleton {
         accessList: [],
         type: '0x02',
       };
+      console.log("txData:::::", txData);
       const common = new Common({
         chain:
           Constants.network == 'testnet'

@@ -1,46 +1,38 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, {useState, useEffect, useRef} from 'react';
+import React, { createRef, useCallback, useEffect, useRef, useState } from 'react';
 import {
-  View,
-  Text,
-  Image,
-  TouchableOpacity,
+  BackHandler,
   FlatList,
-  TextInput,
   Platform,
-  BackHandler
+  Text,
+  TextInput,
+  View
 } from 'react-native';
+import { EventRegister } from 'react-native-event-listeners';
+import FastImage from 'react-native-fast-image';
+import { useDispatch } from 'react-redux';
+import { ThemeManager } from '../../../../ThemeManager';
+import { APIClient } from '../../../Api';
+import * as Constants from '../../../Constant';
 import {
-  MainHeader,
+  HUOBI_TOKEN_LIST
+} from '../../../Endpoints';
+import { NavigationStrings } from '../../../Navigation/NavigationStrings';
+import { getSwapListAll, saveSwapItem } from '../../../Redux/Actions';
+import Singleton from '../../../Singleton';
+import { areaDimen, heightDimen, widthDimen } from '../../../Utils/themeUtils';
+import { getCurrentRouteName, goBack, navigate, reset } from '../../../navigationsService';
+import { Fonts, Images } from '../../../theme';
+import fonts from '../../../theme/Fonts';
+import {
   MainStatusBar,
   SelectionModal,
-  SimpleHeaderNew,
+  SimpleHeaderNew
 } from '../../common';
-import {
-  HUOBI_GET_FAVOURITES,
-  HUOBI_REMOVE_FAVOURITES,
-  HUOBI_SET_FAVOURITES,
-  HUOBI_TOKEN_LIST,
-} from '../../../Endpoints';
-import {Wrap} from '../../common/Wrap';
-import {Actions} from 'react-native-router-flux';
-import styles from './MarketStyle';
-import {Fonts, Images} from '../../../theme';
-import Singleton from '../../../Singleton';
-import {useDispatch} from 'react-redux';
+import { Card } from '../../common/Card';
+import { Wrap } from '../../common/Wrap';
 import Loader from '../Loader/Loader';
-import {ThemeManager} from '../../../../ThemeManager';
-import * as Constants from '../../../Constant';
-import TradeHeader from '../../common/TradeHeader';
-import {APIClient} from '../../../Api';
-import FastImage from 'react-native-fast-image';
-import {useCallback} from 'react';
-import fonts from '../../../theme/Fonts';
-import {createRef} from 'react';
-import {areaDimen, heightDimen, widthDimen} from '../../../Utils/themeUtils';
-import {Card} from '../../common/Card';
-import {EventRegister} from 'react-native-event-listeners';
-import {getSwapListAll, saveSwapItem} from '../../../Redux/Actions';
+import styles from './MarketStyle';
 
 const tabData = [{title: 'Favourites'}, {title: 'USDT'}];
 
@@ -84,10 +76,10 @@ const Market = props => {
   useEffect(() => {
     let backHandle
     backHandle= BackHandler.addEventListener('hardwareBackPress',()=>{
-      if( Actions.currentScene=='Market'){
-        Actions.currentScene != 'Main' && Actions.reset("Main")
+      if( getCurrentRouteName()=='Market'){
+        getCurrentRouteName() != 'Main' && reset(NavigationStrings.Main)
       }else{
-        Actions.pop()
+        goBack()
       }
       return true
     })
@@ -96,12 +88,12 @@ const Market = props => {
     });
     showSaitaDex ? getsaitaDexList() : findDesiredToken();
     // getFavourite();
-    let focus = props.navigation.addListener('didFocus', () => {
+    let focus = props.navigation.addListener('focus', () => {
       backHandle= BackHandler.addEventListener('hardwareBackPress',()=>{
-        if( Actions.currentScene=='Market'){
-          Actions.currentScene != 'Main' && Actions.reset("Main")
+        if( getCurrentRouteName()=='Market'){
+          getCurrentRouteName() != 'Main' && reset(NavigationStrings.Main)
         }else{
-          Actions.pop()
+          goBack()
         }
         return true
       })
@@ -111,13 +103,13 @@ const Market = props => {
       showSaitaDex ? getsaitaDexList() : findDesiredToken();
       // getFavourite();
     });
-    let blur = props.navigation.addListener('didBlur', () => {
+    let blur = props.navigation.addListener('blur', () => {
       backHandle?.remove();
     })
     return () => {
       backHandle?.remove();
-      blur?.remove();
-      focus?.remove();
+      blur();
+      focus();
     };
   }, []);
 
@@ -295,13 +287,13 @@ const Market = props => {
       if (isPrivate !='eth' && isPrivate !='bnb' && isPrivate !='matic' && isPrivate!='trx' && isPrivate != 'btc' && isPrivate != 'stc') {
         console.log("activeWallet all:::::",item);
         dispatch(saveSwapItem(item))
-        Actions.currentScene != 'Trade' && Actions.Trade({ chain: isPrivate ,item:item});
+        getCurrentRouteName() != 'Trade' && navigate(NavigationStrings.Trade,{ chain: isPrivate ,item:item});
       } else if (isPrivate == 'eth') {
         console.log("activeWallet eth:::::",item);
         if (item?.coin_family == 1) {
           console.log("coin_family eth inside:::::",item);
           dispatch(saveSwapItem(item))
-          Actions.currentScene != 'Trade' && Actions.Trade({ chain: isPrivate ,item:item});
+          getCurrentRouteName() != 'Trade' && navigate(NavigationStrings.Trade,{ chain: isPrivate ,item:item});
         } else {
           console.log("coin_family eth::::else:",);
           Singleton.showAlert(Constants.UNCOMPATIBLE_WALLET);
@@ -310,7 +302,7 @@ const Market = props => {
         console.log("activeWallet bnb:::::",item);
         if (item?.coin_family == 6) {
           dispatch(saveSwapItem(item))
-          Actions.currentScene != 'Trade' && Actions.Trade({ chain: isPrivate ,item:item});
+          getCurrentRouteName() != 'Trade' && navigate(NavigationStrings.Trade,{ chain: isPrivate ,item:item});
         } else {
           Singleton.showAlert(Constants.UNCOMPATIBLE_WALLET);
         }
@@ -318,7 +310,7 @@ const Market = props => {
         console.log("activeWallet stc:::::",item);
         if (item?.coin_family == 4) {
           dispatch(saveSwapItem(item))
-          Actions.currentScene != 'Trade' && Actions.Trade({ chain: isPrivate ,item:item});
+          getCurrentRouteName() != 'Trade' && navigate(NavigationStrings.Trade,{ chain: isPrivate ,item:item});
         } else {
           Singleton.showAlert(Constants.UNCOMPATIBLE_WALLET);
         }
@@ -333,7 +325,7 @@ const Market = props => {
     console.log('activeWallet::', activeWallet);
     if (activeWallet == 'eth' || activeWallet == 0) {
       console.log('----------------item', item);
-      Actions.currentScene != 'TradeSwap' && Actions.TradeSwap({item: item});
+      getCurrentRouteName() != 'TradeSwap' && navigate(NavigationStrings.TradeSwap,{item: item});
     } else {
       Singleton.showAlert(Constants.UNCOMPATIBLE_WALLET);
     }

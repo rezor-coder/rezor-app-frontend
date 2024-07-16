@@ -1,23 +1,24 @@
 /* eslint-disable no-lone-blocks */
 /* eslint-disable react-native/no-inline-styles */
-import React, { useEffect} from 'react';
+import React, { useEffect } from 'react';
 import { BackHandler } from 'react-native';
-import {Actions} from 'react-native-router-flux';
-import {ThemeManager} from '../../../../ThemeManager';
+import { ThemeManager } from '../../../../ThemeManager';
+import { NavigationStrings } from '../../../Navigation/NavigationStrings';
 import Singleton from '../../../Singleton';
+import { getCurrentRouteName, navigate, reset } from '../../../navigationsService';
 import { MainStatusBar, Wrap } from '../../common';
 import SaitaCardBlack from '../SaitaCardBlack';
 const SaitaCardsInfo = props => {
   let backHandle = null;
   useEffect(() => {
-    console.log("props:::from",props.from);
-    props.navigation.addListener('didFocus', () => {
+    console.log("props:::from",props?.route?.params?.from);
+    props.navigation.addListener('focus', () => {
       backHandle = BackHandler.addEventListener(
         'hardwareBackPress',
         backAction,
       );
     });
-    props.navigation.addListener('didBlur', () => {
+    props.navigation.addListener('blur', () => {
       backHandle?.remove();
     });
     return () => {
@@ -28,9 +29,9 @@ const SaitaCardsInfo = props => {
   const backAction = () => {
     Singleton.getInstance().currentCard = 'black';
     if(props?.from=='Main'){
-      Actions.currentScene != 'Main' && Actions.reset("Main")
+      getCurrentRouteName() != 'Main' && reset(NavigationStrings.Main)
     }else{
-      Actions.currentScene != 'Dashboard' && Actions.replace('Dashboard');
+      getCurrentRouteName() != 'Dashboard' && navigate(NavigationStrings.Dashboard);
     }
     return true;
   };
@@ -46,7 +47,7 @@ const SaitaCardsInfo = props => {
               : 'light-content'
           }
         />
-            <SaitaCardBlack navigation={props.navigation} from={props.from}/>
+            <SaitaCardBlack navigation={props.navigation} from={props?.route?.params?.from}/>
     </Wrap>
   );
 };

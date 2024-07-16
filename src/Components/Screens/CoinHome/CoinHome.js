@@ -1,22 +1,23 @@
-import { View, Text, FlatList, TouchableOpacity, BackHandler } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import styles from './CoinHomeStyles';
-import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
-import { BorderLine, MainStatusBar, SimpleHeaderNew, Wrap } from '../../common';
-import { areaDimen, heightDimen, widthDimen } from '../../../Utils/themeUtils';
-import { CommaSeprator3, exponentialToDecimalWithoutComma } from '../../../utils';
-import Singleton from '../../../Singleton';
+import { BackHandler, FlatList, Text, TouchableOpacity, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
-import { Images } from '../../../theme';
 import { useDispatch, useSelector } from 'react-redux';
-import { getTransactionList, saveSwapItem } from '../../../Redux/Actions';
-import Loader from '../Loader/Loader';
-import HistoryItem from '../../common/HistoryItem';
-import { Actions } from 'react-native-router-flux';
-import fonts from '../../../theme/Fonts';
+import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
 import * as constants from '../../../Constant';
+import { NavigationStrings } from '../../../Navigation/NavigationStrings';
+import { getTransactionList, saveSwapItem } from '../../../Redux/Actions';
+import Singleton from '../../../Singleton';
+import { areaDimen, heightDimen } from '../../../Utils/themeUtils';
+import { getCurrentRouteName, goBack, navigate } from '../../../navigationsService';
+import { Images } from '../../../theme';
+import fonts from '../../../theme/Fonts';
+import { CommaSeprator3, exponentialToDecimalWithoutComma } from '../../../utils';
+import { BorderLine, MainStatusBar, SimpleHeaderNew, Wrap } from '../../common';
+import HistoryItem from '../../common/HistoryItem';
+import Loader from '../Loader/Loader';
+import styles from './CoinHomeStyles';
 const CoinHome = props => {
-  const { coin } = props;
+  const { coin } = props?.route?.params;
   const dispatch = useDispatch();
   const [historyList, setHistoryList] = useState([]);
   const [Page, setpage] = useState(1);
@@ -30,21 +31,21 @@ const CoinHome = props => {
     let backHandle = null;
     backHandle = BackHandler.addEventListener('hardwareBackPress', backAction);
     getHistory();
-    let focus = props.navigation.addListener('didFocus', () => {
+    let focus = props.navigation.addListener('focus', () => {
       backHandle = BackHandler.addEventListener('hardwareBackPress', backAction);
       getHistory();
     });
-    let blur = props.navigation.addListener('didBlur', () => {
+    let blur = props.navigation.addListener('blur', () => {
       backHandle?.remove()
     })
     return () => {
-      blur?.remove()
-      focus?.remove();
+      blur()
+      focus();
       backHandle?.remove();
     };
   }, [refreshWallet]);
   const backAction=()=>{
-    Actions.pop();
+    goBack()
     return true;
   }
   function getHistory() {
@@ -134,32 +135,32 @@ const CoinHome = props => {
   const onSend = (item = coin) => {
     Singleton.getInstance().updateBalance(item?.coin_id, item?.wallet_address);
     if (item.coin_family == 1) {
-      Actions.currentScene != 'SendETH' && Actions.SendETH({ walletData: item });
+      getCurrentRouteName() != 'SendETH' && navigate(NavigationStrings.SendETH,{ walletData: item });
     } else if (item.coin_family == 6) {
-      Actions.currentScene != 'SendBNB' && Actions.SendBNB({ walletData: item });
+      getCurrentRouteName() != 'SendBNB' && navigate(NavigationStrings.SendBNB,{ walletData: item });
     } else if (item.coin_family == 11) {
-      Actions.currentScene != 'SendMATIC' &&
-        Actions.SendMATIC({ walletData: item });
+      getCurrentRouteName() != 'SendMATIC' &&
+        navigate(NavigationStrings.SendMATIC,{ walletData: item });
     } else if (item.coin_family == 2) {
-      Actions.currentScene != 'SendBTC' && Actions.SendBTC({ walletData: item });
+      getCurrentRouteName() != 'SendBTC' && navigate(NavigationStrings.SendBTC,{ walletData: item });
     } else if (item.coin_family == 3) {
-      Actions.currentScene != 'SendTRX' && Actions.SendTRX({ walletData: item });
+      getCurrentRouteName() != 'SendTRX' && navigate(NavigationStrings.SendTRX,{ walletData: item });
     } else if (item.coin_family == 8) {
-      Actions.currentScene != 'SendSOL' && Actions.SendSOL({ walletData: item });
+      // getCurrentRouteName() != 'SendSOL' && navigate(NavigationStrings.SendSOL,{ walletData: item });
     }else if (item.coin_family == 4) {
-      Actions.currentScene != 'SendSTC' && Actions.SendSTC({ walletData: item });
+      getCurrentRouteName() != 'SendSTC' && navigate(NavigationStrings.SendSTC,{ walletData: item });
     }
   };
   const onRecieve = (item = coin) => {
-    Actions.currentScene != 'QrCode' && Actions.QrCode({ item: item });
+    getCurrentRouteName() != 'QrCode' && navigate(NavigationStrings.QrCode,{ item: item });
   };
   const onPresSwap = (item = coin) => {
     Singleton.getInstance()
       .newGetData(constants.IS_PRIVATE_WALLET)
       .then(isPrivate => {
         dispatch(saveSwapItem(item))
-        Actions.currentScene != 'Trade' &&
-          Actions.Trade({ chain: isPrivate, item: item });
+        getCurrentRouteName() != 'Trade' &&
+        navigate(NavigationStrings.Trade,{ chain: isPrivate, item: item });
       });
   };
   const OptionsBg = ({ image, text, onPress }) => {
@@ -338,8 +339,8 @@ const CoinHome = props => {
           renderItem={({ item, index }) => (
             <HistoryItem
               onPress={() => {
-                Actions.currentScene != 'TransactionDetail' &&
-                  Actions.TransactionDetail({ TxnData: item });
+                getCurrentRouteName() != 'TransactionDetail' &&
+                navigate(NavigationStrings.TransactionDetail,{ TxnData: item });
               }}
               item={item}
               index={index}

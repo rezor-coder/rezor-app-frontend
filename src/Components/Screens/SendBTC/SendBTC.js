@@ -3,72 +3,64 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, { Component } from 'react';
 import {
-  View,
-  Text,
-  ScrollView,
-  Image,
-  TouchableOpacity,
-  Modal,
-  Platform,
-  PermissionsAndroid,
-  SafeAreaView,
   BackHandler,
   Clipboard,
+  Image,
+  Modal,
+  PermissionsAndroid,
+  Platform,
+  SafeAreaView,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
-import styles from './SendBTCStyle';
-import {
-  Wrap,
-  ButtonTransaction,
-  ButtonPrimary,
-  SimpleHeader,
-  BasicInputBox,
-  InputtextAddress,
-  BasicModal,
-  BorderLine,
-  PinInput,
-  KeyboardDigit,
-} from '../../common';
-
-const bitcore = require('bitcore-lib');
-import SmoothPinCodeInput from 'react-native-smooth-pincode-input';
-import { Images, Colors, Fonts } from '../../../theme/index';
-import { Actions } from 'react-native-router-flux';
-import Singleton from '../../../Singleton';
 import { connect } from 'react-redux';
 import * as constants from '../../../Constant';
-import { CameraScreen } from 'react-native-camera-kit';
-import Loader from '../Loader/Loader';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import Singleton from '../../../Singleton';
+import { Colors, Fonts, Images } from '../../../theme/index';
 import {
-  getBnbNonce,
-  getBnbGasPrice,
-  getBnbGasEstimate,
-  getEthTokenRaw,
-  walletFormUpdate,
-  sendBNB,
-  CheckIsContactExist
-} from '../../../Redux/Actions';
-import { BASE_IMAGE } from '../../../Endpoints';
-import moment from 'moment';
-import {
-  bnbDataEncode,
-  sendTokenBNB,
-  getBnbRaw,
-  exponentialToDecimalWithoutComma,
-  CommaSeprator3,
-  bigNumberSafeMath,
-} from '../../../utils';
+  BasicInputBox,
+  BasicModal,
+  BorderLine,
+  ButtonPrimary,
+  InputtextAddress,
+  KeyboardDigit,
+  PinInput,
+  SimpleHeader,
+  Wrap
+} from '../../common';
+import styles from './SendBTCStyle';
+
+const bitcore = require('bitcore-lib');
+// import { CameraScreen } from 'react-native-camera-kit';
+import { EventRegister } from 'react-native-event-listeners';
 import FastImage from 'react-native-fast-image';
-import LinearGradient from 'react-native-linear-gradient';
-import { AddressBox } from '../../common/AddressBox';
-import * as Constants from '../../../Constant';
-import fonts from '../../../theme/Fonts';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
 import { APIClient } from '../../../Api';
-import { widthDimen, heightDimen, areaDimen } from '../../../Utils/themeUtils';
+import * as Constants from '../../../Constant';
+import { NavigationStrings } from '../../../Navigation/NavigationStrings';
+import {
+  CheckIsContactExist,
+  getBnbGasEstimate,
+  getBnbGasPrice,
+  getBnbNonce,
+  getEthTokenRaw,
+  sendBNB,
+  walletFormUpdate
+} from '../../../Redux/Actions';
+import { areaDimen, heightDimen, widthDimen } from '../../../Utils/themeUtils';
+import { getCurrentRouteName, goBack, navigate } from '../../../navigationsService';
+import fonts from '../../../theme/Fonts';
+import {
+  CommaSeprator3,
+  bigNumberSafeMath,
+  exponentialToDecimalWithoutComma
+} from '../../../utils';
 import { DetailOption } from '../../common/DetailOption';
 import QRReaderModal from '../../common/QRReaderModal';
-import { EventRegister } from 'react-native-event-listeners';
+import Loader from '../Loader/Loader';
 const gwei_multi = 1000000000;
 let fee = 0;
 let inputs = [];
@@ -82,7 +74,7 @@ class SendBTC extends Component {
     super(props);
     this.state = {
       blockChain: 'btc',
-      walletData: this.props.walletData,
+      walletData: this.props.route?.params?.walletData,
       isLoading: false,
       gasPriceForTxn: 1000000000,
       gasPriceForTxnSlow: 1000000000,
@@ -91,7 +83,7 @@ class SendBTC extends Component {
       gaslimitForTxn: '',
       gasFeeMultiplier: 0.000000000000000001,
       totalFee: '0',
-      balance: this.props.walletData?.balance || 0,
+      balance: this.props.route?.params?.walletData?.balance || 0,
       modalVisible: false,
       advancedGasPrice: 0,
       advancedGasLimit: 0,
@@ -136,8 +128,8 @@ class SendBTC extends Component {
         this.btcpvtKey = pvtKey;
       });
     //console.warn('MM','walletData-- ', this.props?.walletData);
-    this.props.navigation.addListener('didFocus', this.onScreenFocus);
-    this.props.navigation.addListener('didBlur', this.screenBlur);
+    this.props.navigation.addListener('focus', this.onScreenFocus);
+    this.props.navigation.addListener('blur', this.screenBlur);
 
     this.setState({
       isLoading: true,
@@ -179,7 +171,7 @@ class SendBTC extends Component {
       });
 
     Singleton.getInstance()
-      .newGetData(`${this.props.walletData?.wallet_address}_pk`)
+      .newGetData(`${this.props.route?.params?.walletData?.wallet_address}_pk`)
       .then(bnbPvtKey => {
         //console.warn('MM','chk btc  pvt key::::', bnbPvtKey);
         this.setState({ bnbPvtKey: bnbPvtKey });
@@ -292,23 +284,24 @@ class SendBTC extends Component {
 
     global.firstLogin = true;
     BackHandler.addEventListener('hardwareBackPress', this.backAction);
-    EventRegister.addEventListener('downModal', () => {
+    this.eventListener  = EventRegister.addEventListener('downModal', () => {
+      console.log('heree::::::::2');
       if (this.state.BasicModall) {
         this.setState({ BasicModall: false })
-        Actions.currentScene != 'Wallet' && Actions.Wallet()
+        getCurrentRouteName() != 'Wallet' && navigate(NavigationStrings.Wallet)
       }
     });
   };
   screenBlur = () => {
     BackHandler.removeEventListener('hardwareBackPress', this.backAction);
-    EventRegister.removeEventListener('downModal')
+    EventRegister.removeEventListener(this.eventListener)
   };
   backAction = () => {
     if (this.state.Start_Scanner) {
       this.setState({ Start_Scanner: false });
       return true;
     } else {
-      Actions.pop();
+      goBack();
       return true;
     }
   };
@@ -757,7 +750,7 @@ class SendBTC extends Component {
           showConfirmTxnModal: false,
           pinModal: false,
         });
-        // Actions.pop();
+        // goBack();
         // Actions.TransactionHistory({selectedCoin: this.state.selectedCoin});
       })
       .catch(e => {
@@ -920,8 +913,8 @@ class SendBTC extends Component {
             history={true}
             customIcon={Images.address}
             onPressHistory={() =>
-              Actions.currentScene != 'SendCryptoContacts' &&
-              Actions.SendCryptoContacts({
+              getCurrentRouteName() != 'SendCryptoContacts' &&
+              navigate(NavigationStrings.SendCryptoContacts,{
                 item: this.state.walletData,
                 blockChain: this.state.blockChain,
                 getAddress: this.getAddress,
@@ -1667,7 +1660,7 @@ class SendBTC extends Component {
               amount={this.state.amount}
               contact={() => {
                 this.setState({ BasicModall: false });
-                Actions.AddNewContacts({
+                navigate(NavigationStrings.AddNewContacts,{
                   address: this.state.to_Address,
                   coinFamily: this.state.walletData.coin_family,
                 });

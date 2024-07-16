@@ -1,35 +1,32 @@
 /* eslint-disable react-native/no-inline-styles */
+import React, { useEffect, useState } from 'react';
 import {
-  View,
-  Text,
-  Image,
   Alert,
+  BackHandler,
   Clipboard,
+  Image,
   PermissionsAndroid,
-  SafeAreaView,
   Platform,
-  BackHandler
+  SafeAreaView,
+  Text,
+  View
 } from 'react-native';
-import React, { useState, useEffect } from 'react';
-import { styles } from './EditContactStyle';
-import { Wrap, BasicButton, BorderLine } from '../../common';
-import LinearGradient from 'react-native-linear-gradient';
-import { SimpleHeader } from '../../common/SimpleHeader';
-import { Actions } from 'react-native-router-flux';
-import { BasicInputBox } from '../../common/BasicInputBox';
-import { Images, Colors } from '../../../theme/index';
 import { TextInput, TouchableOpacity } from 'react-native-gesture-handler';
-import { ButtonPrimary } from '../../common/ButtonPrimary';
+import { connect } from 'react-redux';
+import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
 import { editWalletContact } from '../../../Redux/Actions/ContactsAction';
 import Singleton from '../../../Singleton';
-import { connect } from 'react-redux';
-import { ALPHABET_REGEX, APP_NAME, INVALID_BNB_CONTRACT_ADDRESS, INVALID_ETH_CONTRACT_ADDRESS, INVALID_MATIC_CONTRACT_ADDRESS, INVALID_TRX_CONTRACT_ADDRESS } from './../../../Constant';
+import { Colors, Images } from '../../../theme/index';
+import { BasicButton, BorderLine, Wrap } from '../../common';
+import { BasicInputBox } from '../../common/BasicInputBox';
+import { SimpleHeader } from '../../common/SimpleHeader';
 import Loader from '../Loader/Loader';
-import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
-import FastImage from 'react-native-fast-image';
-import { CameraScreen } from 'react-native-camera-kit';
+import { ALPHABET_REGEX, APP_NAME } from './../../../Constant';
+import { styles } from './EditContactStyle';
+// import { CameraScreen } from 'react-native-camera-kit';
 import { heightDimen, widthDimen } from '../../../Utils/themeUtils';
 import QRReaderModal from '../../common/QRReaderModal';
+import { goBack } from '../../../navigationsService';
 let scanner = false
 const EditContact = props => {
   const [contactName, setContactName] = useState('');
@@ -40,8 +37,8 @@ const EditContact = props => {
   const [Start_Scanner, setStart_Scanner] = useState(false);
   useEffect(() => {
     //  console.warn('MM','****************i walletData.decimals', props.walletData.decimals , props.walletData);
-    props.navigation.addListener('didFocus', onScreenFocus);
-    props.navigation.addListener('didBlur', onScreenBlur);
+    props.navigation.addListener('focus', onScreenFocus);
+    props.navigation.addListener('blur', onScreenBlur);
   }, [props]);
 
   const onScreenFocus = () => {
@@ -59,12 +56,12 @@ const EditContact = props => {
      scanner=false
      return true;
     } else{
-      Actions.pop(); 
+      goBack(); 
       return true;
     }
   };
   useEffect(() => {
-    let contactItem = props.contactItem;
+    let contactItem = props?.route?.params?.contactItem;
     // //console.warn('MM','contactItem', contactItem);
     setContactName(contactItem.item.name);
     setContactAddress(contactItem.item.address);
@@ -131,7 +128,7 @@ const EditContact = props => {
 
   const editContact = () => {
     let data = {
-      id: props.contactItem.item.id,
+      id: props?.route?.params?.contactItem.item.id,
       address: contactAddress,
       network: network,
       name: contactName,
@@ -150,7 +147,7 @@ const EditContact = props => {
             {
               text: 'OK',
               onPress: () => {
-                Actions.pop();
+                goBack();
               },
             },
           ],
@@ -167,7 +164,7 @@ const EditContact = props => {
             {
               text: 'OK',
               onPress: () => {
-                // Actions.pop();
+                // goBack();
               },
             },
           ],
@@ -176,7 +173,7 @@ const EditContact = props => {
       });
   };
   const qrClose = () => {
-    let contactItem = props.contactItem;
+    let contactItem = props?.route?.params?.contactItem;
     setStart_Scanner(false);
     scanner = false
     setContactAddress(contactItem ? contactItem.item.address : '');

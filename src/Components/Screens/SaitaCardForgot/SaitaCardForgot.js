@@ -1,18 +1,27 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, Alert, Image, Linking, Dimensions, Modal, ImageBackground, SafeAreaView } from 'react-native';
-import { Actions } from 'react-native-router-flux';
-import { MainStatusBar, BasicButton, Header, Wrap, CheckBox, ImageBackgroundComponent, BasicInputBox, SimpleHeader, SimpleHeaderNew, BorderLine } from '../../common/index';
-import styles from './SaitaCardForgotStyle';
-import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
-import Singleton from '../../../Singleton';
-import { Fonts, Images, Colors } from '../../../theme';
-import HeaderwithBackIcon from '../../common/HeaderWithBackIcon';
-import * as Constants from '../../../Constant';
-import { useDispatch } from 'react-redux';
-import Loader from '../Loader/Loader';
-import { forgetCardOtp, verifyForgotOtpCard, } from '../../../Redux/Actions/SaitaCardAction'
+import React, { useEffect, useRef, useState } from 'react';
+import { Dimensions, Modal, Text, TouchableOpacity, View } from 'react-native';
+import DeviceInfo from 'react-native-device-info';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import SmoothPinCodeInput from 'react-native-smooth-pincode-input';
+import { useDispatch } from 'react-redux';
+import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
+import * as Constants from '../../../Constant';
+import { NavigationStrings } from '../../../Navigation/NavigationStrings';
+import { forgetCardOtp, forgetOtpConfirm, forgetOtpSend, forgetPasswordConfirm, verifyForgotOtpCard, } from '../../../Redux/Actions/SaitaCardAction';
+import Singleton from '../../../Singleton';
+import { numberValidation, validatePassword } from '../../../Utils/Validation';
+import { areaDimen, heightDimen } from '../../../Utils/themeUtils';
+import { countryData } from '../../../countryCodes';
+import { goBack, navigate } from '../../../navigationsService';
+import { Colors, Fonts, Images } from '../../../theme';
+import GradientButton from '../../common/GradientButton';
+import TextInputWithLabel from '../../common/TextInputWithLabel';
+import WraperContainer from '../../common/WraperContainer';
+import { BasicButton, BorderLine, MainStatusBar, SimpleHeader, SimpleHeaderNew, Wrap } from '../../common/index';
+import CountryCodes from '../CountryCodes/CountryCodes';
+import Loader from '../Loader/Loader';
+import styles from './SaitaCardForgotStyle';
 let hasNotch = DeviceInfo.hasNotch();
 
 const windowWidth = Dimensions.get('window').width;
@@ -22,14 +31,12 @@ const windowHeight = Dimensions.get('window').height;
 //main
 let routerAddressCards = "0x12f939E4FB9d9ccd955a1793A39D87672649706f";
 const routerDecimals = Constants.ismainnet ? 6 : 6;
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { Platform } from 'react-native';
-import DeviceInfo from 'react-native-device-info';
-import { areaDimen, heightDimen } from '../../../Utils/themeUtils';
 
 const SaitaCardForgot = props => {
 console.log("hasNotch",hasNotch);
   const dispatch = useDispatch();
+  const intervalRef = useRef(null);
+
   const [email, setEmail] = useState('');
   const [isLoading, setisLoading] = useState(false);
   const [PinModal, setPinModal] = useState(false);
@@ -38,26 +45,52 @@ console.log("hasNotch",hasNotch);
   const [time, setTime] = React.useState(props.initialValue || 60);
   const timerRef = React.useRef(time);
   const [showTime, setshowTime] = useState(false);
-// console.log( 'MM','PinModal' , PinModal);
+  const [countryCode,setCountryCode]= useState('+91')
+  const [countryListModal, setCountryListModal] = useState(false);
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [oldNumber, setOldNumber] = useState(false);
+  const [seconds, setSeconds] = useState(40);
+  const [isActive, setIsActive] = useState(false);
+  const [phoneMatchOtp, setPhoneMatchOtp] = useState('');
+  const [status, setStatus] = useState(0);
+  const [buttonDisable, setButtonDisable] = useState(true);
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [phoneOtp, setPhoneOtp] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setConfirmShowPassword] = useState(false);
 
+// console.log( 'MM','PinModal' , PinModal);
+useEffect(() => {
+  if (isActive && seconds > 0) {
+    intervalRef.current = setInterval(() => {
+      setSeconds(prevSeconds => prevSeconds - 1);
+    }, 1000);
+  } else if (seconds === 0) {
+    setIsActive(false);
+    clearInterval(intervalRef.current);
+  }
+
+  return () => clearInterval(intervalRef.current);
+}, [isActive, seconds]);
 
   // useEffect(() => {
 
-  //   let focus = props.navigation.addListener('didFocus' , ()=>{
-  //     console.log('didFocus' , isPinGenerated);
+  //   let focus = props.navigation.addListener('focus' , ()=>{
+  //     console.log('focus' , isPinGenerated);
   //     if(isPinGenerated){
   //       setPinModal(true)
   //     }
   //   })
-  //   let blur = props.navigation.addListener('didBlur' , ()=>{
-  //     console.log('didBlur' , isPinGenerated);
+  //   let blur = props.navigation.addListener('blur' , ()=>{
+  //     console.log('blur' , isPinGenerated);
   //     setPinModal(false)
   //   })
 
   //   return ()=>{
   //     console.log('unmount...');
-  //     focus?.remove()
-  //     blur?.remove()
+  //     focus()
+  //     blur()
   //   }
 
 
@@ -135,7 +168,7 @@ console.log("hasNotch",hasNotch);
           otp: Pin,
         };
         // alert('ddddddwwww')
-        Actions.SaitaCardChangePassword({ dataObj: dataObjee })
+        navigate(NavigationStrings.SaitaCardChangePassword,{ dataObj: dataObjee })
 
 
       }
@@ -172,6 +205,129 @@ console.log("hasNotch",hasNotch);
     }, 1000);
 
   }
+
+  const onPressPhoneOtpSend = () => {
+    const fields = [
+      {
+        value: phoneNumber,
+        message: 'Please enter your phone number',
+        invalidMessage: 'Invalid phone number',
+        validator: numberValidation,
+      },
+    ];
+    // Check if any field is empty or fails validation and show an alert if it does
+    for (const field of fields) {
+      if (field.value.length < 1) {
+        Singleton.showAlert(field.message);
+        return;
+      }
+
+      // Check if the field has a validator and if it fails validation
+      if (field.validator && !field.validator(field.value)) {
+        Singleton.showAlert(field.invalidMessage);
+        return;
+      }
+    }
+    let data ={
+      phone:`${countryCode}${phoneNumber}`
+    }
+    
+    setisLoading(true);
+    forgetOtpSend({data})
+      .then(res => {
+        console.log('res:::1',res);
+        setOldNumber(phoneNumber);
+        setisLoading(false);
+        setSeconds(40);
+        setPhoneMatchOtp(res?.data?.otp);
+        setIsActive(true);
+        setButtonDisable(false);
+      })
+      .catch(error => {
+        Singleton.showAlert(error.message);
+        setisLoading(false);
+        setSeconds(0);
+      });
+  };
+
+  const checkOtpStatus = () => {
+    if (phoneOtp.length < 1) {
+      Singleton.showAlert('Please enter otp');
+      return;
+    }
+    if (Number(phoneOtp) !== Number(phoneMatchOtp)) {
+      Singleton.showAlert('Please enter valid otp');
+      return;
+    }
+    let data ={
+      phone:`${countryCode}${phoneNumber}`,
+      code:phoneOtp
+    }
+    
+    setIsActive(false);
+    setisLoading(true);
+    forgetOtpConfirm({data})
+      .then(res => {
+        setisLoading(false);
+        setButtonDisable(true);
+        setStatus(1);
+        setSeconds(0);
+      })
+      .catch(error => {
+        Singleton.showAlert(error.message);
+        setisLoading(false);
+        setSeconds(0);
+      });
+  };
+  const onPressSubmit = () => {
+    const fields = [
+      {
+        value: password,
+        message: 'Please enter your password',
+        invalidMessage:
+          'Password must include uppercase, lowercase, numeric, and special character',
+        validator: validatePassword,
+      },
+      {
+        value: confirmPassword,
+        message: 'Please confirm your password',
+      },
+    ];
+    // Check if any field is empty or fails validation and show an alert if it does
+    for (const field of fields) {
+      if (field.value.length < 1) {
+        Singleton.showAlert(field.message);
+        return;
+      }
+
+      // Check if the field has a validator and if it fails validation
+      if (field.validator && !field.validator(field.value)) {
+        Singleton.showAlert(field.invalidMessage);
+        return;
+      }
+    }
+    if (password !== confirmPassword) {
+      Singleton.showAlert('Password and confirm password must match');
+      return;
+    }
+    setisLoading(true);
+
+    let data ={
+      phone:`${countryCode}${phoneNumber}`,
+      password: password,
+    }
+    forgetPasswordConfirm({data})
+      .then(res => {
+        console.log('res::::11', res);
+        setisLoading(false);
+        goBack()
+      })
+      .catch(error => {
+        console.log('res::::11', error);
+        setisLoading(false);
+        Singleton.showAlert(error.message);
+      });
+  };
 
   if(PinModal){
     return (
@@ -267,15 +423,17 @@ console.log("hasNotch",hasNotch);
   }
 
   return (
-    <SafeAreaView style={{flex:1, backgroundColor: ThemeManager.colors.bg }}>
-      <Wrap style={{ backgroundColor: ThemeManager.colors.bg  , }}>
-      {/* <KeyboardAwareScrollView style={{ height: windowHeight }} showsVerticalScrollIndicator={false} enableOnAndroid={true} keyboardShouldPersistTaps={'always'} bounces={false}> */}
+    <WraperContainer>
+        {/* <KeyboardAwareScrollView style={{ height: windowHeight }} showsVerticalScrollIndicator={false} enableOnAndroid={true} keyboardShouldPersistTaps={'always'} bounces={false}> */}
 
-        <View style={{ height: windowHeight }}>
-          <View style={styles.container}>
             <MainStatusBar
               backgroundColor={ThemeManager.colors.backgroundColor}
-              barStyle={ThemeManager.colors.themeColor === 'light' ? 'dark-content' : 'light-content'} />
+              barStyle={
+                ThemeManager.colors.themeColor === 'light'
+                  ? 'dark-content'
+                  : 'light-content'
+              }
+            />
 
             {/* <Text style={[styles.lablePrefLang, { color: ThemeManager.colors.lightTextColor },]}>Visual form of a document or a typeface{'\n'} without relying on meaningful content. </Text> */}
             <SimpleHeaderNew
@@ -286,11 +444,24 @@ console.log("hasNotch",hasNotch);
               backPressed={() => {
                 props.navigation.goBack();
               }}
-
             />
-            <BorderLine borderColor={{ backgroundColor: ThemeManager.colors.viewBorderColor}}/>
-            <View style={{ justifyContent: 'flex-start', marginTop: 20, marginHorizontal: 25,flex:1 }}>
-              <BasicInputBox
+            <BorderLine
+              borderColor={{
+                backgroundColor: ThemeManager.colors.viewBorderColor,
+              }}
+            />
+            <KeyboardAwareScrollView
+              automaticallyAdjustKeyboardInsets={true}
+              enableOnAndroid={true}
+              showsVerticalScrollIndicator={false}>
+              <View
+                style={{
+                  justifyContent: 'flex-start',
+                  marginTop: 20,
+                  marginHorizontal: 25,
+                  flex: 1,
+                }}>
+                {/* <BasicInputBox
                 titleStyle={{ color: ThemeManager.colors.textColor, fontSize: 13, fontFamily: Fonts.semibold }}
                 title={LanguageManager.emailid}
                 width="100%"
@@ -301,25 +472,159 @@ console.log("hasNotch",hasNotch);
                   if(text)
                   text = text?.trim()
                   setEmail(text)}}
-                placeholder={LanguageManager.enterhere}></BasicInputBox>
-             
-            </View>
-
-            <BasicButton
-                onPress={() => proceedForgot()}
-                btnStyle={[styles.btnStyle,{marginBottom:Platform.OS=='ios'?hasNotch?80:20:20}]}
-                customGradient={[styles.customGrad,]}
-                text="Submit"
-              />
-          </View>
-        </View>
-       
-
+                placeholder={LanguageManager.enterhere}></BasicInputBox> */}
+                <TextInputWithLabel
+                  label={LanguageManager.phone}
+                  placeHolder={`${LanguageManager.enterYour} ${LanguageManager.phoneNo}`}
+                  value={phoneNumber}
+                  keyboardType={'numeric'}
+                  onChangeText={text => {
+                    if (numberValidation(text) || text.length < 1) {
+                      setPhoneNumber(text.trimStart());
+                    }
+                  }}
+                  maxLength={10}
+                  labelStyle={{marginTop: areaDimen(24)}}
+                  editable={status == 0 ? true : false}
+                  customLeftIcon={() => (
+                    <TouchableOpacity
+                      style={styles.dialCodeView}
+                      onPress={() => setCountryListModal(true)}>
+                      <Text
+                        style={[
+                          styles.inputTextStyle,
+                          {color: ThemeManager.colors.textColor},
+                        ]}>
+                        {countryCode}
+                      </Text>
+                    </TouchableOpacity>
+                  )}
+                />
+                <TouchableOpacity
+                  disabled={status == 1 ? true : false}
+                  style={styles.sendcodeView}
+                  onPress={onPressPhoneOtpSend}>
+                  <Text
+                    style={[
+                      styles.codeTextStyle,
+                      {color: Colors.buttonColor1},
+                    ]}>
+                    {oldNumber == phoneNumber && !!phoneMatchOtp
+                      ? seconds < 1
+                        ? 'Resend OTP'
+                        : `Resend OTP(00:${seconds})`
+                      : 'Send OTP'}
+                  </Text>
+                </TouchableOpacity>
+                {!!phoneMatchOtp ? (
+                  <TextInputWithLabel
+                    label={LanguageManager.enterOtp}
+                    placeHolder={LanguageManager.enterOtp}
+                    value={phoneOtp}
+                    keyboardType={'numeric'}
+                    maxLength={6}
+                    onChangeText={text => setPhoneOtp(text)}
+                    labelStyle={{marginTop: areaDimen(16)}}
+                    editable={status == 0 ? true : false}
+                  />
+                ) : null}
+                {status == 1 && (
+                  <TextInputWithLabel
+                    label={LanguageManager.password}
+                    placeHolder={LanguageManager.enterPassword}
+                    value={password}
+                    onChangeText={text => {
+                      setPassword(text.trimStart());
+                    }}
+                    labelStyle={{marginTop: areaDimen(16)}}
+                    onPressRightIcon={() => setShowPassword(!showPassword)}
+                    rightIcon={
+                      !!showPassword ? Images.eyeOpened : Images.eyeClosed
+                    }
+                    secureTextEntry={!showPassword}
+                    editable={true}
+                  />
+                )}
+                {status == 1 && (
+                  <TextInputWithLabel
+                    label={LanguageManager.confirmpassword}
+                    placeHolder={`${LanguageManager.enter} ${LanguageManager.confirmpassword}`}
+                    value={confirmPassword}
+                    onChangeText={text => {
+                      setConfirmPassword(text.trimStart());
+                    }}
+                    labelStyle={{marginTop: areaDimen(16)}}
+                    onPressRightIcon={() =>
+                      setConfirmShowPassword(!showConfirmPassword)
+                    }
+                    rightIcon={
+                      !!showConfirmPassword
+                        ? Images.eyeOpened
+                        : Images.eyeClosed
+                    }
+                    secureTextEntry={!showConfirmPassword}
+                    editable={true}
+                  />
+                )}
+              </View>
+              
+            </KeyboardAwareScrollView>
+            <GradientButton
+              title={
+                status == 0 ? LanguageManager.verifyOtp : LanguageManager.submit
+              }
+              disabled={buttonDisable}
+              buttonStyle={styles.buttonView}
+              buttonColor={
+                !!buttonDisable
+                  ? [
+                      ThemeManager.colors.lightGrey,
+                      ThemeManager.colors.lightGrey,
+                    ]
+                  : []
+              }
+              onPress={() => {
+                !!phoneMatchOtp && status == 0
+                  ? checkOtpStatus()
+                  : onPressSubmit();
+              }}
+            />
+            {/* <BasicButton
+              onPress={() => proceedForgot()}
+              btnStyle={[
+                styles.btnStyle,
+                {
+                  marginBottom:
+                    Platform.OS == 'ios' ? (hasNotch ? 80 : 20) : 20,
+                },
+              ]}
+              customGradient={[styles.customGrad]}
+              text="Submit"
+            /> */}
+            
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={countryListModal}
+          onRequestClose={() => setCountryListModal(false)}>
+          <WraperContainer>
+            <CountryCodes
+              List={countryData}
+              twoItems={true}
+              hideCode={true}
+              onPress={item => {
+                setCountryCode(item?.dial_code);
+                setCountryListModal(false);
+              }}
+              closeModal={() => setCountryListModal(false)}
+            />
+          </WraperContainer>
+        </Modal>
         {isLoading && <Loader />}
 
-      {/* </KeyboardAwareScrollView> */}
-       {/* *********************************************************** MODAL FOR PIN ********************************************************************** */}
-       {/* <Modal
+        {/* </KeyboardAwareScrollView> */}
+        {/* *********************************************************** MODAL FOR PIN ********************************************************************** */}
+        {/* <Modal
           animationType="slide"
           transparent={true}
           visible={PinModal}
@@ -418,9 +723,7 @@ console.log("hasNotch",hasNotch);
           </Wrap>
           {isLoading && <Loader />}
         </Modal> */}
-    </Wrap>
-    </SafeAreaView>
-
+    </WraperContainer>
   );
 };
 

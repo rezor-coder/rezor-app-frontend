@@ -237,50 +237,16 @@ export default (state = initialState, action) => {
             ...state, activeSessions: [action.payload, ...state.activeSessions]
         }
         case WALLET_SWITCH: {
-
-
-          console.log('WALLET_SWITCH called !!!!! ' );
-            state.activeSessions?.map(session=>{
-              // return  session?.connector?.killSession()
-              try {
-                session.connector.disconnect({
-                  topic: session?.session?.topic,
-                  reason: { code: 1, message: "USER_DISCONNECTED" },
-                });
-              } catch (err) {
-                console.log("delete_reducer_call_err:::", err);
-              }
-
-            try {
-              session.connector.disconnect({
-                topic: session?.sessionData?.params?.pairingTopic,
-                reason: { code: 1, message: "USER_DISCONNECTED" },
-              });
-            } catch (err) {
-              console.log(" diconenct ... pairingTopic:::", err);
-            }
-              return session
-            })
-            console.log('chech check');
-            Singleton.getInstance().newSaveData(Constants.SESSION_LIST, JSON.stringify([]))
-            .then(res=>{
-              console.log('save res' , res);
-
-            }).catch(err=>{
-              console.log('save err' , err);
-            })
-
-
-            try {
-              Singleton.getInstance().walletConnectRef?.showWalletData(false)
-              setTimeout(() => {
+            // try {
+            //   Singleton?.getInstance()?.walletConnectRef?.showWalletData?.(false)
+            //   setTimeout(() => {
                 
-                Singleton.getInstance().walletConnectRef?.showWalletData(false)
-              }, 3000);
-            } catch (error) {
-              console.log('errrororororrrrrrrrrr' , error);
-            }
-
+            //     Singleton?.getInstance()?.walletConnectRef?.showWalletData?.(false)
+            //   }, 3000);
+            // } catch (error) {
+            //   console.log('errrororororrrrrrrrrr' , error);
+            // }
+            
             return {
                 selectedCoin: '',
                 slowFee: '',

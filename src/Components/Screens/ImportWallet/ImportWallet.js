@@ -1,34 +1,34 @@
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react/self-closing-comp */
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
-  View,
-  StyleSheet,
-  TextInput,
   BackHandler,
-  Text,
-  TouchableOpacity,
   Clipboard,
-  Dimensions,
+  Platform,
   ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
 } from 'react-native';
-import {Wrap} from '../../common/Wrap';
+import { useDispatch } from 'react-redux';
+import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
+import * as constants from '../../../Constant';
+import { NavigationStrings } from '../../../Navigation/NavigationStrings';
+import { createWallet } from '../../../Redux/Actions';
+import Singleton from '../../../Singleton';
+import { areaDimen, heightDimen, widthDimen } from '../../../Utils/themeUtils';
+import { goBack, navigate } from '../../../navigationsService';
+import colors from '../../../theme/Colors';
+import fonts from '../../../theme/Fonts';
 import {
   BasicButton,
   MainStatusBar,
 } from '../../common';
-import {Actions} from 'react-native-router-flux';
-import colors from '../../../theme/Colors';
-import fonts from '../../../theme/Fonts';
-import { useDispatch} from 'react-redux';
-import Singleton from '../../../Singleton';
-import * as constants from '../../../Constant';
-import Loader from '../Loader/Loader';
-import {createWallet} from '../../../Redux/Actions';
-import {LanguageManager, ThemeManager} from '../../../../ThemeManager';
 import HeaderwithBackIcon from '../../common/HeaderWithBackIcon';
-import {Platform} from 'react-native';
-import {areaDimen, heightDimen, widthDimen} from '../../../Utils/themeUtils';
+import { Wrap } from '../../common/Wrap';
+import Loader from '../Loader/Loader';
 const ImportWallet = props => {
   const dispatch = useDispatch();
   const [isLoading, setisLoading] = useState(false);
@@ -54,18 +54,18 @@ const ImportWallet = props => {
   };
 
   const backAction = () => {
-    Actions.pop();
+    goBack();
     return true;
   };
 
   useEffect(() => {
-    props.navigation.addListener('didFocus', onScreenFocus);
-    props.navigation.addListener('didBlur', onScreenBlur);
+    props.navigation.addListener('focus', onScreenFocus);
+    props.navigation.addListener('blur', onScreenBlur);
   });
 
   const nextAction = async () => {
     console.log('nextAction::::', nextAction);
-    if (props.isFrom == 'multiWallet') {
+    if (props?.route?.params?.isFrom == 'multiWallet') {
       if (name.length < 3) {
         Singleton.showAlert(constants.VALID_NAME);
         return;
@@ -88,7 +88,7 @@ const ImportWallet = props => {
       Singleton.showAlert(constants.VALID_MNEMONICS);
       return;
     } else {
-      if (props.isFrom == 'multiWallet') {
+      if (props?.route?.params?.isFrom == 'multiWallet') {
         console.log('multiWallet');
         if (name.length < 3) {
           Singleton.showAlert(constants.VALID_NAME);
@@ -135,10 +135,10 @@ const ImportWallet = props => {
               coin_symbol: 'stc',
               wallet_address: res?.ethAddress,
             },
-            {
-              coin_symbol: 'btc',
-             wallet_address: res?.btcAddress,
-             },
+            // {
+            //   coin_symbol: 'btc',
+            //  wallet_address: res?.btcAddress,
+            //  },
             {
               coin_symbol: 'matic',
               wallet_address: res?.ethAddress,
@@ -149,7 +149,7 @@ const ImportWallet = props => {
             },
           ];
           let address = res.ethAddress;
-          let wallet_name = props.isFrom == 'multiWallet' ? name : 'Basic';
+          let wallet_name = props?.route?.params?.isFrom == 'multiWallet' ? name : 'Basic';
           let device_token = Singleton.getInstance().device_token;
           dispatch(
             createWallet({
@@ -174,7 +174,7 @@ const ImportWallet = props => {
                 addresses: [res.ethAddress, res.btcAddress, res.trxAddress],
                 // addresses: [res.ethAddress,  res.trxAddress],
                 wallet_addresses: wallet_addresses,
-                walletName: props.isFrom == 'multiWallet' ? name : 'Basic',
+                walletName: props?.route?.params?.isFrom == 'multiWallet' ? name : 'Basic',
                 device_token: device_token,
               };
               let login_data = {
@@ -185,7 +185,7 @@ const ImportWallet = props => {
                 defaultStcAddress: res.ethAddress,
                 defaultBtcAddress: res.btcAddress,
                 defaultTrxAddress: res.trxAddress,
-                walletName: props.isFrom == 'multiWallet' ? name : 'Basic',
+                walletName: props.route?.params?.isFrom == 'multiWallet' ? name : 'Basic',
               };
               let addrsListKeys = [
                 res.ethAddress,
@@ -195,17 +195,17 @@ const ImportWallet = props => {
                let coinFamilyKeys = [1, 2, 6, 11, 3,4];
              // let coinFamilyKeys = [1,  6, 11, 3,4];
               let WalletData = {
-                walletName: props.isFrom == 'multiWallet' ? name : 'Basic',
+                walletName: props.route?.params?.isFrom == 'multiWallet' ? name : 'Basic',
                 mnemonics: res.mnemonics,
                 loginRequest: data,
-                defaultWallet: props.isFrom == 'multiWallet' ? false : true,
+                defaultWallet: props.route?.params?.isFrom == 'multiWallet' ? false : true,
                 user_jwtToken: response.data?.token,
                 refreshToken: response?.data?.refreshToken,
                 blockChain: 'all',
                 login_data,
               };
               let Wallet_Array = existingWallets;
-              if (props.isFrom != 'multiWallet') {
+              if (props?.route?.params?.isFrom != 'multiWallet') {
                 Singleton.getInstance().newSaveData(
                   constants.addresKeyList,
                   JSON.stringify(addrsListKeys),
@@ -230,6 +230,10 @@ const ImportWallet = props => {
                   constants.ACTIVE_WALLET,
                   JSON.stringify(WalletData),
                 );
+                Singleton.getInstance().newSaveData(
+                  constants.IS_PRIVATE_WALLET,
+                  '0',
+                );
                 Singleton.getInstance().access_token = response.data.token;
                 Singleton.getInstance().defaultEthAddress = res.ethAddress;
                 Singleton.getInstance().defaultMaticAddress = res.ethAddress;
@@ -250,11 +254,10 @@ const ImportWallet = props => {
               );
 
               setisLoading(false);
-              // Singleton.showAlert('Wallet imported successfully.');
-              if (props.isFrom == 'multiWallet') {
-                Actions.jump('MultiWalletList');
+              if (props?.route?.params?.isFrom == 'multiWallet') {
+                navigate(NavigationStrings.MultiWalletList);
               } else {
-                Actions.Congrats();
+                navigate(NavigationStrings.Congrats);
               }
             })
             .catch(err => {
@@ -276,7 +279,7 @@ const ImportWallet = props => {
       //   });
     }, 200);
   }
-  //console.warn('MM','-==========', props.isFrom);
+  //console.warn('MM','-==========', props?.route?.params?.isFrom);
   return (
     <Wrap style={{backgroundColor: ThemeManager.colors.bg}}>
       <MainStatusBar
@@ -317,7 +320,7 @@ const ImportWallet = props => {
             </Text>
           </View>
 
-          {props.isFrom == 'multiWallet' && (
+          {props?.route?.params?.isFrom == 'multiWallet' && (
             <>
               <Text style={[styles.txtNameWallet,{color:ThemeManager.colors.textColor}]}>{'Name your wallet'}</Text>
               <View
@@ -375,7 +378,7 @@ const ImportWallet = props => {
               marginHorizontal: widthDimen(22),
               alignSelf: 'center',
               marginTop:
-                props.isFrom == 'multiWallet' ? heightDimen(9) : heightDimen(8),
+                props?.route?.params?.isFrom == 'multiWallet' ? heightDimen(9) : heightDimen(8),
               borderRadius: heightDimen(6),
             }}>
             <TextInput

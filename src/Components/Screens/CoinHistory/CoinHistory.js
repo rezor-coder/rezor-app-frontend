@@ -1,25 +1,22 @@
-import { View, Text, Image } from 'react-native';
-import React, { useState, useEffect } from 'react';
-import { styles } from './CoinHistoryStyle';
-import { Wrap, BasicButton, BorderLine } from '../../common';
-import LinearGradient from 'react-native-linear-gradient';
-import { SimpleHeader } from '../../common/SimpleHeader';
-import { Actions } from 'react-native-router-flux';
-import { BasicInputBox } from '../../common/BasicInputBox';
-import { Images, Colors } from '../../../theme/index';
-import { getTransactionList } from '../../../Redux/Actions';
+import React, { useEffect, useState } from 'react';
+import { Image, Text, View } from 'react-native';
 import {
   FlatList,
-  TextInput,
-  TouchableOpacity,
+  TouchableOpacity
 } from 'react-native-gesture-handler';
-import { ButtonPrimary } from '../../common/ButtonPrimary';
-import fonts from '../../../theme/Fonts';
-import * as constants from '../../../Constant';
-import Singleton from '../../../Singleton';
-import { connect, useDispatch, useSelector } from 'react-redux';
-import Loader from '../Loader/Loader';
+import { useDispatch, useSelector } from 'react-redux';
 import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
+import * as constants from '../../../Constant';
+import { NavigationStrings } from '../../../Navigation/NavigationStrings';
+import { getTransactionList } from '../../../Redux/Actions';
+import Singleton from '../../../Singleton';
+import { getCurrentRouteName, navigate } from '../../../navigationsService';
+import fonts from '../../../theme/Fonts';
+import { Colors, Images } from '../../../theme/index';
+import { BorderLine, Wrap } from '../../common';
+import { SimpleHeader } from '../../common/SimpleHeader';
+import Loader from '../Loader/Loader';
+import { styles } from './CoinHistoryStyle';
 
 const CoinHistory = props => {
   const dispatch = useDispatch();
@@ -45,11 +42,11 @@ const CoinHistory = props => {
           .then(coinFamilyKeys => {
             let data = {
               addrsListKeys: JSON.parse(addrssList),
-              coin_family: JSON.parse(props?.Data.coin_family),
+              coin_family: JSON.parse(props?.route?.params?.Data.coin_family),
               limit: trx_limit,
               page: 1,
               status: '',
-              coin_type: props?.Data.coin_symbol.toLowerCase(),
+              coin_type: props?.route?.params?.Data.coin_symbol.toLowerCase(),
               trnx_type: '',
               from_date: '',
               to_date: '',
@@ -100,9 +97,9 @@ const CoinHistory = props => {
               addrsListKeys: addrsListKeys,
               page: page,
               limit: trx_limit,
-              coin_family: JSON.parse(props?.Data.coin_family),
+              coin_family: JSON.parse(props?.route?.params?.Data.coin_family),
               status: '',
-              coin_type: props?.Data.coin_symbol.toLowerCase(),
+              coin_type: props?.route?.params?.Data.coin_symbol.toLowerCase(),
               trnx_type: '',
               from_date: '',
               to_date: '',
@@ -128,7 +125,7 @@ const CoinHistory = props => {
     <Wrap style={{ backgroundColor: ThemeManager.colors.backgroundColor }}>
       <SimpleHeader
         title={
-          props?.Data?.coin_symbol.toUpperCase() + ' ' + LanguageManager.history
+          props?.route?.params?.Data?.coin_symbol.toUpperCase() + ' ' + LanguageManager.history
         }
         history={false}
       />
@@ -147,8 +144,8 @@ const CoinHistory = props => {
             <View style={{ flex: 1 }}>
               <TouchableOpacity
                 onPress={() => {
-                  Actions.currentScene != 'TransactionDetail' &&
-                    Actions.TransactionDetail({ TxnData: item });
+                  getCurrentRouteName() != 'TransactionDetail' &&
+                  navigate(NavigationStrings.TransactionDetail,{ TxnData: item });
                 }}>
                 <View style={styles.tokenItem}>
                   <View style={styles.viewStyle}>

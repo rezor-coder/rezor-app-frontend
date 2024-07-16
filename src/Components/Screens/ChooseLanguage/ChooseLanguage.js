@@ -1,39 +1,30 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
-  View,
+  BackHandler,
+  Dimensions,
+  FlatList,
+  Image,
+  StyleSheet,
   Text,
   TouchableOpacity,
-  BackHandler,
-  Image,
-  Linking,
-  ImageBackground,
-  Dimensions,
-  StyleSheet,
-  FlatList,
+  View
 } from 'react-native';
-import { Actions } from 'react-native-router-flux';
-import {
-  MainStatusBar,
-  BasicButton,
-  Header,
-  Wrap,
-  CheckBox,
-  SecurityLink,
-  SimpleHeader,
-  BorderLine,
-} from '../../common/index';
 import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
-import Singleton from '../../../Singleton';
 import * as Constants from '../../../Constant';
-import LottieView from 'lottie-react-native';
+import Singleton from '../../../Singleton';
+import {
+  BasicButton,
+  BorderLine,
+  SimpleHeader,
+  Wrap
+} from '../../common/index';
 
-import { Fonts, Images, Colors } from '../../../theme';
-import { ScrollView } from 'react-native-gesture-handler';
-import images from '../../../theme/Images';
-import { changeLanguageAction } from '../../../Redux/Actions';
 import { useDispatch } from 'react-redux';
+import { NavigationStrings } from '../../../Navigation/NavigationStrings';
 import { areaDimen, heightDimen, widthDimen } from '../../../Utils/themeUtils';
+import { getCurrentRouteName, goBack, navigate } from '../../../navigationsService';
+import { Colors, Fonts, Images } from '../../../theme';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
@@ -54,7 +45,7 @@ const ChooseLanguage = props => {
   const [toggleCheckBox, setToggleCheckBox] = useState(false);
   const [btnColor, setBtnColor] = useState('');
   useEffect(() => {
-    props.navigation.addListener('didFocus', () => {
+    props.navigation.addListener('focus', () => {
       setBtnColor(Singleton.getInstance().dynamicColor);
     });
   }, []);
@@ -73,12 +64,12 @@ const ChooseLanguage = props => {
 
     const backAction = () => {
       //console.warn('MM','i SelectLanguage');
-      if (props.from == 'setting') {
-        Actions.pop();
+      if (props?.route?.params?.from == 'setting') {
+        goBack();
         return true;
       } else {
         //  BackHandler.exitApp();
-        Actions.pop();
+        goBack();
         return true;
       }
     };
@@ -96,10 +87,10 @@ const ChooseLanguage = props => {
     Singleton.getInstance().newGetData(Constants.Langauage).then(res => {
       console.warn('MM', 'res-SAVED-setLanguage---', res);
       LanguageManager.setLanguage(res == null ? 'English' : res);
-      if (props.from == 'setting') {
-        Actions.pop();
+      if (props?.route?.params?.from == 'setting') {
+        goBack()
       } else {
-        Actions.currentScene != 'Dashboard' && Actions.Dashboard();
+        getCurrentRouteName() != 'Dashboard' && navigate(NavigationStrings.Dashboard,);
       }
     });
   };

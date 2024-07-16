@@ -1,76 +1,61 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, { useState, useEffect, createRef } from 'react';
+import React, { createRef, useEffect, useState } from 'react';
 import {
-  View,
-  ScrollView,
-  Text,
   BackHandler,
-  Modal,
+  Clipboard,
   Image,
-  TouchableOpacity,
+  Modal,
+  PermissionsAndroid,
   Platform,
   SafeAreaView,
-  PermissionsAndroid,
-  Clipboard,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
-import confirmTransaction from '../confirmTransaction/confirmTransaction';
+import { connect } from 'react-redux';
+import { API_TRON_FEE } from '../../../Endpoints';
 import {
-  Wrap,
-  InputtextAddress,
-  BorderLine,
-  PinInput,
-  KeyboardDigit,
-} from '../../common/index';
-import Singleton from '../../../Singleton';
-import SmoothPinCodeInput from 'react-native-smooth-pincode-input';
-import {
-  getEthNonce,
-  getEthGasPrice,
-  sendETH,
+  CheckIsContactExist,
   getEthGasEstimate,
+  getEthGasPrice,
+  getEthNonce,
   getEthTokenRaw,
-  walletFormUpdate,
-  CheckIsContactExist
+  sendETH,
+  walletFormUpdate
 } from '../../../Redux/Actions';
-import { AddressBox } from '../../common/AddressBox';
+import Singleton from '../../../Singleton';
+import { Colors, Fonts, Images } from '../../../theme/index';
+import { BasicModal, SimpleHeader } from '../../common';
+import { BasicInputBox } from '../../common/BasicInputBox';
+import { ButtonPrimary } from '../../common/ButtonPrimary';
+import {
+  BorderLine,
+  InputtextAddress,
+  KeyboardDigit,
+  PinInput,
+  Wrap,
+} from '../../common/index';
+import Loader from '../Loader/Loader';
 import * as constants from './../../../Constant';
 import styles from './SendTRXStyle';
-import { Images, Colors, Fonts } from '../../../theme/index';
-import { SimpleHeader, BasicModal } from '../../common';
-import { BasicInputBox } from '../../common/BasicInputBox';
-import { Actions } from 'react-native-router-flux';
-import { ButtonTransaction } from '../../common/ButtonTransaction';
-import LinearGradient from 'react-native-linear-gradient';
-import { ButtonPrimary } from '../../common/ButtonPrimary';
-import { connect } from 'react-redux';
-import { AdvanceOptions } from '../../common/AdvanceOptions';
-import { useSelector, useDispatch } from 'react-redux';
-import Loader from '../Loader/Loader';
-import { API_TRON_FEE, BASE_IMAGE } from '../../../Endpoints';
-import { CameraScreen } from 'react-native-camera-kit';
-import {
-  createSignedNewEthTransaction,
-  getEthBaseFee,
-  getTotalGasFee,
-  createSignedNewEthTokenTransaction,
-  getMaticBaseFee,
-  createSignedNewMaticTransaction,
-  createSignedNewMaticTokenTransaction,
-  getTotalGasFeeMatic,
-  exponentialToDecimalWithoutComma,
-  CommaSeprator3,
-} from '../../../utils';
-import fonts from '../../../theme/Fonts';
-import * as Constants from '../../../Constant';
+// import { CameraScreen } from 'react-native-camera-kit';
+import { EventRegister } from 'react-native-event-listeners';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
-import { color } from 'react-native-reanimated';
 import { APIClient } from '../../../Api';
+import * as Constants from '../../../Constant';
+import { NavigationStrings } from '../../../Navigation/NavigationStrings';
 import { areaDimen, heightDimen, widthDimen } from '../../../Utils/themeUtils';
+import { getCurrentRouteName, goBack, navigate } from '../../../navigationsService';
+import fonts from '../../../theme/Fonts';
+import {
+  CommaSeprator3,
+  exponentialToDecimalWithoutComma
+} from '../../../utils';
 import { DetailOption } from '../../common/DetailOption';
 import QRReaderModal from '../../common/QRReaderModal';
-import { EventRegister } from 'react-native-event-listeners';
 let scanner = false
 let maxClicked = false;
 let totalFee = '';
@@ -79,6 +64,7 @@ let gaslimitForTxn = 0;
 let api_gas_fee = 0;
 let basicModal = false
 let isContact = false
+let eventListener
 const SendTRX = props => {
   let timer = createRef();
   const [PinModal, setPinModal] = useState(false);
@@ -91,9 +77,9 @@ const SendTRX = props => {
   const [amount, setAmount] = useState('');
 
   // ========Ancrypto =============
-  const [walletData, setwalletData] = useState(props.walletData);
+  const [walletData, setwalletData] = useState(props.route?.params?.walletData);
   const decim =
-    props.walletData?.no_of_decimals > 8 ? 8 : props.walletData?.no_of_decimals;
+    props.route?.params?.walletData?.no_of_decimals > 8 ? 8 : props.route?.params?.walletData?.no_of_decimals;
   const [gasPriceForTxn, setgasPriceForTxn] = useState(1000000000);
 
   const [gasFeeMultiplier, setgasFeeMultiplier] =
@@ -118,21 +104,22 @@ const SendTRX = props => {
 
   useEffect(() => {
     basicModal = false
-    // console.warn('MM','****************i walletData', props.walletData);
+    // console.warn('MM','****************i walletData', props.route?.params?.walletData);
     console.log('walletData===', walletData);
 
-    props.navigation.addListener('didFocus', onScreenFocus);
-    props.navigation.addListener('didBlur', onScreenBlur);
+    props.navigation.addListener('focus', onScreenFocus);
+    props.navigation.addListener('blur', onScreenBlur);
   }, [props]);
 
   const onScreenFocus = () => {
     basicModal = false
     BackHandler.addEventListener('hardwareBackPress', backAction);
-    EventRegister.addEventListener('downModal', () => {
+    eventListener = EventRegister.addEventListener('downModal', () => {
+      console.log('heree::::::::6');
       if (basicModal) {
         setBasicModal(false)
         basicModal = false
-        Actions.currentScene != 'Wallet' && Actions.Wallet()
+        getCurrentRouteName() != 'Wallet' && navigate(NavigationStrings.Wallet)
       }
     });
   };
@@ -140,7 +127,7 @@ const SendTRX = props => {
     basicModal = false
     //console.warn('MM','****************i confirmPin');
     BackHandler.removeEventListener('hardwareBackPress', backAction);
-    EventRegister.removeEventListener('downModal')
+    EventRegister.removeEventListener(eventListener)
   };
 
   const backAction = () => {
@@ -149,7 +136,7 @@ const SendTRX = props => {
       scanner = false
       return true;
     } else {
-      Actions.pop();
+      goBack();
       return true;
     }
   };
@@ -673,16 +660,16 @@ const SendTRX = props => {
             history={true}
             customIcon={Images.address}
             onPressHistory={() =>
-              Actions.currentScene != 'SendCryptoContacts' &&
-              Actions.SendCryptoContacts({
+              getCurrentRouteName() != 'SendCryptoContacts' &&
+              navigate(NavigationStrings.SendCryptoContacts,{
                 item: walletData,
                 blockChain: blockChain,
                 getAddress,
               })
             }
             onpress={() =>
-              Actions.currentScene != 'CoinHistory' &&
-              Actions.CoinHistory({ Data: walletData })
+              getCurrentRouteName() != 'CoinHistory' &&
+              navigate(NavigationStrings.CoinHistory,{ Data: walletData })
             }
             backImage={ThemeManager.ImageIcons.iconBack}
             titleStyle={{ textTransform: 'none' }}
@@ -964,7 +951,7 @@ const SendTRX = props => {
             <BasicModal
               onClose={() => {
                 basicModal = false
-                Actions.currentScene != 'Wallet' && Actions.Wallet()
+                getCurrentRouteName() != 'Wallet' && navigate(NavigationStrings.Wallet)
               }}
               showBtn={isContact}
               containerStyle={{
@@ -986,8 +973,8 @@ const SendTRX = props => {
               contact={() => {
                 setBasicModal(false);
                 basicModal = false
-                Actions.currentScene != 'AddNewContacts' &&
-                  Actions.AddNewContacts({
+                getCurrentRouteName() != 'AddNewContacts' &&
+                navigate(NavigationStrings.AddNewContacts,{
                     address: toAddress,
                     coinFamily: walletData.coin_family,
                   });

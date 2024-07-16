@@ -1,19 +1,21 @@
 import React, { Component } from 'react';
 import {
-  TouchableOpacity,
-  Platform,
-  PermissionsAndroid,
-  SafeAreaView,
   BackHandler,
+  PermissionsAndroid,
+  Platform,
+  SafeAreaView,
+  TouchableOpacity,
 } from 'react-native';
-import styles from './ScanQrStyle';
-import { Images, Colors } from '../../../theme';
-import { Actions } from 'react-native-router-flux';
-import Singleton from '../../../Singleton';
 import { connect } from 'react-redux';
-import { CameraScreen } from 'react-native-camera-kit';
+import Singleton from '../../../Singleton';
+import { Colors, Images } from '../../../theme';
+import styles from './ScanQrStyle';
+// import { CameraScreen } from 'react-native-camera-kit';
 import FastImage from 'react-native-fast-image';
+import QRCodeScanner from 'react-native-qrcode-scanner';
 import { LanguageManager } from '../../../../ThemeManager';
+import { NavigationStrings } from '../../../Navigation/NavigationStrings';
+import { getCurrentRouteName, goBack, navigate } from '../../../navigationsService';
 
 class ScanQr extends Component {
   constructor(props) {
@@ -26,8 +28,8 @@ class ScanQr extends Component {
   }
   componentDidMount() {
     this.open_QR_Code_Scanner();
-    this.props.navigation.addListener('didFocus', this.onScreenFocus);
-    this.props.navigation.addListener('didBlur', this.onScreenBlur);
+    this.props.navigation.addListener('focus', this.onScreenFocus);
+    this.props.navigation.addListener('blur', this.onScreenBlur);
   }
 
   onScreenFocus = () => {
@@ -37,7 +39,7 @@ class ScanQr extends Component {
     BackHandler.removeEventListener('hardwareBackPress', this.backAction);
   };
   backAction() {
-    Actions.pop();
+    goBack();
     return true;
   }
 
@@ -71,20 +73,20 @@ class ScanQr extends Component {
 
   qrClose() {
     // this.setState({ to_Address: '', Start_Scanner: false });
-    Actions.currentScene != 'Dashboard' && Actions.Dashboard();
+    getCurrentRouteName() != 'Dashboard' && navigate(NavigationStrings.Dashboard);
   }
 
   onQR_Code_Scan_Done = QR_Code => {
-    // //console.warn('MM','this.props?.item.coin_family', this.props?.item.coin_family);
+    // //console.warn('MM','this.props?.route?.params?.item.coin_family', this.props?.route?.params?.item.coin_family);
 
     // alert(QR_Code)
     // this.setState({ to_Address: QR_Code, Start_Scanner: false, maxClicked: false });
-    if (this.props?.item.coin_family == 1) {
-      Actions.currentScene != 'SendETH' &&
-        Actions.SendETH({ walletData: this.props?.item, qrCode: QR_Code });
+    if (this.props?.route?.params?.item.coin_family == 1) {
+      getCurrentRouteName() != 'SendETH' &&
+        navigate(NavigationStrings.SendETH,{ walletData: this.props?.route?.params?.item, qrCode: QR_Code });
     } else {
-      Actions.currentScene != 'SendBNB' &&
-        Actions.SendBNB({ walletData: this.props?.item, qrCode: QR_Code });
+      getCurrentRouteName() != 'SendBNB' &&
+        navigate(NavigationStrings.SendBNB,{ walletData: this.props?.route?.params?.item, qrCode: QR_Code });
     }
     // if (Singleton.getInstance().validateEthAddress(QR_Code)) {
     // }
@@ -110,7 +112,7 @@ class ScanQr extends Component {
             source={Images.modal_close_icon}
           />
         </TouchableOpacity>
-        <CameraScreen
+        {/* <CameraScreen
           showFrame={true}
           scanBarcode={true}
           laserColor={'#FF3D00'}
@@ -119,6 +121,13 @@ class ScanQr extends Component {
           onReadCode={event =>
             this.onQR_Code_Scan_Done(event.nativeEvent.codeStringValue)
           }
+        /> */}
+        <QRCodeScanner
+          onRead={event => {
+            console.log("event:::::",event.data);
+            this.onQR_Code_Scan_Done(event.data);
+          }}
+          cameraStyle={{width: '100%', height: '100%'}}
         />
       </SafeAreaView>
     ) : null;

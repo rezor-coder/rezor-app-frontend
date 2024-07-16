@@ -1,11 +1,12 @@
-import React, {Component} from 'react';
-import {View, Text, StyleSheet} from 'react-native';
-import {MainHeader} from '../../common';
-import Colors from '../../../theme/Colors';
-import {Wrap} from '../../common/index';
-import {Actions} from 'react-native-router-flux';
-import {Images} from '../../../theme';
+import React from 'react';
+import { StyleSheet, Text, View } from 'react-native';
+import { NavigationStrings } from '../../../Navigation/NavigationStrings';
 import Singleton from '../../../Singleton';
+import { getCurrentRouteName, navigate } from '../../../navigationsService';
+import { Images } from '../../../theme';
+import Colors from '../../../theme/Colors';
+import { MainHeader } from '../../common';
+import { Wrap } from '../../common/index';
 const Signup = () => {
   return (
     <Wrap>
@@ -24,7 +25,7 @@ const Signup = () => {
       <View style={styles.container}>
         <Text
           onPress={() =>
-            Actions.currentScene != 'VerifyPhrase' && Actions.VerifyPhrase()
+            getCurrentRouteName() != 'VerifyPhrase' && navigate(NavigationStrings.VerifyPhrase)
           }
           style={styles.signupText}>
           SETTINGSsdsdsds

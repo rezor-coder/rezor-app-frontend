@@ -1,15 +1,40 @@
 import React, { Component } from 'react';
 import {
-  View,
-  Image,
-  Text,
-  ScrollView,
-  SafeAreaView,
-  TouchableOpacity,
-  Modal,
   Alert,
+  Image,
+  Modal,
+  SafeAreaView,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
-import styles from './MultiSenderSTCStyle';
+import ReactNativeBiometrics from 'react-native-biometrics';
+import { EventRegister } from 'react-native-event-listeners';
+import FastImage from 'react-native-fast-image';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scrollview';
+import { connect } from 'react-redux';
+import Web3 from 'web3';
+import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
+import * as constants from '../../../Constant';
+import { NavigationStrings } from '../../../Navigation/NavigationStrings';
+import {
+  getBnbGasPrice,
+  getBnbNonce,
+  getSTCGasPrice,
+  getStcGasEstimate,
+  saveTxn,
+  sendBNB
+} from '../../../Redux/Actions';
+import Singleton, {
+  multiSenderBnbContractAddress,
+  multiSenderSTCContractAddress,
+  multiSenderSTCERC20ContractAddress
+} from '../../../Singleton';
+import { areaDimen, heightDimen, widthDimen } from '../../../Utils/themeUtils';
+import { getCurrentRouteName, goBack, navigate } from '../../../navigationsService';
+import { Colors, Fonts, Images } from '../../../theme';
+import { bigNumberSafeMath, getStcNonce } from '../../../utils';
 import {
   BasicButton,
   BorderLine,
@@ -22,33 +47,8 @@ import {
   SimpleHeader,
   Wrap,
 } from '../../common';
-import { Fonts, Images, Colors } from '../../../theme';
-import * as constants from '../../../Constant';
-import { Actions } from 'react-native-router-flux';
-import Singleton, {
-  bep20MultiSenderContractAddress,
-  multiSenderBnbContractAddress,
-  multiSenderSTCContractAddress,
-  multiSenderSTCERC20ContractAddress,
-} from '../../../Singleton';
-import {
-  getBnbNonce,
-  getBnbGasPrice,
-  sendBNB,
-  saveTxn,
-  getSTCGasPrice,
-  getStcGasEstimate
-} from '../../../Redux/Actions';
-import { connect } from 'react-redux';
 import Loader from '../Loader/Loader';
-import Web3 from 'web3';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scrollview';
-import ReactNativeBiometrics from 'react-native-biometrics';
-import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
-import { areaDimen, heightDimen, widthDimen } from '../../../Utils/themeUtils';
-import FastImage from 'react-native-fast-image';
-import { EventRegister } from 'react-native-event-listeners';
-import { bigNumberSafeMath, getStcNonce } from '../../../utils';
+import styles from './MultiSenderSTCStyle';
 
 let csvData = [];
 const gwei_multi = 1000000000;
@@ -89,7 +89,7 @@ class MultiSenderSTC extends Component {
       valueBnb: '',
       showFace: false,
       showTouch: false,
-      commissionAmt: 20000000000000,
+      commissionAmt: 0,
     };
   }
 
@@ -111,25 +111,23 @@ class MultiSenderSTC extends Component {
           to_Address: this.props.selectedAddress,
         });
       });
-    csvData = this.props.csvArray;
+    csvData = this.props?.route?.params?.csvArray;
     let valueInCoin = 0;
     let toAddressMulti = '';
     csvData.map((item, index) => {
-      console.log("item.amount::::::::::",item.amount);
+      console.log("item.amount::::::::::", item.amount);
       if (index < csvData.length - 1)
         toAddressMulti += Web3.utils.toChecksumAddress(item.address) + ',';
       else toAddressMulti += Web3.utils.toChecksumAddress(item.address);
-      valueInCoin += parseFloat(item.amount);
+      valueInCoin = bigNumberSafeMath(valueInCoin, '+', item.amount)
     });
-    console.log("valueInCoinvalueInCoin:::::::::",valueInCoin);
+    console.log("valueInCoinvalueInCoin:::::::::", valueInCoin);
     this.setState(
-      { amount: Singleton.getInstance().toFixednew(valueInCoin,8), toAddress: toAddressMulti, amountNew: valueInCoin },
+      { amount: Singleton.getInstance().toFixednew(valueInCoin, 8), toAddress: toAddressMulti, amountNew: valueInCoin },
       () => {
         this.getbnbEstimate();
       },
     );
-
-    //console.warn('MM','toAddress', valueInCoin);
   }
   componentWillUnmount() {
     EventRegister.removeEventListener('downModal')
@@ -143,15 +141,15 @@ class MultiSenderSTC extends Component {
       amountArr.push(csvData[i].amount);
       //console.warn('MM',csvData[i].address);
     }
-    if (this.props.selectedCoin.is_token == 0) {
+    if (this.props?.route?.params?.selectedCoin.is_token == 0) {
       console.warn('MM', 'hereeee');
       Singleton.getInstance().getDataForMultiSTC(
         addressArr,
         amountArr,
-        this.props.selectedCoin.coin_family,
-        Singleton.getInstance().toFixednew(this.state.amountNew,8),
+        this.props?.route?.params?.selectedCoin.coin_family,
+        Singleton.getInstance().toFixednew(this.state.amountNew, 8),
         Singleton.getInstance().defaultStcAddress,
-        this.props.referralAddress,
+        this.props?.route?.params?.referralAddress,
       )
         .then(res => {
           console.warn('MM', 'chk res stc::::', res);
@@ -159,7 +157,7 @@ class MultiSenderSTC extends Component {
             amount: res?.amountAfterCommission,
             amountAfterCommission: res?.amountAfterCommission,
             dataEncoded: res.data,
-            // gaslimitForTxn: res.gasLimit,
+            gaslimitForTxn: res.gasLimit,
             // advancedGasLimit: res.gasLimit,
             commissionAmt: res.commissionAmt,
           });
@@ -182,10 +180,10 @@ class MultiSenderSTC extends Component {
         .getDataForMultiSTCToken(
           addressArr,
           amountArr,
-          this.props.selectedCoin.token_address,
-          this.props.selectedCoin.decimals,
+          this.props?.route?.params?.selectedCoin.token_address,
+          this.props?.route?.params?.selectedCoin.decimals,
           Singleton.getInstance().defaultStcAddress,
-          this.props.referralAddress,
+          this.props?.route?.params?.referralAddress,
         )
         .then(res => {
           console.warn('MM', 'chk data for token:::STC:', res);
@@ -193,8 +191,8 @@ class MultiSenderSTC extends Component {
             dataEncoded: res.data,
             valueBnb: res.amountAfterCommission,
             advancedGasLimit: res.gasLimit,
-            commissionAmt: res.commissionAmt,
-            // gaslimitForTxn: res.gasLimit,
+            commissionAmt: isNaN(res.commissionAmt)?0:res.commissionAmt,
+            gaslimitForTxn: res.gasLimit,
           });
           this.getBnbGasLimit(res);
         })
@@ -214,46 +212,47 @@ class MultiSenderSTC extends Component {
     let access_token = Singleton.getInstance().access_token;
     this.props.getSTCGasPrice().then(gasPrices => {
       console.log("gasPrices:::::", gasPrices);
-      this.props
-        .getStcGasEstimate({ access_token })
-        .then(response => {
-          let { gasLimit } = response.data.find(item => item.name == 'bulkTransfer')
-          console.warn('MM', 'response GAS--stc ', gasLimit);
-          let slowGasPrice =
-            parseFloat(gasPrices?.data?.safeGasPrice) * gwei_multi;
-          let mediumGasPrice =
-            parseFloat(gasPrices?.data?.proposeGasPrice) * gwei_multi;
-          let heightGasPrice =
-            parseFloat(gasPrices?.data?.fastGasPrice) * gwei_multi;
-          let feeIs = mediumGasPrice *
-            gasLimit *
-            this.state.gasFeeMultiplier;
-          this.setState({
-            gasPriceForTxn: slowGasPrice,
-            gaslimitForTxn: gasLimit,
-            gasPriceForTxnSlow: slowGasPrice,
-            gasPriceForTxnMedium: mediumGasPrice,
-            gasPriceForTxnHigh: heightGasPrice,
-            advancedGasLimit:gasLimit,
-            totalFee: Singleton.getInstance()
-              .exponentialToDecimal(feeIs)
-              .toString(),
-            amountAfterCommission:
-              this.props.selectedCoin.coin_symbol.toLowerCase() == 'stc'
-                ? res.amountAfterCommission
-                : this.state.amountNew,
-            amount:
-              this.props.selectedCoin.coin_symbol.toLowerCase() == 'stc'
-                ? res.amountAfterCommission
-                : this.state.amountNew,
-            dataEncoded: res.data,
-            isLoading: false,
-          });
-        })
-        .catch(error => {
-          this.setState({ isLoading: false });
-          Singleton.showAlert(error?.message || constants.SOMETHING_WRONG);
-        });
+      // this.props
+      //   .getStcGasEstimate({ access_token })
+      //   .then(response => {
+      // let { gasLimit } = response.data.find(item => item.name == 'bulkTransfer')
+      let gasLimit = res.gasLimit
+      console.warn('MM', 'response GAS--stc ', gasLimit);
+      let slowGasPrice =
+        parseFloat(gasPrices?.data?.safeGasPrice) * gwei_multi;
+      let mediumGasPrice =
+        parseFloat(gasPrices?.data?.proposeGasPrice) * gwei_multi;
+      let heightGasPrice =
+        parseFloat(gasPrices?.data?.fastGasPrice) * gwei_multi;
+      let feeIs = mediumGasPrice *
+        gasLimit *
+        this.state.gasFeeMultiplier;
+      this.setState({
+        gasPriceForTxn: slowGasPrice,
+        gaslimitForTxn: gasLimit,
+        gasPriceForTxnSlow: slowGasPrice,
+        gasPriceForTxnMedium: mediumGasPrice,
+        gasPriceForTxnHigh: heightGasPrice,
+        advancedGasLimit: gasLimit,
+        totalFee: Singleton.getInstance()
+          .exponentialToDecimal(feeIs)
+          .toString(),
+        amountAfterCommission:
+          this.props?.route?.params?.selectedCoin.coin_symbol.toLowerCase() == 'stc'
+            ? res.amountAfterCommission
+            : this.state.amountNew,
+        amount:
+          this.props?.route?.params?.selectedCoin.coin_symbol.toLowerCase() == 'stc'
+            ? res.amountAfterCommission
+            : this.state.amountNew,
+        dataEncoded: res.data,
+        isLoading: false,
+      });
+      // })
+      // .catch(error => {
+      //   this.setState({ isLoading: false });
+      //   Singleton.showAlert(error?.message || constants.SOMETHING_WRONG);
+      // });
     }).catch(err => {
       console.log(err);
       this.setState({ isLoading: false });
@@ -284,7 +283,7 @@ class MultiSenderSTC extends Component {
       );
     } else {
       Singleton.showAlert(
-        `Enter valid ${this.props.selectedCoin.coin_symbol.toUpperCase()} address`,
+        `Enter valid ${this.props?.route?.params?.selectedCoin.coin_symbol.toUpperCase()} address`,
       );
     }
   }
@@ -316,7 +315,7 @@ class MultiSenderSTC extends Component {
         if (success) {
           //console.warn('MM','successful biometrics provided');
           this.setState({ pinModal: false }, () => {
-            this.props.selectedCoin.coin_symbol.toLowerCase() == 'stc'
+            this.props?.route?.params?.selectedCoin.coin_symbol.toLowerCase() == 'stc'
               ? this.send_STC()
               : this.send_ERC20();
           });
@@ -398,11 +397,11 @@ class MultiSenderSTC extends Component {
       });
   }
   saveTxn(hash, cmsnAmt) {
-    
+
     let data = {
       from: Singleton.getInstance().defaultStcAddress,
       to: multiSenderBnbContractAddress,
-      amount: Singleton.getInstance().toFixednew(this.state.amount,8),
+      amount: Singleton.getInstance().toFixednew(this.state.amount, 8),
       gas_price: this.state.gasPriceForTxn,
       gas_estimate: this.state.gaslimitForTxn,
       tx_raw: '',
@@ -416,9 +415,9 @@ class MultiSenderSTC extends Component {
     let access_token = Singleton.getInstance().access_token;
     let blockChain = this.state.blockChain;
     let coin_symbol =
-      this.props.selectedCoin.coin_symbol.toLowerCase() == 'stc'
+      this.props?.route?.params?.selectedCoin.coin_symbol.toLowerCase() == 'stc'
         ? 'stc'
-        : this.props.selectedCoin.token_address;
+        : this.props?.route?.params?.selectedCoin.token_address;
     this.props
       .saveTxn({ data, access_token, blockChain, coin_symbol })
       .then(res => {
@@ -430,7 +429,7 @@ class MultiSenderSTC extends Component {
             {
               text: 'OK',
               onPress: () => {
-                Actions.currentScene != 'Wallet' && Actions.Wallet()
+                getCurrentRouteName() != 'Wallet' && navigate(NavigationStrings.Wallet)
               },
             },
           ],
@@ -474,7 +473,7 @@ class MultiSenderSTC extends Component {
             return;
           }
           this.setState({ pinModal: false }, () => {
-            this.props.selectedCoin.coin_symbol.toLowerCase() == 'stc'
+            this.props?.route?.params?.selectedCoin.coin_symbol.toLowerCase() == 'stc'
               ? this.send_STC()
               : this.send_ERC20();
           });
@@ -691,7 +690,7 @@ class MultiSenderSTC extends Component {
                       styles.transaction_textStye,
                       { color: ThemeManager.colors.textColor },
                     ]}>
-                    Transaction Fees (BNB){' '}
+                    Transaction Fees (SBC){' '}
                   </Text>
                 </View>
 
@@ -847,7 +846,7 @@ class MultiSenderSTC extends Component {
                         alignItems: 'center', // Vertical direction
                       }}>
                       <FastImage
-                        source={{ uri: this.props.selectedCoin.coin_image }}
+                        source={{ uri: this.props?.route?.params?.selectedCoin.coin_image }}
                         style={styles.iconImageStyle}
                         resizeMode={FastImage.resizeMode.contain}
                       />
@@ -856,7 +855,7 @@ class MultiSenderSTC extends Component {
                           styles.balanceLabelStyle,
                           { color: ThemeManager.colors.lightTextColor },
                         ]}>
-                        {this.props.selectedCoin.coin_symbol.toUpperCase() +
+                        {this.props?.route?.params?.selectedCoin.coin_symbol.toUpperCase() +
                           ' ' +
                           'Balance'}
                       </Text>
@@ -868,7 +867,7 @@ class MultiSenderSTC extends Component {
                         { color: ThemeManager.colors.textColor },
                       ]}>
                       {Singleton.getInstance().toFixed(
-                        this.props.selectedCoin.balance,
+                        this.props?.route?.params?.selectedCoin.balance,
                         5,
                       )}
                     </Text>
@@ -897,7 +896,7 @@ class MultiSenderSTC extends Component {
                         alignItems: 'center', // Vertical direction
                       }}>
                       <FastImage
-                        source={{ uri: this.props.selectedCoin.coin_image }}
+                        source={{ uri: this.props?.route?.params?.selectedCoin.coin_image }}
                         style={styles.iconImageStyle}
                         resizeMode={FastImage.resizeMode.contain}
                       />
@@ -910,7 +909,7 @@ class MultiSenderSTC extends Component {
                       </Text>
                     </View>
 
-                    {this.props.selectedCoin.coin_symbol.toUpperCase() ==
+                    {this.props?.route?.params?.selectedCoin.coin_symbol.toUpperCase() ==
                       'STC' && (
                         <Text
                           style={[
@@ -922,7 +921,7 @@ class MultiSenderSTC extends Component {
                           }
                         </Text>
                       )}
-                    {this.props.selectedCoin.coin_symbol.toUpperCase() !=
+                    {this.props?.route?.params?.selectedCoin.coin_symbol.toUpperCase() !=
                       'STC' && (
                         <Text
                           style={[
@@ -933,9 +932,8 @@ class MultiSenderSTC extends Component {
                             Singleton.getInstance().toFixed(
                               this.state.amount,
                               8,
-                            ) +" "+ this.props.selectedCoin?.coin_symbol?.toUpperCase()+
-                            ' + ' +
-                            bigNumberSafeMath(this.state.commissionAmt, '/', 10 ** 18)+' STC'
+                            ) + " " + this.props?.route?.params?.selectedCoin?.coin_symbol?.toUpperCase() +
+                            (this.state.commissionAmt>0?(' + ' + bigNumberSafeMath(this.state.commissionAmt, '/', 10 ** 18) + ' STC'):'')
                             // parseFloat(
                             //   this.state.commissionAmt / 10 ** 18,
                             // ).toString()
@@ -980,8 +978,8 @@ class MultiSenderSTC extends Component {
                         alignItems: 'center',
                       }}
                       onPress={() => {
-                        Actions.currentScene != 'Recipient' &&
-                          Actions.Recipient({ csvData: csvData });
+                        getCurrentRouteName() != 'Recipient' &&
+                        navigate(NavigationStrings.Recipient,{ csvData: csvData });
                       }}>
                       {csvData.length > 1 && (
                         <Text
@@ -1033,7 +1031,7 @@ class MultiSenderSTC extends Component {
                   customGradient={styles.customGrad}
                 />
                 <LightButton
-                  onPress={() => Actions.pop()}
+                  onPress={() => goBack()}
                   btnStyle={styles.cancelBtnStyle}
                   customGradient={styles.customGrad}
                   text="Cancel"

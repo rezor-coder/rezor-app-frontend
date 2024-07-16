@@ -70,7 +70,7 @@ import MultiWalletOptions from './MultiWalletOptions';
 import MultiWalletImportSingleCoin from './MultiWalletImportSingleCoin';
 export * from './MultiWallet';
 import ChooseLanguage from './ChooseLanguage/ChooseLanguage';
-import { Stake } from './StakeScreen/Stake';
+import {Stake} from './StakeScreen/Stake';
 import SwapNew from './SwapNew/SwapNew';
 import SwapSelected from './SwapSelected/SwapSelected';
 import LiquiditySelected from './LiquiditySelected/LiquiditySelected';
@@ -79,7 +79,7 @@ import SwapScreenBnb from './SwapScreenBnb';
 import SwapLiquidity from './SwapLiquidity';
 import SaitaProSupport from './SaitaProSupport/SaitaProSupport';
 import SwapSettings from './SwapSettings/SwapSettings';
-import { EditWallet } from './EditWallet/EditWallet';
+import {EditWallet} from './EditWallet/EditWallet';
 import ConfirmSecurityPin from './ConfirmSecurityPin/ConfirmSecurityPin';
 import {
   LiquiditySelectToken,
@@ -116,6 +116,17 @@ import SaitaVirtualForm from './SaitaVirtualForm/SaitaVirtualForm';
 import SaitaCardDepositBinance from './SaitaCardDepositBinance/SaitaCardDepositBinance';
 import WelcomeScreen from './Welcome/WelcomeScreen';
 import DefiAccessmainIOS from './DefiAccessMain/DefiAccessmainIOS';
+
+// ----------------------------------------------------------------
+import SaitaCardDashBoard from './SaitaCardDashBoard/SaitaCardDashBoard';
+import CardInfo from './CardInfo/CardInfo';
+import CardManage from './CardManage/CardManage';
+import ApplyCardWelcomeScreen from './ApplyCardWelcomeScreen/ApplyCardWelcomeScreen';
+import ApplyCard from './ApplyCard/ApplyCard';
+import DepositScreen from './DepositScreen/DepositScreen';
+import RegisterNow from './RegisterNow/RegisterNow';
+import UserDetail from './UserDetail/UserDetail';
+
 // import Stake from './StakeScreen/Stake';
 export {
   Splash,
@@ -233,4 +244,12 @@ export {
   SaitaCardDepositBinance,
   WelcomeScreen,
   DefiAccessmainIOS,
+  SaitaCardDashBoard,
+  CardInfo,
+  CardManage,
+  ApplyCardWelcomeScreen,
+  ApplyCard,
+  DepositScreen,
+  RegisterNow,
+  UserDetail,
 };

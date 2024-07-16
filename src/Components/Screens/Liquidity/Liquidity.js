@@ -1,49 +1,40 @@
 import React, { useEffect, useState } from 'react';
 import {
-  View,
-  Text,
-  StyleSheet,
-  Image,
-  ImageBackground,
-  ScrollView,
-  Dimensions,
   Alert,
-  Modal,
-  SafeAreaView,
   FlatList,
-  Keyboard, TouchableOpacity
+  Image,
+  Keyboard,
+  Modal,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View
 } from 'react-native';
-import { Actions } from 'react-native-router-flux';
 import images from '../../../theme/Images';
-import { styles } from './LiquidityStyle';
 import { Inputtext, InputtextSearch, MainHeader } from '../../common';
-import LinearGradient from 'react-native-linear-gradient';
+import { styles } from './LiquidityStyle';
 // import { TouchableOpacity } from 'react-native-gesture-handler';
-import { Wrap, BasicButton } from '../../common/index';
-import Slider from '@react-native-community/slider';
+import { BasicButton, Wrap } from '../../common/index';
 
-import TOKEN_ABI from '../../../../ABI/tokenContract.ABI.json';
+import PAIR_ABI from '../../../../ABI/Pair.ABI.json';
 import ROUTER_ABI from '../../../../ABI/router.ABI.json';
 import SAITAROUTER_ABI from '../../../../ABI/saitaFactory.ABI.json';
-import PAIR_ABI from '../../../../ABI/Pair.ABI.json';
+import TOKEN_ABI from '../../../../ABI/tokenContract.ABI.json';
 // import Token_List from '../../../../ABI/tokensList';
 
-import Web3 from 'web3';
-import Singleton from '../../../Singleton';
-import { CONTACT_SAVED } from '../../../Constant';
 import { BigNumber } from 'bignumber.js';
-import { Colors, Images } from '../../../theme';
-import { ButtonPercentage } from '../../common/ButtonPercentage';
+import FastImage from 'react-native-fast-image';
+import { useDispatch } from 'react-redux';
+import Web3 from 'web3';
+import { APIClient } from '../../../Api';
 import * as constants from '../../../Constant';
+import { getSwapList } from '../../../Redux/Actions';
+import Singleton from '../../../Singleton';
+import { Colors, Images } from '../../../theme';
+import { bigNumberSafeMath } from '../../../utils';
+import { ButtonPercentage } from '../../common/ButtonPercentage';
 import { ModalSwap } from '../../common/ModalSwap';
 import Loader from '../Loader/Loader';
-import FastImage from 'react-native-fast-image';
-import { APIClient } from '../../../Api';
-import { getSwapList } from '../../../Redux/Actions';
-import { Tab, Tabs } from 'native-base';
-import { connect, useDispatch, useSelector } from 'react-redux';
-import { BASE_URL } from '../../../Endpoints';
-import { bigNumberSafeMath } from '../../../utils';
 
 // let routerAddress = '0x0c17e776CD218252ADFca8D4e761D3fe757e9778'; // mainnet saitaswap router address 
 // let factoryAddress = '0x35113a300ca0D7621374890ABFEAC30E88f214b1'

@@ -1,13 +1,10 @@
 /* eslint-disable react-native/no-inline-styles */
 import React from 'react';
-import { Text, StyleSheet, View, Image, TouchableOpacity } from 'react-native';
+import { Image, StyleSheet, TouchableOpacity } from 'react-native';
 
-import { Actions } from 'react-native-router-flux';
 import { ThemeManager } from '../../../ThemeManager';
 import Singleton from '../../Singleton';
 import Colors from '../../theme/Colors';
-import fonts from '../../theme/Fonts';
-import images from '../../theme/Images';
 
 const ModalHeader = props => {
   return (

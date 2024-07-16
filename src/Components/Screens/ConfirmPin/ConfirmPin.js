@@ -11,8 +11,8 @@ import {
   TouchableOpacity,
   Dimensions,
   ScrollView,
+  AppState,
 } from 'react-native';
-import { Actions, ActionConst } from 'react-native-router-flux';
 import {
   Wrap,
   Multibtn,
@@ -45,6 +45,8 @@ import { API_REFRESH_TOKEN } from '../../../Endpoints';
 import Loader from '../Loader/Loader';
 import { areaDimen, heightDimen, widthDimen } from '../../../Utils/themeUtils';
 import DeviceInfo from 'react-native-device-info';
+import { getCurrentRouteName, goBack, navigate, reset } from '../../../navigationsService';
+import { NavigationStrings } from '../../../Navigation/NavigationStrings';
 const windowHeight = Dimensions.get('window').height;
 let buildNumber = DeviceInfo.getVersion();
 class ConfirmPin extends Component {
@@ -72,8 +74,8 @@ class ConfirmPin extends Component {
     // this.updateSTCKeys();
     // //console.warn('MM','chk frst tym:::', this.firstTime);
     if (this.firstTime == false) {
-      this.props.navigation.addListener('didFocus', this.screenFocus);
-      this.props.navigation.addListener('didBlur', this.screenBlur);
+      this.props.navigation.addListener('focus', this.screenFocus);
+      this.props.navigation.addListener('blur', this.screenBlur);
       Singleton.getInstance()
         .newGetData(Constants.PIN)
         .then(pin => {
@@ -92,6 +94,14 @@ class ConfirmPin extends Component {
           // }
         });
     }
+    AppState.addEventListener('change', state => {
+      console.log(state, 'statestatestate');
+      if (state === 'inactive' || state === 'background') {
+        this.setState({
+          pin: '',
+        });
+      }
+    });
     Singleton.getInstance()
       .newGetData(Constants.CURRENCY_SELECTED)
       .then(CurrencySelected => {
@@ -198,20 +208,35 @@ class ConfirmPin extends Component {
   };
 
   screenBlur = () => {
+    this.setState({
+      isLoading: false,
+      pin: '',
+      showImage: false,
+      showTouch: false,
+      showFace: false,
+      pinFromStorage: '',
+    });
     BackHandler.removeEventListener('hardwareBackPress', this.backAction);
   };
   componentWillUnmount() {
+
     BackHandler.removeEventListener('hardwareBackPress', this.backAction);
   }
   screenFocus = () => {
     this.checkBiometricAvailability(true)
     BackHandler.addEventListener('hardwareBackPress', this.backAction);
+    this.setState({
+      isLoading: false,
+      pin: '',
+      showImage: false,
+      showTouch: false,
+      showFace: false,
+      pinFromStorage: '',
+    });
   };
   backAction = () => {
-    //console.warn('MM','******* chk Actions.currentScene', Actions.currentScene);
-    //console.warn('MM','*******  confirmPin', this.props.goBack);
-    this.props.goBack == true && Actions.pop();
-    return true;
+    //console.warn('MM','******* chk getCurrentRouteName() ', getCurrentRouteName() );
+   return true;
   };
   checkBiometricAvailability(isONlyCheck) {
     console.log("checkBiometric called", isONlyCheck);
@@ -257,9 +282,9 @@ class ConfirmPin extends Component {
         if (success) {
           // //console.warn('MM','successful biometrics provided');
           global.pinShown = false;
-          if (this.props?.refreshToken || this.props?.isFrom == 'splash') {
+          if (this.props?.route?.params?.refreshToken ||this.props?.route?.params?.isFrom == 'splash') {
             this.token_api();
-          } else if (this.props?.loginAgain) {
+          } else if (this.props?.route?.params?.loginAgain) {
             this.refreshToken_expired_api();
           } else {
             this.signInContent();
@@ -316,6 +341,7 @@ class ConfirmPin extends Component {
             Constants.login_data,
             JSON.stringify(login_data),
           );
+          console.log('newMultiWallet::',activeWallet,'oldMultiWAllet:::',oldMultiWAllet,);
           await instance.newSaveData(
             Constants.multi_wallet_array,
             JSON.stringify(newMultiWallet),
@@ -423,47 +449,46 @@ class ConfirmPin extends Component {
         Singleton.getInstance().defaultStcAddress = response?.defaultEthAddress;
         Singleton.getInstance().walletName = response.walletName;
 
-        if (this.props?.redirectTo == 'RecoveryPhrase') {
-          Actions.currentScene != 'RecoveryPhrase' &&
-            Actions.RecoveryPhrase({
-              screenType: this.props.screenType,
-              walletItem: this.props.walletItem,
+        if (this.props?.route?.params?.redirectTo == 'RecoveryPhrase') {
+          getCurrentRouteName() != 'RecoveryPhrase' &&
+            props?.navigation?.replace(NavigationStrings.RecoveryPhrase, {
+              screenType: this.props?.route?.params?.screenType,
+              walletItem: this.props?.route?.params?.walletItem,
             });
           return;
         }
-        if (this.props?.redirectTo == 'ExportPrivateKeys') {
-          Actions.currentScene != 'ExportPrivateKeys' &&
-            Actions.ExportPrivateKeys({
-              screenType: this.props.screenType,
-              walletItem: this.props.walletItem,
+        if (this.props?.route?.params?.redirectTo == 'ExportPrivateKeys') {
+          getCurrentRouteName()  != 'ExportPrivateKeys' &&
+          props?.navigation?.replace(NavigationStrings.ExportPrivateKeys,{
+              screenType: this.props?.route?.params?.screenType,
+              walletItem: this.props?.route?.params?.walletItem,
             });
           return;
         }
-        if (this.props?.redirectTo == 'disablepin') {
+        if (this.props?.route?.params?.redirectTo == 'disablepin') {
           Singleton.getInstance().newSaveData(Constants.ENABLE_PIN, 'false');
-          Actions.jump('Security');
+          navigate(NavigationStrings.Security);
           return;
         }
-        if (this.props?.redirectTo == 'saitaPin') {
+        if (this.props?.route?.params?.redirectTo == 'saitaPin') {
           this.props.getVerified(true);
-          Actions.jump('SaitaCardsInfo');
+          navigate(NavigationStrings.SaitaCardsInfo);
           return;
         } else {
-          if (this.props.isFrom == 'splash') {
-            Actions.Main({ type: ActionConst.RESET });
-            Actions.jump('Wallet');
+          if (this.props?.route?.params?.isFrom == 'splash') {
+            reset(NavigationStrings.Main);
             Singleton.getInstance()
               .newGetData(Constants.IS_PRIVATE_WALLET)
               .then(isPrivateWallet => {
                 if (isPrivateWallet != 'btc' && isPrivateWallet != 'trx') {
-                  console.log("global.isDeepLink:::::>>>>>111", global.isDeepLink, Actions.currentScene);
+                  console.log("global.isDeepLink:::::>>>>>111", global.isDeepLink, getCurrentRouteName() );
                   if (global.isDeepLink) {
-                    console.log("global.isDeepLink:::::>>>>>", global.isDeepLink, Actions.currentScene);
-                    if (Actions.currentScene !== 'ConnectWithDapp111') {
-                      console.log("global.isDeepLink:::::>>5555555555>>>111", global.isDeepLink, Actions.currentScene);
-                      Actions.ConnectWithDapp({ url: global.deepLinkUrl })
+                    console.log("global.isDeepLink:::::>>>>>", global.isDeepLink, getCurrentRouteName() );
+                    if (getCurrentRouteName()  !== 'ConnectWithDapp') {
+                      console.log("global.isDeepLink:::::>>5555555555>>>111", global.isDeepLink, getCurrentRouteName() );
+                      navigate(NavigationStrings.ConnectWithDapp,{ url: global.deepLinkUrl })
                     } else {
-                      console.log("global.isDeepLink:::::>>666666666666>>>1111", global.isDeepLink, Actions.currentScene);
+                      console.log("global.isDeepLink:::::>>666666666666>>>1111", global.isDeepLink, getCurrentRouteName() );
                       EventRegister.emit('wallet_connect_event', global.deepLinkUrl)
                     }
                   }
@@ -476,12 +501,12 @@ class ConfirmPin extends Component {
           } else {
             ;
             if (global.isNotification) {
-              Actions.currentScene != 'Notification' &&
-                Actions.Notification({ from: 'Pin' });
+              getCurrentRouteName()  != 'Notification' &&
+              navigate(NavigationStrings.Notification,{ from: 'Pin' });
               global.isNotification = false;
               return;
             }
-            Actions.pop();
+           goBack()
             if (Singleton.getInstance().isOtpModal) {
               EventRegister.emit('otpModal', true);
             } else if (Singleton.getInstance().istxnModal) {
@@ -492,12 +517,12 @@ class ConfirmPin extends Component {
               .then(isPrivateWallet => {
                 if (isPrivateWallet != 'btc' && isPrivateWallet != 'trx') {
                   if (global.isDeepLink) {
-                    console.log("global.isDeepLink:::::>>>>>", global.isDeepLink, Actions.currentScene);
-                    if (Actions.currentScene !== 'ConnectWithDapp') {
-                      console.log("global.isDeepLink:::::>>5555555555>>>", global.isDeepLink, Actions.currentScene);
-                      Actions.ConnectWithDapp({ url: global.deepLinkUrl })
+                    console.log("global.isDeepLink:::::>>>>>", global.isDeepLink, getCurrentRouteName() );
+                    if (getCurrentRouteName()  !== 'ConnectWithDapp') {
+                      console.log("global.isDeepLink:::::>>5555555555>>>", global.isDeepLink, getCurrentRouteName() );
+                      navigate(NavigationStrings.ConnectWithDapp,{ url: global.deepLinkUrl })
                     } else {
-                      console.log("global.isDeepLink:::::>>666666666666>>>", global.isDeepLink, Actions.currentScene);
+                      console.log("global.isDeepLink:::::>>666666666666>>>", global.isDeepLink, getCurrentRouteName() );
                       EventRegister.emit('wallet_connect_event', global.deepLinkUrl)
                     }
                   }
@@ -515,8 +540,8 @@ class ConfirmPin extends Component {
       });
   }
   popp() {
-    Actions.pop();
-    Actions.currentScene != 'Account' && Actions.Account();
+    goBack()
+    getCurrentRouteName()  != 'Account' && navigate(NavigationStrings.Account);
   }
   deletePin() {
     let pin = this.state.pin;
@@ -537,29 +562,29 @@ class ConfirmPin extends Component {
       this.state.pin.toString() === this.state.pinFromStorage.toString()
     ) {
       if (this.firstTime) {
-        this.props?.redirectTo == 'RecoveryPhrase'
-          ? Actions.RecoveryPhrase()
-          : Actions.currentScene != 'Main' && Actions.Main();
+        this.props?.route?.params?.redirectTo == 'RecoveryPhrase'
+          ? navigate(NavigationStrings.RecoveryPhrase)
+          : getCurrentRouteName()  != 'Main' && reset(NavigationStrings.Main);
       } else {
-        if (this.props?.redirectTo == 'RecoveryPhrase') {
-          Actions.currentScene != 'RecoveryPhrase' &&
-            Actions.RecoveryPhrase({
-              screenType: this.props.screenType,
-              walletItem: this.props.walletItem,
+        if (this.props?.route?.params?.redirectTo == 'RecoveryPhrase') {
+          getCurrentRouteName()  != 'RecoveryPhrase' &&
+            navigate(NavigationStrings.RecoveryPhrase,{
+              screenType: this.props?.route?.params?.screenType,
+              walletItem: this.props?.route?.params?.walletItem,
+            })
+          return;
+        }
+        if (this.props?.route?.params?.redirectTo == 'ExportPrivateKeys') {
+          getCurrentRouteName() != 'ExportPrivateKeys' &&
+            navigate(NavigationStrings.ExportPrivateKeys, {
+              screenType: this.props?.route?.params?.screenType,
+              walletItem: this.props?.route?.params?.walletItem,
             });
           return;
         }
-        if (this.props?.redirectTo == 'ExportPrivateKeys') {
-          Actions.currentScene != 'ExportPrivateKeys' &&
-            Actions.ExportPrivateKeys({
-              screenType: this.props.screenType,
-              walletItem: this.props.walletItem,
-            });
-          return;
-        }
-        if (this.props?.refreshToken || this.props?.isFrom == 'splash') {
+        if (this.props?.route?.params?.refreshToken || this.props?.route?.params?.isFrom == 'splash') {
           this.token_api();
-        } else if (this.props?.loginAgain) {
+        } else if (this.props?.route?.params?.loginAgain) {
           this.refreshToken_expired_api();
         } else {
           this.signInContent();
@@ -610,8 +635,8 @@ class ConfirmPin extends Component {
           }
         />
         <View style={styles.mainView}>
-          {(this.props?.redirectTo == 'RecoveryPhrase' ||
-            this.props?.redirectTo == 'ExportPrivateKeys') && (
+          {(this.props?.route?.params?.redirectTo == 'RecoveryPhrase' ||
+            this.props?.route?.params?.redirectTo == 'ExportPrivateKeys') && (
               <HeaderwithBackIcon iconLeft={ThemeManager.ImageIcons.iconBack} />
             )}
           <View style={{ marginHorizontal: widthDimen(22) }}>

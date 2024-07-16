@@ -1,28 +1,29 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import {
-  View,
-  Text,
-  SafeAreaView,
-  Keyboard,
-  Image,
-  FlatList,
   Alert,
-  BackHandler
+  BackHandler,
+  FlatList,
+  Image,
+  Keyboard,
+  SafeAreaView,
+  Text,
+  View
 } from 'react-native';
-import styles from './DefiAccessMainStyle';
-import {MainStatusBar, TabIcon} from '../../common';
-import {Fonts, Images, Colors} from '../../../theme';
-import {ThemeManager} from '../../../../ThemeManager';
-import Singleton from '../../../Singleton';
+import { ThemeManager } from '../../../../ThemeManager';
 import * as Constants from '../../../Constant';
-import {Actions} from 'react-native-router-flux';
+import Singleton from '../../../Singleton';
+import { Fonts, Images } from '../../../theme';
+import { MainStatusBar, TabIcon } from '../../common';
+import styles from './DefiAccessMainStyle';
 // import { requestDefiLinks } from '../../../Redux/Actions';
-import {connect} from 'react-redux';
+import { TouchableOpacity } from 'react-native';
 import FastImage from 'react-native-fast-image';
-import {InputCustom} from '../../common/InputCustom';
-import {TouchableOpacity} from 'react-native';
-import {areaDimen, heightDimen, widthDimen} from '../../../Utils/themeUtils';
+import { connect } from 'react-redux';
+import { NavigationStrings } from '../../../Navigation/NavigationStrings';
+import { areaDimen, heightDimen, widthDimen } from '../../../Utils/themeUtils';
+import { getCurrentRouteName, goBack, navigate, reset } from '../../../navigationsService';
+import { InputCustom } from '../../common/InputCustom';
 
 class DefiAccessmainIOS extends Component {
   
@@ -48,10 +49,10 @@ class DefiAccessmainIOS extends Component {
   componentDidMount() {
 
     this.backHandle= BackHandler.addEventListener('hardwareBackPress',()=>{
-      if( Actions.currentScene=='DeFi'){
-        Actions.currentScene != 'Main' && Actions.reset("Main")
+      if( getCurrentRouteName()=='DeFi'){
+        getCurrentRouteName() != 'Main' && reset(NavigationStrings.Main)
       }else{
-        Actions.pop()
+        goBack()
       }
       return true
     })
@@ -78,12 +79,12 @@ class DefiAccessmainIOS extends Component {
       },
     );
 
-    this.props.navigation.addListener('didFocus', event => {
+    this.props.navigation.addListener('focus', event => {
       this.backHandle= BackHandler.addEventListener('hardwareBackPress',()=>{
-        if( Actions.currentScene=='DeFi'){
-          Actions.currentScene != 'Main' && Actions.reset("Main")
+        if( getCurrentRouteName()=='DeFi'){
+          getCurrentRouteName() != 'Main' && reset(NavigationStrings.Main)
         }else{
-          Actions.pop()
+          goBack()
         }
         return true
       })
@@ -146,7 +147,7 @@ class DefiAccessmainIOS extends Component {
         },
       );
     });
-    this.focus = this.props.navigation.addListener('didBlur', event => {
+    this.focus = this.props.navigation.addListener('blur', event => {
       this.backHandle?.remove()
       if (this.keyboardDidShowListener) {
         this.keyboardDidShowListener.remove();
@@ -155,7 +156,7 @@ class DefiAccessmainIOS extends Component {
         this.keyboardDidHideListener.remove();
       }
     });
-    this.props.navigation.addListener('didFocus', this.onScreenFocus);
+    this.props.navigation.addListener('focus', this.onScreenFocus);
   }
   componentWillUnmount() {
     this.backHandle?.remove()
@@ -291,8 +292,8 @@ class DefiAccessmainIOS extends Component {
                   Keyboard.dismiss();
                 }
               }
-              Actions.currentScene !== 'DappBrowser' &&
-                Actions.DappBrowser({
+              getCurrentRouteName() !== 'DappBrowser' &&
+              navigate(NavigationStrings.DappBrowser,{
                   url: url,
                   chain: this.state.isPrivate,
                   item: {
@@ -352,8 +353,8 @@ class DefiAccessmainIOS extends Component {
                   Keyboard.dismiss();
                 }
               }
-              Actions.currentScene !== 'DappBrowser' &&
-                Actions.DappBrowser({
+              getCurrentRouteName() !== 'DappBrowser' &&
+              navigate(NavigationStrings.DappBrowser,{
                   url: url,
                   chain: this.state.isPrivate,
                   item: {
@@ -448,8 +449,8 @@ class DefiAccessmainIOS extends Component {
                   <TouchableOpacity
                     style={[styles.listStyle]}
                     onPress={() => {
-                      Actions.currentScene !== 'DappBrowser' &&
-                        Actions.push('DappBrowser', {
+                      getCurrentRouteName() !== 'DappBrowser' &&
+                      navigate(NavigationStrings.DappBrowser, {
                           type: 'Decentralized Finance ',
                           url: item.url,
                           chain: this.state.isPrivate,
@@ -492,8 +493,8 @@ class DefiAccessmainIOS extends Component {
                         </Text>
                         <TouchableOpacity
                           onPress={() => {
-                            Actions.currentScene !== 'DappBrowser' &&
-                              Actions.push('DappBrowser', {
+                            getCurrentRouteName() !== 'DappBrowser' &&
+                            navigate(NavigationStrings.DappBrowser, {
                                 type: 'Decentralized Finance ',
                                 url: item.url,
                                 chain: this.state.isPrivate,
@@ -591,7 +592,7 @@ class DefiAccessmainIOS extends Component {
                         alertTxt={this.state.alertTxt3}
                         hideAlertDialog={() => {
                             this.setState({ showAlertDialog3: false });
-                            Actions.currentScene !== 'WalletMain' &&    Actions.jump('WalletMain');
+                            getCurrentRouteName() !== 'WalletMain' &&    Actions.jump('WalletMain');
                         }}
                     />
                 )} */}

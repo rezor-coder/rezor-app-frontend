@@ -2,6 +2,7 @@
  * @format
  */
 //  import "@ethersproject/shims"
+import './shim';
 import '@walletconnect/react-native-compat'
  import 'react-native-get-random-values'
 import 'react-native-gesture-handler'
@@ -14,6 +15,7 @@ import crypto from 'crypto'
 global.crypto = crypto
 import { name as appName } from './app.json';
 import * as Sentry from "@sentry/react-native";
+import { gestureHandlerRootHOC } from 'react-native-gesture-handler';
 if (typeof global.globalThis === 'undefined') {
   global.globalThis = Function('return this')();
 }
@@ -36,4 +38,4 @@ if (TextInput.defaultProps == null) {
 console.disableYellowBox = true
 
 
-AppRegistry.registerComponent(appName, () => Sentry.wrap(App));
+AppRegistry.registerComponent(appName, () => Sentry.wrap(gestureHandlerRootHOC(App)));

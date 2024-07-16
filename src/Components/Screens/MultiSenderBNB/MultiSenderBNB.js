@@ -1,57 +1,51 @@
 import React, { Component } from 'react';
 import {
-  View,
-  Image,
-  Text,
-  ScrollView,
-  SafeAreaView,
-  TouchableOpacity,
-  Modal,
   Alert,
+  Image,
+  Modal,
+  SafeAreaView,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
-import styles from './MultiSenderBNBStyle';
+import ReactNativeBiometrics from 'react-native-biometrics';
+import { EventRegister } from 'react-native-event-listeners';
+import FastImage from 'react-native-fast-image';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scrollview';
+import { connect } from 'react-redux';
+import Web3 from 'web3';
+import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
+import * as constants from '../../../Constant';
+import { NavigationStrings } from '../../../Navigation/NavigationStrings';
+import {
+  getBnbGasEstimate,
+  getBnbGasPrice,
+  getBnbNonce,
+  saveTxn,
+  sendBNB,
+} from '../../../Redux/Actions';
+import Singleton, {
+  bep20MultiSenderContractAddress,
+  multiSenderBnbContractAddress,
+} from '../../../Singleton';
+import { areaDimen, heightDimen, widthDimen } from '../../../Utils/themeUtils';
+import { getCurrentRouteName, goBack, navigate, reset } from '../../../navigationsService';
+import { Colors, Fonts, Images } from '../../../theme';
 import {
   BasicButton,
   BorderLine,
   ButtonPrimary,
   ButtonTransaction,
-  Header,
-  HeaderNew,
-  IndicatorCreatePin,
   Inputtext,
   KeyboardDigit,
   LightButton,
-  MainHeader,
-  PinBtns,
   PinInput,
   SimpleHeader,
-  Wrap,
+  Wrap
 } from '../../common';
-import { Fonts, Images, Colors } from '../../../theme';
-import * as constants from '../../../Constant';
-import { Actions } from 'react-native-router-flux';
-import Singleton, {
-  bep20MultiSenderContractAddress,
-  multiSenderBnbContractAddress,
-} from '../../../Singleton';
-import {
-  getBnbNonce,
-  getBnbGasPrice,
-  sendBNB,
-  getBnbGasEstimate,
-  saveTxn,
-} from '../../../Redux/Actions';
-import { connect } from 'react-redux';
 import Loader from '../Loader/Loader';
-import Web3 from 'web3';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scrollview';
-import ReactNativeBiometrics from 'react-native-biometrics';
-import Toast, { DURATION } from 'react-native-easy-toast';
-import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
-import SmoothPinCodeInput from 'react-native-smooth-pincode-input';
-import { areaDimen, heightDimen, widthDimen } from '../../../Utils/themeUtils';
-import FastImage from 'react-native-fast-image';
-import { EventRegister } from 'react-native-event-listeners';
+import styles from './MultiSenderBNBStyle';
 // export const multiSenderBnbContractAddress =
 //   constants.network == 'testnet'
 //     ? '0xEF3Cc16FAC12431799ae4ECc3b87BE5e9AD076e4'
@@ -118,7 +112,7 @@ class MultiSenderBNB extends Component {
           to_Address: this.props.selectedAddress,
         });
       });
-    csvData = this.props.csvArray;
+    csvData = this.props?.route?.params?.csvArray;
     let valueInCoin = 0;
     let toAddressMulti = '';
     csvData.map((item, index) => {
@@ -148,27 +142,27 @@ class MultiSenderBNB extends Component {
       amountArr.push(csvData[i].amount);
       //console.warn('MM',csvData[i].address);
     }
-    if (this.props.selectedCoin.coin_symbol.toLowerCase() == 'bnb') {
+    if (this.props?.route?.params?.selectedCoin.coin_symbol.toLowerCase() == 'bnb') {
       //console.warn('MM','hereeee');
       Singleton.getInstance()
         .getDataForMultiEth(
           addressArr,
           amountArr,
-          this.props.selectedCoin.coin_family,
+          this.props?.route?.params?.selectedCoin.coin_family,
           this.state.amountNew,
           Singleton.getInstance().defaultBnbAddress,
-          this.props.referralAddress,
+          this.props?.route?.params?.referralAddress,
         )
         .then(res => {
-          //  console.warn('MM','chk res bnb::::', res);
+           console.warn('MM','chk res bnb::::', res);
           this.setState({
             isLoading: false,
             amount: res?.amountAfterCommission,
             amountAfterCommission: res?.amountAfterCommission,
             dataEncoded: res.data,
-            gaslimitForTxn: res.gasLimit,
-            advancedGasLimit: res.gasLimit,
-            commissionAmt: res.commissionAmt,
+            gaslimitForTxn: (res.gasLimit || 0),
+            advancedGasLimit: (res.gasLimit || 0),
+            commissionAmt: res.commissionAmt || 0,
           });
           this.getBnbGasLimit(res);
         })
@@ -189,22 +183,22 @@ class MultiSenderBNB extends Component {
         .getDataForMultiEthToken(
           addressArr,
           amountArr,
-          this.props.selectedCoin.token_address,
-          this.props.selectedCoin.decimals,
-          this.props.selectedCoin.coin_family,
+          this.props?.route?.params?.selectedCoin.token_address,
+          this.props?.route?.params?.selectedCoin.decimals,
+          this.props?.route?.params?.selectedCoin.coin_family,
           this.state.amountNew,
           Singleton.getInstance().defaultBnbAddress,
-          this.props.referralAddress,
+          this.props?.route?.params?.referralAddress,
         )
         .then(res => {
-          //console.warn('MM','chk data for token:::BNB:', res);
+          console.warn('MM','chk data for token:::BNB:', res);
           this.setState({
             isLoading: false,
             dataEncoded: res.data,
             valueBnb: res.amountAfterCommission,
-            gaslimitForTxn: res.gasLimit,
-            advancedGasLimit: res.gasLimit,
-            commissionAmt: res.commissionAmt,
+            gaslimitForTxn: (res.gasLimit || 0),
+            advancedGasLimit: (res.gasLimit || 0),
+            commissionAmt: res.commissionAmt || 0,
           });
           this.getBnbGasLimit(res);
         })
@@ -229,24 +223,24 @@ class MultiSenderBNB extends Component {
     let blockChain = this.state.blockChain;
     let access_token = Singleton.getInstance().access_token;
     let contractAddress =
-      this.props.selectedCoin.coin_symbol.toLowerCase() == 'bnb'
+      this.props?.route?.params?.selectedCoin.coin_symbol.toLowerCase() == 'bnb'
         ? 'bnb'
-        : this.props.selectedCoin.token_address;
+        : this.props?.route?.params?.selectedCoin.token_address;
     this.props
       .getBnbGasEstimate({ blockChain, data, contractAddress, access_token })
       .then(response => {
-        //  console.warn('MM','response GAS--bnb ', response);
+         console.warn('MM','response GAS--bnb ', response);
         let slowGasPrice =
           parseFloat(response.resultList[0].safe_gas_price) * gwei_multi;
         let mediumGasPrice =
           parseFloat(response.resultList[0].propose_gas_price) * gwei_multi;
         let heightGasPrice =
           parseFloat(response.resultList[0].fast_gas_price) * gwei_multi;
-        let feeIs = slowGasPrice * res.gasLimit * this.state.gasFeeMultiplier;
-        //console.warn('MM','feeIs---- ', feeIs);
+        let feeIs = slowGasPrice * (res.gasLimit || 0) * this.state.gasFeeMultiplier;
+        console.warn('MM','feeIs---- ', feeIs);
         this.setState({
           gasPriceForTxn: slowGasPrice,
-          gaslimitForTxn: res.gasLimit,
+          gaslimitForTxn: (res.gasLimit || 0),
           gasPriceForTxnSlow: slowGasPrice,
           gasPriceForTxnMedium: mediumGasPrice,
           gasPriceForTxnHigh: heightGasPrice,
@@ -254,11 +248,11 @@ class MultiSenderBNB extends Component {
             .exponentialToDecimal(feeIs)
             .toString(),
           amountAfterCommission:
-            this.props.selectedCoin.coin_symbol.toLowerCase() == 'bnb'
+            this.props?.route?.params?.selectedCoin.coin_symbol.toLowerCase() == 'bnb'
               ? res.amountAfterCommission
               : this.state.amountNew,
           amount:
-            this.props.selectedCoin.coin_symbol.toLowerCase() == 'bnb'
+            this.props?.route?.params?.selectedCoin.coin_symbol.toLowerCase() == 'bnb'
               ? res.amountAfterCommission
               : this.state.amountNew,
           dataEncoded: res.data,
@@ -293,7 +287,7 @@ class MultiSenderBNB extends Component {
       );
     } else {
       Singleton.showAlert(
-        `Enter valid ${this.props.selectedCoin.coin_symbol.toUpperCase()} address`,
+        `Enter valid ${this.props?.route?.params?.selectedCoin.coin_symbol.toUpperCase()} address`,
       );
     }
   }
@@ -326,7 +320,7 @@ class MultiSenderBNB extends Component {
         if (success) {
           //console.warn('MM','successful biometrics provided');
           this.setState({ pinModal: false }, () => {
-            this.props.selectedCoin.coin_symbol.toLowerCase() == 'bnb'
+            this.props?.route?.params?.selectedCoin.coin_symbol.toLowerCase() == 'bnb'
               ? this.send_BNB()
               : this.send_BEP20();
           });
@@ -342,17 +336,17 @@ class MultiSenderBNB extends Component {
     this.setState({ isLoading: true });
     let access_token = Singleton.getInstance().access_token;
     let blockChain = this.state.blockChain;
-    let contractAddress = this.props.selectedCoin.token_address;
+    let contractAddress = this.props?.route?.params?.selectedCoin.token_address;
     let chainID = constants.network == 'testnet' ? 97 : 56;
     let coin_symbol = 'bnb';
     let wallet_address = Singleton.getInstance().defaultBnbAddress;
     let cmsnAmt = parseFloat(this.state.commissionAmt).toFixed(8);
 
-    //console.warn('MM','WALLET_ADDRESS===', wallet_address);
+    console.warn('MM','WALLET_ADDRESS===', wallet_address);
     this.props
       .getBnbNonce({ wallet_address, access_token, blockChain, coin_symbol })
       .then(nonce => {
-        //console.warn('MM','Chk bnb nonce::::::::', nonce);
+        console.warn('MM','Chk bnb nonce::::::::', nonce);
         Singleton.getInstance()
           .getsignRawTxnBnb(
             this.state.bnbPvtKey,
@@ -365,11 +359,11 @@ class MultiSenderBNB extends Component {
             this.state.dataEncoded,
           )
           .then(txn_raw => {
-            //console.warn('MM','chk txn_raw_bnb:::', txn_raw);
+            console.warn('MM','chk txn_raw_bnb:::', txn_raw);
             this.saveTxn(txn_raw.transactionHash, cmsnAmt);
           })
           .catch(err => {
-            //console.warn('MM','chk signed raw err::::::::::::', err);
+            console.warn('MM','chk signed raw err::::::::::::', err);
             this.setState({ isLoading: false });
           });
       })
@@ -382,7 +376,7 @@ class MultiSenderBNB extends Component {
     this.setState({ isLoading: true });
     let access_token = Singleton.getInstance().access_token;
     let blockChain = this.state.blockChain;
-    let contractAddress = this.props.selectedCoin.token_address;
+    let contractAddress = this.props?.route?.params?.selectedCoin.token_address;
     let chainID = constants.network == 'testnet' ? 97 : 56;
     let coin_symbol = 'bnb';
     let wallet_address = Singleton.getInstance().defaultBnbAddress;
@@ -390,7 +384,7 @@ class MultiSenderBNB extends Component {
     this.props
       .getBnbNonce({ wallet_address, access_token, blockChain, coin_symbol })
       .then(nonce => {
-        //console.warn('MM','Chk bnb nonce::::::::', nonce);
+        console.warn('MM','Chk bnb nonce::::::::', nonce);
         Singleton.getInstance()
           .getsignRawTxnBnb(
             this.state.bnbPvtKey,
@@ -403,16 +397,18 @@ class MultiSenderBNB extends Component {
             this.state.dataEncoded,
           )
           .then(txn_raw => {
-            //console.warn('MM','chk txn_raw_bnb_token:::', txn_raw);
+            console.warn('MM','chk txn_raw_bnb_token:::', txn_raw);
             this.saveTxn(txn_raw.transactionHash, cmsAmount);
           })
           .catch(err => {
-            //console.warn('MM','chk signed raw err::::::::::::', err);
+            Singleton.showAlert(err?.toString())
+            console.warn('MM','chk signed raw err::::::::::::', err);
             this.setState({ isLoading: false });
           });
       })
       .catch(err => {
-        //console.warn('MM','Chk bnb nonce err::::::::', err);
+        console.warn('MM','Chk bnb nonce err::::::::', err);
+        Singleton.showAlert(err?.toString())
       });
   }
   saveTxn(hash, cmsnAmt) {
@@ -432,9 +428,9 @@ class MultiSenderBNB extends Component {
     let access_token = Singleton.getInstance().access_token;
     let blockChain = this.state.blockChain;
     let coin_symbol =
-      this.props.selectedCoin.coin_symbol.toLowerCase() == 'bnb'
+      this.props?.route?.params?.selectedCoin.coin_symbol.toLowerCase() == 'bnb'
         ? 'bnb'
-        : this.props.selectedCoin.token_address;
+        : this.props?.route?.params?.selectedCoin.token_address;
     this.props
       .saveTxn({ data, access_token, blockChain, coin_symbol })
       .then(res => {
@@ -446,7 +442,7 @@ class MultiSenderBNB extends Component {
             {
               text: 'OK',
               onPress: () => {
-                Actions.currentScene != 'Main' && Actions.replace('Main');
+                getCurrentRouteName() != 'Main' && reset(NavigationStrings.Main);
               },
             },
           ],
@@ -472,7 +468,7 @@ class MultiSenderBNB extends Component {
         // this.checkPin(this.state.pin + item);
         // if (pin == this.state.existingPin) {
         //   this.setState({ pinModal: false }, () => {
-        //     this.props.selectedCoin.coin_symbol.toLowerCase() == 'eth'
+        //     this.props?.route?.params?.selectedCoin.coin_symbol.toLowerCase() == 'eth'
         //       ? this.send_ETH()
         //       : this.send_ERC20();
         //   });
@@ -509,7 +505,7 @@ class MultiSenderBNB extends Component {
           //   this.setState({pinModal: false});
 
           this.setState({ pinModal: false }, () => {
-            this.props.selectedCoin.coin_symbol.toLowerCase() == 'bnb'
+            this.props?.route?.params?.selectedCoin.coin_symbol.toLowerCase() == 'bnb'
               ? this.send_BNB()
               : this.send_BEP20();
           });
@@ -971,7 +967,7 @@ class MultiSenderBNB extends Component {
                         alignItems: 'center', // Vertical direction
                       }}>
                       <FastImage
-                        source={{ uri: this.props.selectedCoin.coin_image }}
+                        source={{ uri: this.props?.route?.params?.selectedCoin.coin_image }}
                         style={styles.iconImageStyle}
                         resizeMode={FastImage.resizeMode.contain}
                       />
@@ -980,7 +976,7 @@ class MultiSenderBNB extends Component {
                           styles.balanceLabelStyle,
                           { color: ThemeManager.colors.lightTextColor },
                         ]}>
-                        {this.props.selectedCoin.coin_symbol.toUpperCase() +
+                        {this.props?.route?.params?.selectedCoin.coin_symbol.toUpperCase() +
                           ' ' +
                           'Balance'}
                       </Text>
@@ -992,7 +988,7 @@ class MultiSenderBNB extends Component {
                         { color: ThemeManager.colors.textColor },
                       ]}>
                       {Singleton.getInstance().toFixed(
-                        this.props.selectedCoin.balance,
+                        this.props?.route?.params?.selectedCoin.balance,
                         5,
                       )}
                     </Text>
@@ -1021,7 +1017,7 @@ class MultiSenderBNB extends Component {
                         alignItems: 'center', // Vertical direction
                       }}>
                       <FastImage
-                        source={{ uri: this.props.selectedCoin.coin_image }}
+                        source={{ uri: this.props?.route?.params?.selectedCoin.coin_image }}
                         style={styles.iconImageStyle}
                         resizeMode={FastImage.resizeMode.contain}
                       />
@@ -1034,7 +1030,7 @@ class MultiSenderBNB extends Component {
                       </Text>
                     </View>
 
-                    {this.props.selectedCoin.coin_symbol.toUpperCase() ==
+                    {this.props?.route?.params?.selectedCoin.coin_symbol.toUpperCase() ==
                       'BNB' && (
                         <Text
                           style={[
@@ -1044,11 +1040,11 @@ class MultiSenderBNB extends Component {
                           {
                             Singleton.getInstance().toFixed(this.state.amount, 8)
                             // +  ' ' +
-                            //   this.props.selectedCoin.coin_symbol.toUpperCase()
+                            //   this.props?.route?.params?.selectedCoin.coin_symbol.toUpperCase()
                           }
                         </Text>
                       )}
-                    {this.props.selectedCoin.coin_symbol.toUpperCase() !=
+                    {this.props?.route?.params?.selectedCoin.coin_symbol.toUpperCase() !=
                       'BNB' && (
                         <Text
                           style={[
@@ -1061,7 +1057,7 @@ class MultiSenderBNB extends Component {
                               8,
                             ) +
                             // ' ' +
-                            // this.props.selectedCoin.coin_symbol.toUpperCase() +
+                            // this.props?.route?.params?.selectedCoin.coin_symbol.toUpperCase() +
                             ' + ' +
                             parseFloat(
                               this.state.commissionAmt / 10 ** 18,
@@ -1087,11 +1083,11 @@ class MultiSenderBNB extends Component {
                       { color: ThemeManager.colors.textColor },
                     ]}>
                     {Singleton.getInstance().toFixed(
-                      this.props.selectedCoin.balance,
+                      this.props?.route?.params?.selectedCoin.balance,
                       5,
                     ) +
                       ' ' +
-                      this.props.selectedCoin.coin_symbol.toUpperCase()}
+                      this.props?.route?.params?.selectedCoin.coin_symbol.toUpperCase()}
                   </Text>
                 </View> */}
 
@@ -1131,8 +1127,8 @@ class MultiSenderBNB extends Component {
                         alignItems: 'center',
                       }}
                       onPress={() => {
-                        Actions.currentScene != 'Recipient' &&
-                          Actions.Recipient({ csvData: csvData });
+                        getCurrentRouteName() != 'Recipient' &&
+                        navigate(NavigationStrings.Recipient,{ csvData: csvData });
                       }}>
                       {csvData.length > 1 && (
                         <Text
@@ -1196,7 +1192,7 @@ class MultiSenderBNB extends Component {
                   )}
                   <TouchableOpacity
                     onPress={() => {
-                      Actions.currentScene != 'Recipient' &&
+                      getCurrentRouteName() != 'Recipient' &&
                         Actions.Recipient({ csvData: csvData });
                     }}>
                     {csvData.length > 1 && (
@@ -1219,7 +1215,7 @@ class MultiSenderBNB extends Component {
                     ]}>
                     Total Amount
                   </Text>
-                  {this.props.selectedCoin.coin_symbol.toUpperCase() ==
+                  {this.props?.route?.params?.selectedCoin.coin_symbol.toUpperCase() ==
                     'BNB' && (
                       <Text
                         style={[
@@ -1228,10 +1224,10 @@ class MultiSenderBNB extends Component {
                         ]}>
                         {Singleton.getInstance().toFixed(this.state.amount, 8) +
                           ' ' +
-                          this.props.selectedCoin.coin_symbol.toUpperCase()}
+                          this.props?.route?.params?.selectedCoin.coin_symbol.toUpperCase()}
                       </Text>
                     )}
-                  {this.props.selectedCoin.coin_symbol.toUpperCase() !=
+                  {this.props?.route?.params?.selectedCoin.coin_symbol.toUpperCase() !=
                     'BNB' && (
                       <Text
                         style={[
@@ -1240,7 +1236,7 @@ class MultiSenderBNB extends Component {
                         ]}>
                         {Singleton.getInstance().toFixed(this.state.amount, 8) +
                           ' ' +
-                          this.props.selectedCoin.coin_symbol.toUpperCase() +
+                          this.props?.route?.params?.selectedCoin.coin_symbol.toUpperCase() +
                           ' + ' +
                           parseFloat(
                             this.state.commissionAmt / 10 ** 18,
@@ -1258,7 +1254,7 @@ class MultiSenderBNB extends Component {
                   customGradient={styles.customGrad}
                 />
                 <LightButton
-                  onPress={() => Actions.pop()}
+                  onPress={() => goBack()}
                   btnStyle={styles.cancelBtnStyle}
                   customGradient={styles.customGrad}
                   text="Cancel"

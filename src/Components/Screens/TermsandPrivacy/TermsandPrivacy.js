@@ -1,33 +1,26 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, { Component } from 'react';
 import {
-  TouchableOpacity,
-  FlatList,
-  Image,
-  ScrollView,
-  SafeAreaView,
   BackHandler,
-  View,
   Linking,
   Text,
+  View
 } from 'react-native';
-import styles from './TermsandPrivacyStyle';
-import {
-  SecuritySwitch,
-  SimpleHeader,
-  Wrap,
-  SecurityLink,
-  CheckBox,
-  BorderLine,
-} from '../../common';
-import { Fonts, Images, Colors } from '../../../theme';
-import { Actions } from 'react-native-router-flux';
-import Singleton from '../../../Singleton';
+import { ThemeManager } from '../../../../ThemeManager';
 import * as constants from '../../../Constant';
-import { SettingBar } from '../../common/SettingBar';
-import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
-import { color } from 'react-native-reanimated';
+import { NavigationStrings } from '../../../Navigation/NavigationStrings';
+import Singleton from '../../../Singleton';
+import { getCurrentRouteName, navigate } from '../../../navigationsService';
+import { Fonts } from '../../../theme';
+import {
+  BorderLine,
+  CheckBox,
+  SecurityLink,
+  SimpleHeader,
+  Wrap
+} from '../../common';
 import { ButtonPrimary } from '../../common/ButtonPrimary';
+import styles from './TermsandPrivacyStyle';
 class TermsandPrivacy extends Component {
   constructor(props) {
     super(props);
@@ -42,8 +35,8 @@ class TermsandPrivacy extends Component {
     //   enablePin == 'false' ? this.setState({ isEnabled: false }) : this.setState({ isEnabled: false })
     // })
     constants.isFirstTime = true;
-    this.props.navigation.addListener('didFocus', this.screenFocus);
-    this.props.navigation.addListener('didBlur', this.screenBlur);
+    this.props.navigation.addListener('focus', this.screenFocus);
+    this.props.navigation.addListener('blur', this.screenBlur);
   }
   screenBlur = () => {
     BackHandler.removeEventListener('hardwareBackPress', this.backAction);
@@ -62,7 +55,7 @@ class TermsandPrivacy extends Component {
       Singleton.showAlert('Please agree to terms and condtions.');
       return;
     } else {
-      Actions.currentScene != 'SelectLanguage' && Actions.SelectLanguage();
+      getCurrentRouteName() != 'SelectLanguage' && navigate(NavigationStrings.SelectLanguage);
     }
   };
 
@@ -78,7 +71,7 @@ class TermsandPrivacy extends Component {
             imageShow={false}
             back={false}
             backPressed={() =>
-              Actions.currentScene != 'Settings' && Actions.Settings()
+              getCurrentRouteName() != 'Settings' && navigate(NavigationStrings.Settings)
             }
             title={'Legal'}
           />

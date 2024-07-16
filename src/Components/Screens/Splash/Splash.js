@@ -1,22 +1,21 @@
-import React, { useContext, useEffect } from 'react';
-import { Platform, SafeAreaView, NativeModules, BackHandler, View, Image, Dimensions, Text, useColorScheme } from 'react-native';
-import { ActionConst, Actions } from 'react-native-router-flux';
-import Singleton from '../../../Singleton';
-import images from '../../../theme/Images';
-import { MainStatusBar } from '../../common';
-import * as Constants from '../../../Constant';
-import LottieView from 'lottie-react-native';
-import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
-import { Alert } from 'react-native';
-import DeviceInfo from 'react-native-device-info';
-import { storageKeys } from '../../../utils';
 import JailMonkey from 'jail-monkey';
-import { createWallet, } from '../../../Redux/Actions';
-import { useDispatch } from 'react-redux';
-import LinearGradient from 'react-native-linear-gradient';
-import { areaDimen, heightDimen, widthDimen } from '../../../Utils/themeUtils';
-import { Fonts } from '../../../theme';
+import React, { useEffect } from 'react';
+import { Alert, BackHandler, Image, SafeAreaView, Text, View } from 'react-native';
+import DeviceInfo from 'react-native-device-info';
 import { EventRegister } from 'react-native-event-listeners';
+import LinearGradient from 'react-native-linear-gradient';
+import { useDispatch } from 'react-redux';
+import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
+import * as Constants from '../../../Constant';
+import { NavigationStrings } from '../../../Navigation/NavigationStrings';
+import { createWallet, } from '../../../Redux/Actions';
+import Singleton from '../../../Singleton';
+import { areaDimen, heightDimen, widthDimen } from '../../../Utils/themeUtils';
+import { getCurrentRouteName, navigate, reset } from '../../../navigationsService';
+import { Fonts } from '../../../theme';
+import images from '../../../theme/Images';
+import { storageKeys } from '../../../utils';
+import { MainStatusBar } from '../../common';
 
 let buildNumber = DeviceInfo.getVersion();
 const Splash = props => {
@@ -432,15 +431,15 @@ const Splash = props => {
             setTimeout(() => {
               if (res == 1) {
                 if (!enablePin) {
-                  Actions.Main({ type: ActionConst.RESET });
+                  reset(NavigationStrings.Main);
                   return;
                 } else {
-                  Actions.replace('ConfirmPin', { isFrom: 'splash' });
+                  navigate(NavigationStrings.ConfirmPin, { isFrom: 'splash' });
                   return;
                 }
               } else {
                 Singleton.getInstance().newSaveData(Constants.UPDATE_PRIVATE_KEY, '1')
-                Actions.currentScene != 'WelcomeScreen' && Actions.WelcomeScreen({ type: ActionConst.RESET });
+                getCurrentRouteName() != 'WelcomeScreen' &&  reset(NavigationStrings.WelcomeScreen);
               }
             }, 2000);
           })

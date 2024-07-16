@@ -8,7 +8,7 @@ import AddTokenReducer from './AddTokenReducer';
 import MultiWalletCreateWalletReducer from './MultiWalletCreateWalletReducer';
 import WalletConnectReducer from './WalletConnectReducer';
 import SwapReducer from './SwapReducer';
-
+import SaitaCardReducer from './SaitaCardReducer'
 const appReducer = combineReducers({
   mnemonicreateReducer: MnemonicCreateReducer,
   createWalletReducer: CreateWalletReducer,
@@ -17,7 +17,8 @@ const appReducer = combineReducers({
   AddTokenReducer: AddTokenReducer,
   MultiWalletCreateWalletReducer: MultiWalletCreateWalletReducer,
   walletConnectReducer:WalletConnectReducer,
-  swapReducer:SwapReducer
+  swapReducer:SwapReducer,
+  saitaCardReducer:SaitaCardReducer
 });
 
 export default rootReducer = (state, action) => {

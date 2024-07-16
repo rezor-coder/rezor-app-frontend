@@ -392,3 +392,4 @@ ScC/xR+ChGQMepwx2APkYOT2zvp2RdhqARKWViUf/nM=
 // lpkQfI1KvRI8ngjIbwIDAQAB
 // -----END PUBLIC KEY-----
 // `
+export const USER_DATA = 'userData'

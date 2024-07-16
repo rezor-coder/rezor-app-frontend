@@ -1,26 +1,20 @@
+import moment from 'moment';
 import React, { Component } from 'react';
 import {
-  View,
-  Text,
-  Image,
-  TouchableOpacity,
-  SafeAreaView,
-  Linking,
-  Dimensions,
   BackHandler,
+  SafeAreaView,
+  Text,
+  View
 } from 'react-native';
-import styles from './CardHistoryDetailStyle';
-import { Actions, ActionConst } from 'react-native-router-flux';
-import { Images, Colors, Fonts } from '../../../theme';
-import Singleton from '../../../Singleton';
-import * as Constants from '../../../Constant';
 import { connect } from 'react-redux';
-import moment from 'moment';
-import { Wrap, SimpleHeader, BorderLine } from '../../common';
-import Loader from '../Loader/Loader';
-import { getTransactionDetail } from '../../../Redux/Actions';
-import FastImage from 'react-native-fast-image';
 import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
+import { getTransactionDetail } from '../../../Redux/Actions';
+import Singleton from '../../../Singleton';
+import { Colors } from '../../../theme';
+import { BorderLine, SimpleHeader, Wrap } from '../../common';
+import Loader from '../Loader/Loader';
+import styles from './CardHistoryDetailStyle';
+import { goBack } from '../../../navigationsService';
 class CardHistoryDetail extends Component {
   constructor(props) {
     super(props);
@@ -32,18 +26,18 @@ class CardHistoryDetail extends Component {
   }
   componentDidMount() {
     global.isCamera = false;
-    //console.warn('MM','Chk txnData::::::::::::', this.props.selectedItem);
-    this.props.navigation.addListener('didFocus', () => {
+    //console.warn('MM','Chk txnData::::::::::::', this.props?.route?.params?.selectedItem);
+    this.props.navigation.addListener('focus', () => {
       BackHandler.addEventListener('hardwareBackPress', this.backAction);
     });
-    this.props.navigation.addListener('didBlur', this.screenBlur);
+    this.props.navigation.addListener('blur', this.screenBlur);
   }
   screenBlur = () => {
     BackHandler.removeEventListener('hardwareBackPress', this.backAction);
   };
   backAction = () => {
     //console.warn('MM','i detail');
-    Actions.pop();
+    goBack();
     return true;
   };
 
@@ -91,7 +85,7 @@ class CardHistoryDetail extends Component {
     }
   }
   render() {
-    let date = new Date((this.props.selectedItem?.item?.transaction_date - 12600 )* 1000)
+    let date = new Date((this.props?.route?.params?.selectedItem?.item?.transaction_date - 12600 )* 1000)
     return (
       <>
         <Wrap style={{ backgroundColor: ThemeManager.colors.backgroundColor }}>
@@ -131,7 +125,7 @@ class CardHistoryDetail extends Component {
                   styles.newtextStyle,
                   { marginLeft: 0, color: ThemeManager.colors.textColor },
                 ]}>
-                {this.getStatus(this.props.selectedItem?.item?.status)}
+                {this.getStatus(this.props?.route?.params?.selectedItem?.item?.status)}
               </Text>
             </View>
 
@@ -147,14 +141,14 @@ class CardHistoryDetail extends Component {
                     styles.newtextStyle,
                     { marginLeft: 10, color: ThemeManager.colors.textColor },
                   ]}>
-                  {this.gettxStatus(this.props.selectedItem?.item?.type)}:
+                  {this.gettxStatus(this.props?.route?.params?.selectedItem?.item?.type)}:
                 </Text>
                 <Text
                   style={[
                     styles.newtextStyle,
                     { marginLeft: 0, color: ThemeManager.colors.textColor },
                   ]}>
-                  {Singleton.getInstance().toFixednew(this.props.selectedItem?.item?.debit > 0 ? this.props.selectedItem?.item?.debit : this.props.selectedItem?.item?.credit, 2)} {this.props?.card_currency}
+                  {Singleton.getInstance().toFixednew(this.props?.route?.params?.selectedItem?.item?.debit > 0 ? this.props?.route?.params?.selectedItem?.item?.debit : this.props?.route?.params?.selectedItem?.item?.credit, 2)} {this.props?.route?.params?.card_currency}
                 </Text>
               </View>
 
@@ -164,7 +158,7 @@ class CardHistoryDetail extends Component {
                     styles.newtextStyle,
                     { marginLeft: 0, color: ThemeManager.colors.textColor },
                   ]}>
-                  Transaction Id: {this.props.selectedItem?.item?.tx_id}
+                  Transaction Id: {this.props?.route?.params?.selectedItem?.item?.tx_id}
                 </Text>
 
               </View>

@@ -63,6 +63,25 @@ const Colors = {
   red_dark: '#F90000',
   saitabg:'#4D68FF',
   grayTextColor: '#7F7F7F',
+  bgBlack:'#212121',
+  bgWhite:'#fff',
+  purple:'#8F5BFF',
+  blackLight:'#484848',
+  lightGrey:'#7A7A7A',
+  lightGray2:'#F6F6F6',
+  royalBlue:'#4569BB',
+  midnightBlue:'#1A418A',
+  lightRedColor:'#FCF2F3',
+  cottonCandyPink:'#FFC5CB',
+  cardBgColor:'#F1F1F1',
+  darkGreen:'#217D00',
+  darkYellow:'#F6CD26',
+  lightBlue:'#C5D6F6',
+  skyBlue:'#E4ECF8',
+  powderBlue:'#BED1EE',
+  borderColor:'#E6EBF1'
+  
+  
 };
 
 export default Colors;

@@ -1,46 +1,44 @@
 /* eslint-disable react/self-closing-comp */
 /* eslint-disable handle-callback-err */
 /* eslint-disable react-native/no-inline-styles */
-import React, {useState, createRef, useEffect} from 'react';
+import React, { createRef, useEffect, useState } from 'react';
 import {
-  View,
-  Text,
-  TouchableOpacity,
-  Image,
   Alert,
   BackHandler,
+  Image,
+  Keyboard,
   Linking,
   Platform,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
-import {Actions} from 'react-native-router-flux';
-import styles from './GetSupportStyle';
-import {Colors, Images} from '../../../theme';
-import {
-  ButtonPrimary,
-  BasicInputBox,
-  Wrap,
-  ThankYouModal,
-  SimpleHeader,
-  BasicButton,
-  BorderLine,
-} from '../../common';
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-import {connect} from 'react-redux';
+import ActionSheet from 'react-native-actionsheet';
+import ImagePicker from 'react-native-image-crop-picker';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { connect } from 'react-redux';
+import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
+import { APP_NAME, VALID_NAME_CONTACT } from '../../../Constant';
+import { NavigationStrings } from '../../../Navigation/NavigationStrings';
 import {
   saveSupportRequest,
   uploadImage,
 } from '../../../Redux/Actions/SupportRequestAction';
 import Singleton from '../../../Singleton';
-import Loader from '../Loader/Loader';
-import {APP_NAME, VALID_NAME_CONTACT} from '../../../Constant';
-import {validateEmail} from '../../../utils';
-import ImagePicker from 'react-native-image-crop-picker';
-import ActionSheet from 'react-native-actionsheet';
-import {LanguageManager, ThemeManager} from '../../../../ThemeManager';
-import * as Constants from '../../../Constant';
+import { areaDimen, heightDimen, widthDimen } from '../../../Utils/themeUtils';
+import { getCurrentRouteName, goBack, navigate } from '../../../navigationsService';
+import { Colors, Images } from '../../../theme';
 import fonts from '../../../theme/Fonts';
-import {areaDimen, heightDimen, widthDimen} from '../../../Utils/themeUtils';
-import {Keyboard, KeyboardEvent} from 'react-native';
+import {
+  BasicButton,
+  BasicInputBox,
+  BorderLine,
+  SimpleHeader,
+  ThankYouModal,
+  Wrap
+} from '../../common';
+import Loader from '../Loader/Loader';
+import styles from './GetSupportStyle';
 const GetSupport = props => {
   const [keyboardHeight, setKeyboardHeight] = useState(0);
   const [modalVisible, setModalVisible] = useState(false);
@@ -57,7 +55,7 @@ const GetSupport = props => {
 
   useEffect(() => {
     const backAction = () => {
-      Actions.pop();
+      goBack();
       return true;
     };
 
@@ -165,7 +163,7 @@ const GetSupport = props => {
         Linking.openURL(
           `mailto:info@saitachain.com?subject=${subject}&body=Name: ${name}\nMessage: ${message}\nWalletAddress: ${walletAddress}\nLink: ${transactionLinks}\nImage: ${selectedImageUrl}`,
         );
-        Actions.pop();
+        goBack();
       })
       .catch(err => {
         Alert.alert(
@@ -175,7 +173,7 @@ const GetSupport = props => {
             {
               text: 'OK',
               onPress: () => {
-                Actions.currentScene != 'Dashboard' && Actions.Dashboard();
+                getCurrentRouteName() != 'Dashboard' && navigate(NavigationStrings.Dashboard);
               },
             },
           ],
@@ -433,7 +431,7 @@ const GetSupport = props => {
             }}>
             <TouchableOpacity
               onPress={() =>
-                Actions.currentScene != 'Dashboard' && Actions.Dashboard()
+                getCurrentRouteName() != 'Dashboard' && navigate(NavigationStrings.Dashboard)
               }
               style={{
                 height: widthDimen(60),

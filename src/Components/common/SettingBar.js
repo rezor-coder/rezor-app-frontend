@@ -70,7 +70,7 @@ const SettingBar = props => {
               {props.showRightImage == false ? (
                 <Text></Text>
               ) : (
-                <FastImage source={props.rightImage} style={styles.rightImg} />
+                <FastImage source={props.rightImage} style={styles.rightImg}  resizeMode={FastImage.resizeMode.contain} />
               )}
             </>
           ) : (
@@ -79,6 +79,7 @@ const SettingBar = props => {
                 <FastImage
                   source={props.detailIcon}
                   style={[styles.detailImg]}
+                  resizeMode={FastImage.resizeMode.contain}
                 />
               )}
               {props.isDetailText && (
@@ -96,6 +97,7 @@ const SettingBar = props => {
                   styles.arwImg,
                 ]}
                 tintColor={ThemeManager.colors.lightTextColor}
+                resizeMode={FastImage.resizeMode.contain}
               />
             </View>
           )}

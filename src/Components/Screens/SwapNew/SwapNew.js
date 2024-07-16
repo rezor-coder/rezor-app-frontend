@@ -1,13 +1,14 @@
-import React, {useState, useEffect } from 'react';
-import {View, StyleSheet, Text,BackHandler} from 'react-native';
-import {Actions} from 'react-native-router-flux';
-import {ThemeManager, LanguageManager} from '../../../../ThemeManager';
-import Singleton from '../../../Singleton';
-import {Wrap, SimpleHeaderNew, BorderLine} from '../../common';
-import SwapSelected from '../SwapSelected/SwapSelected';
+import React, { useEffect, useState } from 'react';
+import { BackHandler, StyleSheet, Text, View } from 'react-native';
+import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
 import * as constants from '../../../Constant';
-import {areaDimen, heightDimen, widthDimen} from '../../../Utils/themeUtils';
-import {Colors, Fonts} from '../../../theme';
+import { NavigationStrings } from '../../../Navigation/NavigationStrings';
+import Singleton from '../../../Singleton';
+import { areaDimen, heightDimen, widthDimen } from '../../../Utils/themeUtils';
+import { getCurrentRouteName, goBack, navigate, reset } from '../../../navigationsService';
+import { Colors, Fonts } from '../../../theme';
+import { BorderLine, SimpleHeaderNew, Wrap } from '../../common';
+import SwapSelected from '../SwapSelected/SwapSelected';
 const SwapNew = props => {
   const [showSwap, setShowSwap] = useState(false);
   useEffect(() => {
@@ -24,19 +25,19 @@ const SwapNew = props => {
   useEffect(() => {
     let backHandle
     backHandle= BackHandler.addEventListener('hardwareBackPress',()=>{
-      if( Actions.currentScene=='Trade'){
-        Actions.currentScene != 'Main' && Actions.reset("Main")
+      if( getCurrentRouteName()=='Trade'){
+        getCurrentRouteName() != 'Main' && reset(NavigationStrings.Main)
       }else{
-        Actions.pop()
+        goBack()
       }
       return true
     })
-    let focus = props.navigation.addListener('didFocus', () => {
+    let focus = props.navigation.addListener('focus', () => {
       backHandle= BackHandler.addEventListener('hardwareBackPress',()=>{
-        if( Actions.currentScene=='Trade'){
-          Actions.currentScene != 'Main' && Actions.reset("Main")
+        if( getCurrentRouteName()=='Trade'){
+          getCurrentRouteName() != 'Main' && reset(NavigationStrings.Main)
         }else{
-          Actions.pop()
+          goBack()
         }
         return true
       })
@@ -54,13 +55,13 @@ const SwapNew = props => {
           }
         });
     });
-    let blur = props.navigation.addListener('didBlur', () => {
+    let blur = props.navigation.addListener('blur', () => {
       backHandle?.remove();
     })
     return () => {
       backHandle?.remove();
-      blur?.remove();
-      focus?.remove();
+      blur();
+      focus();
     };
   }, [props]);
   const onBackPressed=() => {
@@ -68,8 +69,8 @@ const SwapNew = props => {
   }
   const onPressSettings=() => {
     if(showSwap){
-      Actions.currentScene != 'SwapSettings' &&
-      Actions.SwapSettings({
+      getCurrentRouteName() != 'SwapSettings' &&
+      navigate(NavigationStrings.SwapSettings,{
         onGoBack: data => {},
       })
     }

@@ -1,37 +1,25 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, {useState, useEffect, useContext} from 'react';
+import React from 'react';
 import {
-  View,
+  Dimensions,
+  Image,
+  ImageBackground,
   Text,
   TouchableOpacity,
-  Image,
-  Linking,
-  ImageBackground,
-  Dimensions,
-  ScrollView,
+  View
 } from 'react-native';
-import {Actions} from 'react-native-router-flux';
+import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
 import {
-  MainStatusBar,
-  BasicButton,
   Header,
-  Wrap,
-  CheckBox,
-  SecurityLink,
-  ImageBackgroundComponent,
+  MainStatusBar
 } from '../../common/index';
 import styles from './WelcomeScreenStyle';
-import {LanguageManager, ThemeManager} from '../../../../ThemeManager';
-import Singleton from '../../../Singleton';
-import * as Constants from '../../../Constant';
-import LottieView from 'lottie-react-native';
 
-import {Fonts, Images, Colors} from '../../../theme';
+import { Fonts, Images } from '../../../theme';
 // import {ScrollView} from 'react-native-gesture-handler';
-import {ifIphoneX} from 'react-native-iphone-x-helper';
-import {areaDimen, heightDimen, widthDimen} from '../../../Utils/themeUtils';
-import LinearGradient from 'react-native-linear-gradient';
-import { useDispatch } from 'react-redux';
+import { NavigationStrings } from '../../../Navigation/NavigationStrings';
+import { areaDimen, widthDimen } from '../../../Utils/themeUtils';
+import { getCurrentRouteName, navigate } from '../../../navigationsService';
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
@@ -42,7 +30,7 @@ const WelcomeScreen = props => {
     return (
       <TouchableOpacity
         onPress={() => {
-          Actions.currentScene != 'SelectLanguage' && Actions.SelectLanguage();
+          getCurrentRouteName() != 'SelectLanguage' && navigate(NavigationStrings.SelectLanguage);
         }}
         activeOpacity={1}
         style={[

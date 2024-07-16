@@ -1,16 +1,15 @@
 import {
+  BACKUPMNEMONIC_FORM_UPDATE,
   CREATEMNEMONIC_FORM_UPDATE,
+  REGISTER_FORM_RESET,
+  REGISTER_USER,
   REGISTER_USER_FAIL,
   REGISTER_USER_SUCCESS,
-  REGISTER_USER,
-  REGISTER_FORM_RESET,
-  BACKUPMNEMONIC_FORM_UPDATE,
 } from './types';
 // import { APIClient } from '../../Api';
 // import { REGISTER_URL } from '../../Endpoints';
 // import * as Constants from '../../Constant';
 import Singleton from '../../Singleton';
-import { Actions, ActionConst } from 'react-native-router-flux';
 
 /**************************************Update prop values ****************************************************/
 export const createMnemonicsFormUpdate = ({ prop, value }) => {
@@ -150,5 +149,5 @@ const registerUserSuccess = (dispatch, user) => {
     type: REGISTER_USER_SUCCESS,
     payload: user,
   });
-  // Actions.currentScene != 'Main' && Actions.Main()
+  // getCurrentRouteName() != 'Main' && Actions.Main()
 };

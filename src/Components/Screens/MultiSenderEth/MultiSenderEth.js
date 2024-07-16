@@ -2,61 +2,47 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, { Component } from 'react';
 import {
-  View,
-  Image,
-  Text,
-  ScrollView,
-  SafeAreaView,
-  Dimensions,
-  FlatList,
-  TouchableOpacity,
-  Keyboard,
-  Platform,
-  PermissionsAndroid,
-  Linking,
-  Modal,
   Alert,
+  Image,
+  Modal,
+  SafeAreaView,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View
 } from 'react-native';
-import styles from './MultiSenderEthStyle';
+import FastImage from 'react-native-fast-image';
+import { connect } from 'react-redux';
+import * as constants from '../../../Constant';
+import { sendETH } from '../../../Redux/Actions';
+import Singleton, {
+  erc20MultiSenderContractAddress,
+  multiSenderContractAddress,
+} from '../../../Singleton';
+import { Colors, Fonts, Images } from '../../../theme';
 import {
   BasicButton,
   BorderLine,
   ButtonPrimary,
-  Header,
-  HeaderNew,
-  IndicatorCreatePin,
   Inputtext,
-  InputtextAddress,
-  InputtextSearch,
   KeyboardDigit,
   LightButton,
-  MainHeader,
-  PinBtns,
   PinInput,
   SimpleHeader,
-  Wrap,
+  Wrap
 } from '../../common';
-import { Fonts, Images, Colors } from '../../../theme';
-import * as constants from '../../../Constant';
-import Toast, { DURATION } from 'react-native-easy-toast';
-import { Actions } from 'react-native-router-flux';
-import Singleton, {
-  multiSenderContractAddress,
-  erc20MultiSenderContractAddress,
-} from '../../../Singleton';
-import { sendETH } from '../../../Redux/Actions';
-import { connect } from 'react-redux';
 import Loader from '../Loader/Loader';
-import FastImage from 'react-native-fast-image';
+import styles from './MultiSenderEthStyle';
 
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scrollview';
-import { getEthBaseFee, getTotalGasFee } from '../../../utils';
 import ReactNativeBiometrics from 'react-native-biometrics';
-import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
-import SmoothPinCodeInput from 'react-native-smooth-pincode-input';
-import Web3 from 'web3';
-import { areaDimen, heightDimen, widthDimen } from '../../../Utils/themeUtils';
 import { EventRegister } from 'react-native-event-listeners';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scrollview';
+import Web3 from 'web3';
+import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
+import { NavigationStrings } from '../../../Navigation/NavigationStrings';
+import { areaDimen, heightDimen, widthDimen } from '../../../Utils/themeUtils';
+import { getCurrentRouteName, goBack, navigate, reset } from '../../../navigationsService';
+import { getEthBaseFee, getTotalGasFee } from '../../../utils';
 // export const multiSenderContractAddress =
 //   constants.network == 'testnet'
 //     ?"0x34fd17651CC48C7e3A0C31E5ea3152de075C4529"
@@ -78,7 +64,7 @@ class MultiSenderEth extends Component {
       isError: null,
       amountNew: 0.0,
       toAddress: '',
-      selectedCoin: props?.selectedCoin,
+      selectedCoin: props?.route?.params?.selectedCoin,
       isLoading: false,
       gasPriceForTxn: 1000000000,
       gaslimitForTxn: 21000,
@@ -123,7 +109,7 @@ class MultiSenderEth extends Component {
       .then(pin => {
         this.setState({ existingPin: pin });
       });
-    csvData = this.props.csvArray;
+    csvData = this.props?.route?.params?.csvArray;
     let valueInCoin = 0;
     let toAddressMulti = '';
     csvData.map((item, index) => {
@@ -174,7 +160,7 @@ class MultiSenderEth extends Component {
       );
     } else {
       Singleton.showAlert(
-        `Enter valid ${this.props.selectedCoin.coin_symbol.toUpperCase()} address`,
+        `Enter valid ${this.props.route?.params?.selectedCoin.coin_symbol.toUpperCase()} address`,
       );
     }
   }
@@ -208,7 +194,7 @@ class MultiSenderEth extends Component {
         if (success) {
           //console.warn('MM','successful biometrics provided');
           this.setState({ pinModal: false }, () => {
-            this.props.selectedCoin.coin_symbol.toLowerCase() == 'eth'
+            this.props.route?.params?.selectedCoin.coin_symbol.toLowerCase() == 'eth'
               ? this.send_ETH()
               : this.send_ERC20();
           });
@@ -229,7 +215,7 @@ class MultiSenderEth extends Component {
   //   if (pin.length == 4) {
   //     if (pin == this.state.existingPin) {
   //       this.setState({ pinModal: false }, () => {
-  //         this.props.selectedCoin.coin_symbol.toLowerCase() == 'eth'
+  //         this.props.route?.params?.selectedCoin.coin_symbol.toLowerCase() == 'eth'
   //           ? this.send_ETH()
   //           : this.send_ERC20();
   //       });
@@ -281,7 +267,7 @@ class MultiSenderEth extends Component {
           //     : this.send_BNB();
           //   this.setState({pinModal: false});
           this.setState({ pinModal: false }, () => {
-            this.props.selectedCoin.coin_symbol.toLowerCase() == 'eth'
+            this.props.route?.params?.selectedCoin.coin_symbol.toLowerCase() == 'eth'
               ? this.send_ETH()
               : this.send_ERC20();
           });
@@ -324,7 +310,7 @@ class MultiSenderEth extends Component {
         //console.warn('MM','chk txn_raw_eth:::', txn_raw);
         this.send(
           txn_raw.signedRaw,
-          this.props.selectedCoin.coin_symbol.toLowerCase(),
+          this.props.route?.params?.selectedCoin.coin_symbol.toLowerCase(),
           txn_raw.nonce,
         );
       })
@@ -345,7 +331,7 @@ class MultiSenderEth extends Component {
       return;
     }
     this.setState({ isLoading: true });
-    let contractAddress = this.props.selectedCoin.token_address;
+    let contractAddress = this.props.route?.params?.selectedCoin.token_address;
     Singleton.getInstance()
       .getsignRawTxnEthToken(
         this.state.ethPvtKey,
@@ -382,7 +368,7 @@ class MultiSenderEth extends Component {
       nonce: nonce,
       chat: 0,
       multisender_reward:
-        this.props.selectedCoin.coin_symbol.toLowerCase() == 'eth'
+        this.props.route?.params?.selectedCoin.coin_symbol.toLowerCase() == 'eth'
           ? parseFloat(this.state.commissionAmt).toFixed(8)
           : parseFloat(this.state.commissionAmt / 10 ** 18).toFixed(8),
     };
@@ -400,7 +386,7 @@ class MultiSenderEth extends Component {
             {
               text: 'OK',
               onPress: () => {
-                Actions.currentScene != 'Main' && Actions.replace('Main');
+                getCurrentRouteName() != 'Main' && reset(NavigationStrings.Main);
               },
             },
           ],
@@ -484,9 +470,9 @@ class MultiSenderEth extends Component {
     }
     const Totalfee = await getTotalGasFee();
     console.warn('MM', 'Totalfee', Totalfee);
-    if (this.props.selectedCoin.coin_symbol.toLowerCase() == 'eth') {
+    if (this.props.route?.params?.selectedCoin.coin_symbol.toLowerCase() == 'eth') {
       //  console.warn('MM','address arr' , addressArr);
-      //  console.warn('MM','this.props.referralAddress' , this.props.referralAddress);
+      //  console.warn('MM','this.props?.route?.params?.referralAddress' , this.props?.route?.params?.referralAddress);
       //  console.warn('MM','amount' , this.state.amount);
       //  console.warn('MM','amountArr' , amountArr);
 
@@ -494,10 +480,10 @@ class MultiSenderEth extends Component {
         .getDataForMultiEth(
           addressArr,
           amountArr,
-          this.props.selectedCoin.coin_family,
+          this.props.route?.params?.selectedCoin.coin_family,
           this.state.amount,
           Singleton.getInstance().defaultEthAddress,
-          this.props.referralAddress,
+          this.props?.route?.params?.referralAddress,
         )
         .then(res => {
           //0x0000000000000000000000000000000000000000  0x69DADB732E09994964B92256308Bd8204Aec7354
@@ -505,17 +491,17 @@ class MultiSenderEth extends Component {
           console.warn('MM', 'chk Totalfee:::::eth:::::::', Totalfee);
           this.setState({
             gasPriceForTxn: Totalfee,
-            amount: res.amountAfterCommission,
+            amount: res.amountAfterCommission || 0,
             totalFee: (
               Totalfee *
               this.state.gasFeeMultiplier *
-              res.gasLimit
+              res.gasLimit || 0
             ).toFixed(8),
             isLoading: false,
-            gaslimitForTxn: res.gasLimit,
+            gaslimitForTxn: res.gasLimit || 0,
             amountAfterCommission: res.amountAfterCommission,
             dataEncoded: res.data,
-            commissionAmt: res.commissionAmt,
+            commissionAmt: res.commissionAmt || 0,
           });
         })
         .catch(err => {
@@ -532,12 +518,12 @@ class MultiSenderEth extends Component {
         .getDataForMultiEthToken(
           addressArr,
           amountArr,
-          this.props.selectedCoin.token_address,
-          this.props.selectedCoin.decimals,
-          this.props.selectedCoin.coin_family,
+          this.props.route?.params?.selectedCoin.token_address,
+          this.props.route?.params?.selectedCoin.decimals,
+          this.props.route?.params?.selectedCoin.coin_family,
           this.state.amountNew,
           Singleton.getInstance().defaultEthAddress,
-          this.props.referralAddress,
+          this.props?.route?.params?.referralAddress,
         )
         .then(res => {
           ////console.log(
@@ -555,11 +541,11 @@ class MultiSenderEth extends Component {
             amount: this.state.amount,
             totalFee: parseFloat(fee).toFixed(8).toString(),
             isLoading: false,
-            gaslimitForTxn: res.gasLimit,
+            gaslimitForTxn: res.gasLimit || 0,
             amountAfterCommission: this.state.amount,
-            dataEncoded: res.data,
-            valueEth: res.amountAfterCommission,
-            commissionAmt: res.commissionAmt,
+            dataEncoded: res.data || 0,
+            valueEth: res.amountAfterCommission || 0,
+            commissionAmt: res.commissionAmt || 0,
           });
         })
         .catch(err => {
@@ -827,7 +813,7 @@ class MultiSenderEth extends Component {
                         alignItems: 'center', // Vertical direction
                       }}>
                       <FastImage
-                        source={{ uri: this.props.selectedCoin.coin_image }}
+                        source={{ uri: this.props.route?.params?.selectedCoin.coin_image }}
                         style={styles.iconImageStyle}
                         resizeMode={FastImage.resizeMode.contain}
                       />
@@ -836,7 +822,7 @@ class MultiSenderEth extends Component {
                           styles.balanceLabelStyle,
                           { color: ThemeManager.colors.lightTextColor },
                         ]}>
-                        {this.props.selectedCoin.coin_symbol.toUpperCase() +
+                        {this.props.route?.params?.selectedCoin.coin_symbol.toUpperCase() +
                           ' ' +
                           'Balance'}
                       </Text>
@@ -847,7 +833,7 @@ class MultiSenderEth extends Component {
                         { color: ThemeManager.colors.textColor },
                       ]}>
                       {Singleton.getInstance().toFixed(
-                        this.props.selectedCoin.balance,
+                        this.props.route?.params?.selectedCoin.balance,
                         5,
                       )}
                     </Text>
@@ -876,7 +862,7 @@ class MultiSenderEth extends Component {
                         alignItems: 'center', // Vertical direction
                       }}>
                       <FastImage
-                        source={{ uri: this.props.selectedCoin.coin_image }}
+                        source={{ uri: this.props.route?.params?.selectedCoin.coin_image }}
                         style={styles.iconImageStyle}
                         resizeMode={FastImage.resizeMode.contain}
                       />
@@ -889,7 +875,7 @@ class MultiSenderEth extends Component {
                       </Text>
                     </View>
 
-                    {this.props.selectedCoin.coin_symbol.toUpperCase() ==
+                    {this.props.route?.params?.selectedCoin.coin_symbol.toUpperCase() ==
                       'ETH' && (
                         <Text
                           style={[
@@ -899,11 +885,11 @@ class MultiSenderEth extends Component {
                           {
                             Singleton.getInstance().toFixed(this.state.amount, 8)
                             // + ' ' +
-                            //   this.props.selectedCoin.coin_symbol.toUpperCase()
+                            //   this.props.route?.params?.selectedCoin.coin_symbol.toUpperCase()
                           }
                         </Text>
                       )}
-                    {this.props.selectedCoin.coin_symbol.toUpperCase() !=
+                    {this.props.route?.params?.selectedCoin.coin_symbol.toUpperCase() !=
                       'ETH' && (
                         <Text
                           style={[
@@ -916,7 +902,7 @@ class MultiSenderEth extends Component {
                               8,
                             ) +
                             // ' ' +
-                            // this.props.selectedCoin.coin_symbol.toUpperCase() +
+                            // this.props.route?.params?.selectedCoin.coin_symbol.toUpperCase() +
                             ' + ' +
                             parseFloat(
                               this.state.commissionAmt / 10 ** 18,
@@ -964,8 +950,8 @@ class MultiSenderEth extends Component {
                         alignItems: 'center',
                       }}
                       onPress={() => {
-                        Actions.currentScene != 'Recipient' &&
-                          Actions.Recipient({ csvData: csvData });
+                        getCurrentRouteName() != 'Recipient' &&
+                        navigate(NavigationStrings.Recipient,{ csvData: csvData });
                       }}>
                       {csvData.length > 1 && (
                         <Text
@@ -1019,7 +1005,7 @@ class MultiSenderEth extends Component {
                 />
                 <LightButton
                   onPress={() => {
-                    Actions.pop()
+                    goBack()
                   }}
                   btnStyle={styles.cancelBtnStyle}
                   customGradient={styles.customGrad}

@@ -1,25 +1,16 @@
 import React, { Component } from 'react';
 import {
-  View,
-  Text,
-  Image,
-  StatusBar,
-  TouchableOpacity,
-  ImageBackground,
-  TextInput,
   Dimensions,
-  NetInfo,
-  AsyncStorage,
-  ActivityIndicator,
-  Alert,
   FlatList,
-  Switch, SafeAreaView
+  SafeAreaView,
+  Text,
+  TouchableOpacity,
+  View
 } from 'react-native';
+import { ThemeManager } from '../../../../ThemeManager';
+import { Fonts } from '../../../theme';
+import { BorderLine, SearchBar, SimpleHeader } from "../../common";
 import CountryCodeStyle from './CountryListStyle';
-import { SimpleHeader, BorderLine, SearchBar } from "../../common";
-import { Actions, ActionConst } from 'react-native-router-flux';
-import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
-import { Images, Colors, Fonts } from '../../../theme';
 let Search = '';
 
 class CountryList extends Component {

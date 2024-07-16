@@ -1,7 +1,6 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, {useState} from 'react';
-import {Text, StyleSheet, View, Image} from 'react-native';
-import {TouchableOpacity} from 'react-native-gesture-handler';
+import {Text, StyleSheet, View, Image,TouchableOpacity} from 'react-native';
 import Colors from '../../theme/Colors';
 import images from '../../theme/Images';
 import {ThemeManager} from '../../../ThemeManager';

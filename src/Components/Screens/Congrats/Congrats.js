@@ -1,47 +1,37 @@
 /* eslint-disable react/self-closing-comp */
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import {
-  View,
-  Text,
-  Image,
-  TouchableOpacity,
   BackHandler,
-  SafeAreaView,
   Dimensions,
-  ScrollView,
+  Image,
+  SafeAreaView,
+  Text,
+  View
 } from 'react-native';
-import { Wrap } from '../../common/Wrap';
-import { ActionConst, Actions } from 'react-native-router-flux';
-import images from '../../../theme/Images';
-import { styles } from './CongratsStyle';
 import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
-import {
-  SubHeader,
-  SimpleHeader,
-  BasicButton,
-  MainStatusBar,
-} from '../../common';
-import colors from '../../../theme/Colors';
-import fonts from '../../../theme/Fonts';
-import * as constants from './../../../Constant';
+import { NavigationStrings } from '../../../Navigation/NavigationStrings';
 import Singleton from '../../../Singleton';
-import LottieView from 'lottie-react-native';
-import { ifIphoneX } from 'react-native-iphone-x-helper'
 import { heightDimen, widthDimen } from '../../../Utils/themeUtils';
+import { navigate, reset } from '../../../navigationsService';
+import {
+  BasicButton,
+  MainStatusBar
+} from '../../common';
+import * as constants from './../../../Constant';
+import { styles } from './CongratsStyle';
 const windowHeight = Dimensions.get('window').height;
 
 const Congrats = props => {
-
+console.log(props,'aFSDDAGSF');
   const onProceed = () => {
     // Actions.jump('Congrats');
     Singleton.getInstance().newSaveData(constants.IS_LOGIN, '1');
-    Actions.Main({ type: ActionConst.RESET }); 
-    Actions.jump('Wallet');
+    reset(NavigationStrings.Main);
   };
   useEffect(() => {
     //  console.warn('MM','****************i walletData.decimals', props.walletData.decimals , props.walletData);
-    props.navigation.addListener('didFocus', onScreenFocus);
-    props.navigation.addListener('didBlur', onScreenBlur);
+    props.navigation.addListener('focus', onScreenFocus);
+    props.navigation.addListener('blur', onScreenBlur);
   }, [props]);
   const onScreenFocus = () => {
     console.log("onScreenFocus----------------------FOCUS")

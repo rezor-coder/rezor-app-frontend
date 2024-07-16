@@ -43,9 +43,9 @@ const BasicInputBoxPassword = props => {
         <View style={{ alignSelf: 'center', marginLeft: 4 }}>
           <TouchableOpacity onPress={props.onPress}>
             {props.secureTextEntry ?
-              <Image style={{ tintColor: 'grey',height: widthDimen(20), width: widthDimen(20), resizeMode: 'contain' }} source={!props.secureTextEntry ? Images.open_eye : Images.eye_card} />
+              <Image style={{ tintColor: 'grey',height: widthDimen(20), width: widthDimen(20), resizeMode: 'contain',...props?.iconStyle }} source={!props.secureTextEntry ? Images.open_eye : Images.eye_card} />
               :
-              <Image style={{ tintColor: 'grey', height: widthDimen(20), width: widthDimen(20), resizeMode: 'contain' }} source={!props.secureTextEntry ? Images.open_eye : Images.eye_card} />
+              <Image style={{ tintColor: 'grey', height: widthDimen(20), width: widthDimen(20), resizeMode: 'contain',...props?.iconStyle }} source={!props.secureTextEntry ? Images.open_eye : Images.eye_card} />
             }
           </TouchableOpacity>
         </View>

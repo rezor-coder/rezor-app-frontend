@@ -1,19 +1,16 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, { Component } from 'react';
-import { StyleSheet, View, Image, Text, BackHandler, Alert } from 'react-native';
-import Toast, { DURATION } from 'react-native-easy-toast';
-import { Actions, ActionConst } from 'react-native-router-flux';
-import { BasicButton, BorderLine, KeyboardDigit, PinInput, Wrap } from '../../common';
+import { BackHandler, StyleSheet, Text, View } from 'react-native';
+import ReactNativeBiometrics from 'react-native-biometrics';
+import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
+import * as Constants from '../../../Constant';
+import { NavigationStrings } from '../../../Navigation/NavigationStrings';
+import Singleton from '../../../Singleton';
+import { areaDimen, heightDimen, widthDimen } from '../../../Utils/themeUtils';
+import { getCurrentRouteName, goBack, navigate } from '../../../navigationsService';
 import { Colors } from '../../../theme';
 import fonts from '../../../theme/Fonts';
-import SmoothPinCodeInput from 'react-native-smooth-pincode-input';
-import Singleton from '../../../Singleton';
-import * as Constants from '../../../Constant';
-import { SubHeader, ButtonPrimary } from '../../common';
-import ReactNativeBiometrics from 'react-native-biometrics';
-import { SimpleHeader } from '../../common';
-import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
-import { areaDimen, heightDimen, widthDimen } from '../../../Utils/themeUtils';
+import { BasicButton, BorderLine, KeyboardDigit, PinInput, SimpleHeader, Wrap } from '../../common';
 class ResetConfirmPin extends Component {
   constructor(props) {
     super(props);
@@ -47,8 +44,8 @@ class ResetConfirmPin extends Component {
     //   this.backAction,
     // );
     if (this.firstTime == false) {
-      // this.props.navigation.addListener('didFocus', this.screenFocus);
-      // this.props.navigation.addListener('didBlur', this.screenBlur);
+      // this.props.navigation.addListener('focus', this.screenFocus);
+      // this.props.navigation.addListener('blur', this.screenBlur);
       Singleton.getInstance()
         .newGetData(Constants.PIN)
         .then(pin => {
@@ -159,7 +156,7 @@ class ResetConfirmPin extends Component {
   //   if (this.firstTime) {
   //     Singleton.getInstance().saveData(Constants.PIN, this.state.pin);
   //     Singleton.getInstance().saveData(Constants.ENABLE_PIN, 'true');
-  //     Actions.currentScene != 'Wallet' && Actions.Wallet();
+  //     getCurrentRouteName() != 'Wallet' && Actions.Wallet();
   //   } else {
   //     this.signInContent();
   //   }
@@ -194,7 +191,7 @@ class ResetConfirmPin extends Component {
                       Singleton.getInstance().defaultStcAddress =
                       response.defaultEthAddress;
                     Singleton.getInstance().walletName = response.walletName;
-                    Actions.pop();
+                    goBack();
                     return;
                   })
                   .catch(error => { });
@@ -206,8 +203,8 @@ class ResetConfirmPin extends Component {
       .catch(error => { });
   }
   popp() {
-    Actions.pop();
-    Actions.currentScene != 'Account' && Actions.Account();
+    goBack();
+    getCurrentRouteName() != 'Account' && navigate(NavigationStrings.Account);
   }
   // deletePin() {
   //   let pin = this.state.pin;
@@ -247,8 +244,8 @@ class ResetConfirmPin extends Component {
     } else if (
       this.state.pin.toString() === this.state.pinFromStorage.toString()
     ) {
-      Actions.currentScene != 'ResetCreatePIN' &&
-        Actions.ResetCreatePIN({ pinFrom: this.state.pin });
+      getCurrentRouteName() != 'ResetCreatePIN' &&
+      navigate(NavigationStrings.ResetCreatePIN,{ pinFrom: this.state.pin });
       this.setState({ pin: '' });
     } else {
       Singleton.showAlert('Wrong Pin');

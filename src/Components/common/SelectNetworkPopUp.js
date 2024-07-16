@@ -6,7 +6,7 @@ import { areaDimen, heightDimen, widthDimen } from '../../Utils/themeUtils';
 import fonts from '../../theme/Fonts';
 import images from '../../theme/Images';
 import FastImage from 'react-native-fast-image';
-const SelectNetworkPopUp = ({ onClose, onPressBnb, onPressEth, onPressStc }) => {
+const SelectNetworkPopUp = ({ onClose, onPressBnb, onPressEth, onPressStc,isDisableStc }) => {
   return (
     <View style={{ flex: 1, justifyContent: 'flex-end' }}>
       <BlurView
@@ -74,7 +74,6 @@ const SelectNetworkPopUp = ({ onClose, onPressBnb, onPressEth, onPressStc }) => 
                 paddingBottom: heightDimen(20),
               }}>
                   <TouchableOpacity
-                disabled={true}
                 key={'index'}
                 onPress={() => onPressStc()}
                 style={[
@@ -100,14 +99,15 @@ const SelectNetworkPopUp = ({ onClose, onPressBnb, onPressEth, onPressStc }) => 
                         color: ThemeManager.colors.textColor,
                       },
                     ]}>
-                    {'SBC24(Coming Soon)'}
+                    {'SBC'}
                   </Text>
                 </View>
-                {/* <FastImage
+                <FastImage
                   source={ThemeManager.ImageIcons.forwardArrowIcon}
                   style={[styles.arwImg]}
+                  resizeMode='contain'
                   tintColor={ThemeManager.colors.lightTextColor}
-                /> */}
+                />
               </TouchableOpacity>
               <TouchableOpacity
                 key={'index'}
@@ -138,6 +138,7 @@ const SelectNetworkPopUp = ({ onClose, onPressBnb, onPressEth, onPressStc }) => 
                 <FastImage
                   source={ThemeManager.ImageIcons.forwardArrowIcon}
                   style={[styles.arwImg]}
+                   resizeMode='contain'
                   tintColor={ThemeManager.colors.lightTextColor}
                 />
               </TouchableOpacity>
@@ -174,6 +175,7 @@ const SelectNetworkPopUp = ({ onClose, onPressBnb, onPressEth, onPressStc }) => 
                 <FastImage
                   source={ThemeManager.ImageIcons.forwardArrowIcon}
                   style={[styles.arwImg]}
+                   resizeMode='contain'
                   tintColor={ThemeManager.colors.lightTextColor}
                 />
               </TouchableOpacity>

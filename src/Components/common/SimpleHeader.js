@@ -1,13 +1,13 @@
 /* eslint-disable react-native/no-inline-styles */
 import React from 'react';
-import {Text, StyleSheet, View, Image, TouchableOpacity} from 'react-native';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import {Actions} from 'react-native-router-flux';
-import {ThemeManager} from '../../../ThemeManager';
+import { ThemeManager } from '../../../ThemeManager';
+import { areaDimen, heightDimen, widthDimen } from '../../Utils/themeUtils';
 import Colors from '../../theme/Colors';
 import fonts from '../../theme/Fonts';
 import images from '../../theme/Images';
-import {areaDimen, heightDimen, widthDimen} from '../../Utils/themeUtils';
+import { goBack } from '../../navigationsService';
 const SimpleHeader = props => {
   return (
     <>
@@ -55,7 +55,7 @@ const SimpleHeader = props => {
                 alignItems: 'flex-start',
               }}
               onPress={() => {
-                Actions.pop();
+                goBack();
               }}>
               <Image
                 source={props.backImage}
@@ -93,7 +93,7 @@ const SimpleHeader = props => {
             justifyContent: 'flex-end',
             paddingVertical: heightDimen(5),
             flexDirection: 'row',
-            alignItems:'center'
+            alignItems: 'center',
           }}>
           <TouchableOpacity
             onPress={props.onPressHistory}
@@ -116,7 +116,8 @@ const SimpleHeader = props => {
                       props.history == true ? widthDimen(22) : widthDimen(26),
                     resizeMode: 'contain',
                   },
-                  props.iconstyle,{tintColor:ThemeManager.colors.iconColor}
+                  props.iconstyle,
+                  {tintColor: ThemeManager.colors.iconColor},
                 ]}
               />
             )}
@@ -158,6 +159,8 @@ const SimpleHeader = props => {
                   props.plusIconStyle)
                 }
               />
+            ) : props.rightText ? (
+              <Text style={props.rightIconStyle}>{props.rightText}</Text>
             ) : (
               <View style={{width: widthDimen(0)}} />
             )}
@@ -198,4 +201,5 @@ const styles = StyleSheet.create({
   img: {height: 20, width: 30, resizeMode: 'contain', marginLeft: 5},
 });
 
-export {SimpleHeader};
+export { SimpleHeader };
+

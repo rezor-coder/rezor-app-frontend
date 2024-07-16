@@ -1,37 +1,31 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, {useState, useEffect, useContext} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
-  View,
-  Text,
-  TouchableOpacity,
   BackHandler,
+  Dimensions,
   Image,
   Linking,
-  ImageBackground,
-  Dimensions,
-  ScrollView,
+  Text,
+  TouchableOpacity,
+  View
 } from 'react-native';
-import {Actions} from 'react-native-router-flux';
+import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
+import * as Constants from '../../../Constant';
+import Singleton from '../../../Singleton';
 import {
-  MainStatusBar,
   BasicButton,
   Header,
-  Wrap,
-  CheckBox,
-  SecurityLink,
-  ImageBackgroundComponent,
+  MainStatusBar,
+  Wrap
 } from '../../common/index';
 import styles from './SelectLanguageStyle';
-import {LanguageManager, ThemeManager} from '../../../../ThemeManager';
-import Singleton from '../../../Singleton';
-import * as Constants from '../../../Constant';
-import LottieView from 'lottie-react-native';
 
-import {Fonts, Images, Colors} from '../../../theme';
+import { Fonts, Images } from '../../../theme';
 // import {ScrollView} from 'react-native-gesture-handler';
-import {ifIphoneX} from 'react-native-iphone-x-helper';
-import {areaDimen, heightDimen, widthDimen} from '../../../Utils/themeUtils';
 import FastImage from 'react-native-fast-image';
+import { NavigationStrings } from '../../../Navigation/NavigationStrings';
+import { areaDimen, heightDimen, widthDimen } from '../../../Utils/themeUtils';
+import { getCurrentRouteName, goBack, navigate } from '../../../navigationsService';
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 const Languages = [
@@ -51,7 +45,7 @@ const SelectLanguage = props => {
   const [btnColor, setBtnColor] = useState('');
 
   useEffect(() => {
-    props.navigation.addListener('didFocus', () => {
+    props.navigation.addListener('focus', () => {
       setBtnColor(Singleton.getInstance().dynamicColor);
     });
   }, []);
@@ -69,14 +63,14 @@ const SelectLanguage = props => {
 
     const backAction = () => {
       //console.warn('MM','i SelectLanguage');
-      if (props.from == 'setting') {
-        Actions.pop();
-        return true;
-      } else {
+      // if (props.from == 'setting') {
+      //   goBack();
+      //   return true;
+      // } else {
         //  BackHandler.exitApp();
-        Actions.pop();
+        goBack();
         return true;
-      }
+      // }
     };
 
     const backHandler = BackHandler.addEventListener(
@@ -115,9 +109,9 @@ const SelectLanguage = props => {
     }
 
     if (props.from == 'setting') {
-      Actions.pop();
+      goBack();
     } else {
-      Actions.currentScene != 'WalletSequrity' && Actions.WalletSequrity();
+      getCurrentRouteName() != 'WalletSequrity' && navigate(NavigationStrings.WalletSequrity);
     }
   };
   const languageChanged = index => {

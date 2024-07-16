@@ -18,7 +18,6 @@ import {
   ImageBackgroundComponent,
   MainStatusBar,
 } from '../../common';
-import { Actions } from 'react-native-router-flux';
 import { FlatList } from 'react-native-gesture-handler';
 import { styles } from './SecureWalletStyle';
 import { Fonts } from '../../../theme';
@@ -32,6 +31,8 @@ import { ifIphoneX } from 'react-native-iphone-x-helper';
 import RNPreventScreenshot from 'react-native-screenshot-prevent';
 import { heightDimen, widthDimen } from '../../../Utils/themeUtils';
 import FastImage from 'react-native-fast-image';
+import { getCurrentRouteName, navigate } from '../../../navigationsService';
+import { NavigationStrings } from '../../../Navigation/NavigationStrings';
 const windowHeight = Dimensions.get('window').height;
 
 const SecureWallet = props => {
@@ -42,12 +43,12 @@ const SecureWallet = props => {
   const toastRef = createRef();
 
   useEffect(() => {
-    props.navigation.addListener('didFocus', () => {
+    props.navigation.addListener('focus', () => {
       //  console.warn('MM','did focus called secure Wallet::::::');
       // if (Platform.OS == "android")
       // RNPreventScreenshot?.enabled(true)
     });
-    // props.navigation.addListener('didBlur', () => {
+    // props.navigation.addListener('blur', () => {
     //   if (Platform.OS == "android")
     //   RNPreventScreenshot?.enabled(false)
     //  //  console.warn('MM','did Blur called secure Wallet::::::');
@@ -165,12 +166,12 @@ const SecureWallet = props => {
 
         {/* <Multibtn
             style={{marginTop: 10}}
-            firstBtn={() => Actions.pop()}
+            firstBtn={() => goBack()}
             secondBtn={() => {
-              if (props.isFrom == 'multiWallet') {
-                Actions.replace('VerifyPhrase', {isFrom: props.isFrom});
+              if (props?.route?.params?.isFrom == 'multiWallet') {
+                Actions.replace('VerifyPhrase', {isFrom: props?.route?.params?.isFrom});
               } else {
-                Actions.currentScene != 'VerifyPhrase' &&
+                getCurrentRouteName() != 'VerifyPhrase' &&
                   Actions.VerifyPhrase();
               }
             }}
@@ -187,14 +188,14 @@ const SecureWallet = props => {
           }]}> */}
         <BasicButton
           onPress={() => {
-            if (props.isFrom == 'multiWallet') {
-              Actions.currentScene != 'VerifyPhrase' &&
-                Actions.replace('VerifyPhrase', { isFrom: props.isFrom });
+            if (props?.route?.params?.isFrom == 'multiWallet') {
+              getCurrentRouteName() != 'VerifyPhrase' &&
+               navigate(NavigationStrings.VerifyPhrase, { isFrom: props?.route?.params?.isFrom });
             } else {
-              Actions.currentScene != 'VerifyPhrase' &&
-                Actions.VerifyPhrase();
+              getCurrentRouteName() != 'VerifyPhrase' &&
+              navigate(NavigationStrings.VerifyPhrase);
             }
-            // Actions.currentScene != 'VerifyPhrase' && Actions.VerifyPhrase();
+            // getCurrentRouteName() != 'VerifyPhrase' && Actions.VerifyPhrase();
           }}
           // colors={Singleton.getInstance().dynamicColor}
           btnStyle={styles.btnStyle}

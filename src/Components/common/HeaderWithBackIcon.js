@@ -1,16 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import {
-  View,
-  Text,
   Image,
-  TouchableOpacity,
-  BackHandler,
   StyleSheet,
+  TouchableOpacity,
+  View
 } from 'react-native';
-import { Actions } from 'react-native-router-flux';
-import { Colors } from '../../theme';
-import { Wrap } from './Wrap';
 import { areaDimen, heightDimen, widthDimen } from '../../Utils/themeUtils';
+import { goBack } from '../../navigationsService';
 
 const HeaderwithBackIcon = props => {
   return (
@@ -22,7 +18,7 @@ const HeaderwithBackIcon = props => {
           justifyContent: 'center',
           alignItems: 'flex-start',
         }}
-        onPress={props.onPress || Actions.pop}>
+        onPress={props.onPress || goBack}>
         <Image style={styles.iocnLeftStyle} source={props.iconLeft} />
       </TouchableOpacity>
     </View>

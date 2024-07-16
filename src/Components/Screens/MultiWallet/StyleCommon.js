@@ -43,6 +43,7 @@ export default StyleSheet.create({
   infoIconStyle: {
     height: widthDimen(16),
     width: widthDimen(16),
+    resizeMode:'contain'
   },
   deleteIconStyle: {
     height: widthDimen(18),

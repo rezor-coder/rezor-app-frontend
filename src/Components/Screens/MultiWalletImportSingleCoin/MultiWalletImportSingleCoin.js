@@ -1,45 +1,37 @@
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react/self-closing-comp */
+import Clipboard from '@react-native-community/clipboard';
 import React, { Component } from 'react';
 import {
-  View,
-  Image,
-  Text,
-  SafeAreaView,
   Dimensions,
-  TextInput,
   ScrollView,
+  Text,
+  TextInput,
+  View
 } from 'react-native';
-import styles from './MultiWalletImportSingleCoinStyle';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import LinearGradient from 'react-native-linear-gradient';
+import { connect } from 'react-redux';
+import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
+import * as constants from '../../../Constant';
+import { NavigationStrings } from '../../../Navigation/NavigationStrings';
 import {
-  Wrap,
-  HeaderCreateNewWallet,
-  Inputtext,
-  ButtonPrimary,
-  Header,
-  SimpleHeader,
+  MultiWallet_create,
+  multiWalletFormUpdate,
+} from '../../../Redux/Actions';
+import Singleton from '../../../Singleton';
+import { areaDimen, heightDimen } from '../../../Utils/themeUtils';
+import { getCurrentRouteName, navigate } from '../../../navigationsService';
+import { Colors, Fonts } from '../../../theme';
+import {
   // ImageBackgroundComponent,
   BasicButton,
   MainStatusBar,
+  Wrap
 } from '../../common';
-import { Fonts, Images, Colors } from '../../../theme';
-import { Actions } from 'react-native-router-flux';
-import {
-  multiWalletFormUpdate,
-  MultiWallet_create,
-} from '../../../Redux/Actions';
-import { connect } from 'react-redux';
-import Singleton from '../../../Singleton';
-import * as constants from '../../../Constant';
-import Loader from '../Loader/Loader';
-import { TouchableOpacity } from 'react-native-gesture-handler';
-import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
 import HeaderwithBackIcon from '../../common/HeaderWithBackIcon';
-import Clipboard from '@react-native-community/clipboard';
-import { ifIphoneX } from 'react-native-iphone-x-helper';
-import LinearGradient from 'react-native-linear-gradient';
-import { areaDimen, heightDimen } from '../../../Utils/themeUtils';
-import { add } from 'react-native-reanimated';
+import Loader from '../Loader/Loader';
+import styles from './MultiWalletImportSingleCoinStyle';
 const windowHeight = Dimensions.get('window').height;
 
 class MultiWalletImportSingleCoin extends Component {
@@ -52,7 +44,7 @@ class MultiWalletImportSingleCoin extends Component {
     };
   }
   componentDidMount() {
-    //console.warn('MM','ppppp coin_symbol', this.props.coin_symbol);
+    //console.warn('MM','ppppp coin_symbol', this.props.route?.params.coin_symbol);
     this.props.multiWalletFormUpdate({ prop: 'multiWalletName', value: '' });
     this.props.multiWalletFormUpdate({ prop: 'importMnemonics', value: '' });
   }
@@ -112,13 +104,13 @@ class MultiWalletImportSingleCoin extends Component {
                 .newGetData(constants.multi_wallet_array)
                 .then(multiWalletArray => {
                   var array = JSON.parse(multiWalletArray);
-                  let addressToCheck = this.props.coin_symbol.toLowerCase() == ('eth' || 'matic' || 'bnb' || 'stc') ? res.ethAddress : this.props.coin_symbol.toLowerCase() == ('btc') ? res.btcAddress : res.trxAddress
+                  let addressToCheck = this.props.route?.params.coin_symbol.toLowerCase() == ('eth' || 'matic' || 'bnb' || 'stc') ? res.ethAddress : this.props.route?.params.coin_symbol.toLowerCase() == ('btc') ? res.btcAddress : res.trxAddress
                   const isExistArray = array.filter(item => {
                     console.log("addressToCheck::", addressToCheck);
                    let isExistInside =  item.loginRequest.wallet_addresses.find(
                       o => {
                         if ((o.wallet_address == addressToCheck &&
-                          this.props.coin_symbol.toLowerCase() == o.coin_symbol)) {
+                          this.props.route?.params.coin_symbol.toLowerCase() == o.coin_symbol)) {
                           console.log("item:::", item);
                           return item
                         }
@@ -128,11 +120,11 @@ class MultiWalletImportSingleCoin extends Component {
                   });
                   console.log("isExistArray::::", isExistArray);
                   const isExist = isExistArray.find(item => {
-                    return this.props.coin_symbol.toLowerCase() == item.blockChain
+                    return this.props.route?.params.coin_symbol.toLowerCase() == item.blockChain
 
                   });
                   console.log("isExist::", isExist);
-                  // const isExist = array.find(itemAddress => array.find(item => item.loginRequest.wallet_addresses.find(item1 => item1.wallet_address == itemAddress.wallet_address && this.props.coin_symbol.toLowerCase() == item1.coin_symbol)))
+                  // const isExist = array.find(itemAddress => array.find(item => item.loginRequest.wallet_addresses.find(item1 => item1.wallet_address == itemAddress.wallet_address && this.props.route?.params.coin_symbol.toLowerCase() == item1.coin_symbol)))
                   if (isExist) {
                     console.log("isExist::", isExist);
                     Singleton.showAlert(constants.wallet_already_exist);
@@ -145,57 +137,57 @@ class MultiWalletImportSingleCoin extends Component {
                     });
                     let wallet_addresses = [
                       {
-                        coin_symbol: this.props.coin_symbol,
+                        coin_symbol: this.props.route?.params.coin_symbol,
                         wallet_address:
-                          this.props.coin_symbol == 'eth'
+                          this.props.route?.params.coin_symbol == 'eth'
                             ? res.ethAddress
-                            : this.props.coin_symbol == 'trx'
+                            : this.props.route?.params.coin_symbol == 'trx'
                               ? res.trxAddress
-                              : this.props.coin_symbol == 'sol'
+                              : this.props.route?.params.coin_symbol == 'sol'
                                 ? res.solAddress
-                                : this.props.coin_symbol == 'bnb'
+                                : this.props.route?.params.coin_symbol == 'bnb'
                                   ? res.ethAddress
-                                  : this.props.coin_symbol == 'btc'
+                                  : this.props.route?.params.coin_symbol == 'btc'
                                     ? res.btcAddress
-                                    : this.props.coin_symbol == 'stc'
+                                    : this.props.route?.params.coin_symbol == 'stc'
                                     ? res.ethAddress
                                     : res.ethAddress,
                       },
                     ];
                     let data = {
                       address:
-                        this.props.coin_symbol == 'eth'
+                        this.props.route?.params.coin_symbol == 'eth'
                           ? res.ethAddress
-                          : this.props.coin_symbol == 'trx'
+                          : this.props.route?.params.coin_symbol == 'trx'
                             ? res.trxAddress
-                            : this.props.coin_symbol == 'sol'
+                            : this.props.route?.params.coin_symbol == 'sol'
                               ? res.solAddress
-                              : this.props.coin_symbol == 'bnb'
+                              : this.props.route?.params.coin_symbol == 'bnb'
                                 ? res.ethAddress
-                                : this.props.coin_symbol == 'btc'
+                                : this.props.route?.params.coin_symbol == 'btc'
                                   ? res.btcAddress
-                                  : this.props.coin_symbol == 'stc'
+                                  : this.props.route?.params.coin_symbol == 'stc'
                                   ? res.ethAddress
                                   : res.ethAddress,
                       addresses: [
-                        this.props.coin_symbol == 'eth'
+                        this.props.route?.params.coin_symbol == 'eth'
                           ? res.ethAddress
-                          : this.props.coin_symbol == 'trx'
+                          : this.props.route?.params.coin_symbol == 'trx'
                             ? res.trxAddress
-                            : this.props.coin_symbol == 'sol'
+                            : this.props.route?.params.coin_symbol == 'sol'
                               ? res.solAddress
-                              : this.props.coin_symbol == 'bnb'
+                              : this.props.route?.params.coin_symbol == 'bnb'
                                 ? res.ethAddress
-                                : this.props.coin_symbol == 'btc'
+                                : this.props.route?.params.coin_symbol == 'btc'
                                   ? res.btcAddress
-                                  : this.props.coin_symbol == 'stc'
+                                  : this.props.route?.params.coin_symbol == 'stc'
                                   ? res.ethAddress
                                   : res.ethAddress,
                       ],
                       btcAddress:
-                        this.props.coin_symbol == 'btc' ? res.btcAddress : '',
+                        this.props.route?.params.coin_symbol == 'btc' ? res.btcAddress : '',
                       trxAddress:
-                        this.props.coin_symbol == 'trx' ? res.trxAddress : '',
+                        this.props.route?.params.coin_symbol == 'trx' ? res.trxAddress : '',
                       wallet_addresses: wallet_addresses,
                       wallet_name: this.props.multiWalletName,
                       walletName: this.props.multiWalletName,
@@ -211,7 +203,7 @@ class MultiWalletImportSingleCoin extends Component {
                           loginRequest: data,
                           defaultWallet: false,
                           user_jwtToken: response.data?.token,
-                          blockChain: this.props.coin_symbol,
+                          blockChain: this.props.route?.params.coin_symbol,
                           refreshToken: response?.data?.refreshToken,
                         };
                         let multiWalletArray = [];
@@ -224,8 +216,8 @@ class MultiWalletImportSingleCoin extends Component {
                               constants.multi_wallet_array,
                               JSON.stringify(multiWalletArray),
                             );
-                            Actions.currentScene != 'MultiWalletList' &&
-                              Actions.jump('MultiWalletList');
+                            getCurrentRouteName() != 'MultiWalletList' &&
+                            navigate(NavigationStrings.MultiWalletList);
                             this.setState({ isLoading: false });
                           })
                           .catch(err => {
@@ -250,7 +242,7 @@ class MultiWalletImportSingleCoin extends Component {
         }, 200);
       } else if (this.state.mnemonicsEnable == false) {
         this.setState({ pvtKey: this.state.pvtKey.trim() });
-        if (this.props.coin_symbol.toLowerCase() == 'eth') {
+        if (this.props.route?.params.coin_symbol.toLowerCase() == 'eth') {
           const { address, error } =
             Singleton.getInstance().getEthAddressFromPrivateKey(
               this.state.pvtKey,
@@ -261,12 +253,12 @@ class MultiWalletImportSingleCoin extends Component {
             return;
           } else {
             this.importUsingPvtKey(
-              this.props.coin_symbol.toLowerCase(),
+              this.props.route?.params.coin_symbol.toLowerCase(),
               address,
             );
           }
         }
-        if (this.props.coin_symbol.toLowerCase() == 'matic') {
+        if (this.props.route?.params.coin_symbol.toLowerCase() == 'matic') {
           const { address, error } =
             Singleton.getInstance().getEthAddressFromPrivateKey(
               this.state.pvtKey,
@@ -277,12 +269,12 @@ class MultiWalletImportSingleCoin extends Component {
             return;
           } else {
             this.importUsingPvtKey(
-              this.props.coin_symbol.toLowerCase(),
+              this.props.route?.params.coin_symbol.toLowerCase(),
               address,
             );
           }
         }
-        if (this.props.coin_symbol.toLowerCase() == 'stc') {
+        if (this.props.route?.params.coin_symbol.toLowerCase() == 'stc') {
           const { address, error } =
             Singleton.getInstance().getEthAddressFromPrivateKey(
               this.state.pvtKey,
@@ -293,12 +285,12 @@ class MultiWalletImportSingleCoin extends Component {
             return;
           } else {
             this.importUsingPvtKey(
-              this.props.coin_symbol.toLowerCase(),
+              this.props.route?.params.coin_symbol.toLowerCase(),
               address,
             );
           }
         }
-        if (this.props.coin_symbol.toLowerCase() == 'btc') {
+        if (this.props.route?.params.coin_symbol.toLowerCase() == 'btc') {
           const { address, error } =
             Singleton.getInstance().getBtcAddressFromPrivateKey(
               this.state.pvtKey,
@@ -309,12 +301,12 @@ class MultiWalletImportSingleCoin extends Component {
             return;
           } else {
             this.importUsingPvtKey(
-              this.props.coin_symbol.toLowerCase(),
+              this.props.route?.params.coin_symbol.toLowerCase(),
               address,
             );
           }
         }
-        if (this.props.coin_symbol.toLowerCase() == 'trx') {
+        if (this.props.route?.params.coin_symbol.toLowerCase() == 'trx') {
           const { address, error } =
             Singleton.getInstance().getTronAddressFromPvtKey(this.state.pvtKey);
           if (error != '') {
@@ -323,12 +315,12 @@ class MultiWalletImportSingleCoin extends Component {
             return;
           } else {
             this.importUsingPvtKey(
-              this.props.coin_symbol.toLowerCase(),
+              this.props.route?.params.coin_symbol.toLowerCase(),
               address,
             );
           }
         }
-        if (this.props.coin_symbol.toLowerCase() == 'bch') {
+        if (this.props.route?.params.coin_symbol.toLowerCase() == 'bch') {
           const { address, error } =
             Singleton.getInstance().getBchAddressFromPrivateKey(
               this.state.pvtKey,
@@ -339,12 +331,12 @@ class MultiWalletImportSingleCoin extends Component {
             return;
           } else {
             this.importUsingPvtKey(
-              this.props.coin_symbol.toLowerCase(),
+              this.props.route?.params.coin_symbol.toLowerCase(),
               address,
             );
           }
         }
-        if (this.props.coin_symbol.toLowerCase() == 'ltc') {
+        if (this.props.route?.params.coin_symbol.toLowerCase() == 'ltc') {
           const { address, error } =
             Singleton.getInstance().getLtcAddressFromPrivateKey(
               this.state.pvtKey,
@@ -355,12 +347,12 @@ class MultiWalletImportSingleCoin extends Component {
             return;
           } else {
             this.importUsingPvtKey(
-              this.props.coin_symbol.toLowerCase(),
+              this.props.route?.params.coin_symbol.toLowerCase(),
               address,
             );
           }
         }
-        if (this.props.coin_symbol.toLowerCase() == 'bnb') {
+        if (this.props.route?.params.coin_symbol.toLowerCase() == 'bnb') {
           const { address, error } =
             Singleton.getInstance().getEthAddressFromPrivateKey(
               this.state.pvtKey,
@@ -371,12 +363,12 @@ class MultiWalletImportSingleCoin extends Component {
             return;
           } else {
             this.importUsingPvtKey(
-              this.props.coin_symbol.toLowerCase(),
+              this.props.route?.params.coin_symbol.toLowerCase(),
               address,
             );
           }
         }
-        if (this.props.coin_symbol.toLowerCase() == 'xtz') {
+        if (this.props.route?.params.coin_symbol.toLowerCase() == 'xtz') {
           const { address, error } =
             await Singleton.getInstance().getXtzAddressFromPrivateKey(
               this.state.pvtKey,
@@ -387,12 +379,12 @@ class MultiWalletImportSingleCoin extends Component {
             return;
           } else {
             this.importUsingPvtKey(
-              this.props.coin_symbol.toLowerCase(),
+              this.props.route?.params.coin_symbol.toLowerCase(),
               address,
             );
           }
         }
-        if (this.props.coin_symbol.toLowerCase() == 'doge') {
+        if (this.props.route?.params.coin_symbol.toLowerCase() == 'doge') {
           const { address, error } =
             Singleton.getInstance().getDogeAddressFromPrivateKey(
               this.state.pvtKey,
@@ -403,7 +395,7 @@ class MultiWalletImportSingleCoin extends Component {
             return;
           } else {
             this.importUsingPvtKey(
-              this.props.coin_symbol.toLowerCase(),
+              this.props.route?.params.coin_symbol.toLowerCase(),
               address,
             );
           }
@@ -491,7 +483,7 @@ class MultiWalletImportSingleCoin extends Component {
                 user_jwtToken: response.data?.token,
                 refreshToken: response.data?.refreshToken,
                 privateKey: this.state.pvtKey,
-                blockChain: this.props.coin_symbol,
+                blockChain: this.props.route?.params.coin_symbol,
               };
               let multiWalletArray = [];
               Singleton.getInstance()
@@ -503,7 +495,7 @@ class MultiWalletImportSingleCoin extends Component {
                     constants.multi_wallet_array,
                     JSON.stringify(multiWalletArray),
                   );
-                  Actions.jump('MultiWalletList');
+                  navigate(NavigationStrings.MultiWalletList);
                   this.setState({ isLoading: false });
                 })
                 .catch(err => {
@@ -645,8 +637,8 @@ class MultiWalletImportSingleCoin extends Component {
                 Import your wallet using
               </Text>
               <View style={styles.viewStyle}>
-                {this.props.coin_symbol.toLowerCase() != 'dot' &&
-                  this.props.coin_symbol.toLowerCase() != 'ksm' && (
+                {this.props.route?.params.coin_symbol.toLowerCase() != 'dot' &&
+                  this.props.route?.params.coin_symbol.toLowerCase() != 'ksm' && (
                     <TouchableOpacity
                       onPress={() =>
                         this.setState({
@@ -689,8 +681,8 @@ class MultiWalletImportSingleCoin extends Component {
                       </LinearGradient>
                     </TouchableOpacity>
                   )}
-                {this.props.coin_symbol.toLowerCase() != 'dot' &&
-                  this.props.coin_symbol.toLowerCase() != 'ksm' && (
+                {this.props.route?.params.coin_symbol.toLowerCase() != 'dot' &&
+                  this.props.route?.params.coin_symbol.toLowerCase() != 'ksm' && (
                     <TouchableOpacity
                       onPress={() =>
                         this.setState({

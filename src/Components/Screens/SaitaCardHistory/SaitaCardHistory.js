@@ -1,39 +1,34 @@
-import React, { useState, useEffect } from 'react';
-import {
-  View,
-  Text,
-  Dimensions,
-  Image,
-  TouchableOpacity,
-  FlatList,
-  BackHandler
-} from 'react-native';
-import {
-  Wrap,
-  Multibtn,
-  BasicButton,
-  MainStatusBar,
-  ImageBackgroundComponent,
-  SimpleHeaderNew,
-  BorderLine,
-} from '../../common';
-import HeaderwithBackIcon from '../../common/HeaderWithBackIcon';
-import { styles } from './SaitaCardHistoryStyle';
-import { Actions } from 'react-native-router-flux';
-import { fetchCardHistory } from '../../../Redux/Actions/SaitaCardAction';
-import { useDispatch } from 'react-redux';
-import Singleton from '../../../Singleton';
-import * as Constants from '../../../Constant';
-import Loader from '../Loader/Loader';
-import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
-import { Fonts, Colors, Images } from '../../../theme';
 import moment from 'moment';
+import React, { useEffect, useState } from 'react';
+import {
+  BackHandler,
+  Dimensions,
+  FlatList,
+  Text,
+  View
+} from 'react-native';
+import { useDispatch } from 'react-redux';
+import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
+import * as Constants from '../../../Constant';
+import { NavigationStrings } from '../../../Navigation/NavigationStrings';
+import { fetchCardHistory } from '../../../Redux/Actions/SaitaCardAction';
+import Singleton from '../../../Singleton';
+import { getCurrentRouteName, goBack, navigate } from '../../../navigationsService';
+import { Fonts } from '../../../theme';
+import {
+  BorderLine,
+  MainStatusBar,
+  SimpleHeaderNew,
+  Wrap
+} from '../../common';
 import CardHistoryItem from '../../common/CardHistoryItem';
+import Loader from '../Loader/Loader';
+import { styles } from './SaitaCardHistoryStyle';
 
 const windowHeight = Dimensions.get('window').height;
 
 const SaitaCardHistory = props => {
-  //console.warn('MM','SaitaCardHistory card_id', props.cardId);
+  //console.warn('MM','SaitaCardHistory card_id', props?.route?.params?.cardId);
   const dispatch = useDispatch();
   const [historyList, setHistoryList] = useState([]);
   const [isLoading, setisLoading] = useState(false);
@@ -41,7 +36,7 @@ const SaitaCardHistory = props => {
   const [date, setDate] = useState(new Date());
   useEffect(() => {
     let backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
-      Actions.pop()
+      goBack()
       return true
     })
     Singleton.getInstance()
@@ -50,7 +45,7 @@ const SaitaCardHistory = props => {
         if (access_token) {
           //console.warn('MM',">>>access_token", access_token);
           setisLoading(true);
-          getCardHistory(access_token, props.cardId);
+          getCardHistory(access_token, props?.route?.params?.cardId);
         }
       });
       return ()=>{
@@ -64,13 +59,13 @@ const SaitaCardHistory = props => {
         item={item}
         list={historyList}
         onPress={() =>
-          Actions.currentScene != 'CardHistoryDetail' &&
-          Actions.CardHistoryDetail({
+          getCurrentRouteName() != 'CardHistoryDetail' &&
+          navigate(NavigationStrings.CardHistoryDetail,{
             selectedItem: item,
-            card_currency: props?.card_currency,
+            card_currency: props?.route?.params?.card_currency,
           })
         }
-        currency={props?.card_currency}
+        currency={props?.route?.params?.card_currency}
       />
     );
   };
@@ -123,7 +118,7 @@ const SaitaCardHistory = props => {
         imageShow
         back={false}
         backPressed={() => {
-          Actions.pop();
+          goBack();
         }}
         containerStyle={{ marginRight: 20 }}
       />

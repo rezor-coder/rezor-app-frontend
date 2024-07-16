@@ -1,31 +1,27 @@
 /* eslint-disable react-native/no-inline-styles */
+import moment from 'moment';
 import React, { Component } from 'react';
 import {
-  View,
-  Image,
-  Text,
-  SafeAreaView,
-  TouchableOpacity,
-  FlatList,
-  ScrollView,
-  Clipboard,
-  Modal,
-  Alert,
   BackHandler,
+  FlatList,
+  Image,
+  SafeAreaView,
+  Text,
+  TouchableOpacity,
+  View
 } from 'react-native';
-import styles from './NotificationStyle';
-import { Images, Colors, Fonts } from '../../../theme';
-import { ActionConst, Actions } from 'react-native-router-flux';
-import Singleton from '../../../Singleton';
-import * as Constants from '../../../Constant';
 import { connect } from 'react-redux';
-import moment from 'moment';
-import { BorderLine, SimpleHeader, TitleHeader, Wrap } from '../../common';
-import { getNotificationList } from '../../../Redux/Actions/index';
-import Loader from '../Loader/Loader';
-import FastImage from 'react-native-fast-image';
 import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
+import * as Constants from '../../../Constant';
+import { NavigationStrings } from '../../../Navigation/NavigationStrings';
+import { getNotificationList } from '../../../Redux/Actions/index';
+import Singleton from '../../../Singleton';
 import { heightDimen, widthDimen } from '../../../Utils/themeUtils';
+import { getCurrentRouteName, goBack, navigate, reset } from '../../../navigationsService';
+import { Images } from '../../../theme';
+import { BorderLine, SimpleHeader, Wrap } from '../../common';
+import Loader from '../Loader/Loader';
+import styles from './NotificationStyle';
 
 class Notification extends Component {
   constructor(props) {
@@ -42,8 +38,8 @@ class Notification extends Component {
   }
   componentDidMount() {
     this.getNotificationList();
-    this.props.navigation.addListener('didFocus', this.screenFocus);
-    this.props.navigation.addListener('didBlur', this.screenBlur);
+    this.props.navigation.addListener('focus', this.screenFocus);
+    this.props.navigation.addListener('blur', this.screenBlur);
   }
   screenBlur = () => {
     BackHandler.removeEventListener('hardwareBackPress', this.backAction);
@@ -54,11 +50,10 @@ class Notification extends Component {
   backAction = () => {
     console.log("this.props.from::::",this.props.from);
    if(this.props.from=='Pin'){
-    Actions.Main({ type: ActionConst.RESET });
-    Actions.jump('Wallet');
+    reset(NavigationStrings.Main);
     return true;
    }else{
-    Actions.pop();
+    goBack();
     return true;
    }
   };
@@ -177,10 +172,9 @@ class Notification extends Component {
             backPressed={() => {
               console.log("this.props.from::::",this.props.from);
               if(this.props.from=='Pin'){
-                Actions.Main({ type: ActionConst.RESET });
-                Actions.jump('Wallet');
+                reset(NavigationStrings.Main);
                }else{
-                Actions.pop();
+                goBack();
                }
             }}
           />
@@ -205,8 +199,8 @@ class Notification extends Component {
                     <TouchableOpacity
                       activeOpacity={0.7}
                       onPress={() => {
-                        Actions.currentScene != 'TransactionDetail' &&
-                          Actions.TransactionDetail({ TxnData: item });
+                        getCurrentRouteName() != 'TransactionDetail' &&
+                        navigate(NavigationStrings.TransactionDetail,{ TxnData: item });
                       }}>
                       <View style={[styles.tokenItem]}>
                         <View style={styles.viewStyle}>

@@ -3,73 +3,74 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, { Component } from 'react';
 import {
-  View,
-  Text,
-  ScrollView,
-  Image,
-  TouchableOpacity,
-  Modal,
-  Platform,
-  PermissionsAndroid,
-  SafeAreaView,
   BackHandler,
+  Clipboard,
+  Image,
+  Modal,
+  PermissionsAndroid,
+  Platform,
+  SafeAreaView,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
-import styles from './SendSTCStyle';
-import {
-  Wrap,
-  ButtonTransaction,
-  ButtonPrimary,
-  SimpleHeader,
-  BasicInputBox,
-  InputtextAddress,
-  BasicModal,
-  BorderLine,
-  BasicButton,
-  PinInput,
-  KeyboardDigit,
-} from '../../common';
-import { Images, Colors, Fonts } from '../../../theme/index';
-import { Actions } from 'react-native-router-flux';
-import Singleton from '../../../Singleton';
-import { connect } from 'react-redux';
-import * as constants from '../../../Constant';
-import Loader from '../Loader/Loader';
+import { EventRegister } from 'react-native-event-listeners';
+import FastImage from 'react-native-fast-image';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { connect } from 'react-redux';
+import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
+import * as Constants from '../../../Constant';
+import * as constants from '../../../Constant';
+import { IS_PRODUCTION } from '../../../Endpoints';
+import { NavigationStrings } from '../../../Navigation/NavigationStrings';
 import {
-  getBnbNonce,
+  CheckIsContactExist,
   getBnbGasEstimate,
+  getBnbNonce,
   getEthTokenRaw,
-  walletFormUpdate,
-  sendBNB,
   getSTCGasPrice,
-  CheckIsContactExist
+  sendBNB,
+  walletFormUpdate
 } from '../../../Redux/Actions';
+import Singleton from '../../../Singleton';
+import { areaDimen, heightDimen, widthDimen } from '../../../Utils/themeUtils';
+import { getCurrentRouteName, goBack, navigate } from '../../../navigationsService';
+import fonts from '../../../theme/Fonts';
+import { Colors, Fonts, Images } from '../../../theme/index';
 import {
-  exponentialToDecimalWithoutComma,
   CommaSeprator3,
   bigNumberSafeMath,
+  exponentialToDecimalWithoutComma,
   getStcNonce,
+  getStcRaw,
   sendTokenSTC,
   stcDataEncode,
-  getStcRaw,
 } from '../../../utils';
-import FastImage from 'react-native-fast-image';
-import * as Constants from '../../../Constant';
-import fonts from '../../../theme/Fonts';
-import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
-import { areaDimen, heightDimen, widthDimen } from '../../../Utils/themeUtils';
-import { Clipboard } from 'react-native';
+import {
+  BasicButton,
+  BasicInputBox,
+  BasicModal,
+  BorderLine,
+  ButtonPrimary,
+  ButtonTransaction,
+  InputtextAddress,
+  KeyboardDigit,
+  PinInput,
+  SimpleHeader,
+  Wrap,
+} from '../../common';
 import { DetailOption } from '../../common/DetailOption';
 import QRReaderModal from '../../common/QRReaderModal';
-import { IS_PRODUCTION } from '../../../Endpoints';
-import { EventRegister } from 'react-native-event-listeners';
+import Loader from '../Loader/Loader';
+import styles from './SendSTCStyle';
 const gwei_multi = 1000000000;
 class SendSTC extends Component {
   constructor(props) {
     super(props);
     this.state = {
       blockChain: 'saitachain',
-      walletData: this.props.walletData,
+      walletData: this.props.route?.params.walletData,
       isLoading: false,
       gasPriceForTxn: 1000000000,
       gasPriceForTxnSlow: 1000000000,
@@ -113,8 +114,8 @@ class SendSTC extends Component {
   componentDidMount() {
     // this.setState({BasicModall:true})
     console.log('walletData===', this.state.walletData);
-    this.props.navigation.addListener('didFocus', this.onScreenFocus);
-    this.props.navigation.addListener('didBlur', this.screenBlur);
+    this.props.navigation.addListener('focus', this.onScreenFocus);
+    this.props.navigation.addListener('blur', this.screenBlur);
     Singleton.getInstance()
       .newGetData(`${Singleton.getInstance().defaultStcAddress}_pk`)
       .then(stcPvtKey => {
@@ -123,26 +124,31 @@ class SendSTC extends Component {
     this.availableBalance();
     this.getGasLimit();
   }
+  
   onScreenFocus = () => {
     global.firstLogin = true;
     BackHandler.addEventListener('hardwareBackPress', this.backAction);
-    EventRegister.addEventListener('downModal', () => {
+    this.eventListener = EventRegister.addEventListener('downModal', () => {
+      console.log('heree::::::::5');
       if (this.state.BasicModall) {
         this.setState({ BasicModall: false })
-        Actions.currentScene != 'Wallet' && Actions.Wallet()
+        getCurrentRouteName() != 'Wallet' && navigate(NavigationStrings.Wallet)
       }
     });
   };
   screenBlur = () => {
     BackHandler.removeEventListener('hardwareBackPress', this.backAction);
-    EventRegister.removeEventListener('downModal')
+    EventRegister.removeEventListener(this.eventListener)
   };
+  componentWillUnmount(){
+    EventRegister.removeEventListener(this.eventListener)
+  }
   backAction = () => {
     if (this.state.Start_Scanner) {
       this.setState({ Start_Scanner: false });
       return true;
     } else {
-      Actions.pop();
+      goBack();
       return true;
     }
   };
@@ -691,6 +697,7 @@ class SendSTC extends Component {
     this.setState({ to_Address: '', Start_Scanner: false });
   }
   onQR_Code_Scan_Done = QR_Code => {
+    console.log("QR_Code::::::",QR_Code);
     this.setState({
       to_Address: QR_Code,
       Start_Scanner: false,
@@ -749,8 +756,8 @@ class SendSTC extends Component {
             history={true}
             customIcon={Images.address}
             onPressHistory={() =>
-              Actions.currentScene != 'SendCryptoContacts' &&
-              Actions.SendCryptoContacts({
+              getCurrentRouteName() != 'SendCryptoContacts' &&
+              navigate(NavigationStrings.SendCryptoContacts,{
                 item: this.state.walletData,
                 blockChain: this.state.blockChain,
                 getAddress: this.getAddress,
@@ -1468,7 +1475,7 @@ class SendSTC extends Component {
               amount={this.state.amount}
               contact={() => {
                 this.setState({ BasicModall: false });
-                Actions.AddNewContacts({
+                navigate(NavigationStrings.AddNewContacts,{
                   address: this.state.to_Address,
                   coinFamily: this.state.walletData.coin_family,
                 });

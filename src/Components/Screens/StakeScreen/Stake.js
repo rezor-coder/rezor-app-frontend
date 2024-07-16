@@ -1,82 +1,75 @@
-
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react/self-closing-comp */
-import React, {Component, useRef, useState, useEffect} from 'react';
+import React, { Component } from 'react';
 import {
-  View,
-  Image,
-  Text,
-  SafeAreaView,
-  TouchableOpacity,
-  Dimensions,
-  ScrollView,
-  Platform,
-  Animated,
-  Modal,
-  ActivityIndicator,
-  TextInput,
-  Linking,
-  Keyboard,
   BackHandler,
-  Alert,
+  Modal,
+  Platform,
+  SafeAreaView,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
-import styles from '../DappBrowser/DappBrowserStyle';
-import {Actions, ActionConst} from 'react-native-router-flux';
-import {Inputtext, ButtonPrimary, SimpleHeader, Wrap} from '../../common';
+import { EventRegister } from 'react-native-event-listeners';
+import FastImage from 'react-native-fast-image';
 import RNFS from 'react-native-fs';
 import WebView from 'react-native-webview';
-import {Wallet} from 'ethers';
-import web3 from 'web3';
-import Loader from '../Loader/Loader';
+import createInvoke from 'react-native-webview-invoke/native';
+import { connect } from 'react-redux';
+import { default as Web3, default as web3 } from 'web3';
+import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
+import * as Constants from '../../../Constant';
+import { IS_PRODUCTION } from '../../../Endpoints';
+import { getBnbGasEstimate, getBnbNonce, getSTCGasPrice, getStcGasEstimate, sendBNB } from '../../../Redux/Actions';
+import Singleton from '../../../Singleton';
+import { widthDimen } from '../../../Utils/themeUtils';
+import { Colors } from '../../../theme';
 import Images from '../../../theme/Images';
 import {
-  getTotalGasFeeDapp,
-  getPriorityDapp,
-  getNonceValueDapp,
-  getEthBaseFeeDapp,
   getDappSignedTxn,
+  getEthBaseFeeDapp,
+  getNonceValueDapp,
+  getPriorityDapp,
+  getStcNonce,
+  getTotalGasFeeDapp,
   getsignRawTxnDappBnb,
+  getsignRawTxnDappStc,
+  signPersonalMessage,
 } from '../../../utils';
-import {getBnbNonce, getBnbGasEstimate, sendBNB} from '../../../Redux/Actions';
-import {connect} from 'react-redux';
-import Singleton from '../../../Singleton';
-import * as Constants from '../../../Constant';
-import {Colors, Fonts} from '../../../theme';
-import {IS_PRODUCTION, DAPP_IMG_URL} from '../../../Endpoints';
-import createInvoke from 'react-native-webview-invoke/native';
-import images from '../../../theme/Images';
-import {LanguageManager, ThemeManager} from '../../../../ThemeManager';
-import FastImage from 'react-native-fast-image';
-import {EventRegister} from 'react-native-event-listeners';
-import {widthDimen} from '../../../Utils/themeUtils';
+import { ButtonPrimary, Inputtext, SimpleHeader, Wrap } from '../../common';
+import styles from '../DappBrowser/DappBrowserStyle';
+import Loader from '../Loader/Loader';
+import { goBack } from '../../../navigationsService';
 const gasFeeMultiplier = 0.000000000000000001;
-const gas = 1000000000;
-const fullNode = 'https://api.trongrid.io/';
-const solidityNode = 'https://api.trongrid.io/';
-const eventServer = 'https://api.trongrid.io/';
 var that = undefined;
 class DappBrowserSwap extends Component {
   constructor(props) {
     super(props);
-    console.log('props:::::',  `${this.props.stakeUrl}pools?chain=${this.props.chain}`,Singleton.getInstance().defaultEthAddress);
+    console.log('props:::::',this.props?.route?.params?.chain,  `${this.props.stakeUrl}?chainId=${this.props?.route?.params?.chain=='stc'?'sbc':this.props?.route?.params?.chain=='bnb'?'bsc':this.props?.route?.params?.chain}`,Singleton.getInstance().defaultEthAddress);
     this.state = {
       content: '',
       jsContent: '',
       address: Singleton.getInstance().defaultEthAddress,
       chainId:
-        this.props.chain == 'eth'
+        this.props?.route?.params?.chain == 'eth'
           ? IS_PRODUCTION == 0
             ? 5
             : 1
+          : this.props?.route?.params?.chain == 'stc'
+          ? IS_PRODUCTION==0 ? 129:1209
           : IS_PRODUCTION == 0
           ? 97
           : 56,
       rpcUrl:
-        this.props.chain == 'eth'
+        this.props?.route?.params?.chain == 'eth'
           ? IS_PRODUCTION == 0
             ? Constants.testnetEth
             : this.props.publicEthUrl
-          : IS_PRODUCTION == 0
+          :  this.props?.route?.params?.chain == 'stc'
+          ? IS_PRODUCTION == 0
+            ? Constants.testnetStc
+            : this.props.publicStcUrl
+          :IS_PRODUCTION == 0
           ? Constants.testnetBnb
           : this.props.publicBscUrl,
       privacyMode: false,
@@ -91,14 +84,13 @@ class DappBrowserSwap extends Component {
       canGoForward: false,
       isLoading: false,
       mnemonics: '',
-      selectedNetwork: this.props.chain == 'eth' ? 'Ethereum' : 'Binance',
-      selectedNetworkImageUri:
-        this.props.chain == 'eth'
-          ? `${DAPP_IMG_URL}/images/eth.png`
-          : `${DAPP_IMG_URL}/images/bnb.png`,
+      selectedNetwork: this.props?.route?.params?.chain == 'eth' ? 'Ethereum' : this.props?.route?.params?.chain == 'stc' ? 'Saitachain' :'Binance',
       url: '',
-      enteredURL: `${this.props.stakeUrl}?chain=${this.props.chain}`,
-      startUrl: `${this.props.stakeUrl}?chain=${this.props.chain}`,
+      enteredURL: `${this.props.stakeUrl}?chainId=${this.props?.route?.params?.chain=='stc'?'sbc':this.props?.route?.params?.chain=='bnb'?'bsc':this.props?.route?.params?.chain}`,
+      startUrl: `${this.props.stakeUrl}?chainId=${this.props?.route?.params?.chain=='stc'?'sbc':this.props?.route?.params?.chain=='bnb'?'bsc':this.props?.route?.params?.chain}`,
+
+      // enteredURL: `${this.props.stakeUrl}staking-pool?chainId=${this.props?.route?.params?.chain=='stc'?'sbc':this.props?.route?.params?.chain=='bnb'?'bsc':this.props?.route?.params?.chain}`,
+      // startUrl: `${this.props.stakeUrl}staking-pool?chainId=${this.props?.route?.params?.chain=='stc'?'sbc':this.props?.route?.params?.chain=='bnb'?'bsc':this.props?.route?.params?.chain}`,
       isNetworkModalVisible: false,
       advanceModalVisible: false,
       favoriteArray: [],
@@ -108,6 +100,7 @@ class DappBrowserSwap extends Component {
       alertTxt: '',
       currentUrl: '',
       currencyName: '',
+      gasLimit:0,
       dialogGasPrice: 0,
       dialogGasLimit: 0,
       dialogNonce: 0,
@@ -120,10 +113,6 @@ class DappBrowserSwap extends Component {
       MaxFee: 0,
       advancedSet: false,
       priorityFees: 0,
-      web3BscUrl:
-        Constants.network == 'testnet'
-          ? 'https://data-seed-prebsc-1-s1.binance.org:8545/'
-          : this.props.publicBscUrl,
       finished: false,
       txnTobeSigned: undefined,
       gotSigningRequest: false,
@@ -136,6 +125,7 @@ class DappBrowserSwap extends Component {
   }
   invoke = createInvoke(() => this.webview);
   componentDidMount() {
+    console.log("this.state.enteredURL::::::::::",this.state.enteredURL);
     BackHandler.addEventListener('hardwareBackPress', this.backAction);
     that = this;
     EventRegister.addEventListener('downModal', data1 => {
@@ -194,7 +184,7 @@ class DappBrowserSwap extends Component {
 
   getEthPriceinFiat() {
     this.props.myWallets.find(value => {
-      if (value.coin_symbol.toLowerCase() == 'eth') {
+      if (value.coin_symbol.toLowerCase() == this.props?.route?.params?.chain) {
         let perPrice_in_fiat = parseFloat(value.perPrice_in_fiat);
         this.setState({ethPrice: perPrice_in_fiat});
         return;
@@ -216,7 +206,7 @@ class DappBrowserSwap extends Component {
     BackHandler.removeEventListener('hardwareBackPress', this.backAction);
   };
   backAction = () => {
-    Actions.pop();
+    goBack();
     return true;
   };
   signTronTx(txn) {
@@ -251,9 +241,6 @@ class DappBrowserSwap extends Component {
   onLoadStart = event => {
     this.setState({isLoading: Platform.OS != 'ios' ? true : true});
   };
-  checkForSigned() {
-    return new Promise((resolve, reject) => {});
-  }
   onShouldStartLoadWithRequest = () => {
     return true;
   };
@@ -274,8 +261,9 @@ class DappBrowserSwap extends Component {
           ? 'eth'
           : this.state.selectedNetwork == 'Binance'
           ? 'bnb'
-          : 'matic',
-        this.state.selectedNetwork == 'Ethereum' ? 'transaction' : 'binance',
+          : 'stc',
+        this.state.selectedNetwork == 'Ethereum' ? 'transaction' :this.state.selectedNetwork == 'Saitachain' ? 'saitachain' : 'binance',
+        message?.object?.gas 
       );
     } else if (message.name == 'requestAccounts') {
       let js = `trustwallet.${message?.network}.setAddress('${this.state.address}');`;
@@ -291,9 +279,10 @@ class DappBrowserSwap extends Component {
       let pKey = await Singleton.getInstance().newGetData(
         this.state.address + '_pk',
       );
-      let signedMessage = await Singleton.getInstance().signPersonalMessage(
+      let signedMessage = await signPersonalMessage(
         message?.object?.data,
         pKey,
+        this.state.coin_family
       );
       let js = `trustwallet.${message?.network}.sendResponse(${mmid}, "${signedMessage}")`;
       this.webview?.injectJavaScript(js);
@@ -330,29 +319,7 @@ class DappBrowserSwap extends Component {
               });
           });
       }, 200);
-    } else if (message.name == 'switchEthereumChain') {
-      let chainId = this.hex2dec(message?.object?.chainId);
-      console.log('chainId:', chainId);
-      let mmid = message.id;
-      if (chainId == 137 || chainId == 80001) {
-        this.changeNetwork('Polygon');
-        let js1 = `trustwallet.${message?.network}.sendResponse(${mmid}, null)`;
-        this.webview?.injectJavaScript(js1);
-      } else if (chainId == 56 || chainId == 97) {
-        this.changeNetwork('Binance');
-        let js1 = `trustwallet.${message?.network}.sendResponse(${mmid}, null)`;
-        this.webview?.injectJavaScript(js1);
-      } else if (chainId == 1 || chainId == 5) {
-        this.changeNetwork('Ethereum');
-        let js1 = `trustwallet.${message?.network}.sendResponse(${mmid}, null)`;
-        this.webview?.injectJavaScript(js1);
-      } else {
-        console.log('in error ...');
-        let mmid = message.id;
-        let js = `trustwallet.${message?.network}.sendError(${mmid}, "Network not supported")`;
-        this.webview?.injectJavaScript(js);
-      }
-    }
+    } 
   };
   getJavascript = function (chainId, rpcUrl, address, jsContent) {
     let source = '';
@@ -363,8 +330,8 @@ class DappBrowserSwap extends Component {
           var config = {
             ethereum: {
               address: '${address}',
-              chainId: 56,
-              rpcUrl: '${this.props.chain == 'eth' ? this.props.publicEthUrl : this.props.publicBscUrl}'
+              chainId: '${this.props.chainId}',
+              rpcUrl: '${this.props?.route?.params?.chain == 'eth' ? this.props.publicEthUrl : this.props?.route?.params?.chain == 'stc' ? this.props.publicStcUrl :this.props.publicBscUrl}'
           }
           };
           trustwallet.ethereum = new trustwallet.Provider(config);
@@ -391,7 +358,7 @@ class DappBrowserSwap extends Component {
   hex2dec(num) {
     return this.ConvertBase(num).from(16).to(10);
   }
-  async getNonceAndGas(amount, coinsym, coinType) {
+  async getNonceAndGas(amount, coinsym, coinType,gas) {
     if (coinsym.toLowerCase() == 'eth') {
       var gasFees = await getTotalGasFeeDapp();
       var currentNonce = await getNonceValueDapp(this.state.address);
@@ -442,6 +409,55 @@ class DappBrowserSwap extends Component {
               this.setState({isLoading: false});
             });
         });
+    }
+    if (coinsym.toLowerCase() == 'stc') {
+      console.log("gas:::::::::",gas);
+      let access_token = Singleton.getInstance().access_token;
+      this.props.getSTCGasPrice().then(gasPrices => {
+        console.log("gasPrices:::::", gasPrices);
+        console.log("gas:::::::::",gas);
+       if(gas){
+        let web3= new Web3(this.state.rpcUrl)
+        let gasLimit = web3.utils.hexToNumber(gas)
+        console.log("gasLimit::::::::",gasLimit);
+        let standard = gasPrices?.data?.safeGasPrice * 1000000000;
+        let initialValue =
+          standard * web3.utils.hexToNumber(gasLimit);
+        let fee = initialValue * gasFeeMultiplier;
+        this.setState({
+          isVisible: true,
+          calculatedFee: fee.toFixed(5),
+          gasPrice: standard,
+          gasLimit: gasLimit
+        });
+       }else{
+        this.props
+        .getStcGasEstimate({
+          access_token,
+        })
+        .then(response => {
+          console.log("response::::::",response);
+          let gasLimit = response.data.find(item => item.name == 'swap')
+          let standard = gasPrices?.data?.safeGasPrice * 1000000000;
+          let initialValue =
+            standard *  web3.utils.hexToNumber(gasLimit);
+          let fee = initialValue * gasFeeMultiplier;
+          this.setState({
+            isVisible: true,
+            calculatedFee: fee.toFixed(5),
+            gasPrice: standard,
+            gasLimit: gasLimit
+          });
+        })
+        .catch(err => {
+          console.warn('MM', 'Error: getStcGasEstimate', err);
+          this.setState({ isLoading: false });
+        });
+       }
+      }).catch(err => {
+        console.warn('MM', 'Error: getSTCGasPrice', err);
+        this.setState({ isLoading: false });
+      })
     }
   }
 
@@ -507,7 +523,7 @@ class DappBrowserSwap extends Component {
   }
   async makeRaxTxn() {
     console.log('++++++++++');
-    if (this.props.chain == 'eth') {
+    if (this.props?.route?.params?.chain == 'eth') {
       Singleton.getInstance()
         .newGetData(`${Singleton.getInstance().defaultEthAddress}_pk`)
         .then(ethPvtKey => {
@@ -540,7 +556,7 @@ class DappBrowserSwap extends Component {
               hexedPriorityPrice,
             ).then(serializedTxn => {
               console.warn('MM', 'chk signed txn::::::eth:::::', serializedTxn);
-              this.sendCoin(serializedTxn);
+              this.sendCoin(serializedTxn,currentNonce);
             });
           } catch (err) {
             console.warn('MM', 'rtt----', err);
@@ -549,7 +565,7 @@ class DappBrowserSwap extends Component {
         .catch(err => {
           console.log(err);
         });
-    } else if (this.props.chain == 'bnb') {
+    } else if (this.props?.route?.params?.chain == 'bnb') {
       Singleton.getInstance()
         .newGetData(`${Singleton.getInstance().defaultBnbAddress}_pk`)
         .then(pk => {
@@ -579,15 +595,50 @@ class DappBrowserSwap extends Component {
             this.state.signingData.object.data,
             parseInt(this.state.chainId),
           ).then(serializedTx => {
-            this.sendCoin(serializedTx);
+            this.sendCoin(serializedTx,this.nonce);
           });
+        })
+        .catch(err => {
+          Singleton.showAlert('Unable to process transaction.');
+        });
+    }else if (this.props?.route?.params?.chain == 'stc') {
+      Singleton.getInstance()
+        .newGetData(`${Singleton.getInstance().defaultStcAddress}_pk`)
+        .then(pk => {
+          let pKey = pk;
+          let gasLimit = this.state.gasLimit; // in hex
+          let gasPrice = this.web3.utils.toHex(this.state.gasPrice); // in hex
+          let amount = (
+            this.hex2dec(
+              this.state.signingData.object.value
+                ? this.state.signingData.object.value
+                : '0x0',
+            ) /
+            10 ** 18
+          ).toString();
+          getStcNonce(Singleton.getInstance().defaultStcAddress).then(nonce => {
+            getsignRawTxnDappStc(
+              pKey,
+              amount,
+              gasPrice,
+              gasLimit,
+              nonce,
+              this.state.signingData.object.to,
+              this.state.signingData.object.from,
+              this.state.signingData.object.data,
+              parseInt(this.state.chainId),
+            ).then(serializedTx => {
+              console.warn('MM', 'this.serializedTx-------', serializedTx);
+              this.sendCoin(serializedTx,nonce);
+            });
+          })
         })
         .catch(err => {
           Singleton.showAlert('Unable to process transaction.');
         });
     }
   }
-  sendCoin(serializedTx) {
+  sendCoin(serializedTx,nonce) {
     let amountt = Singleton.getInstance().exponentialToDecimal(
       this.state.signingData.object.value,
     );
@@ -599,7 +650,7 @@ class DappBrowserSwap extends Component {
       gas_estimate: this.hex2dec(this.state.signingData.object.gas),
       tx_raw: serializedTx,
       tx_type: 'WITHDRAW',
-      nonce: this.nonce,
+      nonce: nonce,
       chat: 0,
       is_smart: 1,
       typeMessage: 'swapDapp',
@@ -608,8 +659,10 @@ class DappBrowserSwap extends Component {
     let blockChain =
       this.state.selectedNetwork == 'Ethereum'
         ? 'ethereum'
-        : 'binancesmartchain';
-    let coin_symbol = this.state.selectedNetwork == 'Ethereum' ? 'eth' : 'bnb';
+        :   this.state.selectedNetwork == 'Saitachain'
+        ? 'saitachain'
+        :'binancesmartchain';
+        let coin_symbol = this.state.selectedNetwork == 'Ethereum' ? 'eth' : this.state.selectedNetwork == 'Saitachain'?'stc': 'bnb';
     console.log('data:::::', data);
     this.props
       .sendBNB({data, access_token, blockChain, coin_symbol})
@@ -683,7 +736,7 @@ class DappBrowserSwap extends Component {
                   address: "${this.state.address}",
                   chainId: ${this.state.chainId},
                   rpcUrl: "${
-                    this.props.chain == 'eth' ? this.props.publicEthUrl : this.props.publicBscUrl
+                    this.props?.route?.params?.chain == 'eth' ? this.props.publicEthUrl :  this.props?.route?.params?.chain == 'stc' ? this.props.publicStcUrl: this.props.publicBscUrl
                   }"
                 }
             };
@@ -730,6 +783,7 @@ class DappBrowserSwap extends Component {
             onPressHistory={() => this.webview?.reload()}
           />
           <View style={{flex: 1}}>
+            {console.log(this.state.startUrl,'adsfasdfasd')}
             <WebView
               ref={ref => (this.webview = ref)}
               source={{uri: this.state.startUrl}}
@@ -830,7 +884,7 @@ class DappBrowserSwap extends Component {
                         ? 'ETH'
                         : this.state.selectedNetwork == 'Binance'
                         ? 'BNB'
-                        : 'MATIC'}
+                        : 'STC'}
                     </Text>
                   </View>
                   <View style={styles.vwSignTransaction}>
@@ -851,7 +905,7 @@ class DappBrowserSwap extends Component {
                         ? 'ETH'
                         : this.state.selectedNetwork == 'Binance'
                         ? 'BNB'
-                        : 'MATIC'}
+                        : 'STC'}
                     </Text>
                   </View>
 
@@ -1020,12 +1074,13 @@ class DappBrowserSwap extends Component {
 
 const mapStateToProp = state => {
   const {currentEthpriceInSelectedCurrency, myWallets} = state.walletReducer;
-  const {stakeUrl, publicBscUrl, publicEthUrl} = state.walletReducer.dex_data;
-  return {currentEthpriceInSelectedCurrency, myWallets,stakeUrl,publicBscUrl,publicEthUrl};
+  const {stakeUrl, publicBscUrl, publicEthUrl,publicStcUrl} = state.walletReducer.dex_data;
+  return {currentEthpriceInSelectedCurrency, myWallets,stakeUrl,publicBscUrl,publicEthUrl,publicStcUrl};
 };
 export default connect(mapStateToProp, {
   getBnbNonce,
   getBnbGasEstimate,
   sendBNB,
+  getStcGasEstimate,
+  getSTCGasPrice
 })(DappBrowserSwap);
-

@@ -1,49 +1,47 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, {useEffect, useState, createRef} from 'react';
-import {Dimensions, Share, TextInput} from 'react-native';
-import {BorderLine, Wrap} from '../../common/index';
-import {MainStatusBar, SimpleHeader, BasicButton} from '../../common';
-import {Colors, Fonts, Images} from '../../../theme';
-import LinearGradient from 'react-native-linear-gradient';
-import styles from './QrCodeStyle';
-import {View, Image, Text, TouchableOpacity} from 'react-native';
-import Singleton from '../../../Singleton';
-import QRCode from 'react-native-qrcode-image';
-import Toast, {DURATION} from 'react-native-easy-toast';
 import Clipboard from '@react-native-community/clipboard';
-import * as constants from '../../../Constant';
-import {LanguageManager, ThemeManager} from '../../../../ThemeManager';
-import {Actions} from 'react-native-router-flux';
-import {areaDimen, heightDimen, widthDimen} from '../../../Utils/themeUtils';
+import React, { createRef, useEffect, useState } from 'react';
+import { Image, Share, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import Toast from 'react-native-easy-toast';
 import FastImage from 'react-native-fast-image';
+import QRCode from 'react-native-qrcode-image';
+import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
+import * as constants from '../../../Constant';
+import Singleton from '../../../Singleton';
+import { areaDimen, heightDimen, widthDimen } from '../../../Utils/themeUtils';
+import { Colors, Fonts, Images } from '../../../theme';
+import { MainStatusBar, SimpleHeader } from '../../common';
+import { BorderLine, Wrap } from '../../common/index';
+import styles from './QrCodeStyle';
+import { goBack } from '../../../navigationsService';
 
 var qrBase64 = '';
-const QrCode = prop => {
+const QrCode = props => {
   const [showAmountModal, setShowAmountModal] = useState(false);
   const [publicAddress, setPublicAddress] = useState('');
-  const [walletData, setwalletData] = useState(prop.item);
+  const [walletData, setwalletData] = useState(props.route?.params?.item);
   const [disableButton, setDisabled] = useState(false);
   const toast = createRef();
   useEffect(() => {
     const add =
-      prop.item.coin_family == 1
+      props.route?.params?.item.coin_family == 1
         ? Singleton.getInstance().defaultEthAddress
-        : prop.item.coin_family == 6
+        : props.route?.params?.item.coin_family == 6
         ? Singleton.getInstance().defaultBnbAddress
-        : prop.item.coin_family == 11
+        : props.route?.params?.item.coin_family == 11
         ? Singleton.getInstance().defaultBnbAddress
-        : prop.item.coin_family == 3
+        : props.route?.params?.item.coin_family == 3
         ? Singleton.getInstance().defaultTrxAddress
-        : prop.item.coin_family == 4
+        : props.route?.params?.item.coin_family == 4
         ? Singleton.getInstance().defaultStcAddress
         : Singleton.getInstance().defaultBtcAddress;
 
     setPublicAddress(add);
-  }, [prop]);
+  }, [props.route?.params?.item]);
   const shareAction = () => {
     try {
       const result = Share.share({
-        message: `Please send  ${prop.item.coin_symbol.toUpperCase()} on ${publicAddress}`,
+        message: `Please send  ${props.route?.params?.item.coin_symbol.toUpperCase()} on ${publicAddress}`,
       });
       if (result.action === Share.sharedAction) {
         if (result.activityType) {
@@ -85,7 +83,7 @@ const QrCode = prop => {
         imageShow
         back={false}
         backPressed={() => {
-          Actions.pop();
+          goBack();
         }}
       />
       <BorderLine
@@ -139,7 +137,7 @@ const QrCode = prop => {
                     fontFamily: Fonts.bold,
                     fontSize: areaDimen(14),
                   }}>
-                  {prop.item?.coin_symbol?.toUpperCase()?.charAt(0)}
+                  {props.route?.params?.item?.coin_symbol?.toUpperCase()?.charAt(0)}
                 </Text>
               </View>
             )}
@@ -153,9 +151,9 @@ const QrCode = prop => {
 
         <View style={styles.qrCode_wrap}>
           <View style={styles.qrCode_holder}>
-            {prop.item?.coin_image ? (
+            {props.route?.params?.item?.coin_image ? (
               <FastImage
-                source={{uri: prop.item?.coin_image}}
+                source={{uri: props.route?.params?.item?.coin_image}}
                 style={{
                   position: 'absolute',
                   height: areaDimen(50),
@@ -189,7 +187,7 @@ const QrCode = prop => {
                     fontFamily: Fonts.bold,
                     fontSize: areaDimen(18),
                   }}>
-                  {prop.item?.coin_symbol?.toUpperCase()?.charAt(0)}
+                  {props.route?.params?.item?.coin_symbol?.toUpperCase()?.charAt(0)}
                 </Text>
               </View>
             )}

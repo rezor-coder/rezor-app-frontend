@@ -1,8 +1,8 @@
 import React from 'react';
-import { StyleSheet, View, Image, Text } from 'react-native';
+import { Image, StyleSheet, Text, View } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { Actions } from 'react-native-router-flux';
 import { Colors, Images } from '../../theme';
+import { goBack } from '../../navigationsService';
 
 const TitleHeader = props => {
   return (
@@ -14,7 +14,7 @@ const TitleHeader = props => {
           justifyContent: 'center',
           alignItems: 'flex-start',
         }}
-        onPress={() => Actions.pop()}>
+        onPress={() => goBack()}>
         <Image source={Images.backIconArrow} style={styles.backIconStyle} />
       </TouchableOpacity>
       <Text style={styles.title}>{props.title}</Text>

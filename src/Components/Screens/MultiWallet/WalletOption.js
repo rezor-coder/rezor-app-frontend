@@ -15,7 +15,6 @@
 // } from 'react-native';
 // import {Wrap} from '../../common/Wrap';
 // import {ImageBackgroundComponent, SimpleHeader, SubHeader} from '../../common';
-// import {Actions} from 'react-native-router-flux';
 // import colors from '../../../theme/Colors';
 // import LinearGradient from 'react-native-linear-gradient';
 // import {DotPagination} from '../../common/DotPagination';
@@ -102,7 +101,7 @@
 //     //   Constants.GRADIENT_COLOR,
 //     //   JSON.stringify(btn),
 //     // );
-//     props.navigation.addListener('didFocus', () => {
+//     props.navigation.addListener('focus', () => {
 //       dispatch(walletFormUpdate({prop: 'walletName', value: ''}));
 //     });
 //     colorList();
@@ -285,7 +284,7 @@
 
 //           {/* <View style={{}}>
 //             <TouchableOpacity
-//               onPress={() => Actions.pop()}
+//               onPress={() => goBack()}
 //               style={styles.btnView2}>
 //               <Text style={{color: colors.white}}>{LanguageManager.Back}</Text>
 //             </TouchableOpacity>
@@ -312,13 +311,14 @@
 // // export default connect(mapStateToProp, {getColorList})(WalletOption);
 // export {WalletOption};
 
-import React, { Component } from 'react';
-import { View, Text, Image, TouchableOpacity } from 'react-native';
-import { SubHeader, Wrap, DotPagination } from '../../common';
-import { Actions } from 'react-native-router-flux';
-import { colors, Images } from '../../../theme';
-import { styles } from '../CreateWallet/CreateWalletStyle';
+import React from 'react';
+import { Image, Text, TouchableOpacity, View } from 'react-native';
 import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
+import { getCurrentRouteName, navigate } from '../../../navigationsService';
+import { Images } from '../../../theme';
+import { DotPagination, SubHeader, Wrap } from '../../common';
+import { styles } from '../CreateWallet/CreateWalletStyle';
+import { NavigationStrings } from '../../../Navigation/NavigationStrings';
 const WalletOption = () => {
   return (
     <Wrap style={{ backgroundColor: ThemeManager.colors.backgroundColor }}>
@@ -334,8 +334,8 @@ const WalletOption = () => {
             <TouchableOpacity
               onPress={() =>
                 // Actions.ImportWallet({isFrom: 'multiWallet'})
-                Actions.currentScene != 'MultiWalletOptions' &&
-                Actions.MultiWalletOptions({ isFrom: 'multiWallet' })
+                getCurrentRouteName() != 'MultiWalletOptions' &&
+                navigate(NavigationStrings.MultiWalletOptions,{ isFrom: 'multiWallet' })
               }>
               <Image source={Images.Add} style={styles.Img} />
             </TouchableOpacity>
@@ -345,8 +345,8 @@ const WalletOption = () => {
           <View>
             <TouchableOpacity
               onPress={() =>
-                Actions.currentScene != 'CreateNewWallet' &&
-                Actions.CreateNewWallet({ isFrom: 'multiWallet' })
+                getCurrentRouteName() != 'CreateNewWallet' &&
+                navigate(NavigationStrings.CreateNewWallet,{ isFrom: 'multiWallet' })
               }>
               <Image source={Images.Add} style={styles.Img} />
             </TouchableOpacity>
@@ -362,7 +362,7 @@ const WalletOption = () => {
           <Text style={styles.text}>{LanguageManager.walletText}</Text>
         </View>
       </View>
-      <TouchableOpacity onPress={() => Actions.pop()} style={styles.back}>
+      <TouchableOpacity onPress={() => goBack()} style={styles.back}>
         <Text style={styles.heading}>{LanguageManager.Back}</Text>
       </TouchableOpacity>
       <DotPagination activeDotNumber={1} />

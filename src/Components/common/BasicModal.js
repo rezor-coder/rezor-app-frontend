@@ -1,19 +1,19 @@
+import moment from 'moment';
 import React from 'react';
 import {
-  Text,
-  StyleSheet,
-  View,
-  Image,
-  TouchableOpacity,
   Modal,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
 } from 'react-native';
-import { Fonts, Images } from '../../theme';
+import { ThemeManager } from '../../../ThemeManager';
+import { NavigationStrings } from '../../Navigation/NavigationStrings';
+import { areaDimen, heightDimen, widthDimen } from '../../Utils/themeUtils';
+import { getCurrentRouteName, navigate } from '../../navigationsService';
+import { Fonts } from '../../theme';
 import Colors from '../../theme/Colors';
 import { BasicButton } from './index';
-import { Actions } from 'react-native-router-flux';
-import moment from 'moment';
-import { ThemeManager } from '../../../ThemeManager';
-import { areaDimen, heightDimen, widthDimen } from '../../Utils/themeUtils';
 const BasicModal = props => {
   return (
     <Modal
@@ -73,7 +73,7 @@ const BasicModal = props => {
             }}
             onPress={() =>
              {
-              props.onClose ? props.onClose():    Actions.currentScene != 'Wallet' && Actions.Wallet()
+              props.onClose ? props.onClose():    getCurrentRouteName() != 'Wallet' && navigate(NavigationStrings.Wallet)
              }
             }>
             <Text style={[styles.denyText, props.bottomBtn]}>

@@ -1,4 +1,5 @@
 import { Dimensions } from "react-native"
+const { width, height } = Dimensions.get('window');
 
 export const areaDimen = (dimension) => {
     let height = 896
@@ -23,3 +24,7 @@ export const widthDimen=(dimension)=>{
   let actualDImension = screenWidth * (percentage/100)
   return actualDImension
 }
+export {
+  width,
+  height,
+};

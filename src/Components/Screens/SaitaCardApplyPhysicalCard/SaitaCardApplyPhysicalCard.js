@@ -1,15 +1,25 @@
+import React, { useEffect, useRef, useState } from 'react';
 import {
-  View,
-  Text,
-  Platform,
   Image,
-  TouchableOpacity,
-  PermissionsAndroid,
+  Modal,
+  Platform,
   StyleSheet,
-  TouchableWithoutFeedback,
-  Dimensions,
+  Text,
+  TouchableOpacity,
+  View
 } from 'react-native';
-import React, { useEffect, useRef } from 'react';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scrollview';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useDispatch } from 'react-redux';
+import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
+import { APIClient } from '../../../Api';
+import * as Constants from '../../../Constant';
+import { API_CARD_PHYSICAL_FORM } from '../../../Endpoints';
+import { sendOtpCard, sendOtpCardMobile } from '../../../Redux/Actions';
+import Singleton from '../../../Singleton';
+import { countryData, countryWholeData } from '../../../countryCodes';
+import { Colors, Images } from '../../../theme';
+import fonts from '../../../theme/Fonts';
 import {
   BasicButton,
   BasicInputBox,
@@ -17,28 +27,10 @@ import {
   SimpleHeader,
   Wrap,
 } from '../../common';
-import {LanguageManager, ThemeManager} from '../../../../ThemeManager';
-import {Actions} from 'react-native-router-flux';
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scrollview';
-import fonts from '../../../theme/Fonts';
-import * as Constants from '../../../Constant';
-import {useState} from 'react';
-import moment from 'moment';
-import {Colors, Fonts, Images} from '../../../theme';
-import LinearGradient from 'react-native-linear-gradient';
-import {launchImageLibrary} from 'react-native-image-picker';
-import Singleton from '../../../Singleton';
-import SmoothPinCodeInput from 'react-native-smooth-pincode-input';
-import {sendOtpCard, sendOtpCardMobile} from '../../../Redux/Actions';
-import {Modal} from 'react-native';
 import CountryCodes from '../CountryCodes/CountryCodes';
-import {countryData, countryWholeData} from '../../../countryCodes';
-import {SafeAreaView} from 'react-native-safe-area-context';
 import CountryWholeCurrency from '../CountryWholeCurrency/CountryWholeCurrency';
 import Loader from '../Loader/Loader';
-import { useDispatch } from 'react-redux';
-import { APIClient } from '../../../Api';
-import { API_CARD_PHYSICAL_FORM } from '../../../Endpoints';
+import { goBack } from '../../../navigationsService';
 let DocumentList = [
   {
     title: 'Passport',
@@ -262,7 +254,7 @@ let data = {
   console.log(res)
   setisLoading(false)
   Singleton.showAlert(res?.message || 'Your application is in review')
-  Actions.pop()
+  goBack()
 } catch (error) {
   setisLoading(false)
   console.log(error);
@@ -403,7 +395,7 @@ let data = {
         <SimpleHeader
           back={false}
           backPressed={() => {
-            Actions.pop();
+            goBack();
           }}
           title={'Physical Card Application'}
         />
@@ -465,7 +457,7 @@ let data = {
                 fontSize: 13,
                 fontFamily: fonts.regular,
               }}
-              title={LanguageManager.phone}
+              title={LanguageManager.phoneNumber}
               maxLength={20}
               mainStyle={{borderColor: ThemeManager.colors.inputBoxColor}}
               width="100%"
@@ -488,7 +480,7 @@ let data = {
                 fontSize: 13,
                 fontFamily: fonts.semibold,
               }}
-              title={LanguageManager.phone}
+              title={LanguageManager.phoneNumber}
               mainStyle={{borderColor: ThemeManager.colors.inputBoxColor}}
               keyboardType="number-pad"
               onChangeText={text => {

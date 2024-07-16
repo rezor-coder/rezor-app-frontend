@@ -1,31 +1,20 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, {useEffect, useState} from 'react';
+import React, { useState } from 'react';
 import {
-  View,
-  Text,
-  StyleSheet,
-  Image,
-  ImageBackground,
-  ScrollView,
-  Dimensions,
-  Alert,
   Modal,
-  SafeAreaView,
-  FlatList,
-  Keyboard,
+  Text,
   TouchableOpacity,
+  View
 } from 'react-native';
-import {Actions} from 'react-native-router-flux';
-import images from '../../../theme/Images';
-import {Colors} from '../../../theme';
+import { Colors } from '../../../theme';
 
-import {styles} from './SwapTabStyle';
-import {Inputtext, InputtextSearch, MainHeader} from '../../common';
 import LinearGradient from 'react-native-linear-gradient';
+import { InputtextSearch } from '../../common';
+import { styles } from './SwapTabStyle';
 // import { TouchableOpacity } from 'react-native-gesture-handler';
-import {Wrap, BasicButton} from '../../common/index';
-import SwapScreenBnb from '../SwapScreenBnb/SwapScreenBnb';
+import { BasicButton, Wrap } from '../../common/index';
 import SwapScreen from '../SwapScreen/SwapScreen';
+import SwapScreenBnb from '../SwapScreenBnb/SwapScreenBnb';
 
 const SwapTab = () => {
   const [indexPosition, setindexPosition] = useState(0);

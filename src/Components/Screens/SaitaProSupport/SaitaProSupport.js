@@ -1,45 +1,27 @@
 /* eslint-disable react/self-closing-comp */
 /* eslint-disable react-native/no-inline-styles */
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
-  View,
-  Text,
-  StyleSheet,
-  ImageBackground,
-  Image,
-  TouchableOpacity,
   FlatList,
-  ScrollView,
-  Alert,
   Linking,
+  Text,
+  TouchableOpacity,
+  View
 } from 'react-native';
-import { Wrap } from '../../common/Wrap';
-import { BasicButton, BorderLine, MainHeader, SimpleHeader, SubHeader } from '../../common';
-import { Actions } from 'react-native-router-flux';
-import images from '../../../theme/Images';
-import styles from './SaitaProSupportStyle';
-import {
-  logoutUser,
-  enableDisableNoti,
-  getEnableDisableNotiStatus,
-  getSocialList,
-  changeThemeAction,
-} from '../../../Redux/Actions';
-import { Colors, Fonts, Images } from '../../../theme';
-import { SettingBar } from '../../common/SettingBar';
-import fonts from '../../../theme/Fonts';
-import * as constants from './../../../Constant';
-import { ActionConst } from 'react-native-router-flux';
-import Singleton from '../../../Singleton';
-import { connect, useDispatch, useSelector } from 'react-redux';
-import Loader from '../Loader/Loader';
-import { DAPP_IMG_URL } from '../../../Endpoints';
-import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
-import { CoustomModal } from '../../common/CoustomModal';
 import { EventRegister } from 'react-native-event-listeners';
-import LinearGradient from 'react-native-linear-gradient';
-import { heightDimen, widthDimen } from '../../../Utils/themeUtils';
 import FastImage from 'react-native-fast-image';
+import { useDispatch, useSelector } from 'react-redux';
+import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
+import { NavigationStrings } from '../../../Navigation/NavigationStrings';
+import Singleton from '../../../Singleton';
+import { heightDimen, widthDimen } from '../../../Utils/themeUtils';
+import { getCurrentRouteName, goBack, navigate } from '../../../navigationsService';
+import { Images } from '../../../theme';
+import images from '../../../theme/Images';
+import { BorderLine, SimpleHeader } from '../../common';
+import { Wrap } from '../../common/Wrap';
+import * as constants from './../../../Constant';
+import styles from './SaitaProSupportStyle';
 
 let showLoader = true;
 const SaitaProSupport = props => {
@@ -63,7 +45,7 @@ const SaitaProSupport = props => {
   ];
 
   useEffect(() => {
-    props.navigation.addListener('didFocus', () => {
+    props.navigation.addListener('focus', () => {
       // getThemeData();
       Singleton.getInstance()
         .newGetData(constants.SOCIAL_LINKS)
@@ -91,7 +73,7 @@ const SaitaProSupport = props => {
             Linking.openURL('https://saitama.academy')
             :
             item?.type == 'GetSupport' ?
-              Actions.currentScene != 'GetSupport' && Actions.GetSupport()
+              getCurrentRouteName() != 'GetSupport' && navigate(NavigationStrings.GetSupport)
               :
               Linking.openURL('https://fang.art')
 
@@ -163,7 +145,7 @@ const SaitaProSupport = props => {
           backImage={ThemeManager.ImageIcons.iconBack}
           imageShow
           back={false}
-          backPressed={() => Actions.pop()}
+          backPressed={() => goBack()}
           titleStyle={{
             textTransform:'none'
           }}
@@ -421,7 +403,7 @@ const SaitaProSupport = props => {
             disabled={false}
             onPress={() => {
               setSelectedButton('Get Support');
-              Actions.currentScene != 'GetSupport' && Actions.GetSupport();
+              getCurrentRouteName() != 'GetSupport' && Actions.GetSupport();
             }}
             btnStyle={{
               // flex: 1,

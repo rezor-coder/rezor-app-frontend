@@ -1,22 +1,19 @@
-import React, {Component} from 'react';
+import React from 'react';
 import {
-  View,
-  Text,
-  StyleSheet,
-  ImageBackground,
   Image,
-  TouchableOpacity,
   ScrollView,
+  Text,
+  TouchableOpacity,
+  View
 } from 'react-native';
-import {Wrap} from '../../common/Wrap';
-import {SubHeader} from '../../common';
-import {Actions} from 'react-native-router-flux';
-import colors from '../../../theme/Colors';
+import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
+import { NavigationStrings } from '../../../Navigation/NavigationStrings';
+import { getCurrentRouteName, goBack, navigate } from '../../../navigationsService';
 import images from '../../../theme/Images';
-import {Multibtn} from '../../common/Multibtn';
-import {DotPagination} from '../../common/DotPagination';
-import {styles} from './CreateWalletStyle';
-import {LanguageManager, ThemeManager} from '../../../../ThemeManager';
+import { SubHeader } from '../../common';
+import { DotPagination } from '../../common/DotPagination';
+import { Wrap } from '../../common/Wrap';
+import { styles } from './CreateWalletStyle';
 const CreateWallet = () => {
   return (
     <Wrap style={{backgroundColor: ThemeManager.colors.backgroundColor}}>
@@ -32,8 +29,8 @@ const CreateWallet = () => {
             <View>
               <TouchableOpacity
                 onPress={() =>
-                  Actions.currentScene != 'ImportWallet' &&
-                  Actions.ImportWallet()
+                  getCurrentRouteName() != 'ImportWallet' &&
+                  navigate(NavigationStrings.ImportWallet)
                 }>
                 <Image source={images.Add} style={styles.Img} />
               </TouchableOpacity>
@@ -43,8 +40,8 @@ const CreateWallet = () => {
             <View>
               <TouchableOpacity
                 onPress={() =>
-                  Actions.currentScene != 'CreateNewWallet' &&
-                  Actions.CreateNewWallet()
+                  getCurrentRouteName() != 'CreateNewWallet' &&
+                  navigate(NavigationStrings.CreateNewWallet)
                 }>
                 <Image source={images.Add} style={styles.Img} />
               </TouchableOpacity>
@@ -60,7 +57,7 @@ const CreateWallet = () => {
             <Text style={styles.text}>{LanguageManager.walletText}</Text>
             <View style={{marginTop: 50}}>
               <TouchableOpacity
-                onPress={() => Actions.pop()}
+                onPress={() => goBack()}
                 style={styles.back}>
                 <Text style={styles.heading}>{LanguageManager.Back}</Text>
               </TouchableOpacity>

@@ -1,36 +1,27 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
-  View,
-  Text,
-  Image,
-  TouchableOpacity,
   BackHandler,
   Dimensions,
-  ImageBackground,
   ScrollView,
+  Text,
+  View
 } from 'react-native';
-import { Wrap } from '../../common/Wrap';
-import { Actions } from 'react-native-router-flux';
-import images from '../../../theme/Images';
-import { styles } from './WalletSecurityConfirmStyle';
 import ReactNativeBiometrics from 'react-native-biometrics';
 import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
-import {
-  SubHeader,
-  SimpleHeader,
-  BasicButton,
-  MainStatusBar,
-  PinInput,
-  KeyboardDigit,
-} from '../../common';
-import colors from '../../../theme/Colors';
-import fonts from '../../../theme/Fonts';
-import SmoothPinCodeInput from 'react-native-smooth-pincode-input';
-import * as constants from './../../../Constant';
+import { NavigationStrings } from '../../../Navigation/NavigationStrings';
 import Singleton from '../../../Singleton';
+import { widthDimen } from '../../../Utils/themeUtils';
+import { getCurrentRouteName, goBack, navigate } from '../../../navigationsService';
+import {
+  BasicButton,
+  KeyboardDigit,
+  MainStatusBar,
+  PinInput
+} from '../../common';
 import HeaderwithBackIcon from '../../common/HeaderWithBackIcon';
-import { ifIphoneX } from 'react-native-iphone-x-helper';
-import { areaDimen, heightDimen, widthDimen } from '../../../Utils/themeUtils';
+import { Wrap } from '../../common/Wrap';
+import * as constants from './../../../Constant';
+import { styles } from './WalletSecurityConfirmStyle';
 
 const windowHeight = Dimensions.get('window').height;
 const WalletSequrityConfirm = props => {
@@ -40,7 +31,7 @@ const WalletSequrityConfirm = props => {
   const [confirmPin, setConfirmPin] = useState('');
   const [btnColor, setBtnColor] = useState('');
   useEffect(() => {
-    props.navigation.addListener('didFocus', () => {
+    props.navigation.addListener('focus', () => {
       setBtnColor(Singleton.getInstance().dynamicColor);
     });
   }, [props]);
@@ -48,7 +39,7 @@ const WalletSequrityConfirm = props => {
   useEffect(() => {
     const backAction = () => {
       // //console.warn('MM','i WalletSequrityConfirm');
-      Actions.pop();
+      goBack();
       return true;
     };
 
@@ -104,14 +95,14 @@ const WalletSequrityConfirm = props => {
       //     //   // this.setState({pinFromStorage: pin});
       //     //   // global.isOnPinScreen = true;
       //     // });
-      //     Actions.currentScene != 'ConfirmPin' && Actions.ConfirmPin();
+      //     getCurrentRouteName() != 'ConfirmPin' && Actions.ConfirmPin();
       //   }
     } else {
       Singleton.getInstance().newSaveData(constants.PIN, pin);
       Singleton.getInstance().newSaveData(constants.ENABLE_PIN, 'true');
 
-      Actions.currentScene != 'CreateOrImportWallet' &&
-        Actions.replace('CreateOrImportWallet');
+      getCurrentRouteName() != 'CreateOrImportWallet' &&
+      navigate(NavigationStrings.CreateOrImportWallet);
     }
   };
 
@@ -251,7 +242,7 @@ const WalletSequrityConfirm = props => {
         {/* </ImageBackgroundComponent> */}
       </View>
       <View>
-        {/* <TouchableOpacity onPress={() => Actions.pop()} style={styles.btnView2}>
+        {/* <TouchableOpacity onPress={() => goBack()} style={styles.btnView2}>
           <Text style={{color: colors.white}}>{LanguageManager.Back}</Text>
         </TouchableOpacity> */}
       </View>

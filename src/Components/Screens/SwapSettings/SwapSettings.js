@@ -1,50 +1,28 @@
 /* eslint-disable react/self-closing-comp */
 /* eslint-disable react-native/no-inline-styles */
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
-  View,
-  Text,
-  StyleSheet,
-  ImageBackground,
-  Image,
-  TouchableOpacity,
-  FlatList,
-  ScrollView,
-  Alert,
-  Linking,
   BackHandler,
+  ScrollView,
+  View
 } from 'react-native';
-import { Wrap } from '../../common/Wrap';
+import { useDispatch } from 'react-redux';
+import Singleton from '../../../Singleton';
+import { Fonts } from '../../../theme';
 import {
   BasicButton,
   BasicInputBox,
   BorderLine,
-  MainHeader,
   MainStatusBar,
-  SimpleHeader,
-  SubHeader,
+  SimpleHeader
 } from '../../common';
-import { Actions } from 'react-native-router-flux';
-import images from '../../../theme/Images';
-import styles from './SwapSettingsStyle';
-import {
-  logoutUser,
-  enableDisableNoti,
-  getEnableDisableNotiStatus,
-  getSocialList,
-  changeThemeAction,
-} from '../../../Redux/Actions';
-import { Colors, Fonts, Images } from '../../../theme';
-import { SettingBar } from '../../common/SettingBar';
-import fonts from '../../../theme/Fonts';
+import { Wrap } from '../../common/Wrap';
 import * as constants from './../../../Constant';
-import { ActionConst } from 'react-native-router-flux';
-import Singleton from '../../../Singleton';
-import { connect, useDispatch, useSelector } from 'react-redux';
 
-import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
 import { EventRegister } from 'react-native-event-listeners';
+import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
 import { areaDimen, heightDimen, widthDimen } from '../../../Utils/themeUtils';
+import { getCurrentRouteName, goBack } from '../../../navigationsService';
 
 let showLoader = true;
 const SwapSettings = props => {
@@ -64,13 +42,13 @@ const SwapSettings = props => {
     BackHandler.removeEventListener('hardwareBackPress', backAction);
   };
   useEffect(() => {
-    props.navigation.addListener('didFocus', onScreenFocus);
-    props.navigation.addListener('didBlur', onScreenBlur);
+    props.navigation.addListener('focus', onScreenFocus);
+    props.navigation.addListener('blur', onScreenBlur);
   }, []);
   const backAction = () => {
     let data = "";
     EventRegister.emit('swapData', data);
-      Actions.pop(); 
+      goBack(); 
       return true;
   };
   return (
@@ -93,8 +71,8 @@ const SwapSettings = props => {
           // Actions.SwapNew()
           let data = "";
           EventRegister.emit('swapData', data);
-          Actions.currentScene === 'SwapSettings' && Actions.pop();
-          // Actions.currentScene === 'SwapSettings' && Actions.Trade({from:'Setting'});
+          getCurrentRouteName() === 'SwapSettings' && goBack();
+          // getCurrentRouteName() === 'SwapSettings' && Actions.Trade({from:'Setting'});
         }}
       />
 
@@ -179,9 +157,9 @@ const SwapSettings = props => {
                 Singleton.getInstance().slipageTolerance = tolerance;
                 let data = { timeout: timeout, tolerance: tolerance };
                 EventRegister.emit('swapData', data);
-                Actions.currentScene === 'SwapSettings' && Actions.pop();
+                getCurrentRouteName() === 'SwapSettings' && goBack();
                 // Actions.Trade({from:'Setting'});
-                // Actions.currentScene === 'SwapSettings' && Actions.Trade({from:'Setting'});;
+                // getCurrentRouteName() === 'SwapSettings' && Actions.Trade({from:'Setting'});;
                 // Actions.pop({refresh:{foo: 'bar'}})
               }}
               btnStyle={{

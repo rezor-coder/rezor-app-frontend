@@ -1,57 +1,51 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import {
-  View,
-  Image,
-  Text,
-  ScrollView,
-  SafeAreaView,
-  TouchableOpacity,
-  Modal,
   Alert,
+  Image,
+  Modal,
+  SafeAreaView,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
-import styles from './MultiSenderMaticStyle';
+import ReactNativeBiometrics from 'react-native-biometrics';
+import { EventRegister } from 'react-native-event-listeners';
+import FastImage from 'react-native-fast-image';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scrollview';
+import { connect } from 'react-redux';
+import Web3 from 'web3';
+import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
+import * as constants from '../../../Constant';
+import { NavigationStrings } from '../../../Navigation/NavigationStrings';
+import {
+  getBnbGasEstimate,
+  getBnbGasPrice,
+  getBnbNonce,
+  saveTxn,
+  sendBNB,
+} from '../../../Redux/Actions';
+import Singleton, {
+  MultiSenderMaticContractAddress,
+  matic20MultiSenderContractAddress,
+} from '../../../Singleton';
+import { areaDimen, heightDimen, widthDimen } from '../../../Utils/themeUtils';
+import { getCurrentRouteName, goBack, navigate, reset } from '../../../navigationsService';
+import { Colors, Fonts, Images } from '../../../theme';
 import {
   BasicButton,
   BorderLine,
   ButtonPrimary,
   ButtonTransaction,
-  Header,
-  HeaderNew,
-  IndicatorCreatePin,
   Inputtext,
   KeyboardDigit,
   LightButton,
-  MainHeader,
-  PinBtns,
   PinInput,
   SimpleHeader,
-  Wrap,
+  Wrap
 } from '../../common';
-import {Fonts, Images, Colors} from '../../../theme';
-import * as constants from '../../../Constant';
-import {Actions} from 'react-native-router-flux';
-import Singleton, {
-  MultiSenderMaticContractAddress,
-  matic20MultiSenderContractAddress,
-} from '../../../Singleton';
-import {
-  getBnbNonce,
-  getBnbGasPrice,
-  sendBNB,
-  getBnbGasEstimate,
-  saveTxn,
-} from '../../../Redux/Actions';
-import {connect} from 'react-redux';
 import Loader from '../Loader/Loader';
-import Web3 from 'web3';
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scrollview';
-import ReactNativeBiometrics from 'react-native-biometrics';
-import Toast, {DURATION} from 'react-native-easy-toast';
-import {LanguageManager, ThemeManager} from '../../../../ThemeManager';
-import SmoothPinCodeInput from 'react-native-smooth-pincode-input';
-import {areaDimen, heightDimen, widthDimen} from '../../../Utils/themeUtils';
-import FastImage from 'react-native-fast-image';
-import { EventRegister } from 'react-native-event-listeners';
+import styles from './MultiSenderMaticStyle';
 // export const multiSenderBnbContractAddress =
 //   constants.network == 'testnet'
 //     ? '0xEF3Cc16FAC12431799ae4ECc3b87BE5e9AD076e4'
@@ -118,7 +112,7 @@ class MultiSenderMatic extends Component {
           to_Address: this.props.selectedAddress,
         });
       });
-    csvData = this.props.csvArray;
+    csvData = this.props?.route?.params.csvArray;
     let valueInCoin = 0;
     let toAddressMulti = '';
     csvData.map((item, index) => {
@@ -148,16 +142,16 @@ class MultiSenderMatic extends Component {
       amountArr.push(csvData[i].amount);
       //console.log(csvData[i].address);
     }
-    if (this.props.selectedCoin.coin_symbol.toLowerCase() == 'matic') {
+    if (this.props?.route?.params.selectedCoin.coin_symbol.toLowerCase() == 'matic') {
       //console.log('hereeee');
       Singleton.getInstance()
         .getDataForMultiMatic(
           addressArr,
           amountArr,
-          this.props.selectedCoin.coin_family,
+          this.props?.route?.params.selectedCoin.coin_family,
           this.state.amountNew,
           Singleton.getInstance().defaultMaticAddress,
-          this.props.referralAddress,
+          this.props?.route?.params.referralAddress,
         )
         .then(res => {
           // console.log('chk res matic::::', res);
@@ -186,12 +180,12 @@ class MultiSenderMatic extends Component {
         .getDataForMultiMaticToken(
           addressArr,
           amountArr,
-          this.props.selectedCoin.token_address,
-          this.props.selectedCoin.decimals,
-          this.props.selectedCoin.coin_family,
+          this.props?.route?.params.selectedCoin.token_address,
+          this.props?.route?.params.selectedCoin.decimals,
+          this.props?.route?.params.selectedCoin.coin_family,
           this.state.amountNew,
           Singleton.getInstance().defaultMaticAddress,
-          this.props.referralAddress,
+          this.props?.route?.params.referralAddress,
         )
         .then(res => {
           // console.log('chk data for token:::BNB:', res);
@@ -226,9 +220,9 @@ class MultiSenderMatic extends Component {
     let blockChain = this.state.blockChain;
     let access_token = Singleton.getInstance().access_token;
     let contractAddress =
-      this.props.selectedCoin.coin_symbol.toLowerCase() == 'matic'
+      this.props?.route?.params.selectedCoin.coin_symbol.toLowerCase() == 'matic'
         ? 'matic'
-        : this.props.selectedCoin.token_address;
+        : this.props?.route?.params.selectedCoin.token_address;
     this.props
       .getBnbGasEstimate({blockChain, data, contractAddress, access_token})
       .then(response => {
@@ -251,11 +245,11 @@ class MultiSenderMatic extends Component {
             .exponentialToDecimal(feeIs)
             .toString(),
           amountAfterCommission:
-            this.props.selectedCoin.coin_symbol.toLowerCase() == 'matic'
+            this.props?.route?.params.selectedCoin.coin_symbol.toLowerCase() == 'matic'
               ? res.amountAfterCommission
               : this.state.amountNew,
           amount:
-            this.props.selectedCoin.coin_symbol.toLowerCase() == 'matic'
+            this.props?.route?.params.selectedCoin.coin_symbol.toLowerCase() == 'matic'
               ? res.amountAfterCommission
               : this.state.amountNew,
           dataEncoded: res.data,
@@ -290,7 +284,7 @@ class MultiSenderMatic extends Component {
       );
     } else {
       Singleton.showAlert(
-        `Enter valid ${this.props.selectedCoin.coin_symbol.toUpperCase()} address`,
+        `Enter valid ${this.props?.route?.params.selectedCoin.coin_symbol.toUpperCase()} address`,
       );
     }
   }
@@ -327,7 +321,7 @@ class MultiSenderMatic extends Component {
           }
           //console.log('successful biometrics provided');
           this.setState({pinModal: false}, () => {
-            this.props.selectedCoin.coin_symbol.toLowerCase() == 'matic'
+            this.props?.route?.params.selectedCoin.coin_symbol.toLowerCase() == 'matic'
               ? this.send_BNB()
               : this.send_BEP20();
           });
@@ -343,7 +337,7 @@ class MultiSenderMatic extends Component {
     this.setState({isLoading: true});
     let access_token = Singleton.getInstance().access_token;
     let blockChain = this.state.blockChain;
-    let contractAddress = this.props.selectedCoin.token_address;
+    let contractAddress = this.props?.route?.params.selectedCoin.token_address;
     let chainID = constants.network == 'testnet' ? 80001 : 137;
     let coin_symbol = 'matic';
     let wallet_address = Singleton.getInstance().defaultMaticAddress;
@@ -390,7 +384,7 @@ class MultiSenderMatic extends Component {
     this.setState({isLoading: true});
     let access_token = Singleton.getInstance().access_token;
     let blockChain = this.state.blockChain;
-    let contractAddress = this.props.selectedCoin.token_address;
+    let contractAddress = this.props?.route?.params.selectedCoin.token_address;
     let chainID = constants.network == 'testnet' ? 80001 : 137;
     let coin_symbol = 'matic';
     let wallet_address = Singleton.getInstance().defaultMaticAddress;
@@ -440,9 +434,9 @@ class MultiSenderMatic extends Component {
     let access_token = Singleton.getInstance().access_token;
     let blockChain = this.state.blockChain;
     let coin_symbol =
-      this.props.selectedCoin.coin_symbol.toLowerCase() == 'matic'
+      this.props?.route?.params.selectedCoin.coin_symbol.toLowerCase() == 'matic'
         ? 'matic'
-        : this.props.selectedCoin.token_address;
+        : this.props?.route?.params.selectedCoin.token_address;
     this.props
       .saveTxn({data, access_token, blockChain, coin_symbol})
       .then(res => {
@@ -454,7 +448,7 @@ class MultiSenderMatic extends Component {
             {
               text: 'OK',
               onPress: () => {
-                Actions.currentScene != 'Main' && Actions.replace('Main');
+                getCurrentRouteName() != 'Main' && reset(NavigationStrings.Main);
               },
             },
           ],
@@ -480,7 +474,7 @@ class MultiSenderMatic extends Component {
         // this.checkPin(this.state.pin + item);
         // if (pin == this.state.existingPin) {
         //   this.setState({ pinModal: false }, () => {
-        //     this.props.selectedCoin.coin_symbol.toLowerCase() == 'eth'
+        //     this.props?.route?.params.selectedCoin.coin_symbol.toLowerCase() == 'eth'
         //       ? this.send_ETH()
         //       : this.send_ERC20();
         //   });
@@ -513,7 +507,7 @@ class MultiSenderMatic extends Component {
           //   this.setState({pinModal: false});
 
           this.setState({pinModal: false}, () => {
-            this.props.selectedCoin.coin_symbol.toLowerCase() == 'matic'
+            this.props?.route?.params.selectedCoin.coin_symbol.toLowerCase() == 'matic'
               ? this.send_BNB()
               : this.send_BEP20();
           });
@@ -975,7 +969,7 @@ class MultiSenderMatic extends Component {
                         alignItems: 'center', // Vertical direction
                       }}>
                       <FastImage
-                        source={{uri: this.props.selectedCoin.coin_image}}
+                        source={{uri: this.props?.route?.params.selectedCoin.coin_image}}
                         style={styles.iconImageStyle}
                         resizeMode={FastImage.resizeMode.contain}
                       />
@@ -984,7 +978,7 @@ class MultiSenderMatic extends Component {
                           styles.balanceLabelStyle,
                           {color: ThemeManager.colors.lightTextColor},
                         ]}>
-                        {this.props.selectedCoin.coin_symbol.toUpperCase() +
+                        {this.props?.route?.params.selectedCoin.coin_symbol.toUpperCase() +
                           ' ' +
                           'Balance'}
                       </Text>
@@ -996,7 +990,7 @@ class MultiSenderMatic extends Component {
                         {color: ThemeManager.colors.textColor},
                       ]}>
                       {Singleton.getInstance().toFixed(
-                        this.props.selectedCoin.balance,
+                        this.props?.route?.params.selectedCoin.balance,
                         5,
                       )}
                     </Text>
@@ -1025,7 +1019,7 @@ class MultiSenderMatic extends Component {
                         alignItems: 'center', // Vertical direction
                       }}>
                       <FastImage
-                        source={{uri: this.props.selectedCoin.coin_image}}
+                        source={{uri: this.props?.route?.params.selectedCoin.coin_image}}
                         style={styles.iconImageStyle}
                         resizeMode={FastImage.resizeMode.contain}
                       />
@@ -1038,7 +1032,7 @@ class MultiSenderMatic extends Component {
                       </Text>
                     </View>
 
-                    {this.props.selectedCoin.coin_symbol.toUpperCase() ==
+                    {this.props?.route?.params.selectedCoin.coin_symbol.toUpperCase() ==
                       'MATIC' && (
                       <Text
                         style={[
@@ -1048,11 +1042,11 @@ class MultiSenderMatic extends Component {
                         {
                           Singleton.getInstance().toFixed(this.state.amount, 8)
                           // + ' ' +
-                          //   this.props.selectedCoin.coin_symbol.toUpperCase()
+                          //   this.props?.route?.params.selectedCoin.coin_symbol.toUpperCase()
                         }
                       </Text>
                     )}
-                    {this.props.selectedCoin.coin_symbol.toUpperCase() !=
+                    {this.props?.route?.params.selectedCoin.coin_symbol.toUpperCase() !=
                       'MATIC' && (
                       <Text
                         style={[
@@ -1065,7 +1059,7 @@ class MultiSenderMatic extends Component {
                             8,
                           ) +
                             // ' ' +
-                            // this.props.selectedCoin.coin_symbol.toUpperCase() +
+                            // this.props?.route?.params.selectedCoin.coin_symbol.toUpperCase() +
                             ' + ' +
                             parseFloat(
                               this.state.commissionAmt / 10 ** 18,
@@ -1091,11 +1085,11 @@ class MultiSenderMatic extends Component {
                       { color: ThemeManager.colors.textColor },
                     ]}>
                     {Singleton.getInstance().toFixed(
-                      this.props.selectedCoin.balance,
+                      this.props?.route?.params.selectedCoin.balance,
                       5,
                     ) +
                       ' ' +
-                      this.props.selectedCoin.coin_symbol.toUpperCase()}
+                      this.props?.route?.params.selectedCoin.coin_symbol.toUpperCase()}
                   </Text>
                 </View> */}
 
@@ -1135,8 +1129,8 @@ class MultiSenderMatic extends Component {
                         alignItems: 'center',
                       }}
                       onPress={() => {
-                        Actions.currentScene != 'Recipient' &&
-                          Actions.Recipient({csvData: csvData});
+                        getCurrentRouteName() != 'Recipient' &&
+                        navigate(NavigationStrings.Recipient,{csvData: csvData});
                       }}>
                       {csvData.length > 1 && (
                         <Text
@@ -1203,7 +1197,7 @@ class MultiSenderMatic extends Component {
                   )}
                   <TouchableOpacity
                     onPress={() => {
-                      Actions.currentScene != 'Recipient' &&
+                      getCurrentRouteName() != 'Recipient' &&
                         Actions.Recipient({ csvData: csvData });
                     }}>
                     {csvData.length > 1 && (
@@ -1225,7 +1219,7 @@ class MultiSenderMatic extends Component {
                     ]}>
                     Total Amount
                   </Text>
-                  {this.props.selectedCoin.coin_symbol.toUpperCase() ==
+                  {this.props?.route?.params.selectedCoin.coin_symbol.toUpperCase() ==
                     'MATIC' && (
                       <Text
                         style={[
@@ -1234,10 +1228,10 @@ class MultiSenderMatic extends Component {
                         ]}>
                         {Singleton.getInstance().toFixed(this.state.amount, 8) +
                           ' ' +
-                          this.props.selectedCoin.coin_symbol.toUpperCase()}
+                          this.props?.route?.params.selectedCoin.coin_symbol.toUpperCase()}
                       </Text>
                     )}
-                  {this.props.selectedCoin.coin_symbol.toUpperCase() !=
+                  {this.props?.route?.params.selectedCoin.coin_symbol.toUpperCase() !=
                     'MATIC' && (
                       <Text
                         style={[
@@ -1246,7 +1240,7 @@ class MultiSenderMatic extends Component {
                         ]}>
                         {Singleton.getInstance().toFixed(this.state.amount, 8) +
                           ' ' +
-                          this.props.selectedCoin.coin_symbol.toUpperCase() +
+                          this.props?.route?.params.selectedCoin.coin_symbol.toUpperCase() +
                           ' + ' +
                           parseFloat(
                             this.state.commissionAmt / 10 ** 18,
@@ -1264,7 +1258,7 @@ class MultiSenderMatic extends Component {
                   customGradient={styles.customGrad}
                 />
                 <LightButton
-                  onPress={() => Actions.pop()}
+                  onPress={() => goBack()}
                   btnStyle={styles.cancelBtnStyle}
                   customGradient={styles.customGrad}
                   text="Cancel"

@@ -1,17 +1,17 @@
 /* eslint-disable jsx-quotes */
-import React, { useEffect } from 'react';
-import { View, Image, ImageBackground } from 'react-native';
-import images from '../../../theme/Images';
-import colors from '../../../theme/Colors';
-import { styles } from './SplashAppNameStyle';
 import LottieView from 'lottie-react-native';
-import { MainStatusBar, Wrap } from '../../common';
-import { ActionConst, Actions } from 'react-native-router-flux';
+import React, { useEffect } from 'react';
+import { Image, ImageBackground, View } from 'react-native';
 import { ThemeManager } from '../../../../ThemeManager';
+import { NavigationStrings } from '../../../Navigation/NavigationStrings';
+import { getCurrentRouteName, navigate } from '../../../navigationsService';
+import images from '../../../theme/Images';
+import { MainStatusBar, Wrap } from '../../common';
+import { styles } from './SplashAppNameStyle';
 const SplashAppName = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
-      Actions.currentScene != 'SelectLanguage' && Actions.SelectLanguage({ type: ActionConst.RESET });
+      getCurrentRouteName() != 'SelectLanguage' && navigate(NavigationStrings.SelectLanguage);
     }, 2000);
     return () => clearTimeout(timer);
   }, []);

@@ -1,28 +1,24 @@
 /* eslint-disable handle-callback-err */
 /* eslint-disable react-native/no-inline-styles */
-import React, {Component, useState, useEffect} from 'react';
+import React, { useState } from 'react';
 import {
-  View,
-  Text,
-  ScrollView,
   FlatList,
-  ImageBackground,
-  TouchableOpacity,
   Image,
+  Text,
+  TouchableOpacity,
+  View
 } from 'react-native';
-import {Wrap} from '../../common/Wrap';
-import styles from './GainerStyle';
-import {Actions} from 'react-native-router-flux';
-import {getGraphData} from '../../../Redux/Actions';
-import {Fonts, Colors, Images} from '../../../theme';
-import * as constants from '../../../Constant';
-import Singleton from '../../../Singleton';
-import Loader from '../Loader/Loader';
-import {connect, useDispatch, useSelector} from 'react-redux';
-import {Graph} from '../../common';
-import {LanguageManager, ThemeManager} from '../../../../ThemeManager';
-import fonts from '../../../theme/Fonts';
 import FastImage from 'react-native-fast-image';
+import { useDispatch } from 'react-redux';
+import { ThemeManager } from '../../../../ThemeManager';
+import { NavigationStrings } from '../../../Navigation/NavigationStrings';
+import Singleton from '../../../Singleton';
+import { getCurrentRouteName, navigate } from '../../../navigationsService';
+import { Colors, Fonts, Images } from '../../../theme';
+import fonts from '../../../theme/Fonts';
+import { Wrap } from '../../common/Wrap';
+import Loader from '../Loader/Loader';
+import styles from './GainerStyle';
 let TimePeriod = '24h';
 let coinSymbol = 'saitama';
 let graphData = [];
@@ -147,7 +143,7 @@ const Gainer = props => {
             <TouchableOpacity
               activeOpacity={1.0}
               onPress={() => {
-                Actions.currentScene != 'TradeSwap' && Actions.TradeSwap()
+                getCurrentRouteName() != 'TradeSwap' && navigate(NavigationStrings.TradeSwap)
                 //updateGraphItem(item);
               }}
               style={{

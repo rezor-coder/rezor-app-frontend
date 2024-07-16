@@ -10,9 +10,9 @@ import {
   NativeModules,
   NativeEventEmitter,
   Modal,
-  View
+  View,
+  BackHandler
 } from 'react-native';
-import RouterComponent from './Router';
 import KeyboardManager from 'react-native-keyboard-manager';
 import { Provider } from 'react-redux';
 import ReduxThunk from 'redux-thunk';
@@ -24,7 +24,6 @@ import NetInfo from '@react-native-community/netinfo';
 import Singleton from './Singleton';
 import * as Constants from './Constant';
 import '../shim';
-import { Actions } from 'react-native-router-flux';
 import { EventRegister } from 'react-native-event-listeners';
 import { ThemeManager } from '../ThemeManager';
 import EncryptedStorage from 'react-native-encrypted-storage';
@@ -37,38 +36,54 @@ import {
 import TransactionModal from './Components/common/TransactionModal';
 import { request } from 'react-native-permissions';
 import WalletConnect from './Utils/WalletConnect';
+import { AppView } from './Components/common/AppView';
+import { cardUserdata } from './Redux/Actions';
+import Routes from './Navigation/Routes';
+import { getCurrentRouteName, navigate } from './navigationsService';
+import { NavigationStrings } from './Navigation/NavigationStrings';
+
 global.alert = false
 export const store = createStore(reducers, {}, applyMiddleware(ReduxThunk));
 let previousState = AppState.currentState;
 const App = () => {
+
   useEffect(() => {
+    Singleton.getInstance()
+      .newGetData(Constants.USER_DATA)
+      .then(res => {
+        console.log('res::::::111111', JSON.parse(res));
+        cardUserdata(store.dispatch, JSON.parse(res));
+      })
+      .catch(error => {
+        console.log('res::::::', error);
+      });
     let Listener_event = preventScreenShotModule.addListener(
       'screenshotEvent',
       data => {
-        Actions.currentScene == 'SecureWallet' &&
+          getCurrentRouteName() == 'SecureWallet' &&
           Singleton.showAlert(
             `It isn't safe to take screenshot of secret phrase`,
           );
-        Actions.currentScene == 'ExportPrivateKeys' &&
+          getCurrentRouteName() == 'ExportPrivateKeys' &&
           Singleton.showAlert(
             `It isn't safe to take screenshot of private key`,
           );
-        Actions.currentScene == 'RecoveryPhrase' &&
+          getCurrentRouteName() == 'RecoveryPhrase' &&
           Singleton.showAlert(
             `It isn't safe to take screenshot of secret phrase`,
           );
       },
     );
     if (!__DEV__) {
-      console.log = () => { };
-      console.warn = () => { }
+      console.log = () => {};
+      console.warn = () => {};
     }
     const unsubscribe = NetInfo.addEventListener(checkConnection);
     initialize();
     return () => {
       unsubscribe();
       Listener_event.remove();
-      listenTheme?.remove()
+      // listenTheme?.remove();
     };
   }, []);
 
@@ -120,8 +135,8 @@ const App = () => {
                   const { isFromDapp } = store.getState()?.swapReducer
                   if (res == 1) {
                     if (!Singleton.getInstance().isCamera && !global.isCamera && !global.stop_pin) {
-                      Actions.currentScene != 'ConfirmPin' &&
-                        Actions.ConfirmPin();
+                      getCurrentRouteName() != 'ConfirmPin' &&
+                      navigate(NavigationStrings.ConfirmPin);
                     } else {
                       global.isCamera = false;
                       global.stop_pin = false
@@ -193,18 +208,31 @@ const App = () => {
   }
   return (
     <>
-      <View style={{ flex: 1, backgroundColor: ThemeManager.colors.bg }}>
-        <Provider store={store}>
-          <ApproveRequestModal
-            ref={ref => (Singleton.getInstance().walletConnectRef = ref)}
-            store={store}
-          />
-          <RouterComponent />
-          <FlashMessage position="top"
-          />
-        </Provider>
-      </View>
-    </>
+    {Platform.OS == 'ios' ?
+    <Provider store={store}>
+      <ApproveRequestModal
+        ref={ref => (Singleton.getInstance().walletConnectRef = ref)}
+        store={store}
+      />
+      <Routes/>
+      {/* <RouterComponent /> */}
+      <FlashMessage position="top"
+      />
+    </Provider>
+    :
+    <AppView>
+      <Provider store={store}>
+        <ApproveRequestModal
+          ref={ref => (Singleton.getInstance().walletConnectRef = ref)}
+          store={store}
+        />
+            <Routes/>
+        {/* <RouterComponent /> */}
+        <FlashMessage position="top"
+        />
+      </Provider>
+    </AppView>
+  }</>
   );
 };
 

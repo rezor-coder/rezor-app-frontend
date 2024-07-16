@@ -1,8 +1,19 @@
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react/self-closing-comp */
-import React, {useCallback, useEffect, useRef, useState} from 'react';
-import {View, FlatList, BackHandler, Image, Text} from 'react-native';
-import {Wrap} from '../../common/Wrap';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { BackHandler, FlatList, Text, TouchableOpacity, View } from 'react-native';
+import { EventRegister } from 'react-native-event-listeners';
+import FastImage from 'react-native-fast-image';
+import { Colors } from 'react-native/Libraries/NewAppScreen';
+import { connect, useDispatch } from 'react-redux';
+import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
+import { NavigationStrings } from '../../../Navigation/NavigationStrings';
+import { coinActiveInactive, getCoinList } from '../../../Redux/Actions';
+import Singleton from '../../../Singleton';
+import { areaDimen, heightDimen, widthDimen } from '../../../Utils/themeUtils';
+import { getCurrentRouteName, goBack, navigate } from '../../../navigationsService';
+import { Images } from '../../../theme';
+import fonts from '../../../theme/Fonts';
 import {
   BasicButton,
   BorderLine,
@@ -10,21 +21,10 @@ import {
   SearchBar,
   SimpleHeaderNew,
 } from '../../common';
-import {Actions} from 'react-native-router-flux';
-import {Images} from '../../../theme';
-import styles from './ManageWalletStyle';
-import {connect, useDispatch} from 'react-redux';
-import {getCoinList, coinActiveInactive} from '../../../Redux/Actions';
-import Singleton from '../../../Singleton';
-import * as constants from './../../../Constant';
-import {LanguageManager, ThemeManager} from '../../../../ThemeManager';
+import { Wrap } from '../../common/Wrap';
 import Loader from '../Loader/Loader';
-import fonts from '../../../theme/Fonts';
-import {areaDimen, heightDimen, widthDimen} from '../../../Utils/themeUtils';
-import {TouchableOpacity} from 'react-native-gesture-handler';
-import FastImage from 'react-native-fast-image';
-import {EventRegister} from 'react-native-event-listeners';
-import { Colors } from 'react-native/Libraries/NewAppScreen';
+import * as constants from './../../../Constant';
+import styles from './ManageWalletStyle';
 var debounce = require('lodash.debounce');
 let Search = '';
 const ManageWallet = props => {
@@ -57,13 +57,13 @@ const ManageWallet = props => {
     EventRegister.addEventListener('downModal', () => {
       setisLoading(false);
     });
-    props.navigation.addListener('didFocus', () => {
+    props.navigation.addListener('focus', () => {
       backHandle = BackHandler.addEventListener(
         'hardwareBackPress',
         backAction,
       );
     });
-    props.navigation.addListener('didBlur', () => {
+    props.navigation.addListener('blur', () => {
       backHandle?.remove();
     });
     getcoinList();
@@ -74,7 +74,7 @@ const ManageWallet = props => {
   }, []);
 
   const backAction = () => {
-    Actions.pop();
+    goBack();
     return true;
   };
   const debounceLoadData = useCallback(
@@ -380,7 +380,7 @@ const ManageWallet = props => {
                   </Text>
                 </View>
               </View>
-              <View style={{alignSelf: 'center'}}>
+              <View style={{alignSelf: 'center',marginRight: widthDimen(10),}}>
                 <TouchableOpacity
                   onPress={() => {
                     if (timer?.current) {
@@ -403,8 +403,6 @@ const ManageWallet = props => {
                     style={{
                       height: heightDimen(18),
                       width: widthDimen(30),
-                      marginRight: widthDimen(10),
-                      paddingVertical: heightDimen(15),
                     }}
                     resizeMode={FastImage.resizeMode.contain}
                   />
@@ -451,9 +449,9 @@ const ManageWallet = props => {
       {!isBtcWallet && (
         <BasicButton
           onPress={() => {
-            Actions.currentScene != 'AddToken' && Actions.AddToken();
+            getCurrentRouteName() != 'AddToken' && navigate(NavigationStrings.AddToken);
 
-            // Actions.currentScene != 'WalletOption' && Actions.WalletOption();
+            // getCurrentRouteName() != 'WalletOption' && Actions.WalletOption();
           }}
           btnStyle={[styles.btnStyle]}
           customGradient={styles.customGrad}

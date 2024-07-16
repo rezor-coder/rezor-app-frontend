@@ -1,15 +1,16 @@
+import NodeRSA from 'node-rsa';
+import { fetch as ssl_fetch } from 'react-native-ssl-pinning';
+import RNFetchBlob from 'rn-fetch-blob';
 import {
   BASE_URL,
   BASE_URL_CARDS_CENTRALISED,
   BASE_URL_HUOBI,
   BASE_URL_SAITACARDS,
 } from '../Endpoints';
-import RNFetchBlob from 'rn-fetch-blob';
-import * as Constants from './../Constant';
-import NodeRSA from 'node-rsa';
-import { fetch as ssl_fetch } from 'react-native-ssl-pinning';
-import { ActionConst, Actions } from 'react-native-router-flux';
+import { NavigationStrings } from '../Navigation/NavigationStrings';
 import Singleton from '../Singleton';
+import { getCurrentRouteName, navigate, reset } from '../navigationsService';
+import * as Constants from './../Constant';
 
 export const disableAllSecurity = true;
 export const sslCertificateList = [
@@ -92,8 +93,8 @@ const APIClient = class APIClient {
             console.warn('MM', 'msg err::::::get----', msg);
             if (error?.status == 400) {
               if (msg?.invalid) {
-                Actions.currentScene != 'ConfirmPin' &&
-                  Actions.ConfirmPin({ refreshToken: true });
+                getCurrentRouteName() != 'ConfirmPin' &&
+                  navigate(NavigationStrings.ConfirmPin,{refreshToken:true});
               }
             }
             return reject(msg);
@@ -226,11 +227,11 @@ const APIClient = class APIClient {
             let msg = JSON.parse(error?.bodyString);
             if (error?.status == 400) {
               if (msg?.invalid) {
-                Actions.currentScene != 'ConfirmPin' &&
-                  Actions.ConfirmPin({ refreshToken: true });
+                getCurrentRouteName() != 'ConfirmPin' &&
+                navigate(NavigationStrings.ConfirmPin,{ refreshToken: true });
               } else if (msg?.logout) {
-                Actions.currentScene != 'ConfirmPin' &&
-                  Actions.ConfirmPin({ loginAgain: true });
+                getCurrentRouteName() != 'ConfirmPin' &&
+                navigate(NavigationStrings.ConfirmPin,{ loginAgain: true });
               }
             }
             // console.warn('MM', `msg err::::::post`, msg);
@@ -361,7 +362,7 @@ const APIClient = class APIClient {
     }
   }
   //   }
-  postCards(endpoint, data) {
+  postCards(endpoint, data,UserToken) {
     if (global.disconnected) {
       Singleton.showAlert(Constants.NO_NETWORK)
       // if (!this.alertPresent) {
@@ -392,7 +393,9 @@ const APIClient = class APIClient {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            'Accept': 'application/json',
             'x-card-module': "d7be2982f87cwyv2db2908hew9u2b3fuyv877gcw2fb39297gf2b",
+            Authorization:UserToken || undefined
           },
           sslPinning: {
             certs: sslCertificateList,
@@ -401,7 +404,7 @@ const APIClient = class APIClient {
           disableAllSecurity: true,
         })
           .then(async res => {
-            // console.warn('MM','res::::::', res);
+            console.warn('MM','res::::::', res);
             try {
               let jsonVal = await res.json();
               // console.warn('MM','jsonVal::::::', jsonVal);
@@ -1080,7 +1083,7 @@ const APIClient = class APIClient {
 
   onCardTokenExpired = async () => {
     try {
-      Actions.currentScene != 'Dashboard' &&
+      getCurrentRouteName() != 'Dashboard' &&
         Singleton.showAlert(Constants.SESSION_OUT);
       await Singleton.getInstance().removeItemNew(Constants.access_token_cards);
       await Singleton.getInstance().removeItemNew(Constants.gold_access_token);
@@ -1088,12 +1091,12 @@ const APIClient = class APIClient {
         Constants.diamond_access_token,
       );
       await Singleton.getInstance().removeItemNew(Constants.black_access_token);
-      Actions.currentScene != 'Dashboard' &&
-        Actions.Main({ type: ActionConst.RESET });
+      getCurrentRouteName() != 'Dashboard' &&
+        reset(NavigationStrings.Main)
     } catch (error) {
       console.warn('MM', '__onCardTokenExpired__>>', error);
-      Actions.currentScene != 'Dashboard' &&
-        Actions.Main({ type: ActionConst.RESET });
+      getCurrentRouteName() != 'Dashboard' &&
+        reset(NavigationStrings.Main);
     }
   };
 };

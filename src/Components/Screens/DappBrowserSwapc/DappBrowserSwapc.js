@@ -1,51 +1,41 @@
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react/self-closing-comp */
-import React, { Component, useRef, useState, useEffect } from 'react';
+import { Wallet } from 'ethers';
+import React, { Component } from 'react';
 import {
-  View,
-  Image,
-  Text,
-  SafeAreaView,
-  TouchableOpacity,
-  Dimensions,
-  ScrollView,
-  Platform,
-  Animated,
-  Modal,
-  ActivityIndicator,
-  TextInput,
-  Linking,
-  Keyboard,
   BackHandler,
+  Modal,
+  Platform,
+  SafeAreaView,
+  Text,
+  TouchableOpacity,
+  View
 } from 'react-native';
-import styles from './DappBrowserSwapStylec';
-import { Actions, ActionConst } from 'react-native-router-flux';
-import { Inputtext, ButtonPrimary, SimpleHeader } from '../../common';
+import FastImage from 'react-native-fast-image';
 import RNFS from 'react-native-fs';
 import WebView from 'react-native-webview';
-import { Wallet } from 'ethers';
+import createInvoke from 'react-native-webview-invoke/native';
+import { connect } from 'react-redux';
 import web3 from 'web3';
-import Loader from '../Loader/Loader';
+import { ThemeManager } from '../../../../ThemeManager';
+import * as Constants from '../../../Constant';
+import { DAPP_IMG_URL, IS_PRODUCTION } from '../../../Endpoints';
+import { getBnbGasEstimate, getBnbNonce, sendBNB } from '../../../Redux/Actions';
+import Singleton from '../../../Singleton';
+import { Colors, Fonts } from '../../../theme';
 import Images from '../../../theme/Images';
 import {
-  getTotalGasFeeDapp,
-  getPriorityDapp,
-  getNonceValueDapp,
-  getEthBaseFeeDapp,
   getDappSignedTxn,
+  getEthBaseFeeDapp,
+  getNonceValueDapp,
+  getPriorityDapp,
+  getTotalGasFeeDapp,
   getsignRawTxnDappBnb,
 } from '../../../utils';
-import { getBnbNonce, getBnbGasEstimate, sendBNB } from '../../../Redux/Actions';
-import { connect } from 'react-redux';
-import Singleton from '../../../Singleton';
-import * as Constants from '../../../Constant';
-import { Colors, Fonts } from '../../../theme';
-import { IS_PRODUCTION, DAPP_IMG_URL } from '../../../Endpoints';
-import FastImage from 'react-native-fast-image';
-import createInvoke from 'react-native-webview-invoke/native';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scrollview';
-import images from '../../../theme/Images';
-import { ThemeManager } from '../../../../ThemeManager';
+import { ButtonPrimary, Inputtext, SimpleHeader } from '../../common';
+import Loader from '../Loader/Loader';
+import styles from './DappBrowserSwapStylec';
+import { goBack } from '../../../navigationsService';
 var web3BscUrl =
   IS_PRODUCTION == 0
     ? 'https://data-seed-prebsc-1-s1.binance.org:8545/'
@@ -147,8 +137,8 @@ class DappBrowserSwapc extends Component {
     // //console.warn('MM',">>>>>myWallets.", this.props.myWallets);
     // //console.warn('MM','address:::::', this.state.address)
     this.getEthPriceinFiat();
-    this.props.navigation.addListener('didBlur', this.screenBlur);
-    this.props.navigation.addListener('didFocus', this.screenFocus);
+    this.props.navigation.addListener('blur', this.screenBlur);
+    this.props.navigation.addListener('focus', this.screenFocus);
 
     var provider = new web3.providers.HttpProvider(this.state.rpcUrl);
     this.web3 = new web3(provider);
@@ -243,7 +233,7 @@ class DappBrowserSwapc extends Component {
   };
   backAction = () => {
     //console.warn('MM','i dapp browser');
-    Actions.pop();
+    goBack();
     return true;
   };
 

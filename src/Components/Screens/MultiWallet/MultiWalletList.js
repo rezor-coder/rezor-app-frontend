@@ -1,32 +1,32 @@
 /* eslint-disable react-native/no-inline-styles */
+import { View } from 'native-base';
 import React, { useEffect, useRef, useState } from 'react';
-import { FlatList, Image, TouchableOpacity, Text, Alert, BackHandler } from 'react-native';
-import { BasicButton, BorderLine, SimpleHeader, Wrap } from '../../common';
-import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
-import Singleton from '../../../Singleton';
-import { multi_wallet_array } from '../../../Constant';
-import { Colors, Images } from '../../../theme';
-import styles from './StyleCommon';
-import { Actions } from 'react-native-router-flux';
-import * as constants from '../../../Constant';
+import { Alert, BackHandler, FlatList, Image, Text, TouchableOpacity } from 'react-native';
+import { EventRegister } from 'react-native-event-listeners';
+import FastImage from 'react-native-fast-image';
 import { useDispatch, useSelector } from 'react-redux';
+import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
+import * as constants from '../../../Constant';
+import { multi_wallet_array } from '../../../Constant';
+import { NavigationStrings } from '../../../Navigation/NavigationStrings';
 import {
   MultiWallet_create,
   coinListEmpty,
   createWallet,
   getMyWallets,
-  refreshWallet,
   logoutUser,
+  refreshWallet,
 } from '../../../Redux/Actions';
-import Loader from '../Loader/Loader';
-import { View } from 'native-base';
-import fonts from '../../../theme/Fonts';
-import { onWalletSwitch } from '../../../Redux/Actions/WallectConnectActions';
-import { areaDimen, widthDimen } from '../../../Utils/themeUtils';
-import { EventRegister } from 'react-native-event-listeners';
-import FastImage from 'react-native-fast-image';
-import images from '../../../theme/Images';
+import Singleton from '../../../Singleton';
 import WalletConnect from '../../../Utils/WalletConnect';
+import { areaDimen } from '../../../Utils/themeUtils';
+import { getCurrentRouteName, goBack, navigate } from '../../../navigationsService';
+import { Images } from '../../../theme';
+import fonts from '../../../theme/Fonts';
+import images from '../../../theme/Images';
+import { BasicButton, BorderLine, SimpleHeader, Wrap } from '../../common';
+import Loader from '../Loader/Loader';
+import styles from './StyleCommon';
 function MultiWalletList(props) {
   const [walletArr, setWalletArr] = useState([]);
   const [loader, setLoader] = useState(true);
@@ -57,9 +57,23 @@ function MultiWalletList(props) {
       });
   }
   useEffect(() => {
+    const backAction = () => {
+      goBack();
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction,
+    );
+
+    return () => backHandler.remove();
+  }, []);
+
+  useEffect(() => {
     // Singleton.getInstance().saveWalletList();
     isSwitchInProgress.current = false;
-    props.navigation.addListener('didFocus', () => {
+    props.navigation.addListener('focus', () => {
       getWalletData();
       // //console.warn('MM','------------__NEW-------');
       Singleton.getInstance().saveWalletList();
@@ -546,7 +560,7 @@ function MultiWalletList(props) {
           .then(async response => {
             setDisabled(true)
             setLoader(false);
-            Actions.currentScene != 'Wallet' && Actions.Wallet()
+            getCurrentRouteName() != 'Wallet' && navigate(NavigationStrings.Wallet)
             isSwitchInProgress.current = false;
             await WalletConnect.getInstance().deleteAllSessions()
           })
@@ -557,7 +571,7 @@ function MultiWalletList(props) {
             // setLoader(false);
           });
         dispatch(refreshWallet());
-        // Actions.currentScene!='Wallet' && Actions.Wallet()
+        // getCurrentRouteName()!='Wallet' && Actions.Wallet()
       } catch (error) {
         isSwitchInProgress.current = false;
         console.log('default errr', error);
@@ -663,7 +677,9 @@ function MultiWalletList(props) {
         data={walletArr}
         showsVerticalScrollIndicator={false}
         ListFooterComponent={() => {
-          return <BorderLine />
+          if(!loader){
+            return   <BorderLine />;
+           }
         }}
         ItemSeparatorComponent={() => {
           return <BorderLine />
@@ -751,8 +767,8 @@ function MultiWalletList(props) {
                 disabled={disabled}
                   onPress={() => {
                     //  Actions.replace('SecureWallet', {isFrom: props.isFrom});
-                    Actions.currentScene != 'EditWallet' &&
-                      Actions.EditWallet({ walletData: item, index });
+                    getCurrentRouteName() != 'EditWallet' &&
+                    navigate(NavigationStrings.EditWallet,{ walletData: item, index });
                   }}
                   style={styles.imgStyledlt}>
                   <Image
@@ -807,8 +823,8 @@ function MultiWalletList(props) {
                   disabled={disabled}
                     onPress={() => {
                       //  Actions.replace('SecureWallet', {isFrom: props.isFrom});
-                      Actions.currentScene != 'EditWallet' &&
-                        Actions.EditWallet({ walletData: item, index });
+                      getCurrentRouteName() != 'EditWallet' &&
+                      navigate(NavigationStrings.EditWallet,{ walletData: item, index });
                     }}
                     style={styles.imgStyledlt}>
                     <Image
@@ -832,8 +848,8 @@ function MultiWalletList(props) {
           if (walletArr?.length >= 20) {
             Singleton.showAlert("Wallet limit exceeded. Please delete an existing wallet.")
           } else {
-            Actions.currentScene != 'CreateOrImportWallet' &&
-              Actions.CreateOrImportWallet({ isFrom: 'multiWallet' });
+            getCurrentRouteName() != 'CreateOrImportWallet' &&
+            navigate(NavigationStrings.CreateOrImportWallet,{ isFrom: 'multiWallet' });
           }
 
         }}

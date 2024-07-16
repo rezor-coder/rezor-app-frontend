@@ -1,24 +1,23 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, {useState} from 'react';
+import React from 'react';
 import {
-  Alert,
-  Modal,
   Image,
+  Linking,
+  Modal,
   StyleSheet,
   Text,
   TouchableOpacity,
-  View,
-  Linking,
+  View
 } from 'react-native';
-import {Actions} from 'react-native-router-flux';
 import LinearGradient from 'react-native-linear-gradient';
 
-import {Fonts, Colors, Images} from '../../theme';
-import fonts from '../../theme/Fonts';
-import {ButtonPrimary} from './ButtonPrimary';
-import {SimpleHeader} from './../common';
+import { LanguageManager, ThemeManager } from '../../../ThemeManager';
+import { NavigationStrings } from '../../Navigation/NavigationStrings';
 import Singleton from '../../Singleton';
-import {LanguageManager, ThemeManager} from '../../../ThemeManager';
+import { getCurrentRouteName, navigate } from '../../navigationsService';
+import { Colors, Fonts, Images } from '../../theme';
+import fonts from '../../theme/Fonts';
+import { SimpleHeader } from './../common';
 
 const CoustomModal = props => {
   // const [modalVisible, setModalVisible] = useState(false);
@@ -201,7 +200,7 @@ const CoustomModal = props => {
 
           <TouchableOpacity
             onPress={() => {
-              Actions.currentScene != 'GetSupport' && Actions.GetSupport();
+              getCurrentRouteName() != 'GetSupport' && navigate(NavigationStrings.GetSupport);
             }}
             style={{
               height: 60,
@@ -408,4 +407,5 @@ const styles = StyleSheet.create({
   rightImgStyle: {tintColor: Colors.White},
 });
 
-export {CoustomModal};
+export { CoustomModal };
+

@@ -1,14 +1,15 @@
-import { View, Text, Image } from 'react-native';
 import React from 'react';
+import { Image, Text, View } from 'react-native';
 import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
-import styles from './style';
-import { ButtonPrimary, SimpleHeader, Wrap } from '../../common';
-import { Actions } from 'react-native-router-flux';
+import { NavigationStrings } from '../../../Navigation/NavigationStrings';
 import Singleton from '../../../Singleton';
+import { getCurrentRouteName, navigate } from '../../../navigationsService';
+import { ButtonPrimary, SimpleHeader, Wrap } from '../../common';
+import styles from './style';
 
 const RemoveLiquidity = props => {
   const { selectedToCoin, selectedFromCoin, pairBalance, secondTokenSupply, firstTokenSupply, poolSupply, resultPair, pairNonce,
-    FilteredCoinOne, FilteredCoinTwo } = props;
+    FilteredCoinOne, FilteredCoinTwo } = props?.route?.params;
   //console.warn('MM','=====', FilteredCoinOne,FilteredCoinTwo);
 
   const LiquidityValue = ({ title, value }) => {
@@ -80,8 +81,8 @@ const RemoveLiquidity = props => {
         </Text>
         <ButtonPrimary
           onpress={() => {
-            Actions.currentScene != 'RmLiquidityConfirm' &&
-              Actions.RmLiquidityConfirm({
+            getCurrentRouteName() != 'RmLiquidityConfirm' &&
+            navigate(NavigationStrings.RmLiquidityConfirm,{
                 selectedToCoin, selectedFromCoin,
                 pairBalance, firstTokenSupply, secondTokenSupply, poolSupply, resultPair, pairNonce, FilteredCoinOne, FilteredCoinTwo
               });

@@ -1,19 +1,17 @@
 import * as constants from './Constant';
 
-export const BASE_URL =
- constants.network == 'testnet' ? 'https://wallet-api.pro-saitamask.com/stage/api/v1/' : 'https://api.saita.pro/prod/api/v1/';// ? 
- 'https://wallet-api.pro-saitamask.com/stage/api/v1/'
+export const BASE_URL = 'https://api.saita.pro/prod/api/v1/';
+//  constants.network == 'testnet' ? 'https://wallet-api.pro-saitamask.com/stage/api/v1/' : 'https://api.saita.pro/prod/api/v1/';// ? 
 export const BASE_URL_SAITACARDS =
   constants.network == 'testnet' ?
    'https://stage-card-api.pro-saitamask.com/api/v1/' 
-   :  'https://card.saitacard.io/api/v1/';
+   :'https://card.saitacard.io/api/v1/';
+
 export const BASE_URL_CARDS_CENTRALISED =
   constants.network == 'testnet' ? 
   'https://centralized.pro-saitamask.com/api/v1/'
     : 'https://centralized.saitacard.io/api/v1/'
 export const BASE_URL_CARD_EPAY = constants.network == 'testnet' ? "https://epay-saitacard-stage.herokuapp.com/" : "https://epay-card-dev.herokuapp.com/"
-
-
 export const BASE_URL_HUOBI =
   constants.network == 'testnet'
     ? 'https://api-huobi.saitamacard.ai/'
@@ -49,7 +47,6 @@ export const FINANCE_LIST = 'wallet/exchange/support/list';
 export const IS_PRODUCTION = constants.ismainnet ? 1 : 0;
 export const COLOR_LIST = 'wallet/colorlist';
 export const UPDATE_BALANCE = 'wallet/updateUserBalance';
-
 /**************************************ETHEREUM APIs ****************************************************/
 export const API_NONCE = '/nonce';
 export const API_ETH_GAS_PRICE = 'wallet/gasprice';
@@ -87,7 +84,6 @@ export const API_ENABLE_DISABLE_NOTI = 'user/notification/update?status=';
 export const API_ENABLE_DISABLE_NOTI_STATUS = 'user/notification/status';
 /************************************ CURRENCY PREFERENCE API ***************************************************/
 export const API_CURRENCY_PREFERENCE = 'wallet/currencyfiatlist';
-
 /************************************ CHAR API'S ***************************************************/
 export const API_GET_CONTACTS = 'chat/check-contacts';
 export const API_CREATE_THREAD = 'chat/thread';
@@ -101,7 +97,6 @@ export const ME_BLOCK_USER_LIST_URL = 'chat/me-blocked-list?mobile=';
 export const API_UPDATE_CONTACT_URL = 'chat/update/addresses';
 export const API_SEND_CONTACTS = 'chat/add-all-contacts';
 export const API_CHECK_MOBILENO = 'chat/mobile/addresses';
-
 /**************************************Tezos APIs ****************************************************/
 export const API_TEZOS_SEND = '/send';
 /**************************************ADD WALLET CONTACT APIs ****************************************************/
@@ -121,14 +116,11 @@ export const API_NFT_GAS_ESTIMATE = 'nft/gas-estimation';
 /************************************ Swap API ***************************************************/
 export const API_SWAP_COIN_LIST = 'wallet/swap/coinlist';
 export const API_SWAP_USER_LIST = 'wallet/swap/myNewCoinList';
-
 export const API_SWAP_LIST_ALL = 'wallet/all_swap_list';
-
 export const API_SWAP_LIST_ALL_V2 = 'wallet/all_swap_list';
 export const API_SWAP_NEW='wallet/new_swap_list';
 export const API_SWAP_COIN_LIST_NEW = 'wallet/swap_list';
 export const API_SWAP_COIN_LIST_BNB = 'wallet/swap_list_bnb';
-
 /************************************ Invite Link API ***************************************************/
 export const API_INVITE = 'wallet/invitelink';
 /************************************ Invite Link API ***************************************************/
@@ -147,10 +139,8 @@ export const UPLOAD_IMAGE_PASS_URL =
 export const FACE_MATCH_URL =
   'https://sandbox.surepass.io/api/v1/face/face-match';
 export const ADD_KYC = 'user/addkyc';
-
 export const API_SUPPORT_REQUEST = 'user/contact/support';
 export const API_UPLOAD_SUPPORT_IMAGE = 'upload';
-
 /**************************************epay APIs ****************************************************/
 export const API_EPAY_ORDER = 'user/create-order';
 export const API_EPAY_ORDER_V2 = 'user/create-order-v2';
@@ -164,10 +154,6 @@ export const API_INFURA_LINK = 'user/mainnet/node-datails';
 export const API_INFURA_LINKBNB = 'user/mainnet/bsc-node';
 export const API_Contract_Info = 'user/mainnet/nodeInfo';
 export const API_DEX_URLS = 'user/fetchDexUrls';
-
-
-
-
 export const CHECK_FOR_SWAP_TOKEN = 'wallet/toCheckForSwapToken';
 /************************************** saitacard APIs ****************************************************/
 // export const API_LOGIN_CARDS = 'user/v2/login';
@@ -193,13 +179,11 @@ export const API_GET_CARDLIST = 'card/getcardlist'; // old
 export const API_APPLY_ANOTHER_CARD = 'card/applyAnotherCard';
 export const API_CARD_PHYSICAL_FORM = 'user/physicalCardAddressDetails';
 export const API_CARD_PHYSICAL_FORM_KYC = 'user/kyc_details';
-
 export const API_CREATE_WALLET_SAITACARD = 'user/create/wallet';
 export const API_COINLIST_SAITACARD = 'user/coinlist';
 export const API_FETCH_BANK_DETAILS = 'card/bankDetails';
 export const API_CARD_HISTORY = 'card/transactionRecord';
 export const API_USERCARD_LIST = 'card/getusercardlist';
-
 export const API_FORGETCARDPASSWORD = 'auth/forgetPwd';
 export const API_FORGETCARD_VERIFY = 'auth/verifyOtp';
 export const API_NEWPASSWORDCARD = 'auth/setNewPwd';
@@ -207,14 +191,10 @@ export const API_CHANGE_PASSWORDCARD = 'auth/changePwd';
 export const API_UPDATE_MOBILE = 'user/updateUserDetails';
 export const API_CARD_EPAY_CREATE_ORDER = 'epay/create-order';
 export const API_CARD_BINANCE_CREATE_ORDER = 'card/bpay/create-order'; // old
-
 export const LIMINAL_COIN_LIST = 'liminal/LiminalCoin'
 export const LIMINAL_PRICE_CONVERSION = 'liminal/Calculator'
 export const BINANCE_PRICE_CONVERSION = 'bpay/create-order'
-
-
 /************************************** HUOBI APIs ****************************************************/
-
 export const HUOBI_FIND_DESIRED_TOKEN = 'findDesiredToken'
 export const HUOBI_GET_FAVOURITES = 'getFavorites'
 export const HUOBI_SET_FAVOURITES = 'setFavourite'
@@ -224,13 +204,25 @@ export const HUOBI_FETCH_FEE = 'fetchFee'
 export const HUOBI_CHECK_SWAP = 'checkswap'
 export const HUOBI_FIND_TOKEN_FOR_CURRENCY = 'findTokenForCurrency'
 export const HUOBI_SWAP = 'swap'
-
 export const HUOBI_TOKEN_LIST = 'wallet/getHuobiListing'
-
 export const CHECK_MAINTENANCE='wallet/isOnMaintainance';
-
-
-
+export const UPDATE_WALLET_BALANCES='user/updateUserWalletBalances';
 /************************************** HUOBI APIs ****************************************************/
 export const STC_GAS_PRICE='saitachain/gasPrices';
 export const STC_GAS_LIMIT='saitachain/gasLimit';
+
+/************************************** Vault APIs ****************************************************/
+export const SIGN_UP = 'user/v3/mobile/signup';
+export const CONFIRM_PHONE = 'user/v3/mobile/phone/confirm';
+export const RESEND_OTP = 'user/v3/mobile/phone/verify/resend';
+export const EMAIL_ADD = 'user/v3/mobile/email/add';
+export const SET_USER_DETAIL='user/v3/customer/profile';
+export const USER_LOGOUT = 'user/v3/signout';
+export const USER_LOGIN = 'user/v3/oauth/token';
+export const GET_USER_PROFILE = 'user/v3/customer/profile';
+export const GET_KYC_ID='user/v3/kyc/start';
+export const REQUEST_VAULT_CARD='card/v3/card/card-requests';
+
+export const FORGET_OTP_SEND = 'user/v3/mobile/password/reset';
+export const FORGET_OTP_CONFIRM = 'user/v3/mobile/password/reset/confirm/code';
+export const FORGET_PASSWORD_CONFIRM = 'user/v3/mobile/password/reset/confirm';

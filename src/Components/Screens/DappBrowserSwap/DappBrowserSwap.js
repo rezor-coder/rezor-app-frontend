@@ -1,89 +1,68 @@
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react/self-closing-comp */
-import React, { Component, useRef, useState, useEffect } from 'react';
+import { Wallet } from 'ethers';
+import React, { Component, } from 'react';
 import {
-  View,
-  Image,
-  Text,
-  SafeAreaView,
-  TouchableOpacity,
-  Dimensions,
-  ScrollView,
-  Platform,
-  Animated,
-  Modal,
-  ActivityIndicator,
-  TextInput,
-  Linking,
-  Keyboard,
-  BackHandler,
   Alert,
+  BackHandler,
+  Modal,
+  Platform,
+  SafeAreaView,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
-import styles from './DappBrowserSwapStyle';
-import { Actions, ActionConst } from 'react-native-router-flux';
-import { Inputtext, ButtonPrimary, SimpleHeader } from '../../common';
+import FastImage from 'react-native-fast-image';
 import RNFS from 'react-native-fs';
 import WebView from 'react-native-webview';
-import { Wallet } from 'ethers';
+import createInvoke from 'react-native-webview-invoke/native';
+import { connect } from 'react-redux';
 import web3 from 'web3';
-import Loader from '../Loader/Loader';
+import * as Constants from '../../../Constant';
+import { DAPP_IMG_URL, IS_PRODUCTION } from '../../../Endpoints';
+import { getBnbGasEstimate, getBnbNonce, getSTCGasPrice, getStcGasEstimate, sendBNB } from '../../../Redux/Actions';
+import Singleton from '../../../Singleton';
+import { Colors } from '../../../theme';
 import Images from '../../../theme/Images';
 import {
-  getTotalGasFeeDapp,
-  getPriorityDapp,
-  getNonceValueDapp,
-  getEthBaseFeeDapp,
   getDappSignedTxn,
+  getEthBaseFeeDapp,
+  getNonceValueDapp,
+  getPriorityDapp,
+  getStcNonce,
+  getTotalGasFeeDapp,
   getsignRawTxnDappBnb,
+  getsignRawTxnDappStc,
+  signPersonalMessage,
 } from '../../../utils';
-import { getBnbNonce, getBnbGasEstimate, sendBNB } from '../../../Redux/Actions';
-import { connect } from 'react-redux';
-import Singleton from '../../../Singleton';
-import * as Constants from '../../../Constant';
-import { Colors, Fonts } from '../../../theme';
-import { IS_PRODUCTION, DAPP_IMG_URL } from '../../../Endpoints';
-import FastImage from 'react-native-fast-image';
-import createInvoke from 'react-native-webview-invoke/native';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scrollview';
-import images from '../../../theme/Images';
+import { ButtonPrimary, Inputtext, } from '../../common';
+import Loader from '../Loader/Loader';
+import styles from './DappBrowserSwapStyle';
+import { goBack } from '../../../navigationsService';
 var web3BscUrl =
   IS_PRODUCTION == 0
     ? 'https://data-seed-prebsc-1-s1.binance.org:8545/'
     : 'https://bsc-dataseed1.binance.org:443';
 const gasFeeMultiplier = 0.000000000000000001;
-const gas = 1000000000;
-const fullNode = 'https://api.trongrid.io/';
-const solidityNode = 'https://api.trongrid.io/';
-const eventServer = 'https://api.trongrid.io/';
 var that = undefined;
-let jsCode = `document.querySelector('#myContent').style.backgroundColor = 'blue';`;
 let isLoadAlert = false
 class DappBrowserSwap extends Component {
   constructor(props) {
-    ////console.warn('MM','===>>>> ccc', this.props);
-
     super(props);
-    // this.timer = null;
-    // this.timer2 = null;
-    // this.timer3 = null;
-    //console.warn('MM','this.props.item.blockChainType:::::', this.props.item);
-    ////console.log(
-    // 'Constants.mainnetInfuraLink:::::',
-    //   Constants.mainnetInfuraLink,
-    // );
     this.state = {
       content: '',
       jsContent: '',
       address: this.props.item
         ? this.props.item?.coin_family == 6
           ? Singleton.getInstance().defaultBnbAddress
-          : Singleton.getInstance().defaultEthAddress
+          : this.props.item?.coin_family == 4
+            ? Singleton.getInstance().defaultStcAddress
+            : Singleton.getInstance().defaultEthAddress
         : Singleton.getInstance().defaultEthAddress,
-      chainId: IS_PRODUCTION == 0 ? '5' : '1',
+      chainId: this.props.item?.coin_family == 6 ? 56 : this.props.coin_family == 1 ? 1 : 1209,
+
       rpcUrl:
-        IS_PRODUCTION == 0
-          ? Constants.testnetEth
-          : this.props.publicEthUrl,
+        this.props.item?.coin_family == 6 ? Singleton.getInstance().bnbLink : this.props.coin_family == 1 ? this.props.publicEthUrl : this.props.publicStcUrl,
       privacyMode: false,
       isVisible: false,
       signingData: '',
@@ -99,21 +78,22 @@ class DappBrowserSwap extends Component {
       selectedNetwork: this.props.item
         ? this.props.item?.coin_family == 6
           ? 'Binance'
-          : 'Ethereum'
+          : this.props.item?.coin_family == 4
+            ? 'Saitachain'
+            : 'Ethereum'
         : 'Ethereum',
       selectedNetworkImageUri: this.props.item
         ? this.props.item?.coin_family == 6
           ? `${DAPP_IMG_URL}/images/bnb.png`
-          : `${DAPP_IMG_URL}/images/eth.png`
+          : this.props.item?.coin_family == 6
+            ? `${DAPP_IMG_URL}/images/stc.png`
+            : `${DAPP_IMG_URL}/images/eth.png`
         : `${DAPP_IMG_URL}/images/eth.png`,
       url: '',
       enteredURL: this.props.url
         ? this.props.url
         : 'https://app.compound.finance',
       startUrl: this.props.url,
-      // startUrl: this.props.url.includes('https://')
-      //   ? this.props.url
-      //   : 'https://www.google.com/search?q=' + this.props.url,
       isNetworkModalVisible: false,
       advanceModalVisible: false,
       favoriteArray: [],
@@ -123,6 +103,7 @@ class DappBrowserSwap extends Component {
       alertTxt: '',
       currentUrl: '',
       currencyName: '',
+      gasLimit: 0,
       dialogGasPrice: 0,
       dialogGasLimit: 0,
       dialogNonce: 0,
@@ -135,10 +116,7 @@ class DappBrowserSwap extends Component {
       MaxFee: 0,
       advancedSet: false,
       priorityFees: 0,
-      web3BscUrl:
-        Constants.network == 'testnet'
-          ? 'https://data-seed-prebsc-1-s1.binance.org:8545/'
-          : this.props.publicBscUrl,
+      web3BscUrl: this.props.item?.coin_family == 6 ? Singleton.getInstance().bnbLink : this.props.coin_family == 1 ? this.props.publicEthUrl : this.props.publicStcUrl,
       finished: false,
       txnTobeSigned: undefined,
       gotSigningRequest: false,
@@ -147,20 +125,13 @@ class DappBrowserSwap extends Component {
       tronPvtKey: '',
       modalVisibleBnb: false,
       ethPrice: 0,
+      coin_family: this.props.item?.coin_family
     };
   }
   invoke = createInvoke(() => this.webview);
   componentDidMount() {
-    // alert("Addres: "+this.state.address)
-    // //console.warn('MM',">>>>>myWallets.", this.props.myWallets);
-    // //console.warn('MM','address:::::', this.state.address)
-
     this.getEthPriceinFiat();
-
-    // this.props.navigation.addListener('didBlur', this.screenBlur);
-    // this.props.navigation.addListener('didFocus', this.screenFocus);
     that = this;
-    this.invoke.define('signTronTx', this.signTronTx);
     if (this.state.selectedNetwork != 'Tron') {
       var provider = new web3.providers.HttpProvider(this.state.rpcUrl);
       this.web3 = new web3(provider);
@@ -168,24 +139,12 @@ class DappBrowserSwap extends Component {
       Singleton.getInstance()
         .newGetData(Singleton.getInstance().defaultEthAddress)
         .then(mnemonics => {
-          // //console.warn('MM','chk address::::::::::::::', Singleton.getInstance().defaultEthAddress,);
-          // //console.warn('MM','chk mnemonics::::::::::::::', mnemonics);
           var address = this.state.address;
           this.setState({ mnemonics: mnemonics, address: address });
-          // //console.warn('MM','-------------------------', this.state.address);
-
           setTimeout(() => {
             this.webview?.reload();
           }, 800);
-          // setTimeout(() => {
-          //   this.webview?.reload();
-          // }, 3000);
-          // setTimeout(() => {
-          //   this.webview?.reload();
-          // }, 5000);
-
           if (this.state.jsContent === '') {
-            //console.warn('MM','chk platform::::', Platform.OS);
             if (Platform.OS === 'ios') {
               RNFS.readFile(`${RNFS.MainBundlePath}/trust-min.js`, 'utf8').then(
                 content => {
@@ -208,7 +167,6 @@ class DappBrowserSwap extends Component {
               ).catch(err => {
                 console.log('err readfile', err);
               })
-              // this.setUrl(2);
             } else {
               RNFS.readFileAssets(`trust-min.js`, 'utf8').then(content => {
                 this.setState(
@@ -234,18 +192,19 @@ class DappBrowserSwap extends Component {
       Singleton.getInstance()
         .newGetData(`${Singleton.getInstance().defaultTRXAddress}_pk`)
         .then(trnPvKey => {
-          //console.warn('MM','trnPvt key::::::::', trnPvKey);
           this.setState({ tronPvtKey: trnPvKey });
         });
     }
   }
 
   getEthPriceinFiat() {
+    let chain = this.props.chain=='sbc'?'stc':this.props.chain=='bsc'?'bnb':'eth'
+    console.log("::::::::::::",chain);
     this.props.myWallets.find(value => {
-      if ('eth' == value.coin_symbol.toLowerCase()) {
+      if (chain == value.coin_symbol.toLowerCase() && this.props.item?.coin_family == value?.coin_family) {
         let perPrice_in_fiat = parseFloat(value.perPrice_in_fiat);
         this.setState({ ethPrice: perPrice_in_fiat });
-        //console.warn('MM','-----value.perPrice_in_fiat', perPrice_in_fiat);
+        console.warn('MM', '-----value.perPrice_in_fiat', perPrice_in_fiat);
         return;
       }
     });
@@ -255,15 +214,6 @@ class DappBrowserSwap extends Component {
     clearTimeout(this.timer);
     clearTimeout(this.timer1);
     clearTimeout(this.timer2);
-    // if (this.timer) {
-    //   clearTimeout(this.timer);
-    // }
-    // if (this.timer1) {
-    //   clearTimeout(this.timer1);
-    // }
-    // if (this.timer2) {
-    //   clearTimeout(this.timer2);
-    // }
   }
 
   screenFocus = () => {
@@ -273,53 +223,136 @@ class DappBrowserSwap extends Component {
     BackHandler.removeEventListener('hardwareBackPress', this.backAction);
   };
   backAction = () => {
-    //console.warn('MM','i dapp browser');
-    Actions.pop();
+    goBack();
     return true;
   };
-  signTronTx(txn) {
-    //console.warn('MM','chk trn txn:::::::', txn);
-    return new Promise((resolve, reject) => {
-      try {
-        that.setState(
-          { txnTobeSigned: txn, gotSigningRequest: true, rejected: false },
-          () => {
-            var timer = setInterval(() => {
-              if (!that.state.gotSigningRequest) {
-                clearInterval(timer);
-                resolve(that.state.txnTobeSigned);
-              }
-              if (that.state.rejected) {
-                clearInterval(timer);
-                that.setState({
-                  txnTobeSigned: undefined,
-                  gotSigningRequest: false,
-                  rejected: false,
-                });
-                reject('user rejected');
-              }
-            }, 1000);
-          },
-        );
-      } catch (err) {
-        Singleton.showAlert(err);
-        reject(err);
-      }
-    });
-  }
   onLoadStart = event => {
     this.setState({ isLoading: Platform.OS != 'ios' ? true : true });
   };
-  checkForSigned() {
-    return new Promise((resolve, reject) => { });
-  }
   onShouldStartLoadWithRequest = () => {
     return true;
   };
+  changeNetwork = network => {
+    console.log(":::::changeNetwork::::",network, this.state.rpcUrl);
+    if (network == 'Saitachain') {
+      let provider = new web3.providers.HttpProvider(this.props.publicStcUrl);
+      this.web3 = new web3(provider);
+      this.setState({
+        isNetworkModalVisible: false,
+        selectedNetwork: 'Saitachain',
+        selectedNetworkImageUri: DAPP_IMG_URL + '/images/stc.png',
+        chainId: IS_PRODUCTION == 0 ? 129 : 1209,
+        rpcUrl: this.props.publicStcUrl,
+        jsContent: this.getJavascript(
+          IS_PRODUCTION == 0 ? 129 : 1209,
+          this.props.publicStcUrl,
+          this.state.address,
+          this.state.content,
+        ),
+      });
+
+      let script = `
+  var config = {
+      ethereum: {
+          address: "${this.state.address}",
+          chainId: ${this.web3.utils.toHex(IS_PRODUCTION == 0 ? '129' : '1209')},
+          rpcUrl: "${this.props.publicStcUrl}"
+      }
+  };
+  ethereum.setConfig(config);
+  `;
+      console.log('script++++', script);
+      this.webview.injectJavaScript(script);
+      let chainId = this.web3.utils.toHex(IS_PRODUCTION == 0 ? '129' : '1209');
+      let js = `trustwallet.ethereum.emitChainChanged('${chainId}');`;
+      this.webview.injectJavaScript(js);
+    } else if (network == 'Ethereum') {
+      let provider = new web3.providers.HttpProvider(
+        IS_PRODUCTION == 0 ? Constants.testnetEth : this.props.publicEthUrl,
+      );
+      this.web3 = new web3(provider);
+      this.setState({
+        isNetworkModalVisible: false,
+        selectedNetwork: 'Ethereum',
+        selectedNetworkImageUri: DAPP_IMG_URL + '/images/eth.png',
+        chainId: IS_PRODUCTION == 0 ? '5' : '1',
+        rpcUrl:
+          IS_PRODUCTION == 0
+            ? Constants.testnetEth
+            : this.props.publicEthUrl,
+        jsContent: this.getJavascript(
+          IS_PRODUCTION == 0 ? '5' : '1',
+          IS_PRODUCTION == 0
+            ? Constants.testnetEth
+            : this.props.publicEthUrl,
+          this.state.address,
+          this.state.content,
+        ),
+      });
+
+      let script = `
+     var config = {
+         ethereum: {
+             address: "${this.state.address}",
+             chainId: ${this.web3.utils.toHex(IS_PRODUCTION == 0 ? 5 : 1)},
+             rpcUrl: "${IS_PRODUCTION == 0
+          ? Constants.testnetEth
+          : this.props.publicEthUrl
+        }"
+         }
+     };
+     ethereum.setConfig(config);
+     `;
+      console.log('script++++', script);
+      this.webview.injectJavaScript(script);
+      let chainId = this.web3.utils.toHex(IS_PRODUCTION == 0 ? '5' : '1');
+      let js = `trustwallet.ethereum.emitChainChanged('${chainId}');`;
+      console.log('---------js', js);
+      this.webview.injectJavaScript(js);
+
+      // setTimeout(() => {
+      //   console.log('reload called');
+      //   this.webview.reload();
+      //  }, 2000);
+    } else if (network == 'Binance') {
+      console.log("Binance:::::::::::");
+      let provider = new web3.providers.HttpProvider(web3BscUrl);
+      this.web3 = new web3(provider);
+      this.setState({
+        isNetworkModalVisible: false,
+        selectedNetwork: 'Binance',
+        selectedNetworkImageUri: DAPP_IMG_URL + '/images/bnb.png',
+        chainId: IS_PRODUCTION == 0 ? 97 : 56,
+        rpcUrl: web3BscUrl,
+        jsContent: this.getJavascript(
+          IS_PRODUCTION == 0 ? 97 : 56,
+          web3BscUrl,
+          this.state.address,
+          this.state.content,
+        ),
+      });
+
+      let script = `
+  var config = {
+      ethereum: {
+          address: "${this.state.address}",
+          chainId: ${this.web3.utils.toHex(IS_PRODUCTION == 0 ? '97' : '56')},
+          rpcUrl: "${web3BscUrl}"
+      }
+  };
+  ethereum.setConfig(config);
+  `;
+      console.log('script++++', script);
+      this.webview.injectJavaScript(script);
+      let chainId = this.web3.utils.toHex(IS_PRODUCTION == 0 ? '97' : '56');
+      let js = `trustwallet.ethereum.emitChainChanged('${chainId}');`;
+      this.webview.injectJavaScript(js);
+    }
+  };
   onMessage = async ({ nativeEvent }) => {
     let message = JSON.parse(nativeEvent.data);
-    console.warn('MM','---------message------', JSON.parse(nativeEvent.data));
-    console.warn('MM','---------selectedNetwork------', this.state.selectedNetwork);
+    console.warn('MM', '---------message------', JSON.parse(nativeEvent.data));
+    console.warn('MM', '---------selectedNetwork------', this.state.selectedNetwork);
     if (message.name == 'signTransaction') {
       if (!message.object.value) {
         message.object.value = '0x0';
@@ -330,69 +363,58 @@ class DappBrowserSwap extends Component {
       this.setState({ signingData: message });
       this.getNonceAndGas(
         this.hex2dec(message.object.value),
-        this.state.selectedNetwork == 'Ethereum' ? 'eth' : 'bnb',
+        this.state.selectedNetwork == 'Ethereum' ? 'eth' : this.state.selectedNetwork == 'Saitachain' ? 'stc' : 'bnb',
         this.state.selectedNetwork == 'Ethereum' ? 'transaction' : 'binance',
+        message
       );
     } else if (message.name == 'requestAccounts') {
-      // let js = `window.ethereum.setAddress('${this.state.address}');`;
       let js = `trustwallet.${message?.network}.setAddress('${this.state.address}');`;
 
       this.webview.injectJavaScript(js);
       let mmid = message.id;
       let js1 = `trustwallet.${message?.network}.sendResponse(${mmid}, ['${this.state.address}'])`;
-
-      // let js1 = `window.ethereum.sendResponse(${mmid}, ['${this.state.address}'])`;
       this.webview.injectJavaScript(js1);
     } else if (
       message.name == 'signPersonalMessage' ||
       message.name == 'signMessage'
     ) {
       let mmid = message.id;
-      const wallet = Wallet.fromMnemonic(this.state.mnemonics);
-      var pKey = wallet.privateKey;
-      let signedMessage = await Singleton.getInstance().signPersonalMessage(
+      let pKey = await Singleton.getInstance().newGetData(
+        this.state.address + '_pk',
+      );
+      let signedMessage = await signPersonalMessage(
         message.object.data,
         pKey,
+        this.state.coin_family
       );
-      // let js = `window.ethereum.sendResponse(${mmid}, "${signedMessage}")`;
       let js = `trustwallet.${message?.network}.sendResponse(${mmid}, "${signedMessage}")`;
       this.webview.injectJavaScript(js);
+    } else if (message.name == 'switchEthereumChain') {
+      let chainId = this.hex2dec(message?.object?.chainId);
+      console.log('chainId:', chainId);
+      let mmid = message.id;
+      if ((chainId == 56 || chainId == 97) && (this.props.chain == 'bsc' || this.props.chain == '')) {
+        this.changeNetwork('Binance');
+        let js1 = `trustwallet.${message?.network}.sendResponse(${mmid}, null)`;
+        this.webview.injectJavaScript(js1);
+      } else if ((chainId == 1 || chainId == 5) && (this.props.chain == 'eth' || this.props.chain == '')) {
+        this.changeNetwork('Ethereum');
+        let js1 = `trustwallet.${message?.network}.sendResponse(${mmid}, null)`;
+        this.webview.injectJavaScript(js1);
+      } else if ((chainId == 129 || chainId == 1209) && (this.props.chain == 'sbc' || this.props.chain == '')) {
+        this.changeNetwork('Saitachain');
+        let js1 = `trustwallet.${message?.network}.sendResponse(${mmid}, null)`;
+        this.webview.injectJavaScript(js1);
+      } else {
+        console.log('in error ...');
+        let mmid = message.id;
+        let js = `trustwallet.${message?.network}.sendError(${mmid}, "Network not supported")`;
+        this.webview.injectJavaScript(js);
+      }
     }
   };
-  //  getJavascript (chainId, rpcUrl, address, jsContent) {
-  //   let source = '';
-  //   console.warn('MM','chainId:', chainId, 'rpcUrl:', rpcUrl, 'address:', address);
-  //   if (this.state.privacyMode) {
-  //     source = `
-  //     ${jsContent}
-  //         var config = {
-  //             chainId: ${chainId}},
-  //             rpcUrl: ${rpcUrl}
-  //         };
-  //         const provider = new window.Trust(config);
-  //         window.ethereum = provider;
-  //         window.chrome = {webstore: {}};        
-  //     `;
-  //   } else {
-  //     source = `
-  //     ${jsContent}
-  //     var config = {
-  //       address: '${address}',
-  //       chainId: '${chainId}',
-  //       rpcUrl: '${rpcUrl}'
-  //     };
-  //     const provider = new window.Trust(config);
-  //     provider.isDebug = true;
-  //     window.ethereum = provider;
-  //     window.web3 = new window.Web3(provider);
-  //     window.web3.eth.defaultAccount = config.address;
-  //     window.chrome = {webstore: {}};
-  //     `;
-  //     return source;
-  //   }
-  // };
   getJavascript = function (chainId, rpcUrl, address, jsContent) {
-    // console.log('chainId:', chainId, 'rpcUrl:', rpcUrl, 'address:', address);
+    console.log("chainId::::::", chainId, "rpcUrl:::::", rpcUrl, "address::", address);
     let source = '';
     source = `
       ${jsContent}
@@ -428,7 +450,8 @@ class DappBrowserSwap extends Component {
   hex2dec(num) {
     return this.ConvertBase(num).from(16).to(10);
   }
-  async getNonceAndGas(amount, coinsym, coinType) {
+  async getNonceAndGas(amount, coinsym, coinType,signingData) {
+    console.log("coinsym:::::",coinsym);
     //  alert(coinsym)
     if (coinsym.toLowerCase() == 'eth') {
       var gasFees = await getTotalGasFeeDapp();
@@ -442,7 +465,7 @@ class DappBrowserSwap extends Component {
       //console.warn('MM','NONCE_VALUE-----', currentNonce);
       this.nonce = currentNonce;
       var initialValue =
-        gasFees * this.hex2dec(this.state.signingData.object.gas);
+        gasFees * this.hex2dec(signingData.object.gas);
       var fee = initialValue * gasFeeMultiplier;
       //console.warn('MM','Calculate gasFees 123333--- ', gasFees);
       //console.warn('MM','Calculate fees total 123333--- ', fee);
@@ -479,7 +502,7 @@ class DappBrowserSwap extends Component {
               //console.warn('MM','response GAS--bnb ', response);
               var standard = response.resultList[0].safe_gas_price * 1000000000;
               var initialValue =
-                standard * this.hex2dec(this.state.signingData.object.gas);
+                standard * this.hex2dec(signingData.object.gas);
               var fee = initialValue * gasFeeMultiplier;
               this.setState({
                 isVisible: true,
@@ -492,6 +515,40 @@ class DappBrowserSwap extends Component {
               this.setState({ isLoading: false });
             });
         });
+    }
+    if (coinsym.toLowerCase() == 'stc') {
+      let access_token = Singleton.getInstance().access_token;
+      console.log("access_token:::::",access_token,signingData);
+      let gas =signingData.object.gas? this.hex2dec(signingData.object.gas):0
+      console.log("gas:::::",gas);
+      this.props.getSTCGasPrice().then(gasPrices => {
+        console.log("gasPrices:::::", gasPrices);
+        this.props
+          .getStcGasEstimate({
+            access_token,
+          })
+          .then(response => {
+            let gasLimit = response.data.find(item => item.name == 'swap')
+            let standard = gasPrices?.data?.safeGasPrice * 1000000000;
+            let initialValue =
+              standard * (gas>0?gas:gasLimit.gasLimit);
+            let fee = initialValue * gasFeeMultiplier;
+            console.log("calculatedFee::::", fee.toFixed(5), "gasPrice:::::", standard, "gasLimit:::", gasLimit,gas);
+            this.setState({
+              isVisible: true,
+              calculatedFee: fee.toFixed(5),
+              gasPrice: standard,
+              gasLimit: gas>0?gas:gasLimit.gasLimit
+            });
+          })
+          .catch(err => {
+            console.warn('MM', 'Error: getBnbGasEstimate', err);
+            this.setState({ isLoading: false });
+          });
+      }).catch(err => {
+        console.warn('MM', 'Error: getSTCGasPrice', err);
+        this.setState({ isLoading: false });
+      })
     }
   }
 
@@ -512,22 +569,22 @@ class DappBrowserSwap extends Component {
       Singleton.showAlert(Constants.VALID_PRIORITY_FEE);
       return;
     }
-    ////console.log(
-    // 'gas gwei price----',
-    //   2 * this.state.baseFee + parseInt(this.state.advancePriorityFee),
-    // );
-    //console.warn('MM','gas limit----', this.state.advancedGasLimit);
+    console.log(
+      'gas gwei price----',
+      2 * this.state.baseFee + parseInt(this.state.advancePriorityFee),
+    );
+    console.warn('MM', 'gas limit----', this.state.advancedGasLimit);
     let gasGwei =
       parseFloat(2 * this.state.baseFee) +
       parseFloat(this.state.advancePriorityFee);
-    ////console.log(
-    // 'T_GAS_FEES----',
-    //   (
-    //     gasGwei *
-    //     this.state.advancedGasLimit *
-    //     this.state.gasFeeMultiplier
-    //   ).toFixed(8),
-    // );
+    console.log(
+      'T_GAS_FEES----',
+      (
+        gasGwei *
+        this.state.advancedGasLimit *
+        this.state.gasFeeMultiplier
+      ).toFixed(8),
+    );
     this.setState({
       advanceGasPrice: gasGwei,
       advanceGasFees: (
@@ -569,13 +626,6 @@ class DappBrowserSwap extends Component {
     });
   }
   async makeRaxTxn() {
-    ////console.log(
-    // 'here-------',
-    //   this.state.gasPrice,
-    //   ';;;;',
-    //   this.state.priorityFees,
-    //   this.props.item,
-    // );
     if (this.props.item?.coin_family == 1) {
       const wallet = await Wallet.fromMnemonic(this.state.mnemonics);
       var pKey = wallet.privateKey;
@@ -648,6 +698,41 @@ class DappBrowserSwap extends Component {
         .catch(err => {
           Singleton.showAlert('Unable to process transaction.');
         });
+    } else if (this.props.item?.coin_family == 4) {
+      Singleton.getInstance()
+        .newGetData(`${Singleton.getInstance().defaultStcAddress}_pk`)
+        .then(pk => {
+          let pKey = pk;
+          let gasLimit = this.state.gasLimit; // in hex
+          let gasPrice = this.web3.utils.toHex(this.state.gasPrice); // in hex
+          let amount = (
+            this.hex2dec(
+              this.state.signingData.object.value
+                ? this.state.signingData.object.value
+                : '0x0',
+            ) /
+            10 ** 18
+          ).toString();
+          getStcNonce(Singleton.getInstance().defaultStcAddress).then(nonce => {
+            getsignRawTxnDappStc(
+              pKey,
+              amount,
+              gasPrice,
+              gasLimit,
+              nonce,
+              this.state.signingData.object.to,
+              this.state.signingData.object.from,
+              this.state.signingData.object.data,
+              parseInt(this.state.chainId),
+            ).then(serializedTx => {
+              console.warn('MM', 'this.serializedTx-------', serializedTx);
+              this.sendCoin(serializedTx);
+            });
+          })
+        })
+        .catch(err => {
+          Singleton.showAlert('Unable to process transaction.');
+        });
     }
   }
   sendCoin(serializedTx) {
@@ -671,37 +756,28 @@ class DappBrowserSwap extends Component {
     let blockChain =
       this.state.selectedNetwork == 'Ethereum'
         ? 'ethereum'
-        : 'binancesmartchain';
-    let coin_symbol = this.state.selectedNetwork == 'Ethereum' ? 'eth' : 'bnb';
+        : this.state.selectedNetwork == 'Saitachain'
+          ? 'saitachain'
+          : 'binancesmartchain';
+    let coin_symbol = this.state.selectedNetwork == 'Ethereum' ? 'eth' : this.state.selectedNetwork == 'Saitachain' ? 'stc' : 'bnb';
+    console.log('data:::::', data);
     this.props
       .sendBNB({ data, access_token, blockChain, coin_symbol })
       .then(res => {
-        ////console.log(
-        // '-----------------------Response------------',
-        //   res.tx_hash,
-        //   this.state.signingData.id,
-        // );
+        console.log(
+          '-----------------------Response------------',
+          res.tx_hash,
+          this.state.signingData.id,
+        );
         this.setState({ isVisible: false, isLoading: false });
         let mmid = this.state.signingData.id;
         let hash = res.tx_hash;
-        // let js = `window.ethereum.sendResponse(${mmid}, '${hash}')`;
         let js = `trustwallet.ethereum.sendResponse(${mmid}, '${hash}')`;
-
-
-        // if(props.typeofAction=="stake"){
-        //   Singleton.showAlert("Stake successful, waiting for Blockchain confirmation.")
-        // }else{
-        //   Singleton.showAlert(res.message)
-        // }
-
         this.webview.injectJavaScript(js);
       })
       .catch(err => {
-        //console.warn('MM','Error: ', err);
+        console.warn('MM', 'Error: ', err);
         let js = `trustwallet.ethereum.sendError(${this.state.signingData.id}, '${err.message}')`;
-
-        // let js = `window.ethereum.sendError(${this.state.signingData.id
-        //   }, '${JSON.stringify(err.message)}')`;
         this.webview.injectJavaScript(js);
         this.setState({ isVisible: false, isLoading: false });
         Singleton.showAlert(err.message);
@@ -722,26 +798,26 @@ class DappBrowserSwap extends Component {
   setUrl(type) {
     if (this.validURL(this.state.enteredURL)) {
       if (!this.state.enteredURL.startsWith('http')) {
-        //console.warn('MM','true ==>>> ', 'https://' + this.state.enteredURL);
+        console.warn('MM', 'true ==>>> ', 'https://' + this.state.enteredURL);
         this.setState({ url: 'https://' + this.state.enteredURL });
       } else {
-        //console.warn('MM','2true ==>>> ', 'https://' + this.state.enteredURL);
+        console.warn('MM', '2true ==>>> ', 'https://' + this.state.enteredURL);
         // 1 is reload
         if (type == 1) {
-          //console.warn('MM','check type 1 part=====>', this.state.enteredURL);
+          console.warn('MM', 'check type 1 part=====>', this.state.enteredURL);
           if (this.state.url == this.state.enteredURL) {
             this.setState({ url: '' }, () => {
               this.setState({ url: this.state.enteredURL });
             });
           }
         } else {
-          //console.warn('MM','3true ==>>> ', 'https://' + this.state.enteredURL);
+          console.warn('MM', '3true ==>>> ', 'https://' + this.state.enteredURL);
           this.setState({ url: this.state.enteredURL });
         }
       }
     } else {
-      //console.warn('MM','check else part=====>', this.state.enteredURL);
-      //console.warn('MM','4true ==>>> ', 'https://' + this.state.enteredURL);
+      console.warn('MM', 'check else part=====>', this.state.enteredURL);
+      console.warn('MM', '4true ==>>> ', 'https://' + this.state.enteredURL);
       let a = this.state.enteredURL.includes('about:blank')
         ? this.props.url
         : this.state.enteredURL;
@@ -785,22 +861,13 @@ class DappBrowserSwap extends Component {
               clearCache={true}
               onShouldStartLoadWithRequest={this.onShouldStartLoadWithRequest}
               onNavigationStateChange={navState => {
-                console.warn('MM',' navState ==>>>', navState);
-                //console.warn('MM',' navState uri==>>>', this.state.url);
+                console.warn('MM', ' navState ==>>>', navState);
                 this.setState({
                   canGoBack: navState.canGoBack,
                   canGoForward: navState.canGoForward,
                   enteredURL: navState.url,
                   urlTitle: navState.title,
                 });
-                ////console.log(
-                //     'check entered url---------->',
-                //       this.state.enteredURL,
-                //       );
-                //       ////console.log(
-                //         'check this.state.startUrl ---------->',
-                // this.state.startUrl,
-                // );
                 if (this.state.startUrl != this.state.enteredURL) {
                 } else {
                   this.setState({ canGoBack: false });
@@ -812,7 +879,7 @@ class DappBrowserSwap extends Component {
               allowsInlineMediaPlayback
               useWebkit
               testID={'browser-webview'}
-              originWhitelist={['*']}
+              originWhitelist={["http://*", "https://*", "intent://*"]}
               onLoadStart={this.onLoadStart}
               onLoadEnd={this.onLoadEnd}
               onError={err => {
@@ -823,157 +890,22 @@ class DappBrowserSwap extends Component {
                     text: 'Try Again',
                     onPress: () => {
                       isLoadAlert = false
-                      this.webview?.reload()}
+                      this.webview?.reload()
+                    }
                   }, {
                     text: 'Cancel',
                     onPress: () => {
                       isLoadAlert = false
-                  }
+                    }
                   }], {
                     cancelable: true,
 
                   })
                 }
                 console.warn('MM', 'chk err', err);
-                // this.webview?.reload();
               }}
             />
-            {/* {this.state.isLoading && <Loader />} */}
-            {this.state.isNetworkModalVisible && (
-              <View style={styles.dropdown}>
-                <TouchableOpacity
-                  style={{ padding: 10 }}
-                  onPress={() => {
-                    var provider = new web3.providers.HttpProvider(
-                      IS_PRODUCTION == 0
-                        ? Constants.testnetEth
-                        :this.props.publicEthUrl,
-                    );
-                    this.web3 = new web3(provider);
-                    this.setState({
-                      isNetworkModalVisible: false,
-                      selectedNetwork: 'Ethereum',
-                      selectedNetworkImageUri: DAPP_IMG_URL + '/images/eth.png',
-                      chainId: Constants.network == 'testnet' ? '5' : '1',
-                      rpcUrl:
-                        IS_PRODUCTION == 0
-                          ? 'https://eth-goerli.g.alchemy.com/v2/CeBAVqM26_O3EE-R3sDD-Edf5q0kD5UH'
-                          : this.props.publicEthUrl,
-                      jsContent: this.getJavascript(
-                        IS_PRODUCTION == 0 ? '3' : '1',
-                        IS_PRODUCTION == 0
-                          ? 'https://eth-goerli.g.alchemy.com/v2/CeBAVqM26_O3EE-R3sDD-Edf5q0kD5UH'
-                          : this.props.publicEthUrl,
-                        this.state.address,
-                        this.state.content,
-                      ),
-                    });
-                    setTimeout(() => {
-                      this.webview?.reload();
-                    }, 2000);
-                  }}>
-                  <View style={{ flexDirection: 'row' }}>
-                    <FastImage
-                      style={{ marginRight: 10, width: 20, height: 20 }}
-                      source={{
-                        uri: DAPP_IMG_URL + '/images/eth.png',
-                        priority: FastImage.priority.normal,
-                      }}
-                      resizeMode={FastImage.resizeMode.contain}
-                    />
-                    <Text
-                      style={{
-                        fontFamily: Fonts.regular,
-                        fontSize: 15,
-                        color: '#d01961',
-                      }}>
-                      Ethereum
-                    </Text>
-                  </View>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={{ padding: 10 }}
-                  onPress={() => {
-                    let rpcUrl =  IS_PRODUCTION == 0
-                    ? 'https://data-seed-prebsc-1-s1.binance.org:8545/'
-                    : this.props.publicBscUrl;
-                    var provider = new web3.providers.HttpProvider(rpcUrl);
-                    this.web3 = new web3(provider);
-                    this.setState({
-                      isNetworkModalVisible: false,
-                      selectedNetwork: 'Binance',
-                      selectedNetworkImageUri: DAPP_IMG_URL + '/images/bnb.png',
-                      chainId: '4',
-                      rpcUrl: rpcUrl,
-                      jsContent: this.getJavascript(
-                        IS_PRODUCTION == 0 ? '97' : '56',
-                        rpcUrl,
-                        this.state.address,
-                        this.state.content,
-                      ),
-                    });
-                    setTimeout(() => {
-                      this.webview?.reload();
-                    }, 2000);
-                  }}>
-                  <View style={{ flexDirection: 'row' }}>
-                    <FastImage
-                      style={{ marginRight: 10, width: 20, height: 20 }}
-                      source={{
-                        uri: DAPP_IMG_URL + '/images/bnb.png',
-                        priority: FastImage.priority.normal,
-                      }}
-                      resizeMode={FastImage.resizeMode.contain}
-                    />
-                    <Text
-                      style={{
-                        fontFamily: Fonts.regular,
-                        fontSize: 15,
-                        color: '#d01961',
-                      }}>
-                      Binance
-                    </Text>
-                  </View>
-                </TouchableOpacity>
-              </View>
-            )}
           </View>
-          {/* <View style={{ width: '100%', height: 44, flexDirection: 'row', justifyContent: 'space-between', backgroundColor: Colors.white }}>
-            <View style={{ width: 100, height: 44, flexDirection: 'row', justifyContent: 'space-between', elevation: 2, }}>
-              <TouchableOpacity style={{ width: 40, height: '100%', justifyContent: 'center', alignItems: 'center', }}
-                onPress={() => {
-                  //console.warn('MM','print enter url===----->', this.state.enteredURL);
-                  if (this.state.enteredURL === 'about:blank') {
-                    this.setState({ canGoBack: false, });
-                  } else {
-                    this.webview.goBack();
-                  }
-                }}
-                disabled={!this.state.canGoBack}>
-                <FastImage style={[{ width: 25, height: 25, transform: [{ rotateY: '180deg' }] }, this.state.canGoBack ? { opacity: 1 } : { opacity: 0.2 }]}
-                  tintColor={'blue'} resizeMode={'contain'} source={images.rightArrow}
-                />
-              </TouchableOpacity>
-              <TouchableOpacity style={{ width: 40, height: '100%', justifyContent: 'center', alignItems: 'center', }}
-                onPress={() => this.webview.goForward()}
-                disabled={!this.state.canGoForward}>
-                <FastImage style={[{ width: 25, height: 25, tintColor: 'blue' }, this.state.canGoForward ? { opacity: 1 } : { opacity: 0.2 },]}
-                  tintColor={'blue'} resizeMode={'contain'} source={Images.rightArrow}
-                />
-              </TouchableOpacity>
-            </View>
-            <View style={{ width: 50, height: 44, flexDirection: 'row', justifyContent: 'space-between' }}>
-              <TouchableOpacity style={{ width: 40, height: '100%', justifyContent: 'center', alignItems: 'center' }}
-                onPress={() => this.webview.reload()}>
-                <FastImage
-                  style={{ width: 25, height: 25, tintColor: 'blue' }}
-                  resizeMode={'contain'} tintColor={'blue'}
-                  source={Images.financeIcon}
-                />
-              </TouchableOpacity>
-            </View>
-          </View> */}
-          {/* {this.state.isLoading && <Loader color="white" />} */}
         </SafeAreaView>
         <SafeAreaView style={{ backgroundColor: Colors.white }} />
         <Modal
@@ -1002,9 +934,6 @@ class DappBrowserSwap extends Component {
                       }}
                       onPress={() => {
                         let js = `trustwallet.ethereum.sendError(${this.state.signingData.id}, 'Cancelled')`;
-
-                        // let js = `window.ethereum.sendError(${this.state.signingData.id}, 'Cancelled')`;
-                        //console.warn('MM','----------------js-----------', js);
                         this.webview.injectJavaScript(js);
                         this.setState({ isVisible: false });
                       }}>
@@ -1034,7 +963,7 @@ class DappBrowserSwap extends Component {
                       {this.state.advanceMode
                         ? this.state.advanceGasFees
                         : this.state.calculatedFee}{' '}
-                      {this.state.selectedNetwork == 'Ethereum' ? 'ETH' : 'BNB'}
+                      {this.state.selectedNetwork == 'Ethereum' ? 'ETH' :this.state.selectedNetwork == 'Saitachain' ? 'STC' : 'BNB'}
                       {' ('}
                       {Singleton.getInstance().CurrencySymbol}
                       {Singleton.getInstance().toFixed(
@@ -1047,18 +976,6 @@ class DappBrowserSwap extends Component {
                   <View style={styles.vwSignTransaction}>
                     <Text style={styles.textLbl}>Total </Text>
                     <Text style={styles.txtValue}>
-                      {/* {//console.log(
-                      // 'signingData',
-                      // this.hex2dec(this.state.signingData.object.value) /
-                      // 10 ** 18,
-                      // this.state.calculatedFee,
-                      // this.state.ethPrice,
-                      // parseFloat(
-                      //   this.hex2dec(this.state.signingData.object.value) /
-                      //   10 ** 18,
-                      // ) + parseFloat(this.state.calculatedFee),
-                      // parseFloat(this.state.ethPrice),
-                      // )} */}
                       {parseFloat(
                         parseFloat(
                           this.hex2dec(this.state.signingData.object.value) /
@@ -1070,7 +987,7 @@ class DappBrowserSwap extends Component {
                             : this.state.calculatedFee,
                         ),
                       ).toFixed(8)}{' '}
-                      {this.state.selectedNetwork == 'Ethereum' ? 'ETH' : 'BNB'}
+                      {this.state.selectedNetwork == 'Ethereum' ? 'ETH' :this.state.selectedNetwork == 'Saitachain' ? 'STC' : 'BNB'}
                       {' ('}
                       {Singleton.getInstance().CurrencySymbol}
                       {this.getTotalUsd(
@@ -1303,11 +1220,13 @@ class DappBrowserSwap extends Component {
 
 const mapStateToProp = state => {
   const { currentEthpriceInSelectedCurrency, myWallets } = state.walletReducer;
-  const {stakeUrl, publicBscUrl, publicEthUrl} = state.walletReducer.dex_data;
-  return { currentEthpriceInSelectedCurrency, myWallets,stakeUrl, publicBscUrl, publicEthUrl };
+  const { stakeUrl, publicBscUrl, publicEthUrl, publicStcUrl } = state.walletReducer.dex_data;
+  return { currentEthpriceInSelectedCurrency, myWallets, stakeUrl, publicBscUrl, publicEthUrl, publicStcUrl };
 };
 export default connect(mapStateToProp, {
   getBnbNonce,
   getBnbGasEstimate,
   sendBNB,
+  getSTCGasPrice,
+  getStcGasEstimate
 })(DappBrowserSwap);

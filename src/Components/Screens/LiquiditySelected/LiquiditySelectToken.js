@@ -1,25 +1,24 @@
-import { View, Text, SafeAreaView, TouchableOpacity, Image, Dimensions } from 'react-native';
-import React, { useState } from 'react';
-import { ButtonPrimary, CustomDropdown, SimpleHeader, Wrap } from '../../common';
-import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
-import { Images } from '../../../theme';
-import styles from './style';
-import { useEffect } from 'react';
-import { Actions } from 'react-native-router-flux';
+import React, { useEffect, useState } from 'react';
+import { Dimensions, Image, Text, View } from 'react-native';
+import Web3 from 'web3';
+import PAIR_ABI from '../../../../ABI/Pair.ABI.json';
 import SAITAROUTER_ABI from '../../../../ABI/saitaFactory.ABI.json';
 import TOKEN_ABI from '../../../../ABI/tokenContract.ABI.json';
-import PAIR_ABI from '../../../../ABI/Pair.ABI.json';
-import Loader from '../Loader/Loader';
-import Web3 from 'web3';
+import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
+import { NavigationStrings } from '../../../Navigation/NavigationStrings';
 import Singleton from '../../../Singleton';
-import * as constants from '../../../Constant';
+import { getCurrentRouteName, navigate } from '../../../navigationsService';
+import { Images } from '../../../theme';
+import { ButtonPrimary, CustomDropdown, SimpleHeader, Wrap } from '../../common';
+import Loader from '../Loader/Loader';
+import styles from './style';
 
 // let factoryAddress = constants.SwapFactoryAddress;
 
 function LiquiditySelectToken(props) {
   let factoryAddress = Singleton.getInstance().SwapFactoryAddress;
 
-  const { coinList } = props;
+  const { coinList } = props?.route?.params;
   const [selectedToCoin, setSelectedToCoin] = useState(coinList[0]);
   const [selectedFromCoin, setSelectedFromCoin] = useState(coinList[1]);
   const [fromList, setFromList] = useState([]);
@@ -167,8 +166,8 @@ function LiquiditySelectToken(props) {
         </Text>
         {showContinue && <ButtonPrimary
           onpress={() => {
-            Actions.currentScene != 'RemoveLiquidity' &&
-              Actions.RemoveLiquidity({
+            getCurrentRouteName() != 'RemoveLiquidity' &&
+            navigate(NavigationStrings.RemoveLiquidity,{
                 selectedToCoin, selectedFromCoin, pairBalance, firstTokenSupply, secondTokenSupply, poolSupply, resultPair, pairNonce,
                 FilteredCoinOne, FilteredCoinTwo
               });

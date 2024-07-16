@@ -35,7 +35,7 @@ export * from './MyCustomSearch';
 export * from './ImageBackgroundComponent';
 export * from './CustomSwitch';
 export * from './SimpleHeaderNew';
-export * from './CustomTabBar';
+// export * from './CustomTabBar';
 export * from './WalletItem';
 export * from './TradeHeader';
 export * from './ToggleButton';
@@ -51,4 +51,6 @@ export * from './KeyboardDigit';
 export * from './PinInput';
 export * from './Card';
 export * from './SelectionModal'
+export * from './TextInputWithLabel'
+
 

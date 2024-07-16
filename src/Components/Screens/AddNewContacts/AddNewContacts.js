@@ -1,47 +1,46 @@
 /* eslint-disable react-native/no-inline-styles */
+import React, { useEffect, useState } from 'react';
 import {
-  View,
-  Text,
-  Image,
   Alert,
-  SafeAreaView,
+  BackHandler,
+  Clipboard,
+  Image,
   PermissionsAndroid,
   Platform,
-  Clipboard,
-  BackHandler
+  SafeAreaView,
+  Text,
+  View
 } from 'react-native';
-import React, {useState, useEffect} from 'react';
-import {styles} from './AddNewContactsStyle';
-import {Wrap, BasicButton, BorderLine} from '../../common';
-import {SimpleHeader} from '../../common/SimpleHeader';
-import {Actions} from 'react-native-router-flux';
-import {BasicInputBox} from '../../common/BasicInputBox';
-import {Images, Colors} from '../../../theme/index';
-import FastImage from 'react-native-fast-image';
-import {TextInput, TouchableOpacity} from 'react-native-gesture-handler';
-import {saveWalletContact} from '../../../Redux/Actions/ContactsAction';
+import { TextInput, TouchableOpacity } from 'react-native-gesture-handler';
+import { connect } from 'react-redux';
+import { saveWalletContact } from '../../../Redux/Actions/ContactsAction';
 import Singleton from '../../../Singleton';
-import {connect} from 'react-redux';
-import {ALPHABET_REGEX, APP_NAME, NEW_NAME_REGX} from './../../../Constant';
+import { Colors, Images } from '../../../theme/index';
+import { BasicButton, BorderLine, Wrap } from '../../common';
+import { BasicInputBox } from '../../common/BasicInputBox';
+import { SimpleHeader } from '../../common/SimpleHeader';
 import Loader from '../Loader/Loader';
-import {CameraScreen} from 'react-native-camera-kit';
-import {LanguageManager, ThemeManager} from '../../../../ThemeManager';
-import fonts from '../../../theme/Fonts';
-import {areaDimen, heightDimen, widthDimen} from '../../../Utils/themeUtils';
+import { APP_NAME, NEW_NAME_REGX } from './../../../Constant';
+import { styles } from './AddNewContactsStyle';
+// import {CameraScreen} from 'react-native-camera-kit';
+import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
+import { NavigationStrings } from '../../../Navigation/NavigationStrings';
+import { heightDimen, widthDimen } from '../../../Utils/themeUtils';
+import { goBack, navigate } from '../../../navigationsService';
 import QRReaderModal from '../../common/QRReaderModal';
 let scanner = false
 const AddNewContacts = props => {
   const [contactName, setContactName] = useState('');
   const [contactAddress, setContactAddress] = useState(
-    props.address ? props.address : '',
+    props?.route?.params?.address ? props?.route?.params?.address : '',
   );
   const [coinFamily, setCoinFamily] = useState('');
   const [network, setNetwork] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [Start_Scanner, setStart_Scanner] = useState(false);
   const setNetworkState = () => {
-    let coinFamily = props?.coinFamily ? props.coinFamily : 1;
-    setCoinFamily(props?.coinFamily);
+    let coinFamily = props?.route?.params?.coinFamily ? props?.route?.params?.coinFamily : 1;
+    setCoinFamily(props?.route?.params?.coinFamily);
     switch (coinFamily) {
       case 1:
         setNetwork('ethereum');
@@ -64,8 +63,8 @@ const AddNewContacts = props => {
   };
   useEffect(() => {
     //  console.warn('MM','****************i walletData.decimals', props.walletData.decimals , props.walletData);
-    props.navigation.addListener('didFocus', onScreenFocus);
-    props.navigation.addListener('didBlur', onScreenBlur);
+    props.navigation.addListener('focus', onScreenFocus);
+    props.navigation.addListener('blur', onScreenBlur);
   }, [props]);
 
   const onScreenFocus = () => {
@@ -83,7 +82,7 @@ const AddNewContacts = props => {
      scanner=false
      return true;
     } else{
-      Actions.pop(); 
+      goBack(); 
       return true;
     }
   };
@@ -156,8 +155,7 @@ const AddNewContacts = props => {
             {
               text: 'OK',
               onPress: () => {
-                // Actions.currentScene != 'Wallet' && Actions.Wallet();
-                props.isPop ? props.navigation.goBack() : Actions.jump("Wallet")
+                props?.route?.params?.isPop ? goBack(): navigate(NavigationStrings.Wallet)
                 
               },
             },
@@ -174,7 +172,7 @@ const AddNewContacts = props => {
             {
               text: 'OK',
               onPress: () => {
-                // Actions.currentScene != 'Dashboard' && Actions.Dashboard();
+                // getCurrentRouteName() != 'Dashboard' && Actions.Dashboard();
               },
             },
           ],

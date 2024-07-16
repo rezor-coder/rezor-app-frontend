@@ -1,53 +1,54 @@
 import React, { Component } from 'react';
 import {
-  View,
-  Image,
-  Text,
-  ScrollView,
-  SafeAreaView,
-  TouchableOpacity,
-  Modal,
   Alert,
+  Image,
+  Modal,
+  SafeAreaView,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
-import styles from './MultiSenderEthTokenStyle';
-import {
-  Inputtext,
-  Wrap,
-  ButtonTransaction,
-  SimpleHeader,
-  BasicButton,
-  BorderLine,
-  LightButton,
-  PinInput,
-  KeyboardDigit,
-} from '../../common';
-import { Fonts, Images, Colors } from '../../../theme';
+import ReactNativeBiometrics from 'react-native-biometrics';
+import { EventRegister } from 'react-native-event-listeners';
+import FastImage from 'react-native-fast-image';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scrollview';
+import { connect } from 'react-redux';
+import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
 import * as constants from '../../../Constant';
-import Toast, { DURATION } from 'react-native-easy-toast';
-import { Actions } from 'react-native-router-flux';
-import Singleton from '../../../Singleton';
+import { NavigationStrings } from '../../../Navigation/NavigationStrings';
 import {
-  getEthGasEstimate,
   getBnbGasEstimate,
   getBnbNonce,
+  getEthGasEstimate,
+  getSTCGasPrice,
+  getStcGasEstimate,
   saveTxn,
   sendETH,
-  getSTCGasPrice,
-  getStcGasEstimate
 } from '../../../Redux/Actions';
-import { connect } from 'react-redux';
-import Loader from '../Loader/Loader';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scrollview';
+import Singleton from '../../../Singleton';
+import { areaDimen, heightDimen, widthDimen } from '../../../Utils/themeUtils';
+import { getCurrentRouteName, goBack, navigate } from '../../../navigationsService';
+import { Colors, Fonts, Images } from '../../../theme';
 import {
+  bigNumberSafeMath,
   getEthBaseFee,
   getStcNonce,
   getTotalGasFee,
 } from '../../../utils';
-import ReactNativeBiometrics from 'react-native-biometrics';
-import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
-import { areaDimen, heightDimen, widthDimen } from '../../../Utils/themeUtils';
-import FastImage from 'react-native-fast-image';
-import { EventRegister } from 'react-native-event-listeners';
+import {
+  BasicButton,
+  BorderLine,
+  ButtonTransaction,
+  Inputtext,
+  KeyboardDigit,
+  LightButton,
+  PinInput,
+  SimpleHeader,
+  Wrap,
+} from '../../common';
+import Loader from '../Loader/Loader';
+import styles from './MultiSenderEthTokenStyle';
 const multiSenderBnbContractAddress =
   constants.network == 'testnet'
     ? '0xEF3Cc16FAC12431799ae4ECc3b87BE5e9AD076e4'
@@ -65,7 +66,7 @@ class MultiSenderEthToken extends Component {
       amount: 0.0,
       amountNew: 0.0,
       toAddress: '',
-      selectedCoin: this.props?.selectedCoin,
+      selectedCoin: this.props?.route?.params?.selectedCoin,
       isLoading: false,
       gasPriceForTxn: 1000000000,
       gaslimitForTxn: 21000,
@@ -85,11 +86,11 @@ class MultiSenderEthToken extends Component {
       maxClicked: false,
       amountAfterCommission: 0,
       blockChain:
-        this.props.selectedCoin.coin_family == 1
+        this.props.route?.params?.selectedCoin.coin_family == 1
           ? 'ethereum'
-          : this.props.selectedCoin.coin_family == 6
+          : this.props.route?.params?.selectedCoin.coin_family == 6
             ? 'binancesmartchain'
-            : this.props.selectedCoin.coin_family == 4
+            : this.props.route?.params?.selectedCoin.coin_family == 4
               ? 'saitachain'
               : 'polygon',
       ethPvtKey: '',
@@ -101,7 +102,7 @@ class MultiSenderEthToken extends Component {
       totalFee: '',
       showTouch: false,
       showFace: false,
-      coinSymbol: this.props.selectedCoin.coin_family == 1 ? 'ETH' : this.props.selectedCoin.coin_family == 4 ? 'STC' : this.props.selectedCoin.coin_family == 6 ? 'BNB' : 'STC'
+      coinSymbol: this.props.route?.params?.selectedCoin.coin_family == 1 ? 'ETH' : this.props.route?.params?.selectedCoin.coin_family == 4 ? 'STC' : this.props.route?.params?.selectedCoin.coin_family == 6 ? 'BNB' : 'STC'
     };
   }
 
@@ -126,7 +127,7 @@ class MultiSenderEthToken extends Component {
       .then(pin => {
         this.setState({ existingPin: pin });
       });
-    csvData = this.props.csvArray;
+    csvData = this.props?.route?.params?.csvArray;
     let valueInCoin = 0;
     let toAddressMulti = '';
     csvData.map((item, index) => {
@@ -140,17 +141,17 @@ class MultiSenderEthToken extends Component {
       // amountNew: valueInCoin,
     });
     //console.warn('MM','toAddress', valueInCoin);
-    if (this.props.selectedCoin.coin_family == 1) {
+    if (this.props.route?.params?.selectedCoin.coin_family == 1) {
       this.getBaseFee();
       this.getGasLimit();
       this.getTotalFee();
     } else if (
-      this.props.selectedCoin.coin_family == 6 ||
-      this.props?.selectedCoin?.coin_family == 11
+      this.props.route?.params?.selectedCoin.coin_family == 6 ||
+      this.props?.route?.params?.selectedCoin?.coin_family == 11
     ) {
       this.getbnbEstimate();
     } else if (
-      this.props.selectedCoin.coin_family == 4
+      this.props.route?.params?.selectedCoin.coin_family == 4
     ) {
       this.getStcEstimate();
     }
@@ -158,6 +159,56 @@ class MultiSenderEthToken extends Component {
   componentWillUnmount() {
     EventRegister.removeEventListener('downModal')
   }
+  // getStcEstimateOrigional() {
+  //   this.setState({ isLoading: true });
+  //   let data = {
+  //     from: Singleton.getInstance().defaultStcAddress,
+  //     to: multiSenderSTCERC20ContractAddress,
+  //     amount: this.state.amount,
+  //   };
+  //   let blockChain = 'saitachain';
+  //   let access_token = Singleton.getInstance().access_token;
+  //   let contractAddress = this.props.route?.params?.selectedCoin.token_address;
+  //   this.props.getSTCGasPrice().then(gasPrices => {
+  //     console.log("gasPrices:::::", gasPrices);
+  //     let resultList = gasPrices.data
+  //     this.props
+  //       .getBnbGasEstimate({ blockChain, data, contractAddress, access_token })
+  //       .then(response => {
+  //         console.warn('MM', 'response GAS--stc ', response);
+  //         let slowGasPrice =
+  //           parseFloat(resultList[0].safe_gas_price) * gwei_multi;
+  //         let mediumGasPrice =
+  //           parseFloat(resultList[0].propose_gas_price) * gwei_multi;
+  //         let heightGasPrice =
+  //           parseFloat(resultList[0].fast_gas_price) * gwei_multi;
+  //         let feeIs =
+  //           slowGasPrice *
+  //           response.gas_estimate *
+  //           this.state.gasFeeMultiplier;
+  //         console.warn('MM', 'feeIs---- ', feeIs);
+  //         this.setState({
+  //           gasPriceForTxn: slowGasPrice,
+  //           gaslimitForTxn: response.gas_estimate,
+  //           gasPriceForTxnSlow: slowGasPrice,
+  //           gasPriceForTxnMedium: mediumGasPrice,
+  //           gasPriceForTxnHigh: heightGasPrice,
+  //           totalFee: Singleton.getInstance()
+  //             .exponentialToDecimal(feeIs)
+  //             .toString(),
+  //           isLoading: false,
+  //         });
+  //       })
+  //       .catch(error => {
+  //         this.setState({ isLoading: false });
+  //       });
+  //   }).catch(err => {
+  //     console.log(err);
+  //     this.setState({ isLoading: false });
+  //     Singleton.showAlert(err?.message || constants.SOMETHING_WRONG);
+  //   })
+
+  // }
   getbnbEstimate() {
     this.setState({ isLoading: true });
     let data = {
@@ -168,15 +219,15 @@ class MultiSenderEthToken extends Component {
     let blockChain = this.state.blockChain;
     let access_token = Singleton.getInstance().access_token;
     let contractAddress =
-      this.props.selectedCoin.is_token != 1
-        ? this.props.selectedCoin.coin_family == 6
+      this.props.route?.params?.selectedCoin.is_token != 1
+        ? this.props.route?.params?.selectedCoin.coin_family == 6
           ? 'bnb'
           : 'matic'
-        : this.props.selectedCoin.token_address;
+        : this.props.route?.params?.selectedCoin.token_address;
     this.props
       .getBnbGasEstimate({ blockChain, data, contractAddress, access_token })
       .then(response => {
-        //console.warn('MM','response GAS--bnb ', response);
+        console.warn('MM', 'response GAS--bnb ', response);
         let slowGasPrice =
           parseFloat(response.resultList[0].safe_gas_price) * gwei_multi;
         let mediumGasPrice =
@@ -187,7 +238,7 @@ class MultiSenderEthToken extends Component {
           slowGasPrice *
           response.gas_estimate.gas_estimate *
           this.state.gasFeeMultiplier;
-        //console.warn('MM','feeIs---- ', feeIs);
+        console.warn('MM', 'feeIs---- ', feeIs);
         this.setState({
           gasPriceForTxn: slowGasPrice,
           gaslimitForTxn: response.gas_estimate.gas_estimate,
@@ -206,13 +257,21 @@ class MultiSenderEthToken extends Component {
   }
   getStcEstimate() {
     this.setState({ isLoading: true });
-    let access_token = Singleton.getInstance().access_token;
     this.props.getSTCGasPrice().then(gasPrices => {
       console.log("gasPrices:::::", gasPrices);
+      let data = {
+        from: Singleton.getInstance().defaultBnbAddress,
+        to: Singleton.getInstance().defaultBnbAddress,
+        amount: this.state.amount,
+      };
+      let blockChain = this.state.blockChain;
+      let access_token = Singleton.getInstance().access_token;
+      let contractAddress = this.props.route?.params?.selectedCoin.token_address;
       this.props
-        .getStcGasEstimate({ access_token })
+        .getBnbGasEstimate({ blockChain, data, contractAddress, access_token })
         .then(response => {
-          let { gasLimit } = response.data.find(item => item.name == 'bulkTransfer')
+          let  gasLimit  = response?.gas_estimate
+          console.log("gasLimit:::::",gasLimit);
           let slowGasPrice =
             parseFloat(gasPrices?.data?.safeGasPrice) * gwei_multi;
           let mediumGasPrice =
@@ -223,7 +282,7 @@ class MultiSenderEthToken extends Component {
             slowGasPrice *
             gasLimit *
             this.state.gasFeeMultiplier;
-          //console.warn('MM','feeIs---- ', feeIs);
+          console.warn('MM', 'feeIs---- ', feeIs);
           this.setState({
             gasPriceForTxn: slowGasPrice,
             gaslimitForTxn: gasLimit,
@@ -255,11 +314,11 @@ class MultiSenderEthToken extends Component {
     };
     let blockChain = this.state.blockChain;
     let access_token = Singleton.getInstance().access_token;
-    let contractAddress = this.props.selectedCoin.token_address;
+    let contractAddress = this.props.route?.params?.selectedCoin.token_address;
     this.props
       .getEthGasEstimate({ blockChain, data, contractAddress, access_token })
       .then(res => {
-        //console.warn('MM','----------------------GAS---------', res);
+        console.warn('MM', '----------------------GAS---------', res);
         this.setState(
           { isLoading: false, gaslimitForTxn: res.gas_estimate },
           () => {
@@ -274,7 +333,7 @@ class MultiSenderEthToken extends Component {
   async getBaseFee() {
     const fee = await getEthBaseFee();
     this.setState({ baseFee: fee }, () => {
-      //  console.warn('MM','chk fee:::::eth:::::::', this.state.baseFee)
+      console.warn('MM', 'chk fee:::::eth:::::::', this.state.baseFee)
     });
   }
   checkBiometricAvailability() {
@@ -355,39 +414,40 @@ class MultiSenderEthToken extends Component {
       });
     return;
   };
-  generateRaw() {
+  async generateRaw() {
     this.setState({ isLoading: true });
-    let contractAddress = this.props.selectedCoin.token_address;
-    if (this.props.selectedCoin.coin_family == 1) {
+    let contractAddress = this.props.route?.params?.selectedCoin.token_address;
+    if (this.props.route?.params?.selectedCoin.coin_family == 1) {
+      const Totalfee = await getTotalGasFee();
       Singleton.getInstance()
         .getsignRawTxnTokenApproval(
           this.state.ethPvtKey,
-          this.props.selectedCoin.token_address,
-          '',
+          this.props.route?.params?.selectedCoin.token_address,
+          Totalfee,
           this.state.gaslimitForTxn,
           '',
           Singleton.getInstance().defaultEthAddress,
-          this.props.selectedCoin.coin_family,
+          this.props.route?.params?.selectedCoin.coin_family,
         )
         .then(tx_raw => {
-          //console.warn('MM','chk txn_raw:::::', tx_raw);
+          console.warn('MM', 'chk txn_raw:::::', tx_raw);
           this.setState({ isLoading: false });
           this.send(tx_raw.signedRaw, contractAddress, tx_raw.nonce); //TODO: - Uncomment this line
         })
         .catch(e => {
-          //console.warn('MM',e);
+          console.warn('MM', e);
           this.setState({ isLoading: false });
         });
     } else if (
-      this.props.selectedCoin.coin_family == 6 ||
-      this.props.selectedCoin.coin_family == 11
+      this.props.route?.params?.selectedCoin.coin_family == 6 ||
+      this.props.route?.params?.selectedCoin.coin_family == 11
     ) {
       let access_token = Singleton.getInstance().access_token;
       let blockChain = this.state.blockChain;
       let coin_symbol =
-        this.props.selectedCoin.coin_family == 6 ? 'bnb' : 'matic';
+        this.props.route?.params?.selectedCoin.coin_family == 6 ? 'bnb' : 'matic';
       let wallet_address =
-        this.props.selectedCoin.coin_family == 6
+        this.props.route?.params?.selectedCoin.coin_family == 6
           ? Singleton.getInstance().defaultBnbAddress
           : Singleton.getInstance().defaultMaticAddress;
       this.props
@@ -396,12 +456,12 @@ class MultiSenderEthToken extends Component {
           Singleton.getInstance()
             .getsignRawTxnTokenApproval(
               this.state.bnbPvtKey,
-              this.props.selectedCoin.token_address,
+              this.props.route?.params?.selectedCoin.token_address,
               this.state.gasPriceForTxn,
               this.state.gaslimitForTxn,
               nonce,
               Singleton.getInstance().defaultBnbAddress,
-              this.props.selectedCoin.coin_family,
+              this.props.route?.params?.selectedCoin.coin_family,
             )
             .then(tx_raw => {
               // Singleton.getInstance().getsignRawTxnTokenApproval('0x23a481d208423edd51bcfd8ce634895857b94360c414ea7b28aec1d231971808', '0x84b9B910527Ad5C03A9Ca831909E21e236EA7b06', this.state.gasPriceForTxn, this.state.gaslimitForTxn, nonce, '0x75f2CdAa88EAC0Ca8ADB30f1eF14B85Ca2450eFa', 6).then((txn_hash) => {
@@ -411,7 +471,7 @@ class MultiSenderEthToken extends Component {
             })
             .catch(e => {
               if (e?.toString()?.includes('insufficient')) {
-                Singleton.showAlert(`Insufficient ${this.props.selectedCoin.coin_family == 6 ? 'BNB' : this.props.selectedCoin.coin_family == 1 ? 'ETH' : 'MATIC'} Funds.`)
+                Singleton.showAlert(`Insufficient ${this.props.route?.params?.selectedCoin.coin_family == 6 ? 'BNB' : this.props.route?.params?.selectedCoin.coin_family == 1 ? 'ETH' : 'MATIC'} Funds.`)
               }
               console.warn('MM', 'APPROVAL----------------', e);
               this.setState({ isLoading: false });
@@ -422,7 +482,7 @@ class MultiSenderEthToken extends Component {
           this.setState({ isLoading: false });
         });
     } else if (
-      this.props.selectedCoin.coin_family == 4
+      this.props.route?.params?.selectedCoin.coin_family == 4
     ) {
       let wallet_address = Singleton.getInstance().defaultStcAddress
       getStcNonce(wallet_address)
@@ -430,12 +490,12 @@ class MultiSenderEthToken extends Component {
           Singleton.getInstance()
             .getsignRawTxnTokenApproval(
               this.state.bnbPvtKey,
-              this.props.selectedCoin.token_address,
+              this.props.route?.params?.selectedCoin.token_address,
               this.state.gasPriceForTxn,
               this.state.gaslimitForTxn,
               nonce,
               Singleton.getInstance().defaultBnbAddress,
-              this.props.selectedCoin.coin_family,
+              this.props.route?.params?.selectedCoin.coin_family,
             )
             .then(tx_raw => {
               // Singleton.getInstance().getsignRawTxnTokenApproval('0x23a481d208423edd51bcfd8ce634895857b94360c414ea7b28aec1d231971808', '0x84b9B910527Ad5C03A9Ca831909E21e236EA7b06', this.state.gasPriceForTxn, this.state.gaslimitForTxn, nonce, '0x75f2CdAa88EAC0Ca8ADB30f1eF14B85Ca2450eFa', 6).then((txn_hash) => {
@@ -445,7 +505,7 @@ class MultiSenderEthToken extends Component {
             })
             .catch(e => {
               if (e?.toString()?.includes('insufficient')) {
-                Singleton.showAlert(`Insufficient ${this.props.selectedCoin.coin_family == 6 ? 'BNB' : this.props.selectedCoin.coin_family == 1 ? 'ETH' : 'MATIC'} Funds.`)
+                Singleton.showAlert(`Insufficient ${this.props.route?.params?.selectedCoin.coin_family == 6 ? 'BNB' : this.props.route?.params?.selectedCoin.coin_family == 1 ? 'ETH' : 'MATIC'} Funds.`)
               }
               console.warn('MM', 'APPROVAL----------------', e);
               this.setState({ isLoading: false });
@@ -483,7 +543,7 @@ class MultiSenderEthToken extends Component {
             {
               text: 'OK',
               onPress: () => {
-                Actions.currentScene != 'Wallet' && Actions.Wallet()
+                getCurrentRouteName() != 'Wallet' && navigate(NavigationStrings.Wallet)
               },
             },
           ],
@@ -515,8 +575,8 @@ class MultiSenderEthToken extends Component {
     let access_token = Singleton.getInstance().access_token;
     let blockChain = this.state.blockChain;
     let coin_symbol =
-      this.props.selectedCoin.is_token != 1
-        ? this.props.selectedCoin.coin_family == 6
+      this.props.route?.params?.selectedCoin.is_token != 1
+        ? this.props.route?.params?.selectedCoin.coin_family == 6
           ? 'bnb'
           : 'matic'
         : this.state.selectedCoin.token_address;
@@ -531,7 +591,7 @@ class MultiSenderEthToken extends Component {
             {
               text: 'OK',
               onPress: () => {
-                Actions.currentScene != 'Wallet' && Actions.Wallet()
+                getCurrentRouteName() != 'Wallet' && navigate(NavigationStrings.Wallet)
               },
             },
           ],
@@ -626,7 +686,7 @@ class MultiSenderEthToken extends Component {
         maxClicked: true,
       },
       () => {
-        this.props.selectedCoin.coin_family == 1
+        this.props.route?.params?.selectedCoin.coin_family == 1
           ? this.getGasLimit()
           : this.getbnbEstimate();
       },
@@ -635,16 +695,17 @@ class MultiSenderEthToken extends Component {
   async getTotalFee() {
     this.setState({ isLoading: true });
     const Totalfee = await getTotalGasFee();
-    //console.warn('MM','chk Totalfee:::::eth:::::::', Totalfee);
+    console.warn('MM', 'chk Totalfee:::::eth:::::::', Totalfee, this.state.gasFeeMultiplier, this.state.gaslimitForTxn);
+    let feeIs = bigNumberSafeMath(Totalfee, '*', bigNumberSafeMath(this.state.gasFeeMultiplier, '*', this.state.gaslimitForTxn))
+    console.log("feeIs:::::", feeIs);
+    let fixedFee = await Singleton.getInstance().toFixed(feeIs, 8)
+    console.log("fixedFee:::::", fixedFee);
     this.setState({
       gasPriceForTxn: Totalfee,
-      totalFee: (
-        Totalfee *
-        this.state.gasFeeMultiplier *
-        this.state.gaslimitForTxn
-      ).toFixed(8),
+      totalFee: fixedFee?.toString(),
       isLoading: false,
     });
+    console.log(":::::IIIIIIÌfeeIs", feeIs);
   }
   slowAction() {
     this.setState({
@@ -832,7 +893,7 @@ class MultiSenderEthToken extends Component {
                 )}
                 {/* *************************view for eth default********************************* */}
                 {!this.state.advancedSet &&
-                  this.props.selectedCoin.coin_family == 1 && (
+                  this.props.route?.params?.selectedCoin.coin_family == 1 && (
                     <View>
                       <Inputtext
                         style={{
@@ -858,7 +919,7 @@ class MultiSenderEthToken extends Component {
                   )}
                 {/* *************************view for bnb default********************************* */}
                 {!this.state.advancedSet &&
-                  this.props.selectedCoin.coin_family == 6 || this.props.selectedCoin.coin_family == 4 && (
+                  this.props.route?.params?.selectedCoin.coin_family == 6 || this.props.route?.params?.selectedCoin.coin_family == 4 && (
                     <View style={styles.feeWrap}>
                       <ButtonTransaction
                         style={{
@@ -963,7 +1024,7 @@ class MultiSenderEthToken extends Component {
                     </View>
                   )}
                 {!this.state.advancedSet &&
-                  this.props.selectedCoin.coin_family == 11 && (
+                  this.props.route?.params?.selectedCoin.coin_family == 11 && (
                     <View style={styles.feeWrap}>
                       <ButtonTransaction
                         style={{
@@ -1070,7 +1131,7 @@ class MultiSenderEthToken extends Component {
                         alignItems: 'center', // Vertical direction
                       }}>
                       <FastImage
-                        source={{ uri: this.props.selectedCoin.coin_image }}
+                        source={{ uri: this.props.route?.params?.selectedCoin.coin_image }}
                         style={styles.iconImageStyle}
                         resizeMode={FastImage.resizeMode.contain}
                       />
@@ -1079,7 +1140,7 @@ class MultiSenderEthToken extends Component {
                           styles.balanceLabelStyle,
                           { color: ThemeManager.colors.lightTextColor },
                         ]}>
-                        {this.props.selectedCoin.coin_symbol.toUpperCase() +
+                        {this.props.route?.params?.selectedCoin.coin_symbol.toUpperCase() +
                           ' ' +
                           'Balance'}
                       </Text>
@@ -1091,7 +1152,7 @@ class MultiSenderEthToken extends Component {
                         { color: ThemeManager.colors.textColor },
                       ]}>
                       {Singleton.getInstance().toFixed(
-                        this.props.selectedCoin.balance,
+                        this.props.route?.params?.selectedCoin.balance,
                         5,
                       )}
                     </Text>
@@ -1120,7 +1181,7 @@ class MultiSenderEthToken extends Component {
                         alignItems: 'center', // Vertical direction
                       }}>
                       <FastImage
-                        source={{ uri: this.props.selectedCoin.coin_image }}
+                        source={{ uri: this.props.route?.params?.selectedCoin.coin_image }}
                         style={styles.iconImageStyle}
                         resizeMode={FastImage.resizeMode.contain}
                       />
@@ -1180,8 +1241,8 @@ class MultiSenderEthToken extends Component {
                         alignItems: 'center',
                       }}
                       onPress={() => {
-                        Actions.currentScene != 'Recipient' &&
-                          Actions.Recipient({ csvData: csvData });
+                        getCurrentRouteName() != 'Recipient' &&
+                        navigate(NavigationStrings.Recipient,{ csvData: csvData });
                       }}>
                       {csvData.length > 1 && (
                         <Text
@@ -1235,7 +1296,7 @@ class MultiSenderEthToken extends Component {
                   customGradient={styles.customGrad}
                 />
                 <LightButton
-                  onPress={() => Actions.pop()}
+                  onPress={() => goBack()}
                   btnStyle={styles.cancelBtnStyle}
                   customGradient={styles.customGrad}
                   text="Cancel"
@@ -1251,7 +1312,7 @@ class MultiSenderEthToken extends Component {
             transparent={true}
             visible={
               this.state.modalVisible &&
-              this.props.selectedCoin.coin_family == 1
+              this.props.route?.params?.selectedCoin.coin_family == 1
             }
             onRequestClose={() => { }}>
             <View style={styles.centeredView}>
@@ -1317,7 +1378,7 @@ class MultiSenderEthToken extends Component {
             transparent={true}
             visible={
               this.state.modalVisible &&
-              this.props.selectedCoin.coin_family == 6
+              this.props.route?.params?.selectedCoin.coin_family == 6
             }
             onRequestClose={() => { }}>
             <View style={styles.centeredView}>

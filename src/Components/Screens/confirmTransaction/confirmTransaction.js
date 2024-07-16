@@ -1,28 +1,21 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
-  View,
-  ScrollView,
-  Text,
-  TextInput,
   Image,
+  Text,
   TouchableOpacity,
-  Modal,
+  View
 } from 'react-native';
-import {Wrap} from '../../common/index';
-import styles from './confirmTransactionStyle';
-import {Images, Colors} from '../../../theme/index';
-import {SimpleHeader} from '../../common/SimpleHeader';
-import {BasicInputBox} from '../../common/BasicInputBox';
-import {Actions} from 'react-native-router-flux';
-import {ButtonTransaction} from '../../common/ButtonTransaction';
-import LinearGradient from 'react-native-linear-gradient';
-import {ButtonPrimary} from '../../common/ButtonPrimary';
-import {AddressBox} from '../../common/AddressBox';
-import {BasicModal} from '../../common/BasicModal';
-import {AdvanceOptions} from '../../common/AdvanceOptions';
-import {LanguageManager, ThemeManager} from '../../../../ThemeManager';
+import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
 import Singleton from '../../../Singleton';
+import { Colors, Images } from '../../../theme/index';
+import { AddressBox } from '../../common/AddressBox';
+import { AdvanceOptions } from '../../common/AdvanceOptions';
+import { BasicModal } from '../../common/BasicModal';
+import { ButtonPrimary } from '../../common/ButtonPrimary';
+import { ButtonTransaction } from '../../common/ButtonTransaction';
+import { Wrap } from '../../common/index';
+import styles from './confirmTransactionStyle';
 
 const confirmTransaction = () => {
   const [selected, setselected] = useState('');

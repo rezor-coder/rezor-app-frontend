@@ -1,30 +1,26 @@
-import React, {useState, useEffect} from 'react';
-import {
-  View,
-  Text,
-  Image,
-  TouchableOpacity,
-  Dimensions,
-  ScrollView,
-  Platform,
-} from 'react-native';
-import {Wrap} from '../../common/Wrap';
-import {Actions} from 'react-native-router-flux';
-import images from '../../../theme/Images';
-import {styles} from './CreateOrImportWalletStyle';
-import {LanguageManager, ThemeManager} from '../../../../ThemeManager';
-import {BasicButton, MainStatusBar, LightButton} from '../../common';
-import Singleton from '../../../Singleton';
 import LottieView from 'lottie-react-native';
+import React, { useEffect, useState } from 'react';
+import {
+  Dimensions,
+  Text,
+  View
+} from 'react-native';
+import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
+import { NavigationStrings } from '../../../Navigation/NavigationStrings';
+import Singleton from '../../../Singleton';
+import { heightDimen } from '../../../Utils/themeUtils';
+import { getCurrentRouteName, navigate } from '../../../navigationsService';
+import images from '../../../theme/Images';
+import { BasicButton, LightButton, MainStatusBar } from '../../common';
 import HeaderwithBackIcon from '../../common/HeaderWithBackIcon';
-import RNPreventScreenshot from 'react-native-screenshot-prevent';
-import {heightDimen, widthDimen} from '../../../Utils/themeUtils';
+import { Wrap } from '../../common/Wrap';
+import { styles } from './CreateOrImportWalletStyle';
 const windowHeight = Dimensions.get('window').height;
 
 const CreateOrImportWallet = props => {
   const [btnColor, setBtnColor] = useState('');
   useEffect(() => {
-    props.navigation.addListener('didFocus', () => {
+    props.navigation.addListener('focus', () => {
       // if (Platform.OS == "android")
       // RNPreventScreenshot?.enabled(true)
       //MMconsole.warn('MM','did Blur called secure Wallet::::::');
@@ -33,8 +29,8 @@ const CreateOrImportWallet = props => {
   }, []);
 
   const onProceed = () => {
-    Actions.currentScene != 'CreateNewWallet' &&
-      Actions.CreateNewWallet({isFrom: props.isFrom});
+    getCurrentRouteName() != 'CreateNewWallet' &&
+    navigate(NavigationStrings.CreateNewWallet,{isFrom: props?.route?.params?.isFrom});
   };
 
   return (
@@ -51,7 +47,7 @@ const CreateOrImportWallet = props => {
       <View style={[styles.container,{backgroundColor: ThemeManager.colors.bg,}]}>
         {/* <TouchableOpacity
           style={styles.backTouchable}
-          onPress={() => Actions.pop()}>
+          onPress={() => goBack()}>
           <Image
             source={ThemeManager.ImageIcons.iconBack}
             style={styles.imgBackStyle}
@@ -104,11 +100,11 @@ const CreateOrImportWallet = props => {
               justifyContent: 'center'
             }}
             onPress={() => {
-              if (props.isFrom == 'multiWallet') {
-                Actions.currentScene != 'MultiWalletOptions' &&
-                  Actions.MultiWalletOptions({ isFrom: props.isFrom });
+              if (props?.route?.params?.isFrom == 'multiWallet') {
+                getCurrentRouteName() != 'MultiWalletOptions' &&
+                  Actions.MultiWalletOptions({ isFrom: props?.route?.params?.isFrom });
               } else {
-                Actions.currentScene != 'ImportWallet' &&
+                getCurrentRouteName() != 'ImportWallet' &&
                   Actions.ImportWallet();
               }
             }}>
@@ -133,11 +129,11 @@ const CreateOrImportWallet = props => {
 
         <LightButton
           onPress={() => {
-            if (props.isFrom == 'multiWallet') {
-              Actions.currentScene != 'MultiWalletOptions' &&
-                Actions.MultiWalletOptions({isFrom: props.isFrom});
+            if (props?.route?.params?.isFrom == 'multiWallet') {
+              getCurrentRouteName() != 'MultiWalletOptions' &&
+                navigate(NavigationStrings.MultiWalletOptions,{isFrom: props?.route?.params?.isFrom});
             } else {
-              Actions.currentScene != 'ImportWallet' && Actions.ImportWallet();
+              getCurrentRouteName() != 'ImportWallet' && navigate(NavigationStrings.ImportWallet);
             }
           }}
           // colors={btnColor}

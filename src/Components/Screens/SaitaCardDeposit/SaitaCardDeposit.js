@@ -1,14 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, Dimensions, Image, ImageBackground, FlatList, TouchableOpacity } from 'react-native';
-import { Wrap, Multibtn, BasicButton, MainStatusBar, ImageBackgroundComponent, BorderLine, SimpleHeader, SimpleHeaderNew } from '../../common';
-import HeaderwithBackIcon from '../../common/HeaderWithBackIcon';
-import images from '../../../theme/Images';
+import React from 'react';
+import { Dimensions, FlatList, Image, Text, TouchableOpacity, View } from 'react-native';
+import { BorderLine, MainStatusBar, SimpleHeader, Wrap } from '../../common';
 import { styles } from './SaitaCardDepositStyle';
-import { Actions } from 'react-native-router-flux';
 
 import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
-import { Fonts, Colors, Images } from '../../../theme';
 import Singleton from '../../../Singleton';
+import { Colors, Fonts, Images } from '../../../theme';
+import { goBack } from '../../../navigationsService';
 
 const windowHeight = Dimensions.get('window').height;
 
@@ -105,7 +103,7 @@ const SaitaCardDeposit = () => {
                 imageShow
                 back={false}
                 backPressed={() => {
-                    Actions.pop()
+                    goBack()
                 }}
 
             />

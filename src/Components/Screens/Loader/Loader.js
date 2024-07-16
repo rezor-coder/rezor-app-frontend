@@ -49,6 +49,7 @@ export default class Loader extends Component {
               }
               autoPlay
               loop
+              style={{height:'100%',width:'100%'}}
             />
           </View>
         </View>

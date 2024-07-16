@@ -1,27 +1,28 @@
 import React, { useEffect } from 'react';
 import {
-  View,
-  Text,
+  BackHandler,
   Image,
-  BackHandler
+  Text,
+  View
 } from 'react-native';
+import { ThemeManager } from '../../../../ThemeManager';
+import { NavigationStrings } from '../../../Navigation/NavigationStrings';
+import { areaDimen, heightDimen, widthDimen } from '../../../Utils/themeUtils';
+import { getCurrentRouteName, goBack, navigate } from '../../../navigationsService';
+import { Fonts } from '../../../theme';
+import images from '../../../theme/Images';
 import {
-  Wrap,
   BasicButton,
+  BorderLine,
   MainStatusBar,
   SimpleHeader,
-  BorderLine,
+  Wrap,
 } from '../../common';
-import images from '../../../theme/Images';
 import { styles } from './SaitaCardWelcomeStyle';
-import { Actions } from 'react-native-router-flux';
-import {ThemeManager } from '../../../../ThemeManager';
-import { Fonts } from '../../../theme';
-import { areaDimen, heightDimen, widthDimen } from '../../../Utils/themeUtils';
 const SaitaCardWelcome = (props) => {
   useEffect(() => {
     let backhandle = BackHandler.addEventListener('hardwareBackPress', () => {
-      Actions.pop();
+      goBack();
       return true
     })
 
@@ -88,7 +89,7 @@ const SaitaCardWelcome = (props) => {
                 Singleton.showAlert(NO_NETWORK)
                 return
               }
-              Actions.currentScene != 'SaitaCardsInfo' &&
+              getCurrentRouteName() != 'SaitaCardsInfo' &&
                 Actions.SaitaCardsInfo();
             }}
             customGradient={styles.customGrad}
@@ -97,8 +98,8 @@ const SaitaCardWelcome = (props) => {
           /> */}
           <BasicButton
             onPress={() =>
-              Actions.currentScene != 'SaitaCardLogin' &&
-              Actions.SaitaCardLogin({ from: 'Dashboard' })
+              getCurrentRouteName() != 'SaitaCardLogin' &&
+              navigate(NavigationStrings.SaitaCardLogin,{ from: 'Dashboard' })
             }
             // customColor={[ThemeManager.colors.backgroundColor,ThemeManager.colors.backgroundColor]}
             customGradient={[styles.customGrad, { marginTop: heightDimen(30) }]}

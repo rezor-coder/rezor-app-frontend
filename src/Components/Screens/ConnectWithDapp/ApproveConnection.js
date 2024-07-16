@@ -140,6 +140,38 @@ const ApproveConnection = ({
 
     switch (validation) {
       case 'VALID': // proceed with the request - check the `Domain match` case for more info
+      return (
+        <View
+          style={{
+            flexDirection: 'row',
+            marginTop: heightDimen(15),
+            padding: areaDimen(10),
+            backgroundColor: '#FDEDED',
+            marginHorizontal: widthDimen(22),
+            borderRadius: areaDimen(12),
+            alignItems:'center'
+          }}>
+          <View
+            style={{paddingRight: widthDimen(10), justifyContent: 'center'}}>
+            <FastImage
+              source={images.wcAlert}
+              style={{height: areaDimen(30), width: areaDimen(30)}}
+              resizeMode="contain"
+              tintColor={'orange'}
+            />
+          </View>
+          <View style={{flex: 1}}>
+            <Text
+              style={{
+                color: 'orange',
+                fontFamily: Fonts.semibold,
+                fontSize: areaDimen(14),
+              }}>
+              Domain verified
+            </Text>
+          </View>
+        </View>
+      );
         break;
       case 'INVALID':
         // show a warning dialog to the user - check the `Mismatch` case for more info

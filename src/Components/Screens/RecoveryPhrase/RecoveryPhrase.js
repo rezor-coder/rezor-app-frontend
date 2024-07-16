@@ -1,41 +1,33 @@
-import React, { useState, useEffect, createRef } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  Image,
-  TextInput,
-  Dimensions,
-  BackHandler,
-  ScrollView,
-  Platform,
-} from 'react-native';
 import Clipboard from '@react-native-community/clipboard';
-import { Wrap } from '../../common/Wrap';
+import React, { createRef, useEffect, useState } from 'react';
+import {
+  BackHandler,
+  Dimensions,
+  Image,
+  Platform,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View
+} from 'react-native';
+import Toast from 'react-native-easy-toast';
+import { FlatList } from 'react-native-gesture-handler';
+import RNPreventScreenshot from 'react-native-screenshot-prevent';
+import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
+import * as Constants from '../../../Constant';
+import { NavigationStrings } from '../../../Navigation/NavigationStrings';
+import Singleton from '../../../Singleton';
+import { areaDimen, heightDimen } from '../../../Utils/themeUtils';
+import { navigate } from '../../../navigationsService';
+import fonts from '../../../theme/Fonts';
+import images from '../../../theme/Images';
 import {
   BasicButton,
   BorderLine,
-  SimpleHeader,
-  SubHeader,
+  SimpleHeader
 } from '../../common';
-import { Actions } from 'react-native-router-flux';
-import colors from '../../../theme/Colors';
-import { DotPagination } from '../../common/DotPagination';
-import { FlatList } from 'react-native-gesture-handler';
+import { Wrap } from '../../common/Wrap';
 import { styles } from './RecoveryPhraseStyle';
-import { Multibtn } from '../../common/Multibtn';
-import { Fonts } from '../../../theme';
-import { connect, useSelector } from 'react-redux';
-import Toast, { DURATION } from 'react-native-easy-toast';
-import * as Constants from '../../../Constant';
-import Singleton from '../../../Singleton';
-import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
-import images from '../../../theme/Images';
-import { ifIphoneX } from 'react-native-iphone-x-helper';
-import RNPreventScreenshot from 'react-native-screenshot-prevent';
-import { areaDimen, heightDimen } from '../../../Utils/themeUtils';
-import fonts from '../../../theme/Fonts';
 
 const windowHeight = Dimensions.get('window').height;
 const RecoveryPhrase = props => {
@@ -50,7 +42,7 @@ const RecoveryPhrase = props => {
   useEffect(() => {
     let backHandle = null;
     backHandle = BackHandler.addEventListener('hardwareBackPress', backAction);
-    let focus = props.navigation.addListener('didFocus', () => {
+    let focus = props.navigation.addListener('focus', () => {
       // if (Platform.OS == "android")
       // RNPreventScreenshot?.enabled(true)
       //  console.warn('MM','did Focus called recovery phrase::::::');
@@ -59,7 +51,7 @@ const RecoveryPhrase = props => {
         backAction,
       );
     });
-    let blur = props.navigation.addListener('didBlur', () => {
+    let blur = props.navigation.addListener('blur', () => {
       if (Platform.OS == "android")
         RNPreventScreenshot?.enabled(false)
       //  console.warn('MM','did Blur called recovery phrase::::::');
@@ -69,10 +61,10 @@ const RecoveryPhrase = props => {
 
     return () => {
       if (focus) {
-        focus?.remove()
+        focus()
       }
       if (blur) {
-        blur?.remove()
+        blur()
       }
       if (backHandle) {
         backHandle?.remove()
@@ -83,22 +75,21 @@ const RecoveryPhrase = props => {
 
   const backAction = () => {
     //Actions.jump('BackupOptions');
-    props.screenType == 'Editwallet'
-      ? Actions.jump('EditWallet')
-      : Actions.jump('BackupOptions');
+    props.route?.params?.screenType == 'Editwallet'
+      ? navigate(NavigationStrings.EditWallet)
+      : navigate(NavigationStrings.BackupOptions);
     return true;
   };
   useEffect(() => {
-    if (props.screenType == 'Editwallet') {
-      //console.warn('MM','>>>>>>walletItem', props.walletItem);
-      if (props.walletItem.privateKey == undefined) {
-        let mnemonics = props.walletItem?.mnemonics;
+    if (props.route?.params?.screenType == 'Editwallet') {
+      if (props.route?.params?.walletItem.privateKey == undefined) {
+        let mnemonics = props.route?.params?.walletItem?.mnemonics;
         setIsPrvtKey(false);
         setMnemonics(mnemonics);
         let mnemonicArr = mnemonics ? mnemonics.split(' ') : [];
         setMnemonicArray(mnemonicArr);
       } else {
-        setPrvtKey(props.walletItem.privateKey);
+        setPrvtKey(props.route?.params?.walletItem.privateKey);
         setIsPrvtKey(true);
       }
       // let mnemonics = await Singleton.getInstance().getData( response.defaultEthAddress,);
@@ -158,10 +149,9 @@ const RecoveryPhrase = props => {
         backPressed={() => {
           // props.navigation.state.params.onGoBack();
           // props.navigation.goBack();
-          //Actions.jump('BackupOptions');
-          props.screenType == 'Editwallet'
-            ? Actions.jump('EditWallet')
-            : Actions.jump('BackupOptions');
+          props.route?.params?.screenType == 'Editwallet'
+            ? navigate(NavigationStrings.EditWallet)
+            : navigate(NavigationStrings.BackupOptions);
         }}
       />
       <BorderLine
@@ -262,9 +252,9 @@ const RecoveryPhrase = props => {
           }}>
           <BasicButton
             onPress={() => {
-              props.screenType == 'Editwallet'
-                ? Actions.jump('EditWallet')
-                : Actions.jump('BackupOptions');
+              props.route?.params?.screenType == 'Editwallet'
+                ? navigate(NavigationStrings.EditWallet)
+                : navigate(NavigationStrings.BackupOptions);
             }}
             // colors={Singleton.getInstance().dynamicColor}
             btnStyle={styles.btnStyle}

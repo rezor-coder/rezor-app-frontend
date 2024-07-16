@@ -1,37 +1,25 @@
 /* eslint-disable react-native/no-inline-styles */
-import {View, Text, Image} from 'react-native';
-import React, {useState, useEffect} from 'react';
-import {styles} from './HistoryStyle';
+import React, { useEffect, useState } from 'react';
+import { Text, View } from 'react-native';
 import {
-  Wrap,
-  BasicButton,
-  TabIcon,
-  SimpleHeaderNew,
+  FlatList
+} from 'react-native-gesture-handler';
+import { useDispatch, useSelector } from 'react-redux';
+import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
+import * as constants from '../../../Constant';
+import { NavigationStrings } from '../../../Navigation/NavigationStrings';
+import { getTransactionList } from '../../../Redux/Actions';
+import Singleton from '../../../Singleton';
+import { getCurrentRouteName, navigate } from '../../../navigationsService';
+import { Colors } from '../../../theme/index';
+import {
   BorderLine,
   MainHeader,
+  SimpleHeaderNew,
+  Wrap
 } from '../../common';
-import LinearGradient from 'react-native-linear-gradient';
-import {SimpleHeader} from '../../common/SimpleHeader';
-import {Actions} from 'react-native-router-flux';
-import {BasicInputBox} from '../../common/BasicInputBox';
-import {Images, Colors} from '../../../theme/index';
-import {getTransactionList} from '../../../Redux/Actions';
-import {
-  FlatList,
-  TextInput,
-  TouchableOpacity,
-} from 'react-native-gesture-handler';
-import {ButtonPrimary} from '../../common/ButtonPrimary';
-import fonts from '../../../theme/Fonts';
-import * as constants from '../../../Constant';
-import Singleton from '../../../Singleton';
-import {connect, useDispatch, useSelector} from 'react-redux';
-import Loader from '../Loader/Loader';
-import {LanguageManager, ThemeManager} from '../../../../ThemeManager';
-import moment from 'moment';
-import {areaDimen, heightDimen, widthDimen} from '../../../Utils/themeUtils';
-import {area} from 'd3-shape';
 import HistoryItem from '../../common/HistoryItem';
+import Loader from '../Loader/Loader';
 
 const History = props => {
   const dispatch = useDispatch();
@@ -51,12 +39,12 @@ const History = props => {
 
   useEffect(() => {
     getHistory();
-    let focus = props.navigation.addListener('didFocus', () => {
+    let focus = props.navigation.addListener('focus', () => {
       getHistory();
     });
 
     return () => {
-      focus?.remove();
+      focus();
     };
   }, [refreshWallet]);
 
@@ -240,7 +228,7 @@ const History = props => {
         <MainHeader
           goback={false}
           // onpress2={() =>
-          //   Actions.currentScene != 'SelectBlockchain' &&
+          //   getCurrentRouteName() != 'SelectBlockchain' &&
           //   Actions.SelectBlockchain({ blockChainsList: walletList })
           // }
           searchEnable={false}
@@ -249,8 +237,8 @@ const History = props => {
           }}
           onpress3={() =>
             //    setModalVisible(true)
-            // Actions.currentScene != 'History' && Actions.Setting()
-            Actions.currentScene != 'Setting' &&
+            // getCurrentRouteName() != 'History' && Actions.Setting()
+            getCurrentRouteName() != 'Setting' &&
             props.navigation.navigate('Setting', {
               onGoBack: () => {
                 // getThemeData();
@@ -258,7 +246,7 @@ const History = props => {
             })
           }
           onpress2={() => {
-            Actions.currentScene != 'Notification' && Actions.Notification();
+            getCurrentRouteName() != 'Notification' && navigate(NavigationStrings.Notification);
           }}
           styleImg3={{tintColor: '#B1B1B1', width: 20}}
           //  firstImg={Images.Bell}
@@ -278,11 +266,11 @@ const History = props => {
           // img3={ThemeManager.ImageIcons.setting}
           // img2={ThemeManager.ImageIcons.bellIcon}
           // onPress2={() => {
-          //   Actions.currentScene != 'Notification' && Actions.Notification();
+          //   getCurrentRouteName() != 'Notification' && Actions.Notification();
           // }}
           // onPress3={() => {
-          //   // Actions.currentScene != 'Setting' && Actions.Setting();
-          //   Actions.currentScene != 'Setting' && Actions.Setting();
+          //   // getCurrentRouteName() != 'Setting' && Actions.Setting();
+          //   getCurrentRouteName() != 'Setting' && Actions.Setting();
           // }}
         />
       )}
@@ -303,8 +291,8 @@ const History = props => {
             renderItem={({item}) => (
               <HistoryItem
                 onPress={() => {
-                  Actions.currentScene != 'TransactionDetail' &&
-                    Actions.TransactionDetail({TxnData: item});
+                  getCurrentRouteName() != 'TransactionDetail' &&
+                  navigate(NavigationStrings.TransactionDetail,{TxnData: item});
                 }}
                 item={item}
               />

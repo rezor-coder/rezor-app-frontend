@@ -102,6 +102,7 @@ const QRReaderModal = ({visible, setvisible, onCodeRead, onImageUpload}) => {
         }}>
         <QRCodeScanner
           onRead={event => {
+            console.log("event:::::",event.data);
             onCodeRead(event.data,true);
           }}
           cameraStyle={{width: '100%', height: '100%'}}

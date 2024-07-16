@@ -1,0 +1,979 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 54;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		00E356F31AD99517003FC87E /* SaitaProTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* SaitaProTests.m */; };
+		0919F60ED29B4F788DEC4E5E /* Poppins-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4E14CE96C3B64FCF8694BDDD /* Poppins-Light.ttf */; };
+		13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
+		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
+		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
+		1E17F68204D04175B0759225 /* helvetica-rounded-bold-5871d05ead8de.otf in Resources */ = {isa = PBXBuildFile; fileRef = 0839D7A5028F49228A4B5CBB /* helvetica-rounded-bold-5871d05ead8de.otf */; };
+		1FAA5F07C1924F5FA2E90541 /* OCR-ABT.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 89641FB457144C3C91DB7719 /* OCR-ABT.ttf */; };
+		2E3B0EF96D474C75A311B05F /* Poppins-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 50EDC4583F034353853325B2 /* Poppins-Bold.ttf */; };
+		5848699E4218482591DA5AE8 /* Poppins-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = EC247A07A6164B7D9FE9716D /* Poppins-SemiBold.ttf */; };
+		61CA5EC3AB164CBCA6DB875E /* Helvetica-BoldOblique.ttf in Resources */ = {isa = PBXBuildFile; fileRef = ED135075671A4F7FBFC573CD /* Helvetica-BoldOblique.ttf */; };
+		6E351F38245D442BA4D75245 /* ocr-a_bt.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 9C5F9DE1CB854F13ACCDAD5A /* ocr-a_bt.ttf */; };
+		72DCE9E07108469E8CC58537 /* helvetica-light-587ebe5a59211.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 31814E3D911744688BF1646B /* helvetica-light-587ebe5a59211.ttf */; };
+		7B7996720E2E4B508373FEAD /* OCR-A.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 99B2E90B41F74C16B9957A8A /* OCR-A.ttf */; };
+		8086F1EC9F334B13BFF4357F /* Helvetica.ttf in Resources */ = {isa = PBXBuildFile; fileRef = ECB91B1669AF417E93631B6A /* Helvetica.ttf */; };
+		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
+		8740F342923E445196515895 /* Helvetica-Oblique.ttf in Resources */ = {isa = PBXBuildFile; fileRef = EE36ED76F6DA44219BB9EBAF /* Helvetica-Oblique.ttf */; };
+		98AB25CAD8BA4866BF587246 /* ocr-aregular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 194F8C473A444D6686D1CF29 /* ocr-aregular.ttf */; };
+		B35D07E7BFD94CCE9F2005A1 /* helvetica-compressed-5871d14b6903a.otf in Resources */ = {isa = PBXBuildFile; fileRef = 1B9E064B6CCB48FF96A2F428 /* helvetica-compressed-5871d14b6903a.otf */; };
+		BC9AD9BD943948D58A2D1E5F /* OCR-A_Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 74D3D64B4180425CA385481E /* OCR-A_Regular.ttf */; };
+		BD5F1FDFFE4063B102968A14 /* libPods-SaitaPro-SaitaProTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E6FDADB7EC2BA7C0F1CA895D /* libPods-SaitaPro-SaitaProTests.a */; };
+		CEB2653F3AE04E8E81009DF9 /* Helvetica-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 73D8B05A5B104EC1A51F1EA1 /* Helvetica-Bold.ttf */; };
+		CEB8B52E2C19660300DC1EC3 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = CEB8B52D2C19660300DC1EC3 /* GoogleService-Info.plist */; };
+		CEB8B53A2C1966FF00DC1EC3 /* saitaCardCentralizedLive.cer in Resources */ = {isa = PBXBuildFile; fileRef = CEB8B5302C1966FF00DC1EC3 /* saitaCardCentralizedLive.cer */; };
+		CEB8B53B2C1966FF00DC1EC3 /* saitaDevServer.cer in Resources */ = {isa = PBXBuildFile; fileRef = CEB8B5312C1966FF00DC1EC3 /* saitaDevServer.cer */; };
+		CEB8B53C2C1966FF00DC1EC3 /* saitaCardCentralizedStage.cer in Resources */ = {isa = PBXBuildFile; fileRef = CEB8B5322C1966FF00DC1EC3 /* saitaCardCentralizedStage.cer */; };
+		CEB8B53D2C1966FF00DC1EC3 /* trust-min.js in Resources */ = {isa = PBXBuildFile; fileRef = CEB8B5332C1966FF00DC1EC3 /* trust-min.js */; };
+		CEB8B53E2C1966FF00DC1EC3 /* sentry.properties in Resources */ = {isa = PBXBuildFile; fileRef = CEB8B5342C1966FF00DC1EC3 /* sentry.properties */; };
+		CEB8B53F2C1966FF00DC1EC3 /* swift.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB8B5352C1966FF00DC1EC3 /* swift.swift */; };
+		CEB8B5402C19670000DC1EC3 /* saitaCardStage.cer in Resources */ = {isa = PBXBuildFile; fileRef = CEB8B5362C1966FF00DC1EC3 /* saitaCardStage.cer */; };
+		CEB8B5412C19670000DC1EC3 /* saitaProLive.cer in Resources */ = {isa = PBXBuildFile; fileRef = CEB8B5372C1966FF00DC1EC3 /* saitaProLive.cer */; };
+		CEB8B5422C19670000DC1EC3 /* saitaCardLive.cer in Resources */ = {isa = PBXBuildFile; fileRef = CEB8B5382C1966FF00DC1EC3 /* saitaCardLive.cer */; };
+		CEB8B5432C19670000DC1EC3 /* saitaProStage.cer in Resources */ = {isa = PBXBuildFile; fileRef = CEB8B5392C1966FF00DC1EC3 /* saitaProStage.cer */; };
+		CEB8B5592C196A9A00DC1EC3 /* PreventScreenShotModule.m in Sources */ = {isa = PBXBuildFile; fileRef = CEB8B5452C196A9A00DC1EC3 /* PreventScreenShotModule.m */; };
+		CEB8B55A2C196A9A00DC1EC3 /* BigInt+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB8B5462C196A9A00DC1EC3 /* BigInt+Extension.swift */; };
+		CEB8B55B2C196A9A00DC1EC3 /* SMP.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB8B5472C196A9A00DC1EC3 /* SMP.swift */; };
+		CEB8B55C2C196A9A00DC1EC3 /* Base58Encode.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB8B5492C196A9A00DC1EC3 /* Base58Encode.swift */; };
+		CEB8B55D2C196A9A00DC1EC3 /* Bech32.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB8B54A2C196A9A00DC1EC3 /* Bech32.swift */; };
+		CEB8B55E2C196A9A00DC1EC3 /* Crypto.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB8B54B2C196A9A00DC1EC3 /* Crypto.swift */; };
+		CEB8B55F2C196A9A00DC1EC3 /* DataConvertable.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB8B54C2C196A9A00DC1EC3 /* DataConvertable.swift */; };
+		CEB8B5602C196A9A00DC1EC3 /* ECDSA.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB8B54D2C196A9A00DC1EC3 /* ECDSA.swift */; };
+		CEB8B5612C196A9A00DC1EC3 /* Mnemonic.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB8B54E2C196A9A00DC1EC3 /* Mnemonic.swift */; };
+		CEB8B5622C196A9A00DC1EC3 /* Network.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB8B54F2C196A9A00DC1EC3 /* Network.swift */; };
+		CEB8B5632C196A9A00DC1EC3 /* PrivateKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB8B5502C196A9A00DC1EC3 /* PrivateKey.swift */; };
+		CEB8B5642C196A9A00DC1EC3 /* PublicKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB8B5512C196A9A00DC1EC3 /* PublicKey.swift */; };
+		CEB8B5652C196A9A00DC1EC3 /* RIPEMD160.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB8B5522C196A9A00DC1EC3 /* RIPEMD160.swift */; };
+		CEB8B5662C196A9A00DC1EC3 /* SegwitAddrCoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB8B5532C196A9A00DC1EC3 /* SegwitAddrCoder.swift */; };
+		CEB8B5672C196A9A00DC1EC3 /* WalletBTC.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB8B5542C196A9A00DC1EC3 /* WalletBTC.swift */; };
+		CEB8B5682C196A9A00DC1EC3 /* WordList.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB8B5552C196A9A00DC1EC3 /* WordList.swift */; };
+		CEB8B5692C196A9A00DC1EC3 /* HDWalletKitBTC.podspec in Resources */ = {isa = PBXBuildFile; fileRef = CEB8B5572C196A9A00DC1EC3 /* HDWalletKitBTC.podspec */; };
+		CEB8B56A2C196A9A00DC1EC3 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = CEB8B5582C196A9A00DC1EC3 /* PrivacyInfo.xcprivacy */; };
+		CEB8B5722C196AB500DC1EC3 /* CreateWallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB8B56C2C196AB500DC1EC3 /* CreateWallet.swift */; };
+		CEB8B5732C196AB500DC1EC3 /* CustomSecurityMethods.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB8B56E2C196AB500DC1EC3 /* CustomSecurityMethods.swift */; };
+		CEB8B5742C196AB500DC1EC3 /* devCard.cer in Resources */ = {isa = PBXBuildFile; fileRef = CEB8B56F2C196AB500DC1EC3 /* devCard.cer */; };
+		CEB8B5752C196AB500DC1EC3 /* devCentralize.cer in Resources */ = {isa = PBXBuildFile; fileRef = CEB8B5702C196AB500DC1EC3 /* devCentralize.cer */; };
+		CEB8B5762C196AB500DC1EC3 /* CreateWalletBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = CEB8B5712C196AB500DC1EC3 /* CreateWalletBridge.m */; };
+		E1249AC20D7083ABE6FC3992 /* libPods-SaitaPro.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C8B9D22F5342710E738B4AEF /* libPods-SaitaPro.a */; };
+		E31F9979FC554BF3B8E315E4 /* Poppins-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F6B26C3A4B684204B89E47CC /* Poppins-Regular.ttf */; };
+		ED8A18C52B344AF1BEEBF744 /* Poppins-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A451BC815530453EA8C7B5AD /* Poppins-Medium.ttf */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		00E356F41AD99517003FC87E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 13B07F861A680F5B00A75B9A;
+			remoteInfo = SaitaPro;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		00E356EE1AD99517003FC87E /* SaitaProTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SaitaProTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		00E356F21AD99517003FC87E /* SaitaProTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SaitaProTests.m; sourceTree = "<group>"; };
+		022886A1358AD0CF7F90F98D /* Pods-SaitaPro-SaitaProTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SaitaPro-SaitaProTests.release.xcconfig"; path = "Target Support Files/Pods-SaitaPro-SaitaProTests/Pods-SaitaPro-SaitaProTests.release.xcconfig"; sourceTree = "<group>"; };
+		0839D7A5028F49228A4B5CBB /* helvetica-rounded-bold-5871d05ead8de.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "helvetica-rounded-bold-5871d05ead8de.otf"; path = "../assets/fonts/helvetica-rounded-bold-5871d05ead8de.otf"; sourceTree = "<group>"; };
+		13B07F961A680F5B00A75B9A /* SaitaPro.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SaitaPro.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = SaitaPro/AppDelegate.h; sourceTree = "<group>"; };
+		13B07FB01A68108700A75B9A /* AppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppDelegate.mm; path = SaitaPro/AppDelegate.mm; sourceTree = "<group>"; };
+		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = SaitaPro/Images.xcassets; sourceTree = "<group>"; };
+		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = SaitaPro/Info.plist; sourceTree = "<group>"; };
+		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = SaitaPro/main.m; sourceTree = "<group>"; };
+		194F8C473A444D6686D1CF29 /* ocr-aregular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "ocr-aregular.ttf"; path = "../assets/fonts/ocr-aregular.ttf"; sourceTree = "<group>"; };
+		1B9E064B6CCB48FF96A2F428 /* helvetica-compressed-5871d14b6903a.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "helvetica-compressed-5871d14b6903a.otf"; path = "../assets/fonts/helvetica-compressed-5871d14b6903a.otf"; sourceTree = "<group>"; };
+		31814E3D911744688BF1646B /* helvetica-light-587ebe5a59211.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "helvetica-light-587ebe5a59211.ttf"; path = "../assets/fonts/helvetica-light-587ebe5a59211.ttf"; sourceTree = "<group>"; };
+		4E14CE96C3B64FCF8694BDDD /* Poppins-Light.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-Light.ttf"; path = "../assets/fonts/Poppins-Light.ttf"; sourceTree = "<group>"; };
+		50EDC4583F034353853325B2 /* Poppins-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-Bold.ttf"; path = "../assets/fonts/Poppins-Bold.ttf"; sourceTree = "<group>"; };
+		727C0E063CE1CF66019C3CF5 /* Pods-SaitaPro.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SaitaPro.release.xcconfig"; path = "Target Support Files/Pods-SaitaPro/Pods-SaitaPro.release.xcconfig"; sourceTree = "<group>"; };
+		73D8B05A5B104EC1A51F1EA1 /* Helvetica-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Helvetica-Bold.ttf"; path = "../assets/fonts/Helvetica-Bold.ttf"; sourceTree = "<group>"; };
+		74D3D64B4180425CA385481E /* OCR-A_Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "OCR-A_Regular.ttf"; path = "../assets/fonts/OCR-A_Regular.ttf"; sourceTree = "<group>"; };
+		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = SaitaPro/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		89641FB457144C3C91DB7719 /* OCR-ABT.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "OCR-ABT.ttf"; path = "../assets/fonts/OCR-ABT.ttf"; sourceTree = "<group>"; };
+		99B2E90B41F74C16B9957A8A /* OCR-A.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "OCR-A.ttf"; path = "../assets/fonts/OCR-A.ttf"; sourceTree = "<group>"; };
+		9C5F9DE1CB854F13ACCDAD5A /* ocr-a_bt.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "ocr-a_bt.ttf"; path = "../assets/fonts/ocr-a_bt.ttf"; sourceTree = "<group>"; };
+		A451BC815530453EA8C7B5AD /* Poppins-Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-Medium.ttf"; path = "../assets/fonts/Poppins-Medium.ttf"; sourceTree = "<group>"; };
+		C75B7861316CE0F15E9232BA /* Pods-SaitaPro-SaitaProTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SaitaPro-SaitaProTests.debug.xcconfig"; path = "Target Support Files/Pods-SaitaPro-SaitaProTests/Pods-SaitaPro-SaitaProTests.debug.xcconfig"; sourceTree = "<group>"; };
+		C8B9D22F5342710E738B4AEF /* libPods-SaitaPro.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SaitaPro.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		CEB8B52D2C19660300DC1EC3 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		CEB8B52F2C1966FF00DC1EC3 /* SaitaPro-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SaitaPro-Bridging-Header.h"; sourceTree = "<group>"; };
+		CEB8B5302C1966FF00DC1EC3 /* saitaCardCentralizedLive.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = saitaCardCentralizedLive.cer; sourceTree = "<group>"; };
+		CEB8B5312C1966FF00DC1EC3 /* saitaDevServer.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = saitaDevServer.cer; sourceTree = "<group>"; };
+		CEB8B5322C1966FF00DC1EC3 /* saitaCardCentralizedStage.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = saitaCardCentralizedStage.cer; sourceTree = "<group>"; };
+		CEB8B5332C1966FF00DC1EC3 /* trust-min.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "trust-min.js"; sourceTree = "<group>"; };
+		CEB8B5342C1966FF00DC1EC3 /* sentry.properties */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = sentry.properties; sourceTree = "<group>"; };
+		CEB8B5352C1966FF00DC1EC3 /* swift.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = swift.swift; sourceTree = "<group>"; };
+		CEB8B5362C1966FF00DC1EC3 /* saitaCardStage.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = saitaCardStage.cer; sourceTree = "<group>"; };
+		CEB8B5372C1966FF00DC1EC3 /* saitaProLive.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = saitaProLive.cer; sourceTree = "<group>"; };
+		CEB8B5382C1966FF00DC1EC3 /* saitaCardLive.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = saitaCardLive.cer; sourceTree = "<group>"; };
+		CEB8B5392C1966FF00DC1EC3 /* saitaProStage.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = saitaProStage.cer; sourceTree = "<group>"; };
+		CEB8B5442C196A9A00DC1EC3 /* PreventScreenShotModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PreventScreenShotModule.h; sourceTree = "<group>"; };
+		CEB8B5452C196A9A00DC1EC3 /* PreventScreenShotModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PreventScreenShotModule.m; sourceTree = "<group>"; };
+		CEB8B5462C196A9A00DC1EC3 /* BigInt+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "BigInt+Extension.swift"; sourceTree = "<group>"; };
+		CEB8B5472C196A9A00DC1EC3 /* SMP.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SMP.swift; sourceTree = "<group>"; };
+		CEB8B5492C196A9A00DC1EC3 /* Base58Encode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Base58Encode.swift; sourceTree = "<group>"; };
+		CEB8B54A2C196A9A00DC1EC3 /* Bech32.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Bech32.swift; sourceTree = "<group>"; };
+		CEB8B54B2C196A9A00DC1EC3 /* Crypto.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Crypto.swift; sourceTree = "<group>"; };
+		CEB8B54C2C196A9A00DC1EC3 /* DataConvertable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataConvertable.swift; sourceTree = "<group>"; };
+		CEB8B54D2C196A9A00DC1EC3 /* ECDSA.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ECDSA.swift; sourceTree = "<group>"; };
+		CEB8B54E2C196A9A00DC1EC3 /* Mnemonic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Mnemonic.swift; sourceTree = "<group>"; };
+		CEB8B54F2C196A9A00DC1EC3 /* Network.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Network.swift; sourceTree = "<group>"; };
+		CEB8B5502C196A9A00DC1EC3 /* PrivateKey.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PrivateKey.swift; sourceTree = "<group>"; };
+		CEB8B5512C196A9A00DC1EC3 /* PublicKey.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PublicKey.swift; sourceTree = "<group>"; };
+		CEB8B5522C196A9A00DC1EC3 /* RIPEMD160.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RIPEMD160.swift; sourceTree = "<group>"; };
+		CEB8B5532C196A9A00DC1EC3 /* SegwitAddrCoder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SegwitAddrCoder.swift; sourceTree = "<group>"; };
+		CEB8B5542C196A9A00DC1EC3 /* WalletBTC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WalletBTC.swift; sourceTree = "<group>"; };
+		CEB8B5552C196A9A00DC1EC3 /* WordList.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WordList.swift; sourceTree = "<group>"; };
+		CEB8B5572C196A9A00DC1EC3 /* HDWalletKitBTC.podspec */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = HDWalletKitBTC.podspec; sourceTree = "<group>"; };
+		CEB8B5582C196A9A00DC1EC3 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		CEB8B56C2C196AB500DC1EC3 /* CreateWallet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CreateWallet.swift; sourceTree = "<group>"; };
+		CEB8B56D2C196AB500DC1EC3 /* CreateWalletBridge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CreateWalletBridge.h; sourceTree = "<group>"; };
+		CEB8B56E2C196AB500DC1EC3 /* CustomSecurityMethods.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomSecurityMethods.swift; sourceTree = "<group>"; };
+		CEB8B56F2C196AB500DC1EC3 /* devCard.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = devCard.cer; sourceTree = "<group>"; };
+		CEB8B5702C196AB500DC1EC3 /* devCentralize.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = devCentralize.cer; sourceTree = "<group>"; };
+		CEB8B5712C196AB500DC1EC3 /* CreateWalletBridge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CreateWalletBridge.m; sourceTree = "<group>"; };
+		CEB8B5772C19711000DC1EC3 /* SaitaPro.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = SaitaPro.entitlements; path = SaitaPro/SaitaPro.entitlements; sourceTree = "<group>"; };
+		E6FDADB7EC2BA7C0F1CA895D /* libPods-SaitaPro-SaitaProTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SaitaPro-SaitaProTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		EC247A07A6164B7D9FE9716D /* Poppins-SemiBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-SemiBold.ttf"; path = "../assets/fonts/Poppins-SemiBold.ttf"; sourceTree = "<group>"; };
+		ECB91B1669AF417E93631B6A /* Helvetica.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Helvetica.ttf; path = ../assets/fonts/Helvetica.ttf; sourceTree = "<group>"; };
+		ED135075671A4F7FBFC573CD /* Helvetica-BoldOblique.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Helvetica-BoldOblique.ttf"; path = "../assets/fonts/Helvetica-BoldOblique.ttf"; sourceTree = "<group>"; };
+		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
+		EE36ED76F6DA44219BB9EBAF /* Helvetica-Oblique.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Helvetica-Oblique.ttf"; path = "../assets/fonts/Helvetica-Oblique.ttf"; sourceTree = "<group>"; };
+		F6B26C3A4B684204B89E47CC /* Poppins-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-Regular.ttf"; path = "../assets/fonts/Poppins-Regular.ttf"; sourceTree = "<group>"; };
+		F9477A165B103F5AD8457D46 /* Pods-SaitaPro.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SaitaPro.debug.xcconfig"; path = "Target Support Files/Pods-SaitaPro/Pods-SaitaPro.debug.xcconfig"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		00E356EB1AD99517003FC87E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BD5F1FDFFE4063B102968A14 /* libPods-SaitaPro-SaitaProTests.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		13B07F8C1A680F5B00A75B9A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E1249AC20D7083ABE6FC3992 /* libPods-SaitaPro.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		00E356EF1AD99517003FC87E /* SaitaProTests */ = {
+			isa = PBXGroup;
+			children = (
+				00E356F21AD99517003FC87E /* SaitaProTests.m */,
+				00E356F01AD99517003FC87E /* Supporting Files */,
+			);
+			path = SaitaProTests;
+			sourceTree = "<group>";
+		};
+		00E356F01AD99517003FC87E /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				00E356F11AD99517003FC87E /* Info.plist */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		13B07FAE1A68108700A75B9A /* SaitaPro */ = {
+			isa = PBXGroup;
+			children = (
+				CEB8B5772C19711000DC1EC3 /* SaitaPro.entitlements */,
+				CEB8B56C2C196AB500DC1EC3 /* CreateWallet.swift */,
+				CEB8B56D2C196AB500DC1EC3 /* CreateWalletBridge.h */,
+				CEB8B5712C196AB500DC1EC3 /* CreateWalletBridge.m */,
+				CEB8B56E2C196AB500DC1EC3 /* CustomSecurityMethods.swift */,
+				CEB8B56F2C196AB500DC1EC3 /* devCard.cer */,
+				CEB8B5702C196AB500DC1EC3 /* devCentralize.cer */,
+				CEB8B5562C196A9A00DC1EC3 /* HDWalletKitBTC */,
+				CEB8B5572C196A9A00DC1EC3 /* HDWalletKitBTC.podspec */,
+				CEB8B5442C196A9A00DC1EC3 /* PreventScreenShotModule.h */,
+				CEB8B5452C196A9A00DC1EC3 /* PreventScreenShotModule.m */,
+				CEB8B5582C196A9A00DC1EC3 /* PrivacyInfo.xcprivacy */,
+				CEB8B5302C1966FF00DC1EC3 /* saitaCardCentralizedLive.cer */,
+				CEB8B5322C1966FF00DC1EC3 /* saitaCardCentralizedStage.cer */,
+				CEB8B5382C1966FF00DC1EC3 /* saitaCardLive.cer */,
+				CEB8B5362C1966FF00DC1EC3 /* saitaCardStage.cer */,
+				CEB8B5312C1966FF00DC1EC3 /* saitaDevServer.cer */,
+				CEB8B5372C1966FF00DC1EC3 /* saitaProLive.cer */,
+				CEB8B5392C1966FF00DC1EC3 /* saitaProStage.cer */,
+				CEB8B5342C1966FF00DC1EC3 /* sentry.properties */,
+				CEB8B5352C1966FF00DC1EC3 /* swift.swift */,
+				CEB8B5332C1966FF00DC1EC3 /* trust-min.js */,
+				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
+				13B07FB01A68108700A75B9A /* AppDelegate.mm */,
+				13B07FB51A68108700A75B9A /* Images.xcassets */,
+				13B07FB61A68108700A75B9A /* Info.plist */,
+				81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */,
+				13B07FB71A68108700A75B9A /* main.m */,
+				CEB8B52D2C19660300DC1EC3 /* GoogleService-Info.plist */,
+				CEB8B52F2C1966FF00DC1EC3 /* SaitaPro-Bridging-Header.h */,
+			);
+			name = SaitaPro;
+			sourceTree = "<group>";
+		};
+		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
+				C8B9D22F5342710E738B4AEF /* libPods-SaitaPro.a */,
+				E6FDADB7EC2BA7C0F1CA895D /* libPods-SaitaPro-SaitaProTests.a */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		41AD66455A29494F8380C7F9 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				1B9E064B6CCB48FF96A2F428 /* helvetica-compressed-5871d14b6903a.otf */,
+				0839D7A5028F49228A4B5CBB /* helvetica-rounded-bold-5871d05ead8de.otf */,
+				73D8B05A5B104EC1A51F1EA1 /* Helvetica-Bold.ttf */,
+				ED135075671A4F7FBFC573CD /* Helvetica-BoldOblique.ttf */,
+				EE36ED76F6DA44219BB9EBAF /* Helvetica-Oblique.ttf */,
+				ECB91B1669AF417E93631B6A /* Helvetica.ttf */,
+				99B2E90B41F74C16B9957A8A /* OCR-A.ttf */,
+				89641FB457144C3C91DB7719 /* OCR-ABT.ttf */,
+				74D3D64B4180425CA385481E /* OCR-A_Regular.ttf */,
+				50EDC4583F034353853325B2 /* Poppins-Bold.ttf */,
+				4E14CE96C3B64FCF8694BDDD /* Poppins-Light.ttf */,
+				A451BC815530453EA8C7B5AD /* Poppins-Medium.ttf */,
+				F6B26C3A4B684204B89E47CC /* Poppins-Regular.ttf */,
+				EC247A07A6164B7D9FE9716D /* Poppins-SemiBold.ttf */,
+				31814E3D911744688BF1646B /* helvetica-light-587ebe5a59211.ttf */,
+				9C5F9DE1CB854F13ACCDAD5A /* ocr-a_bt.ttf */,
+				194F8C473A444D6686D1CF29 /* ocr-aregular.ttf */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
+		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Libraries;
+			sourceTree = "<group>";
+		};
+		83CBB9F61A601CBA00E9B192 = {
+			isa = PBXGroup;
+			children = (
+				13B07FAE1A68108700A75B9A /* SaitaPro */,
+				832341AE1AAA6A7D00B99B32 /* Libraries */,
+				00E356EF1AD99517003FC87E /* SaitaProTests */,
+				83CBBA001A601CBA00E9B192 /* Products */,
+				2D16E6871FA4F8E400B85C8A /* Frameworks */,
+				BBD78D7AC51CEA395F1C20DB /* Pods */,
+				41AD66455A29494F8380C7F9 /* Resources */,
+			);
+			indentWidth = 2;
+			sourceTree = "<group>";
+			tabWidth = 2;
+			usesTabs = 0;
+		};
+		83CBBA001A601CBA00E9B192 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				13B07F961A680F5B00A75B9A /* SaitaPro.app */,
+				00E356EE1AD99517003FC87E /* SaitaProTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		BBD78D7AC51CEA395F1C20DB /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				F9477A165B103F5AD8457D46 /* Pods-SaitaPro.debug.xcconfig */,
+				727C0E063CE1CF66019C3CF5 /* Pods-SaitaPro.release.xcconfig */,
+				C75B7861316CE0F15E9232BA /* Pods-SaitaPro-SaitaProTests.debug.xcconfig */,
+				022886A1358AD0CF7F90F98D /* Pods-SaitaPro-SaitaProTests.release.xcconfig */,
+			);
+			path = Pods;
+			sourceTree = "<group>";
+		};
+		CEB8B5482C196A9A00DC1EC3 /* BigInt */ = {
+			isa = PBXGroup;
+			children = (
+				CEB8B5462C196A9A00DC1EC3 /* BigInt+Extension.swift */,
+				CEB8B5472C196A9A00DC1EC3 /* SMP.swift */,
+			);
+			path = BigInt;
+			sourceTree = "<group>";
+		};
+		CEB8B5562C196A9A00DC1EC3 /* HDWalletKitBTC */ = {
+			isa = PBXGroup;
+			children = (
+				CEB8B5482C196A9A00DC1EC3 /* BigInt */,
+				CEB8B5492C196A9A00DC1EC3 /* Base58Encode.swift */,
+				CEB8B54A2C196A9A00DC1EC3 /* Bech32.swift */,
+				CEB8B54B2C196A9A00DC1EC3 /* Crypto.swift */,
+				CEB8B54C2C196A9A00DC1EC3 /* DataConvertable.swift */,
+				CEB8B54D2C196A9A00DC1EC3 /* ECDSA.swift */,
+				CEB8B54E2C196A9A00DC1EC3 /* Mnemonic.swift */,
+				CEB8B54F2C196A9A00DC1EC3 /* Network.swift */,
+				CEB8B5502C196A9A00DC1EC3 /* PrivateKey.swift */,
+				CEB8B5512C196A9A00DC1EC3 /* PublicKey.swift */,
+				CEB8B5522C196A9A00DC1EC3 /* RIPEMD160.swift */,
+				CEB8B5532C196A9A00DC1EC3 /* SegwitAddrCoder.swift */,
+				CEB8B5542C196A9A00DC1EC3 /* WalletBTC.swift */,
+				CEB8B5552C196A9A00DC1EC3 /* WordList.swift */,
+			);
+			path = HDWalletKitBTC;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		00E356ED1AD99517003FC87E /* SaitaProTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 00E357021AD99517003FC87E /* Build configuration list for PBXNativeTarget "SaitaProTests" */;
+			buildPhases = (
+				FC62C1846654BB2B2D6E9BC6 /* [CP] Check Pods Manifest.lock */,
+				00E356EA1AD99517003FC87E /* Sources */,
+				00E356EB1AD99517003FC87E /* Frameworks */,
+				00E356EC1AD99517003FC87E /* Resources */,
+				046F3CB8E72AEFB7784CF131 /* [CP] Embed Pods Frameworks */,
+				EDDAB8389064F37EF577B157 /* [CP] Copy Pods Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				00E356F51AD99517003FC87E /* PBXTargetDependency */,
+			);
+			name = SaitaProTests;
+			productName = SaitaProTests;
+			productReference = 00E356EE1AD99517003FC87E /* SaitaProTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		13B07F861A680F5B00A75B9A /* SaitaPro */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "SaitaPro" */;
+			buildPhases = (
+				5804B8EC7AF5F01F71792A50 /* [CP] Check Pods Manifest.lock */,
+				FD10A7F022414F080027D42C /* Start Packager */,
+				13B07F871A680F5B00A75B9A /* Sources */,
+				13B07F8C1A680F5B00A75B9A /* Frameworks */,
+				13B07F8E1A680F5B00A75B9A /* Resources */,
+				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
+				E06FCA3C70949293E953080D /* [CP] Embed Pods Frameworks */,
+				AA00965D9D3E4FB3ADF4A03D /* [CP] Copy Pods Resources */,
+				371CB85A4AAA0E11AD49E153 /* [CP-User] [RNFB] Core Configuration */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = SaitaPro;
+			productName = SaitaPro;
+			productReference = 13B07F961A680F5B00A75B9A /* SaitaPro.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		83CBB9F71A601CBA00E9B192 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 1210;
+				TargetAttributes = {
+					00E356ED1AD99517003FC87E = {
+						CreatedOnToolsVersion = 6.2;
+						TestTargetID = 13B07F861A680F5B00A75B9A;
+					};
+					13B07F861A680F5B00A75B9A = {
+						LastSwiftMigration = 1540;
+					};
+				};
+			};
+			buildConfigurationList = 83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "SaitaPro" */;
+			compatibilityVersion = "Xcode 12.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 83CBB9F61A601CBA00E9B192;
+			productRefGroup = 83CBBA001A601CBA00E9B192 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				13B07F861A680F5B00A75B9A /* SaitaPro */,
+				00E356ED1AD99517003FC87E /* SaitaProTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		00E356EC1AD99517003FC87E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		13B07F8E1A680F5B00A75B9A /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CEB8B5402C19670000DC1EC3 /* saitaCardStage.cer in Resources */,
+				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
+				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
+				CEB8B53D2C1966FF00DC1EC3 /* trust-min.js in Resources */,
+				CEB8B5692C196A9A00DC1EC3 /* HDWalletKitBTC.podspec in Resources */,
+				CEB8B56A2C196A9A00DC1EC3 /* PrivacyInfo.xcprivacy in Resources */,
+				B35D07E7BFD94CCE9F2005A1 /* helvetica-compressed-5871d14b6903a.otf in Resources */,
+				1E17F68204D04175B0759225 /* helvetica-rounded-bold-5871d05ead8de.otf in Resources */,
+				CEB2653F3AE04E8E81009DF9 /* Helvetica-Bold.ttf in Resources */,
+				61CA5EC3AB164CBCA6DB875E /* Helvetica-BoldOblique.ttf in Resources */,
+				CEB8B53B2C1966FF00DC1EC3 /* saitaDevServer.cer in Resources */,
+				CEB8B5422C19670000DC1EC3 /* saitaCardLive.cer in Resources */,
+				CEB8B5742C196AB500DC1EC3 /* devCard.cer in Resources */,
+				8740F342923E445196515895 /* Helvetica-Oblique.ttf in Resources */,
+				CEB8B53C2C1966FF00DC1EC3 /* saitaCardCentralizedStage.cer in Resources */,
+				8086F1EC9F334B13BFF4357F /* Helvetica.ttf in Resources */,
+				7B7996720E2E4B508373FEAD /* OCR-A.ttf in Resources */,
+				1FAA5F07C1924F5FA2E90541 /* OCR-ABT.ttf in Resources */,
+				CEB8B5752C196AB500DC1EC3 /* devCentralize.cer in Resources */,
+				CEB8B53E2C1966FF00DC1EC3 /* sentry.properties in Resources */,
+				CEB8B5432C19670000DC1EC3 /* saitaProStage.cer in Resources */,
+				BC9AD9BD943948D58A2D1E5F /* OCR-A_Regular.ttf in Resources */,
+				CEB8B53A2C1966FF00DC1EC3 /* saitaCardCentralizedLive.cer in Resources */,
+				2E3B0EF96D474C75A311B05F /* Poppins-Bold.ttf in Resources */,
+				0919F60ED29B4F788DEC4E5E /* Poppins-Light.ttf in Resources */,
+				CEB8B5412C19670000DC1EC3 /* saitaProLive.cer in Resources */,
+				ED8A18C52B344AF1BEEBF744 /* Poppins-Medium.ttf in Resources */,
+				E31F9979FC554BF3B8E315E4 /* Poppins-Regular.ttf in Resources */,
+				5848699E4218482591DA5AE8 /* Poppins-SemiBold.ttf in Resources */,
+				72DCE9E07108469E8CC58537 /* helvetica-light-587ebe5a59211.ttf in Resources */,
+				CEB8B52E2C19660300DC1EC3 /* GoogleService-Info.plist in Resources */,
+				6E351F38245D442BA4D75245 /* ocr-a_bt.ttf in Resources */,
+				98AB25CAD8BA4866BF587246 /* ocr-aregular.ttf in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/.xcode.env.local",
+				"$(SRCROOT)/.xcode.env",
+			);
+			name = "Bundle React Native code and images";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "set -e\n\nWITH_ENVIRONMENT=\"../node_modules/react-native/scripts/xcode/with-environment.sh\"\nREACT_NATIVE_XCODE=\"../node_modules/react-native/scripts/react-native-xcode.sh\"\n\n/bin/sh -c \"$WITH_ENVIRONMENT $REACT_NATIVE_XCODE\"\n";
+		};
+		046F3CB8E72AEFB7784CF131 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-SaitaPro-SaitaProTests/Pods-SaitaPro-SaitaProTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-SaitaPro-SaitaProTests/Pods-SaitaPro-SaitaProTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SaitaPro-SaitaProTests/Pods-SaitaPro-SaitaProTests-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		371CB85A4AAA0E11AD49E153 /* [CP-User] [RNFB] Core Configuration */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"$(BUILT_PRODUCTS_DIR)/$(INFOPLIST_PATH)",
+			);
+			name = "[CP-User] [RNFB] Core Configuration";
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "#!/usr/bin/env bash\n#\n# Copyright (c) 2016-present Invertase Limited & Contributors\n#\n# Licensed under the Apache License, Version 2.0 (the \"License\");\n# you may not use this library except in compliance with the License.\n# You may obtain a copy of the License at\n#\n#   http://www.apache.org/licenses/LICENSE-2.0\n#\n# Unless required by applicable law or agreed to in writing, software\n# distributed under the License is distributed on an \"AS IS\" BASIS,\n# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n# See the License for the specific language governing permissions and\n# limitations under the License.\n#\nset -e\n\n_MAX_LOOKUPS=2;\n_SEARCH_RESULT=''\n_RN_ROOT_EXISTS=''\n_CURRENT_LOOKUPS=1\n_JSON_ROOT=\"'react-native'\"\n_JSON_FILE_NAME='firebase.json'\n_JSON_OUTPUT_BASE64='e30=' # { }\n_CURRENT_SEARCH_DIR=${PROJECT_DIR}\n_PLIST_BUDDY=/usr/libexec/PlistBuddy\n_TARGET_PLIST=\"${BUILT_PRODUCTS_DIR}/${INFOPLIST_PATH}\"\n_DSYM_PLIST=\"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Info.plist\"\n\n# plist arrays\n_PLIST_ENTRY_KEYS=()\n_PLIST_ENTRY_TYPES=()\n_PLIST_ENTRY_VALUES=()\n\nfunction setPlistValue {\n  echo \"info:      setting plist entry '$1' of type '$2' in file '$4'\"\n  ${_PLIST_BUDDY} -c \"Add :$1 $2 '$3'\" $4 || echo \"info:      '$1' already exists\"\n}\n\nfunction getFirebaseJsonKeyValue () {\n  if [[ ${_RN_ROOT_EXISTS} ]]; then\n    ruby -e \"require 'rubygems';require 'json'; output=JSON.parse('$1'); puts output[$_JSON_ROOT]['$2']\"\n  else\n    echo \"\"\n  fi;\n}\n\nfunction jsonBoolToYesNo () {\n  if [[ $1 == \"false\" ]]; then\n    echo \"NO\"\n  elif [[ $1 == \"true\" ]]; then\n    echo \"YES\"\n  else echo \"NO\"\n  fi\n}\n\necho \"info: -> RNFB build script started\"\necho \"info: 1) Locating ${_JSON_FILE_NAME} file:\"\n\nif [[ -z ${_CURRENT_SEARCH_DIR} ]]; then\n  _CURRENT_SEARCH_DIR=$(pwd)\nfi;\n\nwhile true; do\n  _CURRENT_SEARCH_DIR=$(dirname \"$_CURRENT_SEARCH_DIR\")\n  if [[ \"$_CURRENT_SEARCH_DIR\" == \"/\" ]] || [[ ${_CURRENT_LOOKUPS} -gt ${_MAX_LOOKUPS} ]]; then break; fi;\n  echo \"info:      ($_CURRENT_LOOKUPS of $_MAX_LOOKUPS) Searching in '$_CURRENT_SEARCH_DIR' for a ${_JSON_FILE_NAME} file.\"\n  _SEARCH_RESULT=$(find \"$_CURRENT_SEARCH_DIR\" -maxdepth 2 -name ${_JSON_FILE_NAME} -print | /usr/bin/head -n 1)\n  if [[ ${_SEARCH_RESULT} ]]; then\n    echo \"info:      ${_JSON_FILE_NAME} found at $_SEARCH_RESULT\"\n    break;\n  fi;\n  _CURRENT_LOOKUPS=$((_CURRENT_LOOKUPS+1))\ndone\n\nif [[ ${_SEARCH_RESULT} ]]; then\n  _JSON_OUTPUT_RAW=$(cat \"${_SEARCH_RESULT}\")\n  _RN_ROOT_EXISTS=$(ruby -e \"require 'rubygems';require 'json'; output=JSON.parse('$_JSON_OUTPUT_RAW'); puts output[$_JSON_ROOT]\" || echo '')\n\n  if [[ ${_RN_ROOT_EXISTS} ]]; then\n    if ! python3 --version >/dev/null 2>&1; then echo \"python3 not found, firebase.json file processing error.\" && exit 1; fi\n    _JSON_OUTPUT_BASE64=$(python3 -c 'import json,sys,base64;print(base64.b64encode(bytes(json.dumps(json.loads(open('\"'${_SEARCH_RESULT}'\"', '\"'rb'\"').read())['${_JSON_ROOT}']), '\"'utf-8'\"')).decode())' || echo \"e30=\")\n  fi\n\n  _PLIST_ENTRY_KEYS+=(\"firebase_json_raw\")\n  _PLIST_ENTRY_TYPES+=(\"string\")\n  _PLIST_ENTRY_VALUES+=(\"$_JSON_OUTPUT_BASE64\")\n\n  # config.app_data_collection_default_enabled\n  _APP_DATA_COLLECTION_ENABLED=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"app_data_collection_default_enabled\")\n  if [[ $_APP_DATA_COLLECTION_ENABLED ]]; then\n    _PLIST_ENTRY_KEYS+=(\"FirebaseDataCollectionDefaultEnabled\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_APP_DATA_COLLECTION_ENABLED\")\")\n  fi\n\n  # config.analytics_auto_collection_enabled\n  _ANALYTICS_AUTO_COLLECTION=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"analytics_auto_collection_enabled\")\n  if [[ $_ANALYTICS_AUTO_COLLECTION ]]; then\n    _PLIST_ENTRY_KEYS+=(\"FIREBASE_ANALYTICS_COLLECTION_ENABLED\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_ANALYTICS_AUTO_COLLECTION\")\")\n  fi\n\n  # config.analytics_collection_deactivated\n  _ANALYTICS_DEACTIVATED=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"analytics_collection_deactivated\")\n  if [[ $_ANALYTICS_DEACTIVATED ]]; then\n    _PLIST_ENTRY_KEYS+=(\"FIREBASE_ANALYTICS_COLLECTION_DEACTIVATED\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_ANALYTICS_DEACTIVATED\")\")\n  fi\n\n  # config.analytics_idfv_collection_enabled\n  _ANALYTICS_IDFV_COLLECTION=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"analytics_idfv_collection_enabled\")\n  if [[ $_ANALYTICS_IDFV_COLLECTION ]]; then\n    _PLIST_ENTRY_KEYS+=(\"GOOGLE_ANALYTICS_IDFV_COLLECTION_ENABLED\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_ANALYTICS_IDFV_COLLECTION\")\")\n  fi\n\n  # config.analytics_default_allow_ad_personalization_signals\n  _ANALYTICS_PERSONALIZATION=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"analytics_default_allow_ad_personalization_signals\")\n  if [[ $_ANALYTICS_PERSONALIZATION ]]; then\n    _PLIST_ENTRY_KEYS+=(\"GOOGLE_ANALYTICS_DEFAULT_ALLOW_AD_PERSONALIZATION_SIGNALS\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_ANALYTICS_PERSONALIZATION\")\")\n  fi\n\n  # config.google_analytics_automatic_screen_reporting_enabled\n  _ANALYTICS_AUTO_SCREEN_REPORTING=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"google_analytics_automatic_screen_reporting_enabled\")\n  if [[ $_ANALYTICS_AUTO_SCREEN_REPORTING ]]; then\n    _PLIST_ENTRY_KEYS+=(\"FirebaseAutomaticScreenReportingEnabled\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_ANALYTICS_AUTO_SCREEN_REPORTING\")\")\n  fi\n\n  # config.perf_auto_collection_enabled\n  _PERF_AUTO_COLLECTION=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"perf_auto_collection_enabled\")\n  if [[ $_PERF_AUTO_COLLECTION ]]; then\n    _PLIST_ENTRY_KEYS+=(\"firebase_performance_collection_enabled\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_PERF_AUTO_COLLECTION\")\")\n  fi\n\n  # config.perf_collection_deactivated\n  _PERF_DEACTIVATED=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"perf_collection_deactivated\")\n  if [[ $_PERF_DEACTIVATED ]]; then\n    _PLIST_ENTRY_KEYS+=(\"firebase_performance_collection_deactivated\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_PERF_DEACTIVATED\")\")\n  fi\n\n  # config.messaging_auto_init_enabled\n  _MESSAGING_AUTO_INIT=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"messaging_auto_init_enabled\")\n  if [[ $_MESSAGING_AUTO_INIT ]]; then\n    _PLIST_ENTRY_KEYS+=(\"FirebaseMessagingAutoInitEnabled\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_MESSAGING_AUTO_INIT\")\")\n  fi\n\n  # config.in_app_messaging_auto_colllection_enabled\n  _FIAM_AUTO_INIT=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"in_app_messaging_auto_collection_enabled\")\n  if [[ $_FIAM_AUTO_INIT ]]; then\n    _PLIST_ENTRY_KEYS+=(\"FirebaseInAppMessagingAutomaticDataCollectionEnabled\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_FIAM_AUTO_INIT\")\")\n  fi\n\n  # config.app_check_token_auto_refresh\n  _APP_CHECK_TOKEN_AUTO_REFRESH=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"app_check_token_auto_refresh\")\n  if [[ $_APP_CHECK_TOKEN_AUTO_REFRESH ]]; then\n    _PLIST_ENTRY_KEYS+=(\"FirebaseAppCheckTokenAutoRefreshEnabled\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_APP_CHECK_TOKEN_AUTO_REFRESH\")\")\n  fi\n\n  # config.crashlytics_disable_auto_disabler - undocumented for now - mainly for debugging, document if becomes useful\n  _CRASHLYTICS_AUTO_DISABLE_ENABLED=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"crashlytics_disable_auto_disabler\")\n  if [[ $_CRASHLYTICS_AUTO_DISABLE_ENABLED == \"true\" ]]; then\n    echo \"Disabled Crashlytics auto disabler.\" # do nothing\n  else\n    _PLIST_ENTRY_KEYS+=(\"FirebaseCrashlyticsCollectionEnabled\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"NO\")\n  fi\nelse\n  _PLIST_ENTRY_KEYS+=(\"firebase_json_raw\")\n  _PLIST_ENTRY_TYPES+=(\"string\")\n  _PLIST_ENTRY_VALUES+=(\"$_JSON_OUTPUT_BASE64\")\n  echo \"warning:   A firebase.json file was not found, whilst this file is optional it is recommended to include it to configure firebase services in React Native Firebase.\"\nfi;\n\necho \"info: 2) Injecting Info.plist entries: \"\n\n# Log out the keys we're adding\nfor i in \"${!_PLIST_ENTRY_KEYS[@]}\"; do\n  echo \"    ->  $i) ${_PLIST_ENTRY_KEYS[$i]}\" \"${_PLIST_ENTRY_TYPES[$i]}\" \"${_PLIST_ENTRY_VALUES[$i]}\"\ndone\n\nfor plist in \"${_TARGET_PLIST}\" \"${_DSYM_PLIST}\" ; do\n  if [[ -f \"${plist}\" ]]; then\n\n    # paths with spaces break the call to setPlistValue. temporarily modify\n    # the shell internal field separator variable (IFS), which normally\n    # includes spaces, to consist only of line breaks\n    oldifs=$IFS\n    IFS=\"\n\"\n\n    for i in \"${!_PLIST_ENTRY_KEYS[@]}\"; do\n      setPlistValue \"${_PLIST_ENTRY_KEYS[$i]}\" \"${_PLIST_ENTRY_TYPES[$i]}\" \"${_PLIST_ENTRY_VALUES[$i]}\" \"${plist}\"\n    done\n\n    # restore the original internal field separator value\n    IFS=$oldifs\n  else\n    echo \"warning:   A Info.plist build output file was not found (${plist})\"\n  fi\ndone\n\necho \"info: <- RNFB build script finished\"\n";
+		};
+		5804B8EC7AF5F01F71792A50 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-SaitaPro-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		AA00965D9D3E4FB3ADF4A03D /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-SaitaPro/Pods-SaitaPro-resources-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-SaitaPro/Pods-SaitaPro-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SaitaPro/Pods-SaitaPro-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		E06FCA3C70949293E953080D /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-SaitaPro/Pods-SaitaPro-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-SaitaPro/Pods-SaitaPro-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SaitaPro/Pods-SaitaPro-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		EDDAB8389064F37EF577B157 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-SaitaPro-SaitaProTests/Pods-SaitaPro-SaitaProTests-resources-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-SaitaPro-SaitaProTests/Pods-SaitaPro-SaitaProTests-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SaitaPro-SaitaProTests/Pods-SaitaPro-SaitaProTests-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		FC62C1846654BB2B2D6E9BC6 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-SaitaPro-SaitaProTests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		FD10A7F022414F080027D42C /* Start Packager */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Start Packager";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "export RCT_METRO_PORT=\"${RCT_METRO_PORT:=8081}\"\necho \"export RCT_METRO_PORT=${RCT_METRO_PORT}\" > \"${SRCROOT}/../node_modules/react-native/scripts/.packager.env\"\nif [ -z \"${RCT_NO_LAUNCH_PACKAGER+xxx}\" ] ; then\n  if nc -w 5 -z localhost ${RCT_METRO_PORT} ; then\n    if ! curl -s \"http://localhost:${RCT_METRO_PORT}/status\" | grep -q \"packager-status:running\" ; then\n      echo \"Port ${RCT_METRO_PORT} already in use, packager is either not running or not running correctly\"\n      exit 2\n    fi\n  else\n    open \"$SRCROOT/../node_modules/react-native/scripts/launchPackager.command\" || echo \"Can't start packager automatically\"\n  fi\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		00E356EA1AD99517003FC87E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				00E356F31AD99517003FC87E /* SaitaProTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		13B07F871A680F5B00A75B9A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CEB8B5622C196A9A00DC1EC3 /* Network.swift in Sources */,
+				CEB8B55B2C196A9A00DC1EC3 /* SMP.swift in Sources */,
+				CEB8B5682C196A9A00DC1EC3 /* WordList.swift in Sources */,
+				CEB8B5652C196A9A00DC1EC3 /* RIPEMD160.swift in Sources */,
+				CEB8B5732C196AB500DC1EC3 /* CustomSecurityMethods.swift in Sources */,
+				CEB8B55A2C196A9A00DC1EC3 /* BigInt+Extension.swift in Sources */,
+				CEB8B5672C196A9A00DC1EC3 /* WalletBTC.swift in Sources */,
+				CEB8B5722C196AB500DC1EC3 /* CreateWallet.swift in Sources */,
+				CEB8B5602C196A9A00DC1EC3 /* ECDSA.swift in Sources */,
+				CEB8B5762C196AB500DC1EC3 /* CreateWalletBridge.m in Sources */,
+				CEB8B5612C196A9A00DC1EC3 /* Mnemonic.swift in Sources */,
+				CEB8B55C2C196A9A00DC1EC3 /* Base58Encode.swift in Sources */,
+				CEB8B55E2C196A9A00DC1EC3 /* Crypto.swift in Sources */,
+				CEB8B5592C196A9A00DC1EC3 /* PreventScreenShotModule.m in Sources */,
+				13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */,
+				CEB8B53F2C1966FF00DC1EC3 /* swift.swift in Sources */,
+				CEB8B5642C196A9A00DC1EC3 /* PublicKey.swift in Sources */,
+				CEB8B55F2C196A9A00DC1EC3 /* DataConvertable.swift in Sources */,
+				CEB8B55D2C196A9A00DC1EC3 /* Bech32.swift in Sources */,
+				13B07FC11A68108700A75B9A /* main.m in Sources */,
+				CEB8B5632C196A9A00DC1EC3 /* PrivateKey.swift in Sources */,
+				CEB8B5662C196A9A00DC1EC3 /* SegwitAddrCoder.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		00E356F51AD99517003FC87E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 13B07F861A680F5B00A75B9A /* SaitaPro */;
+			targetProxy = 00E356F41AD99517003FC87E /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		00E356F61AD99517003FC87E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = C75B7861316CE0F15E9232BA /* Pods-SaitaPro-SaitaProTests.debug.xcconfig */;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = SaitaProTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-lc++",
+					"$(inherited)",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SaitaPro.app/SaitaPro";
+			};
+			name = Debug;
+		};
+		00E356F71AD99517003FC87E /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 022886A1358AD0CF7F90F98D /* Pods-SaitaPro-SaitaProTests.release.xcconfig */;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COPY_PHASE_STRIP = NO;
+				INFOPLIST_FILE = SaitaProTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-lc++",
+					"$(inherited)",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SaitaPro.app/SaitaPro";
+			};
+			name = Release;
+		};
+		13B07F941A680F5B00A75B9A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = F9477A165B103F5AD8457D46 /* Pods-SaitaPro.debug.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = SaitaPro/SaitaPro.entitlements;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = CAQH633WFK;
+				ENABLE_BITCODE = NO;
+				INFOPLIST_FILE = SaitaPro/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-ObjC",
+					"-lc++",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.saitapro;
+				PRODUCT_NAME = SaitaPro;
+				SWIFT_OBJC_BRIDGING_HEADER = "SaitaPro-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				VERSIONING_SYSTEM = "apple-generic";
+			};
+			name = Debug;
+		};
+		13B07F951A680F5B00A75B9A /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 727C0E063CE1CF66019C3CF5 /* Pods-SaitaPro.release.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = SaitaPro/SaitaPro.entitlements;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = CAQH633WFK;
+				INFOPLIST_FILE = SaitaPro/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-ObjC",
+					"-lc++",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.saitapro;
+				PRODUCT_NAME = SaitaPro;
+				SWIFT_OBJC_BRIDGING_HEADER = "SaitaPro-Bridging-Header.h";
+				SWIFT_VERSION = 5.0;
+				VERSIONING_SYSTEM = "apple-generic";
+			};
+			name = Release;
+		};
+		83CBBA201A601CBA00E9B192 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = i386;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+					_LIBCPP_ENABLE_CXX17_REMOVED_UNARY_BINARY_FUNCTION,
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					/usr/lib/swift,
+					"$(inherited)",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"\"$(SDKROOT)/usr/lib/swift\"",
+					"\"$(TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)\"",
+					"\"$(inherited)\"",
+				);
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				OTHER_CFLAGS = "$(inherited)";
+				OTHER_CPLUSPLUSFLAGS = (
+					"$(OTHER_CFLAGS)",
+					"-DFOLLY_NO_CONFIG",
+					"-DFOLLY_MOBILE=1",
+					"-DFOLLY_USE_LIBCPP=1",
+				);
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-Wl",
+					"-ld_classic",
+				);
+				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		83CBBA211A601CBA00E9B192 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = i386;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					_LIBCPP_ENABLE_CXX17_REMOVED_UNARY_BINARY_FUNCTION,
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					/usr/lib/swift,
+					"$(inherited)",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"\"$(SDKROOT)/usr/lib/swift\"",
+					"\"$(TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)\"",
+					"\"$(inherited)\"",
+				);
+				MTL_ENABLE_DEBUG_INFO = NO;
+				OTHER_CFLAGS = "$(inherited)";
+				OTHER_CPLUSPLUSFLAGS = (
+					"$(OTHER_CFLAGS)",
+					"-DFOLLY_NO_CONFIG",
+					"-DFOLLY_MOBILE=1",
+					"-DFOLLY_USE_LIBCPP=1",
+				);
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-Wl",
+					"-ld_classic",
+				);
+				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		00E357021AD99517003FC87E /* Build configuration list for PBXNativeTarget "SaitaProTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				00E356F61AD99517003FC87E /* Debug */,
+				00E356F71AD99517003FC87E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "SaitaPro" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				13B07F941A680F5B00A75B9A /* Debug */,
+				13B07F951A680F5B00A75B9A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "SaitaPro" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				83CBBA201A601CBA00E9B192 /* Debug */,
+				83CBBA211A601CBA00E9B192 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 83CBB9F71A601CBA00E9B192 /* Project object */;
+}

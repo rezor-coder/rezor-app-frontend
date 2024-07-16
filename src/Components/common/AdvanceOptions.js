@@ -1,11 +1,8 @@
 import React from 'react';
-import {Text, StyleSheet, View, Image, TouchableOpacity} from 'react-native';
-import {Fonts, Images} from '../../theme';
+import { StyleSheet, View } from 'react-native';
 import Colors from '../../theme/Colors';
-import {BasicButton} from './index';
-import {Actions} from 'react-native-router-flux';
-import {BasicInputBox} from './BasicInputBox';
-import {ButtonPrimary} from './ButtonPrimary';
+import { BasicInputBox } from './BasicInputBox';
+import { ButtonPrimary } from './ButtonPrimary';
 
 const AdvanceOptions = props => {
   return (
@@ -54,4 +51,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export {AdvanceOptions};
+export { AdvanceOptions };

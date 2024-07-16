@@ -1,58 +1,55 @@
-import React, {useState, useEffect, createRef, useCallback} from 'react';
+import Clipboard from '@react-native-community/clipboard';
+import moment from 'moment';
+import React, { createRef, useEffect, useState } from 'react';
 import {
-  View,
-  Text,
   Dimensions,
+  FlatList,
   Image,
   ImageBackground,
-  ScrollView,
-  TouchableOpacity,
-  FlatList,
-  Modal,
   Linking,
+  Modal,
   RefreshControl,
-  BackHandler
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View
 } from 'react-native';
-import {
-  Wrap,
-  BasicButton,
-  MainStatusBar,
-  ImageBackgroundComponent,
-  SimpleHeader,
-  BorderLine,
-  PinInput,
-  KeyboardDigit,
-} from '../../common';
-import images from '../../../theme/Images';
-import {styles} from './SaitaCardBlackStyle';
-import {Actions} from 'react-native-router-flux';
+import Toast from 'react-native-easy-toast';
+import FastImage from 'react-native-fast-image';
+import LinearGradient from 'react-native-linear-gradient';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
-import {LanguageManager, ThemeManager} from '../../../../ThemeManager';
-import {Fonts, Colors, Images} from '../../../theme';
+import { useDispatch } from 'react-redux';
+import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
+import * as Constants from '../../../Constant';
+import { NavigationStrings } from '../../../Navigation/NavigationStrings';
 import {
-  getUserCardDetail,
-  getCardsDetailApi,
-  getUserCardAddress,
   fetchBankDetails,
   fetchCardHistory,
   getCardList,
+  getCardsDetailApi,
+  getUserCardAddress,
+  getUserCardDetail,
 } from '../../../Redux/Actions/SaitaCardAction';
-import {useDispatch} from 'react-redux';
 import Singleton from '../../../Singleton';
-import * as Constants from '../../../Constant';
+import { areaDimen, heightDimen, widthDimen } from '../../../Utils/themeUtils';
+import { getCurrentRouteName, navigate, reset } from '../../../navigationsService';
+import { Colors, Fonts, Images } from '../../../theme';
+import images from '../../../theme/Images';
+import { CommaSeprator3 } from '../../../utils';
+import {
+  BasicButton,
+  BorderLine,
+  KeyboardDigit,
+  MainStatusBar,
+  PinInput,
+  SimpleHeader,
+  Wrap
+} from '../../common';
+import CardHistoryItem from '../../common/CardHistoryItem';
 import Loader from '../Loader/Loader';
-import LottieView from 'lottie-react-native';
+import { styles } from './SaitaCardBlackStyle';
 const windowHeight = Dimensions.get('window').height;
 const windowWidth = Dimensions.get('window').width;
-import moment from 'moment';
-import Clipboard from '@react-native-community/clipboard';
-import Toast from 'react-native-easy-toast';
-import SmoothPinCodeInput from 'react-native-smooth-pincode-input';
-import {areaDimen, heightDimen, widthDimen} from '../../../Utils/themeUtils';
-import FastImage from 'react-native-fast-image';
-import LinearGradient from 'react-native-linear-gradient';
-import CardHistoryItem from '../../common/CardHistoryItem';
-import { CommaSeprator3 } from '../../../utils';
 function getUrl(card_name) {
   return card_name?.toLowerCase() == 'black'
     ? 'https://d18zkqei0yjvv8.cloudfront.net/SaitaCard_BLACK.pdf'
@@ -118,14 +115,14 @@ const SaitaCardBlack = props => {
     //     .newGetData(Constants.access_token_cards)
     //     .then(access_token => {
     //       access_token
-    //         ? Actions.currentScene != 'Dashboard' &&
+    //         ? getCurrentRouteName() != 'Dashboard' &&
     //           Actions.replace('Dashboard')
     //         : props.navigation.goBack();
     //     });
     //   return true
     // })
     getDataCard();
-    let onFocus = props.navigation.addListener('didFocus', () => {
+    let onFocus = props.navigation.addListener('focus', () => {
       Singleton.getInstance()
         .newGetData(Constants.access_token_cards)
         .then(access_token => {
@@ -139,14 +136,14 @@ const SaitaCardBlack = props => {
           }
         });
     });
-    let onBlur = props.navigation.addListener('didBlur', () => {
+    let onBlur = props.navigation.addListener('blur', () => {
       setFeesModal(false);
     });
 
     return () => {
       // backHandle?.remove()
       onFocus?.remove();
-      onBlur?.remove();
+      onblur();
     };
   }, []);
 
@@ -306,8 +303,8 @@ const SaitaCardBlack = props => {
                 return;
               } else if (data.kyc_status == 2 && data.card_applied == null) {
                 !isActiveBlack &&
-                  Actions.currentScene != 'SaitaCardApplyForm' &&
-                  Actions.SaitaCardApplyForm({
+                  getCurrentRouteName() != 'SaitaCardApplyForm' &&
+                  navigate(NavigationStrings.SaitaCardApplyForm,{
                     cardType: selected_item?.card_table_id,
                     selectedItem: data,
                   });
@@ -376,8 +373,8 @@ const SaitaCardBlack = props => {
                   return;
                 } else if (data.kyc_status == 2 && data.card_applied == null) {
                   !isActiveBlack &&
-                    Actions.currentScene != 'SaitaCardApplyForm' &&
-                    Actions.SaitaCardApplyForm({
+                    getCurrentRouteName() != 'SaitaCardApplyForm' &&
+                    navigate(NavigationStrings.SaitaCardApplyForm,{
                       cardType: selected_item?.card_table_id,
                       selectedItem: data,
                     });
@@ -566,8 +563,8 @@ const SaitaCardBlack = props => {
         item={item}
         list={historyList}
         onPress={() =>
-          Actions.currentScene != 'CardHistoryDetail' &&
-          Actions.CardHistoryDetail({
+          getCurrentRouteName() != 'CardHistoryDetail' &&
+          navigate(NavigationStrings.CardHistoryDetail,{
             selectedItem: item,
             card_currency:
               userDetail?.cards?.length > 0
@@ -945,8 +942,8 @@ const SaitaCardBlack = props => {
               <TouchableOpacity
                 style={styles.depositButton}
                 onPress={() => {
-                  Actions.currentScene != 'SaitaCardDepositQr' &&
-                    Actions.SaitaCardDepositQr({
+                  getCurrentRouteName() != 'SaitaCardDepositQr' &&
+                  navigate(NavigationStrings.SaitaCardDepositQr,{
                       myAddress: myWalletAddress,
                       tokenListItem: tokenList,
                       fees: selectedItem?.card_fee,
@@ -1114,8 +1111,8 @@ const SaitaCardBlack = props => {
               </View>
               <TouchableOpacity
                 onPress={() => {
-                  Actions.currentScene != 'SaitaCardHistory' &&
-                    Actions.SaitaCardHistory({
+                  getCurrentRouteName() != 'SaitaCardHistory' &&
+                  navigate(NavigationStrings.SaitaCardHistory,{
                       cardId: cardData.card_id,
                       card_currency:
                         userDetail?.cards?.length > 0
@@ -1186,15 +1183,15 @@ const SaitaCardBlack = props => {
             .newGetData(Constants.access_token_cards)
             .then(access_token => {
               if(props?.from=='Main'){
-                Actions.currentScene != 'Main' && Actions.reset("Main")
+                getCurrentRouteName() != 'Main' && reset(NavigationStrings.Main)
               }else{
-                Actions.currentScene != 'Dashboard' && Actions.replace('Dashboard');
+                getCurrentRouteName() != 'Dashboard' && navigate(NavigationStrings.Dashboard);
               }
             });
         }}
         history={showSetting && !firstLoading.visible}
         onPressHistory={() =>
-          Actions.currentScene != 'CardSetting' && Actions.CardSetting()
+          getCurrentRouteName() != 'CardSetting' && navigate(NavigationStrings.CardSetting)
         }
         customIcon={ThemeManager.ImageIcons.setting}
       />
@@ -1229,7 +1226,7 @@ const SaitaCardBlack = props => {
               />
               <TouchableOpacity
                 onPress={() => {
-                  Actions.currentScene != 'GetSupport' && Actions.GetSupport();
+                  getCurrentRouteName() != 'GetSupport' && navigate(NavigationStrings.GetSupport);
                 }}>
                 <Text
                   style={{
@@ -1398,7 +1395,7 @@ const SaitaCardBlack = props => {
               <BasicButton
                 onPress={() => {
                   setApplyModal(false);
-                  Actions.currentScene != 'KycShufti' &&
+                  getCurrentRouteName() != 'KycShufti' &&
                     Actions.KycShufti({email: userDetail?.email});
                 }}
                 btnStyle={styles.btnStylekyc}
@@ -1532,7 +1529,7 @@ const SaitaCardBlack = props => {
                 <BasicButton
                   onPress={() => {
                     setKycRejected(false);
-                    Actions.currentScene != 'KycShufti' &&
+                    getCurrentRouteName() != 'KycShufti' &&
                       Actions.KycShufti({email: userDetail?.email});
                   }}
                   btnStyle={styles.btnStylekyc}
@@ -1631,7 +1628,7 @@ const SaitaCardBlack = props => {
                     return;
                   }
                   !isActiveBlack &&
-                    Actions.currentScene != 'SaitaCardApplyForm' &&
+                    getCurrentRouteName() != 'SaitaCardApplyForm' &&
                     Actions.SaitaCardApplyForm({
                       cardType: selectedItem?.card_table_id,
                       selectedItem: tempData?.data,

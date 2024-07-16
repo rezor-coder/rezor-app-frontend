@@ -1,76 +1,56 @@
 /* eslint-disable react/self-closing-comp */
 /* eslint-disable handle-callback-err */
 /* eslint-disable react-native/no-inline-styles */
-import React, {useState, useEffect} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
-  View,
-  Text,
-  TouchableOpacity,
-  Modal,
   Alert,
-  SafeAreaView,
   Dimensions,
   ImageBackground,
   Keyboard,
   Linking,
-  Image,
-  FlatList,
+  Modal,
+  SafeAreaView,
+  Text,
+  TouchableOpacity,
+  View
 } from 'react-native';
-import {Actions} from 'react-native-router-flux';
-import styles from './SaitaVirtualFormStyle';
-import {Colors, Fonts, Images} from '../../../theme';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { useDispatch } from 'react-redux';
+import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
+import * as Constants from '../../../Constant';
 import {
-  BasicInputBox,
-  BasicInputBoxSelect,
-  Wrap,
-  SimpleHeader,
-  BasicButton,
-  BorderLine,
-  CheckBox,
-  ImageBackgroundComponent,
-  BasicInputBoxPassword,
-} from '../../common';
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-import {
-  signupCards,
-  verifyOtpCards,
-  getUserCardDetail,
-  sendOtpCard,
-  sendCardPaymentrx,
-  applyAnotherCard,
   VirtualForm,
+  getUserCardDetail
 } from '../../../Redux/Actions/SaitaCardAction';
 import Singleton from '../../../Singleton';
-import {LanguageManager, ThemeManager} from '../../../../ThemeManager';
+import { countryData } from '../../../countryCodes';
+import { Colors } from '../../../theme';
 import fonts from '../../../theme/Fonts';
-import SmoothPinCodeInput from 'react-native-smooth-pincode-input';
-import {countryData} from '../../../countryCodes';
+import {
+  BasicButton,
+  BasicInputBox,
+  BasicInputBoxPassword,
+  BasicInputBoxSelect,
+  BorderLine,
+  CheckBox,
+  SimpleHeader,
+  Wrap
+} from '../../common';
 import CountryCodes from '../CountryCodes/CountryCodes';
 import Loader from '../Loader/Loader';
-import * as Constants from '../../../Constant';
-import {useDispatch} from 'react-redux';
+import styles from './SaitaVirtualFormStyle';
 //main
 import SmartCardAbi from '../../../../ABI/SmartCardAbi.json';
 import tokenCardAbi from '../../../../ABI/tokenCardAbi.json';
 // test
 // import SmartCardAbi from '../../../../ABI/SmartCardAbitest.json';
 // import tokenCardAbi from '../../../../ABI/tokenCardAbitest.json';
-import {EventRegister} from 'react-native-event-listeners';
-import {BigNumber} from 'bignumber.js';
+import { BigNumber } from 'bignumber.js';
+import { Platform } from 'react-native';
 import Web3 from 'web3';
-import {ModalCardTrx} from '../../common/ModalCardTrx';
-import {BASE_URL, BASE_URL_CARD_EPAY} from '../../../Endpoints';
-import {fetch} from 'react-native-ssl-pinning';
-import {APIClient, disableAllSecurity, sslCertificateList} from '../../../Api';
-import {
-  MyThemeTester,
-  createOrderForSaitaCard,
-  createOrderForSaitaCard_Binance,
-} from '../../../utils';
-import {Platform} from 'react-native';
-import {SaitaOfferList} from '../../common/SaitaOfferList';
-import LinearGradient from 'react-native-linear-gradient';
 import { areaDimen, heightDimen, widthDimen } from '../../../Utils/themeUtils';
+import { getCurrentRouteName, goBack, navigate } from '../../../navigationsService';
+import { NavigationStrings } from '../../../Navigation/NavigationStrings';
 // //test
 // let routerAddressCards = '0xBd5EB4F64C5c9D87e1a33B08AD3FFf8D821da48E';
 // //main
@@ -429,10 +409,10 @@ const SaitaVirtualForm = props => {
           setShouldEdit(false);
           setApplyModal(false);
 
-          // Actions.currentScene != 'KycShufti' &&
+          // getCurrentRouteName() != 'KycShufti' &&
           //   Actions.replace("KycShufti",{email: email});
-          Actions.currentScene != 'SaitaCardHyperKycForm' &&
-            Actions.replace("SaitaCardHyperKycForm",{
+          getCurrentRouteName() != 'SaitaCardHyperKycForm' &&
+          navigate(NavigationStrings.SaitaCardHyperKycForm,{
             selectedItem: props?.cardDetail,
             cardDetail: props?.selectedItem,
             userDetail: res,
@@ -479,7 +459,7 @@ const SaitaVirtualForm = props => {
           imageShow
           back={false}
           backPressed={() => {
-            Actions.pop();
+            goBack();
           }}
         />
         <BorderLine
@@ -548,7 +528,7 @@ const SaitaVirtualForm = props => {
                   lineHeight: heightDimen(18),
                   fontFamily: fonts.medium,
                 }}
-                title={LanguageManager.phone}
+                title={LanguageManager.phoneNumber}
                 mainStyle={{ borderColor: ThemeManager.colors.viewBorderColor,
                   borderRadius: 100,}}
                 keyboardType="number-pad"

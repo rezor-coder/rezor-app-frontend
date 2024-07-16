@@ -1,13 +1,10 @@
 /* eslint-disable react-native/no-inline-styles */
 import React from 'react';
-import {Text, StyleSheet, View, Image, TouchableOpacity} from 'react-native';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import {Actions} from 'react-native-router-flux';
-import {ThemeManager} from '../../../ThemeManager';
-import Colors from '../../theme/Colors';
+import { ThemeManager } from '../../../ThemeManager';
+import { areaDimen, heightDimen, widthDimen } from '../../Utils/themeUtils';
 import fonts from '../../theme/Fonts';
-import images from '../../theme/Images';
-import {areaDimen, heightDimen, widthDimen} from '../../Utils/themeUtils';
 
 const SimpleHeaderNew = props => {
   return (
@@ -109,4 +106,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export {SimpleHeaderNew};
+export { SimpleHeaderNew };

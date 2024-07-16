@@ -1,31 +1,26 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, Image, Alert } from 'react-native';
-import { Actions } from 'react-native-router-flux';
-import colors from '../../../theme/Colors';
-import images from '../../../theme/Images';
-import { BasicButton, Inputtext, MainHeader, SubHeader } from '../../common';
-import LinearGradient from 'react-native-linear-gradient';
-import { Wrap } from '../../common/Wrap';
-import { styles } from './StakingPoolsStyle';
-import fonts from '../../../theme/Fonts';
-import {
-  FlatList,
-  ScrollView,
-  TouchableOpacity,
-} from 'react-native-gesture-handler';
-import { useSelector } from 'react-redux';
-import Singleton from '../../../Singleton';
-import TOKEN_CONTRACT_ABI from './tokenContract.ABI.json';
-import STAKING_CONTRACT_ABI from './SaitaABI.json';
-import Colors from '../../../theme/Colors';
-import * as constants from '../../../Constant';
-import Web3 from 'web3';
 import { BigNumber } from 'bignumber.js';
-import { ButtonPercentage } from '../../common/ButtonPercentage';
+import React, { useCallback, useEffect, useState } from 'react';
+import { Alert, Text, View } from 'react-native';
+import {
+  ScrollView
+} from 'react-native-gesture-handler';
+import LinearGradient from 'react-native-linear-gradient';
+import { useSelector } from 'react-redux';
+import Web3 from 'web3';
 import { APIClient } from '../../../Api/APIClient';
+import * as constants from '../../../Constant';
+import { NavigationStrings } from '../../../Navigation/NavigationStrings';
+import Singleton from '../../../Singleton';
+import { getCurrentRouteName, navigate } from '../../../navigationsService';
+import Colors from '../../../theme/Colors';
+import images from '../../../theme/Images';
+import { BasicButton, Inputtext, MainHeader } from '../../common';
+import { ButtonPercentage } from '../../common/ButtonPercentage';
+import { Wrap } from '../../common/Wrap';
 import Loader from '../Loader/Loader';
-import { ModalSwap } from '../../common/ModalSwap';
-import { BASE_URL } from '../../../Endpoints';
+import STAKING_CONTRACT_ABI from './SaitaABI.json';
+import { styles } from './StakingPoolsStyle';
+import TOKEN_CONTRACT_ABI from './tokenContract.ABI.json';
 const debounce = require('lodash.debounce');
 
 const stakeData = [
@@ -742,8 +737,8 @@ const StakingPools = () => {
         end={{ x: 1, y: 0 }}>
         <MainHeader
           onpress2={() =>
-            Actions.currentScene != 'SelectBlockchain' &&
-            Actions.SelectBlockchain({ blockChainsList: walletList })
+            getCurrentRouteName() != 'SelectBlockchain' &&
+            navigate(NavigationStrings.SelectBlockchain,{ blockChainsList: walletList })
           }
           onpress3={() => Singleton.showAlert('soon')}
           styleImg3={{ tintColor: '#B1B1B1' }}
@@ -1078,7 +1073,7 @@ const StakeItem = ({ item, index, letsUnstake }) => {
 //         start={{ x: 0, y: 0 }}
 //         end={{ x: 1, y: 0 }}>
 //         <MainHeader
-//           onpress2={() => Actions.currentScene != 'SelectBlockchain' && Actions.SelectBlockchain({ blockChainsList: walletList })}
+//           onpress2={() => getCurrentRouteName() != 'SelectBlockchain' && Actions.SelectBlockchain({ blockChainsList: walletList })}
 //           onpress3={() => alert('soon')}
 //           styleImg3={{ tintColor: '#B1B1B1' }}
 //           firstImg={images.Bell}

@@ -1,24 +1,23 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, { useState, createRef, useEffect, useRef } from 'react';
-import { Keyboard, ScrollView, Share, TextInput, BackHandler } from 'react-native';
-import { BorderLine, Wrap } from '../../common/index';
-import { MainStatusBar, SimpleHeader, BasicButton } from '../../common';
-import { Colors, Fonts, Images } from '../../../theme';
-import styles from './SaitaCardDepositQrStyle';
-import { View, Image, Text, TouchableOpacity } from 'react-native';
-import Singleton from '../../../Singleton';
-import QRCode from 'react-native-qrcode-image';
-import Toast from 'react-native-easy-toast';
 import Clipboard from '@react-native-community/clipboard';
-import * as constants from '../../../Constant';
-import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
-import { Actions } from 'react-native-router-flux';
-import SelectDropdown from 'react-native-select-dropdown';
-import Loader from '../Loader/Loader';
-import { APIClient } from '../../../Api';
-import { LIMINAL_COIN_LIST, LIMINAL_PRICE_CONVERSION } from '../../../Endpoints';
-import { areaDimen, heightDimen, widthDimen } from '../../../Utils/themeUtils';
+import React, { createRef, useEffect, useRef, useState } from 'react';
+import { BackHandler, Image, Keyboard, ScrollView, Share, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import Toast from 'react-native-easy-toast';
 import FastImage from 'react-native-fast-image';
+import QRCode from 'react-native-qrcode-image';
+import SelectDropdown from 'react-native-select-dropdown';
+import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
+import { APIClient } from '../../../Api';
+import * as constants from '../../../Constant';
+import { LIMINAL_COIN_LIST, LIMINAL_PRICE_CONVERSION } from '../../../Endpoints';
+import Singleton from '../../../Singleton';
+import { areaDimen, heightDimen, widthDimen } from '../../../Utils/themeUtils';
+import { Colors, Fonts, Images } from '../../../theme';
+import { BasicButton, MainStatusBar, SimpleHeader } from '../../common';
+import { BorderLine, Wrap } from '../../common/index';
+import Loader from '../Loader/Loader';
+import styles from './SaitaCardDepositQrStyle';
+import { goBack } from '../../../navigationsService';
 let buttonPressed = false
 const QrCode = prop => {
   const toast = createRef();
@@ -43,18 +42,18 @@ const QrCode = prop => {
         setIsButtonPresses(false)
         buttonPressed = false
       } else {
-        Actions.pop()
+        goBack()
       }
       return true
     })
     getCoinlist();
-    let blur = prop.navigation.addListener('didBlur', () => {
-      console.warn('didBlur .... ');
+    let blur = prop.navigation.addListener('blur', () => {
+      console.warn('blur .... ');
       setIsButtonPresses(false);
       buttonPressed = false
     });
     return () => {
-      blur?.remove();
+      blur();
       backHandle?.remove()
     };
   }, []);
@@ -571,7 +570,7 @@ const QrCode = prop => {
         imageShow
         back={false}
         backPressed={() => {
-          Actions.pop();
+          goBack();
         }}
       />
       <BorderLine

@@ -47,3 +47,6 @@ export const SAVE_SWAP_ITEM = 'save_swap_item';
 
 
 export const IS_FROM_DAPP= 'is_from_dapp';
+/*******************************************Card Connect****************************************************** */
+
+export const CARD_USER_DETAIL= 'card_user_detail';

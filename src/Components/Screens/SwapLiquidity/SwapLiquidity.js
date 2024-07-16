@@ -1,29 +1,20 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
-  View,
-  Text,
-  StyleSheet,
-  Image,
-  ImageBackground,
-  ScrollView,
-  Dimensions,
-  Alert,
   Modal,
-  SafeAreaView,
-  FlatList,
-  Keyboard, TouchableOpacity
+  Text,
+  TouchableOpacity,
+  View
 } from 'react-native';
-import { Actions } from 'react-native-router-flux';
-import images from '../../../theme/Images';
 import { Colors } from '../../../theme';
+import images from '../../../theme/Images';
 
-import { styles } from './SwapLiquidityStyle';
-import { Inputtext, InputtextSearch, MainHeader } from '../../common';
 import LinearGradient from 'react-native-linear-gradient';
+import { InputtextSearch, MainHeader } from '../../common';
+import { styles } from './SwapLiquidityStyle';
 // import { TouchableOpacity } from 'react-native-gesture-handler';
-import { Wrap, BasicButton } from '../../common/index';
-import Liquidity from '../Liquidity/Liquidity'
-import SwapTab from '../SwapTab/SwapTab'
+import { BasicButton, Wrap } from '../../common/index';
+import Liquidity from '../Liquidity/Liquidity';
+import SwapTab from '../SwapTab/SwapTab';
 
 
 const SwapLiquidity = () => {

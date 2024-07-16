@@ -3,41 +3,27 @@
 /* eslint-disable react/self-closing-comp */
 import React, { useEffect, useState } from 'react';
 import {
-  View,
-  Text,
-  StyleSheet,
-  ImageBackground,
-  Image,
-  TouchableOpacity,
-  TextInput,
-  ScrollView,
   Dimensions,
   Platform,
+  Text,
+  TextInput,
+  View
 } from 'react-native';
-import { Wrap } from '../../common/Wrap';
+import { connect, useDispatch, useSelector } from 'react-redux';
+import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
+import * as Constants from '../../../Constant';
+import { NavigationStrings } from '../../../Navigation/NavigationStrings';
+import { getColorList, walletFormUpdate } from '../../../Redux/Actions';
+import Singleton from '../../../Singleton';
+import { getCurrentRouteName, navigate } from '../../../navigationsService';
 import {
   BasicButton,
-  MainStatusBar,
-  SubHeader,
+  MainStatusBar
 } from '../../common';
-import { Actions } from 'react-native-router-flux';
-import colors from '../../../theme/Colors';
-import LinearGradient from 'react-native-linear-gradient';
-import { DotPagination } from '../../common/DotPagination';
-import { ButtonPrimary } from '../../common/ButtonPrimary';
-import { FlatList } from 'react-native-gesture-handler';
-import { styles } from './CreateNewWalletStyle';
-import { walletFormUpdate } from '../../../Redux/Actions';
-import { connect, useSelector, useDispatch } from 'react-redux';
-import Singleton from '../../../Singleton';
-import * as Constants from '../../../Constant';
-import Loader from '../Loader/Loader';
-import { getColorList } from '../../../Redux/Actions';
-import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
-import images from '../../../theme/Images';
 import HeaderwithBackIcon from '../../common/HeaderWithBackIcon';
-import { ifIphoneX } from 'react-native-iphone-x-helper';
-import RNPreventScreenshot from 'react-native-screenshot-prevent';
+import { Wrap } from '../../common/Wrap';
+import Loader from '../Loader/Loader';
+import { styles } from './CreateNewWalletStyle';
 
 const windowHeight = Dimensions.get('window').height;
 const CreateNewWallet = props => {
@@ -56,8 +42,8 @@ const CreateNewWallet = props => {
     // 'usename00-----',
     //   Singleton.getInstance().saveData(Constants.USER_NAME, walletName),
     // );
-    console.log("props.isFrom===", props.isFrom)
-    if (props.isFrom != 'multiWallet') {
+    console.log("props.route?.params?.isFrom===", props.route?.params?.isFrom)
+    if (props.route?.params?.isFrom != 'multiWallet') {
       Singleton.getInstance().newSaveData(Constants.GRADIENT_COLOR, JSON.stringify(btn ? btn : ['#DA539C', '#A73CBE', '#882DD4', '#7C28DD']));
     }
     if (walletName.trim().length == 0) {
@@ -70,7 +56,7 @@ const CreateNewWallet = props => {
     }
     setLoading(true);
 
-    if (props.isFrom == 'multiWallet') {
+    if (props.route?.params?.isFrom == 'multiWallet') {
 
       let multiWalletData = JSON.parse(await Singleton.getInstance().newGetData(Constants.multi_wallet_array))
       let isNameExist = multiWalletData.filter(item => item?.walletName?.trim()?.toLowerCase() == walletName?.trim()?.toLowerCase())
@@ -90,10 +76,10 @@ const CreateNewWallet = props => {
         .then(res => {
           console.warn('MM', 'create wallet res--------', res);
           dispatch(walletFormUpdate({ prop: 'walletData', value: res }));
-          if (props.isFrom == 'multiWallet') {
-            Actions.replace('SecureWallet', { isFrom: props.isFrom });
+          if (props.route?.params?.isFrom == 'multiWallet') {
+           navigate(NavigationStrings.SecureWallet, { isFrom: props.route?.params?.isFrom });
           } else {
-            Actions.currentScene != 'SecureWallet' && Actions.SecureWallet();
+            getCurrentRouteName() != 'SecureWallet' && navigate(NavigationStrings.SecureWallet);
           }
 
           setLoading(false);
@@ -123,7 +109,7 @@ const CreateNewWallet = props => {
     //   Constants.GRADIENT_COLOR,
     //   JSON.stringify(btn),
     // );
-    props.navigation.addListener('didFocus', () => {
+    props.navigation.addListener('focus', () => {
       // if (Platform.OS == "android")
       // RNPreventScreenshot?.enabled(true)
       //  console.warn('MM','did focus called::::: createNewWallet');
@@ -226,9 +212,9 @@ const CreateNewWallet = props => {
 
         {/* <View
               style={{
-                height: props.isFrom != 'multiWallet' ? 160 : 50,
+                height: props.route?.params?.isFrom != 'multiWallet' ? 160 : 50,
               }}>
-              {props.isFrom != 'multiWallet' && (
+              {props.route?.params?.isFrom != 'multiWallet' && (
                 <View style={{ marginHorizontal: 25 }}>
                   <Text
                     style={[
