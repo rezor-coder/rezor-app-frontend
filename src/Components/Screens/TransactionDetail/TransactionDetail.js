@@ -28,6 +28,7 @@ class TransactionDetail extends Component {
       txnDetail: [],
       setImgStyle: false,
       data: this.props?.route?.params?.TxnData,
+      isLoading:false
     };
   }
   componentDidMount() {

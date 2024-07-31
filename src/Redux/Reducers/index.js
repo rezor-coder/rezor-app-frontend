@@ -1,4 +1,4 @@
-import {combineReducers} from 'redux';
+import {applyMiddleware, combineReducers, createStore} from 'redux';
 import {LOGOUT} from '../Actions/types';
 import MnemonicCreateReducer from './MnemonicCreateReducer';
 import CreateWalletReducer from './CreateWalletReducer';
@@ -9,6 +9,11 @@ import MultiWalletCreateWalletReducer from './MultiWalletCreateWalletReducer';
 import WalletConnectReducer from './WalletConnectReducer';
 import SwapReducer from './SwapReducer';
 import SaitaCardReducer from './SaitaCardReducer'
+import storage from 'redux-persist/lib/storage' // defaults to localStorage for web
+import persistReducer from 'redux-persist/es/persistReducer';
+import persistStore from 'redux-persist/es/persistStore';
+import ReduxThunk from 'redux-thunk';
+
 const appReducer = combineReducers({
   mnemonicreateReducer: MnemonicCreateReducer,
   createWalletReducer: CreateWalletReducer,
@@ -20,10 +25,19 @@ const appReducer = combineReducers({
   swapReducer:SwapReducer,
   saitaCardReducer:SaitaCardReducer
 });
+const persistConfig = {
+  key: 'root',
+  storage,
+  whitelist: ['walletReducer']
+}
 
-export default rootReducer = (state, action) => {
+export const rootReducer = (state, action) => {
   if (action.type === LOGOUT) {
     state = undefined;
   }
   return appReducer(state, action);
 };
+
+const persistedReducer = persistReducer(persistConfig, rootReducer)
+export  const store = createStore(persistedReducer,  {}, applyMiddleware(ReduxThunk))
+export  const persistor = persistStore(store)

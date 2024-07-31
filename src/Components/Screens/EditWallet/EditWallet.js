@@ -253,7 +253,7 @@ const EditWallet = props => {
 
   const colorList = () => {
     let access_token = Singleton.getInstance().access_token;
-    setLoading(true),
+    // setLoading(true),
       setTimeout(() => {
         dispatch(getColorList({access_token}))
           .then(async response => {

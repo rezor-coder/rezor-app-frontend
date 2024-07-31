@@ -424,6 +424,8 @@ percentage:require('../../assets/images/percentage.png'),
   tiltCard: require("../../assets/images/tiltCard.png"),
   circleBlueTick: require("../../assets/images/circleBlueTick.png"),
   blueLike: require("../../assets/images/blueLike.png"),
+  deposit2: require("../../assets/images/deposit2.png"),
+
 };
 
 export default images;

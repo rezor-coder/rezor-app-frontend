@@ -6,6 +6,7 @@ import {
   BASE_URL_CARDS_CENTRALISED,
   BASE_URL_HUOBI,
   BASE_URL_SAITACARDS,
+  VAULT_CARD_URL,
 } from '../Endpoints';
 import { NavigationStrings } from '../Navigation/NavigationStrings';
 import Singleton from '../Singleton';
@@ -51,20 +52,19 @@ const APIClient = class APIClient {
       //     {cancelable: false},
       //   );
       // }
-      Singleton.showAlert(Constants.NO_NETWORK)
+      Singleton.showAlert(Constants.NO_NETWORK);
       return new Promise((resolve, reject) => {
-        reject({ message: Constants.NO_NETWORK });
+        reject({message: Constants.NO_NETWORK});
       });
     } else {
       return new Promise((resolve, reject) => {
-        console.warn('MM', 'UserToken',endpoint, UserToken);
+        console.warn('MM', 'UserToken', endpoint, UserToken);
         console.warn('MM', 'url', `${BASE_URL}${endpoint}`);
         ssl_fetch(`${BASE_URL}${endpoint}`, {
           method: 'GET',
           headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
-            'x-card-module': "d7be2982f87cwyv2db2908hew9u2b3fuyv877gcw2fb39297gf2b",
             Authorization: UserToken || undefined,
           },
           sslPinning: {
@@ -78,14 +78,14 @@ const APIClient = class APIClient {
               console.warn('MM', 'res get api:::::::', endpoint, jsonVal);
               if (res.status != 200) {
                 if (jsonVal.message == undefined) {
-                  return reject({ message: Constants.SOMETHING_WRONG });
+                  return reject({message: Constants.SOMETHING_WRONG});
                 }
                 return reject(jsonVal);
               }
               return resolve(jsonVal);
             } catch (e) {
               // console.warn('MM', 'api error', e);
-              return reject({ message: Constants.SOMETHING_WRONG });
+              return reject({message: Constants.SOMETHING_WRONG});
             }
           })
           .catch(error => {
@@ -94,7 +94,7 @@ const APIClient = class APIClient {
             if (error?.status == 400) {
               if (msg?.invalid) {
                 getCurrentRouteName() != 'ConfirmPin' &&
-                  navigate(NavigationStrings.ConfirmPin,{refreshToken:true});
+                  navigate(NavigationStrings.ConfirmPin, {refreshToken: true});
               }
             }
             return reject(msg);
@@ -106,7 +106,7 @@ const APIClient = class APIClient {
   getGasPrice(endpoint, UserToken) {
     // //console.warn('MM','API Client Called');
     if (global.disconnected) {
-      Singleton.showAlert(Constants.NO_NETWORK)
+      Singleton.showAlert(Constants.NO_NETWORK);
       // if (!this.alertPresent) {
       //   this.alertPresent = true;
       //   Alert.alert(
@@ -124,7 +124,7 @@ const APIClient = class APIClient {
       //   );
       // }
       return new Promise((resolve, reject) => {
-        reject({ message: Constants.NO_NETWORK });
+        reject({message: Constants.NO_NETWORK});
       });
     } else {
       return new Promise((resolve, reject) => {
@@ -134,7 +134,6 @@ const APIClient = class APIClient {
           headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
-            'x-card-module': "d7be2982f87cwyv2db2908hew9u2b3fuyv877gcw2fb39297gf2b",
             'api-access-token': UserToken,
           },
           sslPinning: {
@@ -142,19 +141,19 @@ const APIClient = class APIClient {
           },
         })
           .then(async res => {
-             console.warn('MM','res', res);
+            console.warn('MM', 'res', res);
             try {
               let jsonVal = await res.json();
-              console.warn('MM','Json Response:', jsonVal);
+              console.warn('MM', 'Json Response:', jsonVal);
               if (res.status != 200) {
                 if (jsonVal.message == undefined) {
-                  return reject({ message: Constants.SOMETHING_WRONG });
+                  return reject({message: Constants.SOMETHING_WRONG});
                 }
                 return reject(jsonVal);
               }
               return resolve(jsonVal);
             } catch (e) {
-              return reject({ message: Constants.SOMETHING_WRONG });
+              return reject({message: Constants.SOMETHING_WRONG});
             }
           })
           .catch(reject);
@@ -165,7 +164,7 @@ const APIClient = class APIClient {
 
   post(endpoint, data, UserToken) {
     if (global.disconnected) {
-      Singleton.showAlert(Constants.NO_NETWORK)
+      Singleton.showAlert(Constants.NO_NETWORK);
       // if (!this.alertPresent) {
       //   this.alertPresent = true;
       //   Alert.alert(
@@ -183,20 +182,19 @@ const APIClient = class APIClient {
       //   );
       // }
       return new Promise((resolve, reject) => {
-        reject({ message: Constants.NO_NETWORK });
+        reject({message: Constants.NO_NETWORK});
       });
     } else {
       return new Promise(async (resolve, reject) => {
         console.warn('MM', 'UserToken11', UserToken);
         console.warn('MM', 'url11', `${BASE_URL}${endpoint}`);
         console.warn('MM', 'params11', JSON.stringify(data));
-        let encodedData = await this.encode_saitamask_data(data)
+        let encodedData = await this.encode_saitamask_data(data);
         console.warn('MM', 'await this.encodeData(data::::::', encodedData);
         ssl_fetch(`${BASE_URL}${endpoint}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'x-card-module': "d7be2982f87cwyv2db2908hew9u2b3fuyv877gcw2fb39297gf2b",
             Authorization: UserToken || undefined,
           },
           sslPinning: {
@@ -213,14 +211,14 @@ const APIClient = class APIClient {
               // console.warn('MM', 'jsonVal::::::', jsonVal,endpoint);
               if (res.status != 200) {
                 if (jsonVal.message == undefined) {
-                  return reject({ message: Constants.SOMETHING_WRONG });
+                  return reject({message: Constants.SOMETHING_WRONG});
                 }
                 return reject(jsonVal);
               }
               return resolve(jsonVal);
             } catch (e) {
               // console.warn('MM', 'api error', e);
-              return reject({ message: Constants.SOMETHING_WRONG });
+              return reject({message: Constants.SOMETHING_WRONG});
             }
           })
           .catch(error => {
@@ -228,10 +226,10 @@ const APIClient = class APIClient {
             if (error?.status == 400) {
               if (msg?.invalid) {
                 getCurrentRouteName() != 'ConfirmPin' &&
-                navigate(NavigationStrings.ConfirmPin,{ refreshToken: true });
+                  navigate(NavigationStrings.ConfirmPin, {refreshToken: true});
               } else if (msg?.logout) {
                 getCurrentRouteName() != 'ConfirmPin' &&
-                navigate(NavigationStrings.ConfirmPin,{ loginAgain: true });
+                  navigate(NavigationStrings.ConfirmPin, {loginAgain: true});
               }
             }
             // console.warn('MM', `msg err::::::post`, msg);
@@ -259,7 +257,7 @@ const APIClient = class APIClient {
 
   postFile(endpoint, data, UserToken) {
     if (global.disconnected) {
-      Singleton.showAlert(Constants.NO_NETWORK)
+      Singleton.showAlert(Constants.NO_NETWORK);
       // if (!this.alertPresent) {
       //   this.alertPresent = true;
       //   Alert.alert(
@@ -277,7 +275,7 @@ const APIClient = class APIClient {
       //   );
       // }
       return new Promise((resolve, reject) => {
-        reject({ message: Constants.NO_NETWORK });
+        reject({message: Constants.NO_NETWORK});
       });
     } else {
       return new Promise((resolve, reject) => {
@@ -289,12 +287,9 @@ const APIClient = class APIClient {
           `${BASE_URL}${endpoint}`,
           {
             Authorization: UserToken || undefined,
-            'x-card-module': "d7be2982f87cwyv2db2908hew9u2b3fuyv877gcw2fb39297gf2b",
             'Content-Type': 'multipart/form-data',
           },
-          [data]
-
-
+          [data],
         )
           .then(async res => {
             // console.warn('MM', 'res', res.json());
@@ -302,7 +297,7 @@ const APIClient = class APIClient {
               let jsonVal = await res.json();
               return resolve(jsonVal);
             } catch (e) {
-              return reject({ message: Constants.SOMETHING_WRONG });
+              return reject({message: Constants.SOMETHING_WRONG});
             }
           })
           .catch(reject);
@@ -311,7 +306,7 @@ const APIClient = class APIClient {
   }
   postFileCards(endpoint, data, UserToken) {
     if (global.disconnected) {
-      Singleton.showAlert(Constants.NO_NETWORK)
+      Singleton.showAlert(Constants.NO_NETWORK);
       // if (!this.alertPresent) {
       //   this.alertPresent = true;
       //   Alert.alert(
@@ -329,7 +324,7 @@ const APIClient = class APIClient {
       //   );
       // }
       return new Promise((resolve, reject) => {
-        reject({ message: Constants.NO_NETWORK });
+        reject({message: Constants.NO_NETWORK});
       });
     } else {
       return new Promise((resolve, reject) => {
@@ -341,12 +336,9 @@ const APIClient = class APIClient {
           `${BASE_URL_SAITACARDS}${endpoint}`,
           {
             Authorization: UserToken || undefined,
-            'x-card-module': "d7be2982f87cwyv2db2908hew9u2b3fuyv877gcw2fb39297gf2b",
             'Content-Type': 'multipart/form-data',
           },
-          data
-
-
+          data,
         )
           .then(async res => {
             // console.warn('MM', 'res', res.json());
@@ -354,7 +346,7 @@ const APIClient = class APIClient {
               let jsonVal = await res.json();
               return resolve(jsonVal);
             } catch (e) {
-              return reject({ message: Constants.SOMETHING_WRONG });
+              return reject({message: Constants.SOMETHING_WRONG});
             }
           })
           .catch(reject);
@@ -362,9 +354,9 @@ const APIClient = class APIClient {
     }
   }
   //   }
-  postCards(endpoint, data,UserToken) {
+  postCards(endpoint, data, UserToken,headers = {}) {
     if (global.disconnected) {
-      Singleton.showAlert(Constants.NO_NETWORK)
+      Singleton.showAlert(Constants.NO_NETWORK);
       // if (!this.alertPresent) {
       //   this.alertPresent = true;
       //   Alert.alert(
@@ -382,20 +374,22 @@ const APIClient = class APIClient {
       //   );
       // }
       return new Promise((resolve, reject) => {
-        reject({ message: Constants.NO_NETWORK });
+        reject({message: Constants.NO_NETWORK});
       });
     } else {
       return new Promise(async (resolve, reject) => {
-        // console.warn('MM', 'url11crddd', `${BASE_URL_SAITACARDS}${endpoint}`);
-        // console.warn('MM', 'params11', JSON.stringify(data));
-        // console.warn('MM', 'encodeData::::::', await this.encodeData(data));
+        console.warn('MM', 'url11crddd', `${BASE_URL_SAITACARDS}${endpoint}`);
+        console.warn('MM', 'params11', UserToken);
+        console.warn('MM', 'data1111', data);
+        console.warn('MM', 'headers1111', headers);
+        console.warn('MM', 'encodeData::::::', await this.encodeData(data));
         ssl_fetch(`${BASE_URL_SAITACARDS}${endpoint}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Accept': 'application/json',
-            'x-card-module': "d7be2982f87cwyv2db2908hew9u2b3fuyv877gcw2fb39297gf2b",
-            Authorization:UserToken || undefined
+            Accept: 'application/json',
+            Authorization: UserToken ? 'Bearer ' + UserToken : '',
+            ...headers
           },
           sslPinning: {
             certs: sslCertificateList,
@@ -404,20 +398,20 @@ const APIClient = class APIClient {
           disableAllSecurity: true,
         })
           .then(async res => {
-            console.warn('MM','res::::::', res);
+            console.warn('MM', 'res::::::', res);
             try {
               let jsonVal = await res.json();
               // console.warn('MM','jsonVal::::::', jsonVal);
               if (res.status != 200) {
                 if (jsonVal.message == undefined) {
-                  return reject({ message: Constants.SOMETHING_WRONG });
+                  return reject({message: Constants.SOMETHING_WRONG});
                 }
                 return reject(jsonVal);
               }
               return resolve(jsonVal);
             } catch (e) {
               // console.warn('MM', 'api error', e);
-              return reject({ message: Constants.SOMETHING_WRONG });
+              return reject({message: Constants.SOMETHING_WRONG});
             }
           })
           .catch(error => {
@@ -450,7 +444,7 @@ const APIClient = class APIClient {
   }
   postTokenCards(endpoint, data, UserToken) {
     if (global.disconnected) {
-      Singleton.showAlert(Constants.NO_NETWORK)
+      Singleton.showAlert(Constants.NO_NETWORK);
       // if (!this.alertPresent) {
       //   this.alertPresent = true;
       //   Alert.alert(
@@ -468,7 +462,7 @@ const APIClient = class APIClient {
       //   );
       // }
       return new Promise((resolve, reject) => {
-        reject({ message: Constants.NO_NETWORK });
+        reject({message: Constants.NO_NETWORK});
       });
     } else {
       return new Promise(async (resolve, reject) => {
@@ -479,7 +473,6 @@ const APIClient = class APIClient {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'x-card-module': "d7be2982f87cwyv2db2908hew9u2b3fuyv877gcw2fb39297gf2b",
             Authorization: UserToken || undefined,
           },
           sslPinning: {
@@ -495,14 +488,14 @@ const APIClient = class APIClient {
               // console.warn('MM', 'res', endpoint, jsonVal);
               if (res.status != 200) {
                 if (jsonVal.message == undefined) {
-                  return reject({ message: jsonVal.data.message });
+                  return reject({message: jsonVal.data.message});
                 }
                 return reject(jsonVal);
               }
               return resolve(jsonVal);
             } catch (e) {
               // console.warn('MM', 'api error', e);
-              return reject({ message: Constants.SOMETHING_WRONG });
+              return reject({message: Constants.SOMETHING_WRONG});
             }
           })
           .catch(error => {
@@ -535,7 +528,7 @@ const APIClient = class APIClient {
   }
   postTokenCardsFormData(endpoint, data, UserToken) {
     if (global.disconnected) {
-      Singleton.showAlert(Constants.NO_NETWORK)
+      Singleton.showAlert(Constants.NO_NETWORK);
       // if (!this.alertPresent) {
       //   this.alertPresent = true;
       //   Alert.alert(
@@ -553,7 +546,7 @@ const APIClient = class APIClient {
       //   );
       // }
       return new Promise((resolve, reject) => {
-        reject({ message: Constants.NO_NETWORK });
+        reject({message: Constants.NO_NETWORK});
       });
     } else {
       return new Promise(async (resolve, reject) => {
@@ -566,9 +559,8 @@ const APIClient = class APIClient {
             // 'Content-Type': 'multipart/form-data',
             Authorization: UserToken || undefined,
           },
-          body: data
+          body: data,
           // body: data != null ? this.encodeData(data) : null,
-
         })
           .then(async res => {
             try {
@@ -576,19 +568,19 @@ const APIClient = class APIClient {
               // console.warn('MM', 'res', endpoint, jsonVal);
               if (res.status != 200) {
                 if (jsonVal.message == undefined) {
-                  return reject({ message: jsonVal.data.message });
+                  return reject({message: jsonVal.data.message});
                 }
                 return reject(jsonVal);
               }
               return resolve(jsonVal);
             } catch (e) {
               // console.warn('MM', 'api error', e);
-              return reject({ message: Constants.SOMETHING_WRONG });
+              return reject({message: Constants.SOMETHING_WRONG});
             }
           })
           .catch(error => {
             // let msg = JSON.parse(error.bodyString);
-            let msg = error
+            let msg = error;
             console.warn('MM', 'msg err::::::', msg);
             if (error?.status == 400) {
               if (msg?.invalid) {
@@ -617,7 +609,7 @@ const APIClient = class APIClient {
   }
   getCards(endpoint, UserToken) {
     if (global.disconnected) {
-      Singleton.showAlert(Constants.NO_NETWORK)
+      Singleton.showAlert(Constants.NO_NETWORK);
       // if (!this.alertPresent) {
       //   this.alertPresent = true;
       //   Alert.alert(
@@ -635,7 +627,7 @@ const APIClient = class APIClient {
       //   );
       // }
       return new Promise((resolve, reject) => {
-        reject({ message: Constants.NO_NETWORK });
+        reject({message: Constants.NO_NETWORK});
       });
     } else {
       console.warn('MM', 'UserToken', UserToken);
@@ -646,9 +638,8 @@ const APIClient = class APIClient {
           method: 'GET',
           headers: {
             Accept: 'application/json',
-            'x-card-module': "d7be2982f87cwyv2db2908hew9u2b3fuyv877gcw2fb39297gf2b",
             'Content-Type': 'application/json',
-            Authorization: UserToken || undefined,
+            Authorization: UserToken ? 'Bearer ' + UserToken : '',
           },
           sslPinning: {
             certs: sslCertificateList,
@@ -658,17 +649,17 @@ const APIClient = class APIClient {
           .then(async res => {
             try {
               let jsonVal = await res.json();
-              console.warn('MM', 'res', endpoint, jsonVal);
+              console.warn('MM', 'res111111', endpoint, jsonVal);
               if (res.status != 200) {
                 if (jsonVal.message == undefined) {
-                  return reject({ message: Constants.SOMETHING_WRONG });
+                  return reject({message: Constants.SOMETHING_WRONG});
                 }
                 return reject(jsonVal);
               }
               return resolve(jsonVal);
             } catch (e) {
               console.warn('MM', 'api error', e);
-              return reject({ message: Constants.SOMETHING_WRONG });
+              return reject({message: Constants.SOMETHING_WRONG});
             }
           })
           .catch(error => {
@@ -701,7 +692,7 @@ const APIClient = class APIClient {
   }
   centralisedApi(endpoint, data, UserToken) {
     if (global.disconnected) {
-      Singleton.showAlert(Constants.NO_NETWORK)
+      Singleton.showAlert(Constants.NO_NETWORK);
       // if (!this.alertPresent) {
       //   this.alertPresent = true;
       //   Alert.alert(
@@ -719,19 +710,30 @@ const APIClient = class APIClient {
       //   );
       // }
       return new Promise((resolve, reject) => {
-        reject({ message: Constants.NO_NETWORK });
+        reject({message: Constants.NO_NETWORK});
       });
     } else {
       return new Promise((resolve, reject) => {
         console.warn('MM', '\nUserToken11  centralisedApi', UserToken);
-        console.warn('MM', '\nurl11', `${BASE_URL_CARDS_CENTRALISED}${endpoint}`);
-        console.warn('MM', '\nparams11 centralisedApi', JSON.stringify(data) + '\n');
-        console.warn('MM', '\nparams11 centralisedApi', this.encodeCentralisedData(data) + '\n');
+        console.warn(
+          'MM',
+          '\nurl11',
+          `${BASE_URL_CARDS_CENTRALISED}${endpoint}`,
+        );
+        console.warn(
+          'MM',
+          '\nparams11 centralisedApi',
+          JSON.stringify(data) + '\n',
+        );
+        console.warn(
+          'MM',
+          '\nparams11 centralisedApi',
+          this.encodeCentralisedData(data) + '\n',
+        );
         ssl_fetch(`${BASE_URL_CARDS_CENTRALISED}${endpoint}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'x-card-module': "d7be2982f87cwyv2db2908hew9u2b3fuyv877gcw2fb39297gf2b",
             Authorization: UserToken || undefined,
           },
           sslPinning: {
@@ -746,14 +748,14 @@ const APIClient = class APIClient {
               console.warn('MM', 'centralisedApi', endpoint, jsonVal);
               if (res.status != 200) {
                 if (jsonVal.message == undefined) {
-                  return reject({ message: jsonVal.data.message });
+                  return reject({message: jsonVal.data.message});
                 }
                 return reject(jsonVal);
               }
               return resolve(jsonVal);
             } catch (e) {
               console.warn('MM', 'api error', e);
-              return reject({ message: Constants.SOMETHING_WRONG });
+              return reject({message: Constants.SOMETHING_WRONG});
             }
           })
           .catch(error => {
@@ -787,7 +789,7 @@ const APIClient = class APIClient {
 
   centralisedApiget(endpoint, data, UserToken) {
     if (global.disconnected) {
-      Singleton.showAlert(Constants.NO_NETWORK)
+      Singleton.showAlert(Constants.NO_NETWORK);
       // if (!this.alertPresent) {
       //   this.alertPresent = true;
       //   Alert.alert(
@@ -805,18 +807,25 @@ const APIClient = class APIClient {
       //   );
       // }
       return new Promise((resolve, reject) => {
-        reject({ message: Constants.NO_NETWORK });
+        reject({message: Constants.NO_NETWORK});
       });
     } else {
       return new Promise((resolve, reject) => {
         console.warn('MM', '\nUserToken11  postTokenCards', UserToken);
-        console.warn('MM', '\nurl11', `${BASE_URL_CARDS_CENTRALISED}${endpoint}`);
-        console.warn('MM', '\nparams11 postTokenCards', JSON.stringify(data) + '\n');
+        console.warn(
+          'MM',
+          '\nurl11',
+          `${BASE_URL_CARDS_CENTRALISED}${endpoint}`,
+        );
+        console.warn(
+          'MM',
+          '\nparams11 postTokenCards',
+          JSON.stringify(data) + '\n',
+        );
         ssl_fetch(`${BASE_URL_CARDS_CENTRALISED}${endpoint}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
-            'x-card-module': "d7be2982f87cwyv2db2908hew9u2b3fuyv877gcw2fb39297gf2b",
             Authorization: UserToken || undefined,
           },
           sslPinning: {
@@ -831,14 +840,14 @@ const APIClient = class APIClient {
               let jsonVal = await res.json();
               if (res.status != 200) {
                 if (jsonVal.message == undefined) {
-                  return reject({ message: jsonVal.data.message });
+                  return reject({message: jsonVal.data.message});
                 }
                 return reject(jsonVal);
               }
               return resolve(jsonVal);
             } catch (e) {
               console.warn('MM', 'api error', e);
-              return reject({ message: Constants.SOMETHING_WRONG });
+              return reject({message: Constants.SOMETHING_WRONG});
             }
           })
           .catch(error => {
@@ -871,7 +880,7 @@ const APIClient = class APIClient {
   }
   postHyperCards(endpoint, data, UserToken) {
     if (global.disconnected) {
-      Singleton.showAlert(Constants.NO_NETWORK)
+      Singleton.showAlert(Constants.NO_NETWORK);
       // if (!this.alertPresent) {
       //   this.alertPresent = true;
       //   Alert.alert(
@@ -889,18 +898,21 @@ const APIClient = class APIClient {
       //   );
       // }
       return new Promise((resolve, reject) => {
-        reject({ message: Constants.NO_NETWORK });
+        reject({message: Constants.NO_NETWORK});
       });
     } else {
       return new Promise((resolve, reject) => {
         console.warn('MM', '\nUserToken11  postTokenCards', UserToken);
         console.warn('MM', '\nurl11', `${BASE_URL_SAITACARDS}${endpoint}`);
-        console.warn('MM', '\nparams11 postTokenCards', JSON.stringify(data) + '\n');
+        console.warn(
+          'MM',
+          '\nparams11 postTokenCards',
+          JSON.stringify(data) + '\n',
+        );
         ssl_fetch(`${BASE_URL_SAITACARDS}${endpoint}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'x-card-module': "d7be2982f87cwyv2db2908hew9u2b3fuyv877gcw2fb39297gf2b",
             Authorization: UserToken || undefined,
           },
           sslPinning: {
@@ -915,14 +927,14 @@ const APIClient = class APIClient {
               console.warn('MM', 'res', endpoint, jsonVal);
               if (res.status != 200) {
                 if (jsonVal.message == undefined) {
-                  return reject({ message: jsonVal.data.message });
+                  return reject({message: jsonVal.data.message});
                 }
                 return reject(jsonVal);
               }
               return resolve(jsonVal);
             } catch (e) {
               console.warn('MM', 'api error', e);
-              return reject({ message: Constants.SOMETHING_WRONG });
+              return reject({message: Constants.SOMETHING_WRONG});
             }
           })
           .catch(error => {
@@ -954,10 +966,9 @@ const APIClient = class APIClient {
     }
   }
 
-
   postHuobi(endpoint, data, UserToken) {
     if (global.disconnected) {
-      Singleton.showAlert(Constants.NO_NETWORK)
+      Singleton.showAlert(Constants.NO_NETWORK);
       // if (!this.alertPresent) {
       //   this.alertPresent = true;
       //   Alert.alert(
@@ -975,7 +986,7 @@ const APIClient = class APIClient {
       //   );
       // }
       return new Promise((resolve, reject) => {
-        reject({ message: Constants.NO_NETWORK });
+        reject({message: Constants.NO_NETWORK});
       });
     } else {
       return new Promise((resolve, reject) => {
@@ -999,14 +1010,14 @@ const APIClient = class APIClient {
               console.log('MM', 'res', endpoint, res.status);
               if (res.status != 200) {
                 if (jsonVal.message == undefined) {
-                  return reject({ message: jsonVal.data.message });
+                  return reject({message: jsonVal.data.message});
                 }
                 return reject(jsonVal);
               }
               return resolve(jsonVal);
             } catch (e) {
               console.log('MM', 'api error', e);
-              return reject({ message: Constants.SOMETHING_WRONG });
+              return reject({message: Constants.SOMETHING_WRONG});
             }
           })
           .catch(error => {
@@ -1034,27 +1045,23 @@ const APIClient = class APIClient {
     }
   }
 
-
-
-
-
   encode_saitamask_data = data => {
     return new Promise((resolve, reject) => {
       const second = new NodeRSA(Constants.SAITAMASK_WALLET_KEY);
-      second.setOptions({ encryptionScheme: 'pkcs1' });
+      second.setOptions({encryptionScheme: 'pkcs1'});
       const enc = second.encrypt(data, 'base64');
       const dataa = {
         dataString: enc,
       };
       // console.warn('MM','enc::::', dataa);
       return resolve(JSON.stringify(dataa));
-    })
+    });
   };
 
   encodeData = data => {
     // return JSON.stringify(data)
     const second = new NodeRSA(Constants.CARD_KEY);
-    second.setOptions({ encryptionScheme: 'pkcs1' });
+    second.setOptions({encryptionScheme: 'pkcs1'});
     const enc = second.encrypt(data, 'base64');
     const dataa = {
       dataString: enc,
@@ -1064,7 +1071,7 @@ const APIClient = class APIClient {
   };
   encodeCentralisedData = data => {
     const second = new NodeRSA(Constants.CENTRALIZED_KEY);
-    second.setOptions({ encryptionScheme: 'pkcs1' });
+    second.setOptions({encryptionScheme: 'pkcs1'});
     const enc = second.encrypt(data, 'base64');
     const dataa = {
       dataString: enc,
@@ -1075,7 +1082,7 @@ const APIClient = class APIClient {
 
   decryption = async data => {
     const key = new NodeRSA(Constants.BANK_DETAIL_PRIVATEKEY);
-    key.setOptions({ encryptionScheme: 'pkcs1' });
+    key.setOptions({encryptionScheme: 'pkcs1'});
     const decrypted = await key.decrypt(data, 'utf8');
     let originalText = await JSON.parse(decrypted);
     return originalText;
@@ -1091,14 +1098,300 @@ const APIClient = class APIClient {
         Constants.diamond_access_token,
       );
       await Singleton.getInstance().removeItemNew(Constants.black_access_token);
-      getCurrentRouteName() != 'Dashboard' &&
-        reset(NavigationStrings.Main)
+      getCurrentRouteName() != 'Dashboard' && reset(NavigationStrings.Main);
     } catch (error) {
       console.warn('MM', '__onCardTokenExpired__>>', error);
-      getCurrentRouteName() != 'Dashboard' &&
-        reset(NavigationStrings.Main);
+      getCurrentRouteName() != 'Dashboard' && reset(NavigationStrings.Main);
     }
   };
+  // ************************************************* Get Card **************************************************
+  async getCardVault(endpoint, UserToken) {
+    console.log('url11', `${VAULT_CARD_URL}${endpoint}`);
+    console.log('UserToken', UserToken);
+    if (!global.isConnected) {
+      return new Promise((resolve, reject) => {
+        reject({message: Constants.NO_NETWORK});
+      });
+    } else {
+      return new Promise(async (resolve, reject) => {
+        fetch(`${VAULT_CARD_URL}${endpoint}`, {
+          method: 'GET',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            Authorization: UserToken ? 'Bearer ' + UserToken : '',
+            X_MERCHANT_ID: Singleton.getInstance().xMerchantId,
+          },
+        })
+          .then(async res => {
+            try {
+              let jsonVal = await res.json();
+              if (jsonVal.code == 409) {
+                this.refreshTheToken()
+                  .then(async res => {
+                    const UserToken = await Singleton.getInstance().newGetData(Constants.access_token);
+                    const response = await this.get(endpoint, UserToken);
+                    return resolve(response);
+                    // this.get(endpoint, UserToken)
+                  })
+                  .catch(err => {
+                    console.log('chk refresh errrrrget', err);
+                  });
+              } else {
+                if (!res.ok) {
+                  if (jsonVal.message == undefined) {
+                    return reject({message: Constants.SOMETHING_WRONG});
+                  }
+                  return reject(jsonVal);
+                }
+                return resolve(jsonVal);
+              }
+            } catch (e) {
+              return reject({message: Constants.SOMETHING_WRONG});
+            }
+          })
+          .catch(reject);
+      });
+    }
+  }
+
+  // ************************************************* Post **************************************************
+  async postCardVault(endpoint, data, UserToken, headers = {}) {
+    if (!global.isConnected) {
+      return new Promise((resolve, reject) => {
+        reject({message: Constants.NO_NETWORK});
+      });
+    } else {
+      return new Promise(async (resolve, reject) => {
+        console.log('UserToken11 post', UserToken);
+        console.log('url11 post', `${VAULT_CARD_URL}${endpoint}`);
+        console.log('params11 post', JSON.stringify(data));
+        // console.log('SELECTED_LANGUAGE', await getData(Constants.SELECTED_LANGUAGE));
+        console.log(
+          'encodeData:::post',
+          data != null ? this.encodeData(data) : null,
+        );
+        const config = {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+            Authorization: UserToken ? 'Bearer ' + UserToken : '',
+            ...headers,
+        
+          },
+          body: data,
+        };
+        console.log('config::::::', config);
+        try {
+          fetch(`${VAULT_CARD_URL}${endpoint}`, config)
+            .then(async res => {
+              console.log('res::::', res);
+              try {
+                const jsonVal = await res.json();
+                console.log('Json Response:endpoint', endpoint, jsonVal);
+
+                if (jsonVal.error) {
+                  if (jsonVal.message == undefined) {
+                    return reject({message: Constants.SOMETHING_WRONG});
+                  }
+                  return reject({message: jsonVal?.message});
+                } else {
+                  return resolve(jsonVal);
+                }
+              } catch (e) {
+                console.log('api error99', e);
+                return reject({message: Constants.SOMETHING_WRONG});
+              }
+            })
+            .catch(err => {
+              console.log('chk post errr::::', err);
+              reject(err);
+            });
+        } catch (e) {
+          console.log('eroor:::::::::', e);
+        }
+      });
+    }
+  }
+    // ************************************************* PUT **************************************************
+    async putCard(endpoint, data, UserToken,headers) {
+      if (!global.isConnected) {
+           return new Promise((resolve, reject) => {
+                reject({ message: Constants.NO_NETWORK });
+           });
+      } else {
+           return new Promise(async (resolve, reject) => {
+                console.log('UserToken11 post', UserToken);
+                console.log('url11 post', `${BASE_URL_SAITACARDS}${endpoint}`);
+                console.log('params11 post', JSON.stringify(data));
+                // console.log('SELECTED_LANGUAGE', await getData(Constants.SELECTED_LANGUAGE));
+                console.log('encodeData:::post', data != null ? this.encodeData(data) : null);
+                try {
+                     fetch(`${BASE_URL_SAITACARDS}${endpoint}`, {
+                          method: 'PUT',
+                          headers: {
+                               'Content-Type': 'application/json',
+                               'Authorization': UserToken ? 'Bearer ' + UserToken : '',
+                               ...headers
+                          },
+
+                          body: data != null ? this.encodeData(data) : null,
+                     }).then(async res => {
+                          console.log("res::::", res);
+                          try {
+                               const jsonVal = await res.json();
+                               console.log('Json Response:endpoint', endpoint, jsonVal);
+                               if (jsonVal.code == 409) {
+                                    this.refreshTheToken().then(async res => {
+                                         console.log('refresh token resp:::::::')
+                                         const response = await this.postToken(endpoint, data);
+                                         return resolve(response);
+                                         //  this.postToken(endpoint, data)
+                                    }).catch(err => {
+                                         console.log('chk refresh errrrr post', err);
+                                         return reject(err);
+                                    })
+                               } else {
+                                     if (jsonVal.message?.toLowerCase()?.includes('access token')) {
+                                         navigationRef.navigate('CardSplash')
+                                         return reject({ message: Constants.ACCESS_TOKEN_EXPIRED });
+                                    }
+                                    if (!jsonVal.status) {
+                                         if (jsonVal.message == undefined) {
+                                              return reject({ message: Constants.SOMETHING_WRONG });
+                                         }
+                                         return reject(jsonVal);
+                                    } else {
+                                         return resolve(jsonVal);
+                                    }
+                               }
+                          } catch (e) {
+                               console.log('api error99', e);
+                               return reject({ message: Constants.SOMETHING_WRONG });
+                          }
+                     }).catch(err => {
+                          console.log('chk post errr::::', err);
+                          reject(err)
+                     });
+                } catch (e) {
+                     console.log("eroor:::::::::", e);
+                }
+           });
+      }
+ }
+
+
+  async putCardVault(endpoint, data, UserToken, headers = {}) {
+    if (!global.isConnected) {
+      return new Promise((resolve, reject) => {
+        reject({message: Constants.NO_NETWORK});
+      });
+    } else {
+      return new Promise(async (resolve, reject) => {
+        console.log('UserToken11 put', UserToken);
+        console.log('url11 put', `${VAULT_CARD_URL}${endpoint}`);
+        console.log('params11 put', JSON.stringify(data));
+        // console.log('SELECTED_LANGUAGE', await getData(Constants.SELECTED_LANGUAGE));
+        console.log(
+          'encodeData:::put',
+          data != null ? this.encodeData(data) : null,
+        );
+        const config = {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+            'X-Merchant-ID': Singleton.getInstance().xMerchantId,
+            Authorization: UserToken ? 'Bearer ' + UserToken : '',
+            ...headers,
+          },
+          body: data,
+        };
+        console.log('config::::::', config);
+        try {
+          fetch(`${VAULT_CARD_URL}${endpoint}`, config)
+            .then(async res => {
+              console.log('res::::', JSON.stringify(res));
+              try {
+                const jsonVal = await res.json();
+                console.log('Json Response:endpoint', endpoint, jsonVal);
+
+                if (jsonVal.error) {
+                  if (jsonVal.message == undefined) {
+                    return reject({message: Constants.SOMETHING_WRONG});
+                  }
+                  return reject({message: jsonVal?.message});
+                } else {
+                  return resolve(jsonVal);
+                }
+              } catch (e) {
+                console.log('api error99', e);
+                return reject({message: Constants.SOMETHING_WRONG});
+              }
+            })
+            .catch(err => {
+              console.log('chk put errr::::', err);
+              reject(err);
+            });
+        } catch (e) {
+          console.log('eroor:::::::::', e);
+        }
+      });
+    }
+  }
+  async getCard2(endpoint, UserToken) {
+    console.log('url11aqdq', `${BASE_URL_SAITACARDS}${endpoint}`);
+    console.log('UserTokenadsfasd', UserToken);
+    if (!global.isConnected) {
+      return new Promise((resolve, reject) => {
+        reject({message: Constants.NO_NETWORK});
+      });
+    } else {
+      return new Promise(async (resolve, reject) => {
+        fetch(`${BASE_URL_SAITACARDS}${endpoint}`, {
+          method: 'GET',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            'content-language': 'en',
+            Authorization: UserToken,
+          },
+        })
+          .then(async res => {
+            console.log("res:::::3234234",res);
+            try {
+              let jsonVal = await res.json();
+              if (jsonVal.code == 409) {
+                this.refreshTheToken()
+                  .then(async res => {
+                    const UserToken = await Singleton.getInstance().newGetData(
+                      Constants.access_token,
+                    );
+                    const response = await this.get(endpoint, UserToken);
+                    return resolve(response);
+                    // this.get(endpoint, UserToken)
+                  })
+                  .catch(err => {
+                    // console.log('chk refresh errrrrget', err);
+                  });
+              } else {
+                if (!res.ok) {
+                  if (jsonVal.message == undefined) {
+                    return reject({message: Constants.SOMETHING_WRONG});
+                  }
+                  return reject(jsonVal);
+                }
+                return resolve(jsonVal);
+              }
+            } catch (e) {
+              return reject({message: Constants.SOMETHING_WRONG});
+            }
+          })
+          .catch(reject);
+      });
+    }
+  }
 };
 
 export { APIClient };

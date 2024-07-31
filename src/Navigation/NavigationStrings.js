@@ -130,4 +130,7 @@ export const NavigationStrings = {
   Trade:'Trade',
   Wallet:'Wallet',
   DeFi:'DeFi',
+  CardKyc:'CardKyc',
+  AfterApplyDetails:'AfterApplyDetails',
+  VaultTransactionHistory:'VaultTransactionHistory'
 };

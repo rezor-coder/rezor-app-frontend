@@ -19,7 +19,7 @@ const CardImageBgCom = ({
       activeOpacity={1}
       disabled={disabled}
       onPress={onPress}>
-      <Image
+      <FastImage
         source={cardImage}
         style={styles.cardImageStyle}
       />

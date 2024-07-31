@@ -7,17 +7,16 @@ import SmoothPinCodeInput from 'react-native-smooth-pincode-input';
 import { useDispatch } from 'react-redux';
 import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
 import * as Constants from '../../../Constant';
-import { NavigationStrings } from '../../../Navigation/NavigationStrings';
-import { forgetCardOtp, forgetOtpConfirm, forgetOtpSend, forgetPasswordConfirm, verifyForgotOtpCard, } from '../../../Redux/Actions/SaitaCardAction';
+import { forgetOtpSend, forgetPasswordConfirm, verifyVaultForgotOtpCard } from '../../../Redux/Actions/SaitaCardAction';
 import Singleton from '../../../Singleton';
 import { numberValidation, validatePassword } from '../../../Utils/Validation';
 import { areaDimen, heightDimen } from '../../../Utils/themeUtils';
 import { countryData } from '../../../countryCodes';
-import { goBack, navigate } from '../../../navigationsService';
+import { goBack } from '../../../navigationsService';
 import { Colors, Fonts, Images } from '../../../theme';
 import GradientButton from '../../common/GradientButton';
 import TextInputWithLabel from '../../common/TextInputWithLabel';
-import WraperContainer from '../../common/WraperContainer';
+import WrapperContainer from '../../common/WrapperContainer';
 import { BasicButton, BorderLine, MainStatusBar, SimpleHeader, SimpleHeaderNew, Wrap } from '../../common/index';
 import CountryCodes from '../CountryCodes/CountryCodes';
 import Loader from '../Loader/Loader';
@@ -96,115 +95,8 @@ useEffect(() => {
 
   // }, []);
 
-  const proceedForgot = () => {
-    if (email == "") {
-      Singleton.showAlert('Email field is required.');
-      return
-    }
-    if (Constants.EMAIL_REGEX.test(email) == false) {
-      Singleton.showAlert("Please provide valid email.")
-      return
-    }
-
-    setisLoading(true);
-    let data = {
-      email: email,
-    };
-    dispatch(forgetCardOtp({ data })).then(res => {
-      setisLoading(false);
-      //console.warn('MM',"proceedForgot res::::::::", res);
-      if (res.status) {
-        setshowTime(true)
-        startTimer()
-        setPin('');
-        setPinModal(true)
-      }
-
-    }).catch(err => {
-      //console.warn('MM',"proceedForgot eerrr:::::::::", err);
-      setisLoading(false);
-      Singleton.showAlert(err.message)
-    });
-  }
-
-  const resendOtp = () => {
-
-    setisLoading(true);
-    let data = {
-      email: email,
-    };
-    dispatch(forgetCardOtp({ data })).then(res => {
-      setisLoading(false);
-      //console.warn('MM',"resendOtp res::::::::", res);
-      if (res.status) {
-        setshowTime(true)
-        startTimer()
-      }
-
-    }).catch(err => {
-      //console.warn('MM',"resendOtp eerrr:::::::::", err);
-      setisLoading(false);
-      Singleton.showAlert(err.message)
-    });
-  }
-  const verifyOtpCard = () => {
-    if (Pin.length < 6) {
-      Singleton.showAlert('Enter valid Pin.');
-      return
-    }
-    setisLoading(true);
-    let data = {
-      email: email,
-      otp: Pin,
-      otp_type: "forget_pwd"
-    };
-    dispatch(verifyForgotOtpCard({ data })).then(res => {
-      setisLoading(false);
-      //console.warn('MM',"verifyOtpCard res::::::::", res);
-      if (res.status) {
-        setPinModal(false)
-        let dataObjee = {
-          email: email,
-          otp: Pin,
-        };
-        // alert('ddddddwwww')
-        navigate(NavigationStrings.SaitaCardChangePassword,{ dataObj: dataObjee })
 
 
-      }
-
-    }).catch(err => {
-      //console.warn('MM',"verifyOtpCard eerrr:::::::::", err);
-      setisLoading(false);
-      Singleton.showAlert(err.message)
-    });
-  }
-
-
-  const startTimer = () => {
-    //console.warn('MM',"startTimer1111", timerRef);
-    const timerId = setInterval(() => {
-      //console.warn('MM',"startTimer222", timerRef);
-      timerRef.current -= 1;
-      if (timerRef.current < 0) {
-        //console.warn('MM',"startTimer333", timerRef);
-        clearInterval(timerId);
-        setTime(60)
-        timerRef.current = 60
-      }
-      else {
-        //console.warn('MM',"startTimer4444", timerRef);
-        if (timerRef.current == 0) {
-          //console.warn('MM',"startTimer5555", timerRef);
-          setshowTime(false)
-          setTime(60)
-        }
-        //console.warn('MM',"startTimer6666", timerRef);
-        setTime(timerRef.current);
-      }
-    }, 1000);
-
-  }
 
   const onPressPhoneOtpSend = () => {
     const fields = [
@@ -239,7 +131,7 @@ useEffect(() => {
         setOldNumber(phoneNumber);
         setisLoading(false);
         setSeconds(40);
-        setPhoneMatchOtp(res?.data?.otp);
+        setPhoneMatchOtp(true);
         setIsActive(true);
         setButtonDisable(false);
       })
@@ -255,26 +147,23 @@ useEffect(() => {
       Singleton.showAlert('Please enter otp');
       return;
     }
-    if (Number(phoneOtp) !== Number(phoneMatchOtp)) {
-      Singleton.showAlert('Please enter valid otp');
-      return;
-    }
+
     let data ={
       phone:`${countryCode}${phoneNumber}`,
-      code:phoneOtp
+      code:`${phoneOtp}`
     }
     
     setIsActive(false);
     setisLoading(true);
-    forgetOtpConfirm({data})
+    verifyVaultForgotOtpCard({data})
       .then(res => {
         setisLoading(false);
-        setButtonDisable(true);
+        setButtonDisable(false);
         setStatus(1);
         setSeconds(0);
       })
       .catch(error => {
-        Singleton.showAlert(error.message);
+        Singleton.showAlert(error);
         setisLoading(false);
         setSeconds(0);
       });
@@ -315,6 +204,7 @@ useEffect(() => {
     let data ={
       phone:`${countryCode}${phoneNumber}`,
       password: password,
+      code:`${phoneOtp}`
     }
     forgetPasswordConfirm({data})
       .then(res => {
@@ -325,7 +215,7 @@ useEffect(() => {
       .catch(error => {
         console.log('res::::11', error);
         setisLoading(false);
-        Singleton.showAlert(error.message);
+        Singleton.showAlert(error);
       });
   };
 
@@ -423,7 +313,7 @@ useEffect(() => {
   }
 
   return (
-    <WraperContainer>
+    <WrapperContainer>
         {/* <KeyboardAwareScrollView style={{ height: windowHeight }} showsVerticalScrollIndicator={false} enableOnAndroid={true} keyboardShouldPersistTaps={'always'} bounces={false}> */}
 
             <MainStatusBar
@@ -589,25 +479,13 @@ useEffect(() => {
                   : onPressSubmit();
               }}
             />
-            {/* <BasicButton
-              onPress={() => proceedForgot()}
-              btnStyle={[
-                styles.btnStyle,
-                {
-                  marginBottom:
-                    Platform.OS == 'ios' ? (hasNotch ? 80 : 20) : 20,
-                },
-              ]}
-              customGradient={[styles.customGrad]}
-              text="Submit"
-            /> */}
             
         <Modal
           animationType="slide"
           transparent={true}
           visible={countryListModal}
           onRequestClose={() => setCountryListModal(false)}>
-          <WraperContainer>
+          <WrapperContainer>
             <CountryCodes
               List={countryData}
               twoItems={true}
@@ -618,112 +496,12 @@ useEffect(() => {
               }}
               closeModal={() => setCountryListModal(false)}
             />
-          </WraperContainer>
+          </WrapperContainer>
         </Modal>
         {isLoading && <Loader />}
 
-        {/* </KeyboardAwareScrollView> */}
-        {/* *********************************************************** MODAL FOR PIN ********************************************************************** */}
-        {/* <Modal
-          animationType="slide"
-          transparent={true}
-          visible={PinModal}
-          onRequestClose={() => {
-            setPinModal(false)
-            // Singleton.getInstance().isOtpModal = false;
-          }
-          }
-          >
-          <Wrap
-            style={{ backgroundColor: ThemeManager.colors.backgroundColor }}>
-            <SimpleHeader
-              back={false}
-              backPressed={() => {
-                setPinModal(false)
-                // Singleton.getInstance().isOtpModal = false;
-              }}
-              title={LanguageManager.otp}
 
-            />
-            <BorderLine
-              borderColor={{ backgroundColor: ThemeManager.colors.chooseBorder }}
-            />
-            <View style={{ alignItems: 'center', marginTop: 30 }}>
-              <Text
-                style={{
-                  fontSize: 13,
-                  fontFamily: Fonts.semibold,
-                  color: ThemeManager.colors.textColor,
-                }}>
-                {LanguageManager.otptext}
-              </Text>
-            </View>
-            <View style={{ alignItems: 'center', marginTop: 20, flex: 1, }}>
-              <SmoothPinCodeInput
-                autoFocus={true}
-                cellSize={42}
-                codeLength={6}
-                cellStyleFocused={{ borderColor: ThemeManager.colors.textColor, }}
-                cellStyle={[styles.cellStyle, { borderColor: ThemeManager.colors.inputBoxColor },]}
-                textStyle={[styles.inputText, { color: ThemeManager.colors.textColor },]}
-                value={Pin}
-                onTextChange={text => {
-                  if (Constants.NUMBER_ONLY_REGEX.test(text)) {
-                    setPin(text);
-
-                  }
-                }}
-              />
-
-
-
-              {showTime == false && <TouchableOpacity
-                onPress={() => {
-                  resendOtp();
-                }}>
-                <Text
-                  style={[
-                    styles.numbertitleStyle,
-                    { color: Colors.red_dark },
-                  ]}>
-                  {' '}
-                  Resend Code
-                </Text>
-              </TouchableOpacity>}
-              {showTime && <View
-              >
-                <Text
-                  style={[
-                    styles.numbertitleStyle,
-                    { color: Colors.red_dark },
-                  ]}>
-                  {' '}
-                  {`00:${time}`}
-                </Text>
-              </View>}
-
-
-
-            </View>
-
-            <View style={{ alignItems: 'center' }}>
-              <BasicButton
-                btnStyle={{
-                  marginVertical: 20,
-                  height: 50,
-                  width: '84%',
-                  borderRadius: 10,
-                }}
-                onPress={() => verifyOtpCard()}
-                customGradient={{ borderRadius: 12, height: 50, }}
-                text={LanguageManager.proceed}
-                textStyle={{ fontSize: 16, fontFamily: Fonts.semibold }}
-              />
-            </View>
-          </Wrap>
-          {isLoading && <Loader />}
-        </Modal> */}
-    </WraperContainer>
+    </WrapperContainer>
   );
 };
 

@@ -105,6 +105,9 @@ let routerAddressCards =
 // '0x12f939E4FB9d9ccd955a1793A39D87672649706f'; // upto 3 cards ( old production)
 
 export default class Singleton {
+  xMerchantId='';
+  xVErsion='';
+  fingerPrintSeed='';
   access_token = '';
   access_token_cards = '';
   defaultEthAddress = '';

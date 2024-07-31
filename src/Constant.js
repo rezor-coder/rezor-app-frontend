@@ -42,6 +42,8 @@ export const isFirstTime = false;
 export const network = ismainnet ? 'mainnet' : 'testnet';
 export const isQA = false;
 export const Langauage = 'language';
+export const Notification = 'notification';
+export const History = 'history';
 export const LangauageIndex = 'languageindex';
 export const access_token = 'access_token';
 export const refresh_token = 'refresh_token';
@@ -93,7 +95,11 @@ export const UPDATE_PRIVATE_KEY = 'updateprivatekey';
 export const CARD_CURRENCY = 'card_currency';
 export const PRIVATE_KEY_WALLET_COIN_FAMILY = 'private_key_wallet_coin_family';
 export const FAVORITE = 'favorite';
-
+export const CARD_TOKEN = 'card_token';
+export const CARD_KYC_STATUSES = {
+  undefined: 'UNDEFINED',
+}
+export const ACCESS_TOKEN_EXPIRED = "Access token expired";
 export const ANDROID_APP_ID =
   'https://play.google.com/store/apps/details?id=com.saitapro';
 export const IOS_APP_ID = 'https://apps.apple.com/in/app/saitapro/id1636523777';
@@ -393,3 +399,7 @@ ScC/xR+ChGQMepwx2APkYOT2zvp2RdhqARKWViUf/nM=
 // -----END PUBLIC KEY-----
 // `
 export const USER_DATA = 'userData'
+export const CARD_PUBLIC_KEY = `MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCaNjkO5B78o2HZxecBs6Xn7KT2NDHrwid8aACEfp+1v7BLGkdDcgRhzrm7AHvOWVJ8U/a8xhbnWv547UYjOzI/+HqDCQ/sBenABF/3yzICL+5DukCtj970JIXA3xSG/ClnYuyp3LejlmPrMLRFHmmToRkSudOv+/0hs4+x/WtDiwIDAQAB`
+export const CARD_PVT_KEY = `-----BEGIN PRIVATE KEY-----
+MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJo2OQ7kHvyjYdnF5wGzpefspPY0MevCJ3xoAIR+n7W/sEsaR0NyBGHOubsAe85ZUnxT9rzGFuda/njtRiM7Mj/4eoMJD+wF6cAEX/fLMgIv7kO6QK2P3vQkhcDfFIb8KWdi7Knct6OWY+swtEUeaZOhGRK506/7/SGzj7H9a0OLAgMBAAECgYATzaLGJsVT7CdEsAVaUpebkOgeNdWzUNuBPlnSqfAYhuU8v8MnBh1J8iInwYgkl5PgI2gsFcQbMbQ8EzxOieuJ18TvNRvEHPxfYBhG7ql/3SL482k6W6uxkP1a/m9vAkUGRZK2+BoFhcTBPCkvm6JQoA53j374KaYjPT8x7Lx1AQJBAOpPV3XZYPU0KJYer7aiUHgol3F8WmGr/x2wFYKwVX1wBXQXj1zrzdnYGvZB22uoIB7ZILFoNwzrUBLGP9+Sc3UCQQCofLjlne2Y9+Rve3iJ10hj+ZBZP4ae7XG4gpE1I4qCAiBk00MNZLp89qwvbDbviJ89Ksk2dPkojQvtnDVnYvr/AkEAwuoZwYmBpLktAiSo228PLcXmpZtivFmOMi4m1r7Ff0HO55IpyozGg2/Ijg6e72G+xqqtDae6E980j0moHN4BeQJAHIytw/LDzPTMV3ujjC/Xi2FBbW4PQKTZbTtqoYd5M9hqZstJhF56HyypNovurx4GZZX3bGvbwFxOFiAvCGrEPwJARzVfPEeCk47er4oAc4gvEULR/k3G07cbD5gAwlFA+fPoDQfwFUno7y6Ze1+fauy/iAeso8zyHVMh424e7NbAxw==
+-----END PRIVATE KEY-----`

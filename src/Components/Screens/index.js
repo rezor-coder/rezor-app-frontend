@@ -99,12 +99,9 @@ import SaitaCardDepositQr from './SaitaCardDepositQr';
 import SaitaCardTransaction from './SaitaCardTransaction';
 import KycShufti from './KycShufti';
 import CountryCodes from './CountryCodes';
-import SaitaCardLogin from './SaitaCardLogin';
 import NfcDemo from './NfcDemo';
 import CardHistoryDetail from './CardHistoryDetail';
 import SaitaCardForgot from './SaitaCardForgot';
-import CardSetting from './CardSetting';
-import SaitaCardNewPassword from './SaitaCardNewPassword';
 import SaitaCardChangePassword from './SaitaCardChangePassword';
 import SendBTC from './SendBTC/SendBTC';
 import SendMATIC from './SendMATIC/SendMATIC';
@@ -118,14 +115,17 @@ import WelcomeScreen from './Welcome/WelcomeScreen';
 import DefiAccessmainIOS from './DefiAccessMain/DefiAccessmainIOS';
 
 // ----------------------------------------------------------------
-import SaitaCardDashBoard from './SaitaCardDashBoard/SaitaCardDashBoard';
-import CardInfo from './CardInfo/CardInfo';
-import CardManage from './CardManage/CardManage';
-import ApplyCardWelcomeScreen from './ApplyCardWelcomeScreen/ApplyCardWelcomeScreen';
-import ApplyCard from './ApplyCard/ApplyCard';
-import DepositScreen from './DepositScreen/DepositScreen';
-import RegisterNow from './RegisterNow/RegisterNow';
-import UserDetail from './UserDetail/UserDetail';
+import SaitaCardDashBoard from './Cards/SaitaCardDashBoard/SaitaCardDashBoard';
+import CardInfo from './Cards/CardInfo/CardInfo';
+import CardManage from './Cards/CardManage/CardManage';
+import ApplyCardWelcomeScreen from './Cards/ApplyCardWelcomeScreen/ApplyCardWelcomeScreen';
+import ApplyCard from './Cards/ApplyCard/ApplyCard';
+import DepositScreen from './Cards/DepositScreen/DepositScreen';
+import RegisterNow from './Cards/RegisterNow/RegisterNow';
+import UserDetail from './Cards/UserDetail/UserDetail';
+import SaitaCardLogin from './Cards/SaitaCardLogin';
+import CardSetting from './Cards/CardSetting/CardSetting';
+import SaitaCardNewPassword from './Cards/SaitaCardNewPassword/SaitaCardNewPassword';
 
 // import Stake from './StakeScreen/Stake';
 export {

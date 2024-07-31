@@ -83,7 +83,7 @@ class CountryCodes extends Component {
           <SafeAreaView style={CountryCodeStyle.mainViewStyle}>
             <View style={{ width: '100%', }}>
               <SimpleHeader
-                title={"Country"}
+                title={this.props?.title || "Country"}
                 backImage={ThemeManager.ImageIcons.iconBack}
                 titleStyle={{ marginRight: 30 }}
                 imageShow

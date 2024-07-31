@@ -189,7 +189,7 @@ const SendETH = props => {
   // };
   const getTotalFee = async () => {
     try {
-      setisLoading(true);
+      // setisLoading(true);
       // const Totalfee = await getTotalGasFee();
       let token = await Singleton.getInstance().newGetData(
         Constants.access_token,

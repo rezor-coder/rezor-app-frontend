@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, { useEffect, useState } from 'react';
+import React, { memo, useEffect, useState } from 'react';
 import { Text, View } from 'react-native';
 import {
   FlatList
@@ -20,6 +20,8 @@ import {
 } from '../../common';
 import HistoryItem from '../../common/HistoryItem';
 import Loader from '../Loader/Loader';
+import * as Constants from '../../../Constant';
+import { isEmpty } from 'lodash';
 
 const History = props => {
   const dispatch = useDispatch();
@@ -27,7 +29,7 @@ const History = props => {
   const [LoadList, setLoadList] = useState(false);
   const [Page, setpage] = useState(1);
   const [limit, setlimit] = useState(25);
-  const [isLoading, setisLoading] = useState(true);
+  const [isLoading, setisLoading] = useState(false);
   const [selectedCoinData, setselectedCoinData] = useState('');
   const [trx_page, settrx_page] = useState(1);
   const [trx_limit, settrx_limit] = useState(25);
@@ -38,15 +40,27 @@ const History = props => {
   const {refreshWallet} = useSelector(state => state?.walletReducer);
 
   useEffect(() => {
-    getHistory();
-    let focus = props.navigation.addListener('focus', () => {
-      getHistory();
-    });
+    Singleton.getInstance()
+      .newGetData(Constants.History)
+      .then((res) => {
+        let temp = !!res ? res : '[]'
+        console.log(res,'resresresres');
+        setisLoading(!isEmpty(JSON.parse(temp)) ? false : true)
+        settransaction_List(!isEmpty(JSON.parse(temp)) ? JSON.parse(temp) :[])
+        getHistory();
+      }).catch(error => {
+        console.log(error, 'errorerror');
+      })
 
-    return () => {
-      focus();
-    };
-  }, [refreshWallet]);
+    
+    // let focus = props.navigation.addListener('focus', () => {
+    //   getHistory();
+    // });
+
+    // return () => {
+    //   focus();
+    // };
+  }, []);
 
   function getHistory() {
     Singleton.getInstance()
@@ -146,11 +160,12 @@ const History = props => {
   const getTransactions = data => {
     let access_token = Singleton.getInstance().access_token;
     // alert(transaction_List.length)
-    setisLoading(transaction_List.length > 0 ? false : true),
+    // setisLoading(transaction_List.length > 0 ? false : true),
       setTimeout(() => {
         dispatch(getTransactionList({data, access_token}))
           .then(response => {
             console.warn('MM', 'response===History====', response?.data);
+            Singleton.getInstance().newSaveData(Constants.History,JSON.stringify(response?.data))
             settransaction_List(response?.data);
             setTotalRecordd(response.meta.total);
             setLoadList(true);
@@ -311,4 +326,4 @@ const History = props => {
   );
 };
 
-export default History;
+export default memo(History);

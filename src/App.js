@@ -16,7 +16,7 @@ import {
 import KeyboardManager from 'react-native-keyboard-manager';
 import { Provider } from 'react-redux';
 import ReduxThunk from 'redux-thunk';
-import reducers from './Redux/Reducers';
+import reducers, { persistor, store } from './Redux/Reducers';
 import { createStore, applyMiddleware } from 'redux';
 import FlashMessage from 'react-native-flash-message';
 import { firebase } from '@react-native-firebase/messaging';
@@ -41,12 +41,15 @@ import { cardUserdata } from './Redux/Actions';
 import Routes from './Navigation/Routes';
 import { getCurrentRouteName, navigate } from './navigationsService';
 import { NavigationStrings } from './Navigation/NavigationStrings';
-
+import { PersistGate } from 'redux-persist/integration/react'
+import {
+  QueryClient,
+  QueryClientProvider,
+} from '@tanstack/react-query'
 global.alert = false
-export const store = createStore(reducers, {}, applyMiddleware(ReduxThunk));
 let previousState = AppState.currentState;
 const App = () => {
-
+  const queryClient = new QueryClient()
   useEffect(() => {
     Singleton.getInstance()
       .newGetData(Constants.USER_DATA)
@@ -207,32 +210,33 @@ const App = () => {
     KeyboardManager.setToolbarPreviousNextButtonEnable(true);
   }
   return (
-    <>
-    {Platform.OS == 'ios' ?
-    <Provider store={store}>
-      <ApproveRequestModal
-        ref={ref => (Singleton.getInstance().walletConnectRef = ref)}
-        store={store}
-      />
-      <Routes/>
-      {/* <RouterComponent /> */}
-      <FlashMessage position="top"
-      />
-    </Provider>
-    :
-    <AppView>
-      <Provider store={store}>
-        <ApproveRequestModal
-          ref={ref => (Singleton.getInstance().walletConnectRef = ref)}
-          store={store}
-        />
-            <Routes/>
-        {/* <RouterComponent /> */}
-        <FlashMessage position="top"
-        />
-      </Provider>
-    </AppView>
-  }</>
+    <QueryClientProvider client={queryClient}>
+      {Platform.OS == 'ios' ? (
+        <Provider store={store}>
+          <PersistGate loading={null} persistor={persistor}>
+            <ApproveRequestModal
+              ref={ref => (Singleton.getInstance().walletConnectRef = ref)}
+              store={store}
+            />
+            <Routes />
+            <FlashMessage position="top" />
+          </PersistGate>
+        </Provider>
+      ) : (
+        <AppView>
+            <Provider store={store}>
+              <PersistGate loading={null} persistor={persistor}>
+                <ApproveRequestModal
+                  ref={ref => (Singleton.getInstance().walletConnectRef = ref)}
+                  store={store}
+                />
+                <Routes />
+                <FlashMessage position="top" />
+              </PersistGate>
+            </Provider>
+        </AppView>
+      )}
+    </QueryClientProvider>
   );
 };
 

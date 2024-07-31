@@ -18,12 +18,47 @@ import {
     REQUEST_VAULT_CARD,
     FORGET_OTP_SEND,
     FORGET_OTP_CONFIRM,
-    FORGET_PASSWORD_CONFIRM
+    FORGET_PASSWORD_CONFIRM,
+    LOG_OUT,
+    CHANGE_PASSWORD,
+    GET_CUSTOMER_PROFILE,
+    KYC_DATA,
+    ADDITIONAL_INFO,
+    cardRequestAddress,
+    FINISH_KYC,
+    requestCard,
+    CREATE_WALLETS,
+    BlockCard,
+    unblockCard,
+    otpForCardUnblock,
+    otpForCardBlock,
+    getValutWalletList,
+    GET_WALLET_LIST,
+    otpForCardDetails,
+    otpForCardDetailsCode,
+    CARD_TRANSACTION_HISTORY,
+    USER_CARD_LIST,
+    VAULT_DETAILS,
+    KYC_START,
+    CONFIRM_PHONE_OTP,
+    GET_SIGNUP_CODE,
+    GET_COUNTRY_CODES,
+    GET_VAULT_SETTINGS,
+    cardLimits,
+    confirmRecharge,
+    rechargeConversion,
+    confirmCardFee,
+    payCardFee,
+    cardPrice,
+    CARD_WALLETS,
+    CARD_PRICES
 } from '../../Endpoints';
 import { APIClient } from "../../Api";
 import * as Constants from '../../Constant'
 import Singleton from '../../Singleton';
 import { CARD_USER_DETAIL } from './types';
+import { Alert } from 'react-native';
+import NodeRSA from 'node-rsa';
 
 
 // ********************************* loginCards   API********************************************* //
@@ -407,184 +442,856 @@ export const changePasswordCard = ({ data, access_token }) => {
 };
 // ********************************* vault card API********************************************* //
 
-export const sendPhoneOtp = ({data}) => {
-  return new Promise((resolve, reject) => {
-    APIClient.getInstance()
-      .postCards(SIGN_UP, data)
-      .then(response => {
-        let result = response;
-        resolve(result);
-      })
-      .catch(error => {
-        reject(error);
-      });
-  });
+export const getSignUPPhoneCode = ({ data }) => dispatch => {
+    return new Promise((resolve, reject) => {
+        let headers = {
+            "X-Version": Singleton.getInstance().xVErsion,
+            "X-Merchant-ID": Singleton.getInstance().xMerchantId,
+        }
+        console.log("headers:::::::", headers);
+        APIClient.getInstance().postCardVault(GET_SIGNUP_CODE, JSON.stringify(data), "", headers).then(response => {
+            let result = response.data;
+            console.log('getSignUPPhoneCode success **** ' + JSON.stringify(result));
+            resolve(result);
+        }).catch(error => {
+            console.log("error:::::::", typeof error);
+            let errorMessage = error.message;
+            if (!errorMessage)
+                errorMessage = 'Something Went Wrong '
+            console.log('getSignUPPhoneCode Error ****', JSON.stringify(error), error.message);
+            reject(errorMessage);
+        });
+    });
+}
+
+/******************************************************************************************/
+export const confirmPhoneOtp = ({ data }) => dispatch => {
+    console.log(data,'datadatadatadatadata');
+    let newData = {
+        ...data,
+        fingerPrint: Singleton.getInstance().fingerPrintSeed
+    }
+    return new Promise((resolve, reject) => {
+        APIClient.getInstance().postCards(CONFIRM_PHONE_OTP, newData).then(response => {
+            let result = response;
+            console.log('confirmPhoneOtp success **** ' + JSON.stringify(result));
+            resolve(result);
+        }).catch(error => {
+            let errorMessage = error.message;
+            if (!errorMessage)
+                errorMessage = 'Something Went Wrong '
+            console.log('getSignUPPhoneCode Error ****', JSON.stringify(error));
+            reject(errorMessage);
+        });
+    });
+}
+
+/******************************************************************************************/
+export const addEmail = ({ data }) => dispatch => {
+    return new Promise((resolve, reject) => {
+        Singleton.getInstance()
+        .newGetData(Constants.CARD_TOKEN).then(token => {
+            if (token) {
+                APIClient.getInstance().postCards(EMAIL_ADD, data, token).then(response => {
+                    let result = response;
+                    console.log('confirmPhoneOtp success **** ' + JSON.stringify(result));
+                    resolve(result);
+                }).catch(error => {
+                    let errorMessage = error.message;
+                    if (!errorMessage)
+                        errorMessage = 'Something Went Wrong '
+                    console.log('getSignUPPhoneCode Error ****', JSON.stringify(error));
+                    reject(errorMessage);
+                });
+            }
+        })
+    });
+}
+/******************************************************************************************/
+export const userLogIn = ({ data }) => dispatch => {
+    return new Promise((resolve, reject) => {
+        let headers = {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            "X-Merchant-ID": Singleton.getInstance().xMerchantId,
+        }
+        APIClient.getInstance().postCardVault(USER_LOGIN, data, '', headers).then(response => {
+            let result = response;
+            console.log('userLogIn success **** ' + JSON.stringify(result));
+            resolve(result);
+        }).catch(error => {
+            let errorMessage = error.message;
+            if (!errorMessage)
+                errorMessage = 'Something Went Wrong '
+            console.log('userLogIn Error ****', JSON.stringify(error));
+            reject(errorMessage);
+        });
+    });
+}
+
+/******************************************************************************************/
+export const kycData = () => dispatch => {
+    return new Promise((resolve, reject) => {
+        Singleton.getInstance()
+      .newGetData(Constants.CARD_TOKEN).then(token => {
+            if (token) {
+                APIClient.getInstance().getCards(KYC_DATA, token).then(response => {
+                    let result = response;
+                    console.log('kycData success **** ' + JSON.stringify(result));
+                    resolve(result);
+                }).catch(error => {
+                    let errorMessage = error.message;
+                    if (!errorMessage)
+                        errorMessage = 'Something Went Wrong '
+                    console.log('kycData Error ****', JSON.stringify(error));
+                    reject(errorMessage);
+                });
+            } else {
+                reject(Constants.ACCESS_TOKEN_EXPIRED);
+            }
+        });
+    });
+}
+
+/******************************************************************************************/
+export const customerProfile = () => dispatch => {
+    return new Promise((resolve, reject) => {
+        Singleton.getInstance()
+      .newGetData(Constants.CARD_TOKEN).then(token => {
+        console.log(token,'tokentokentokentoken');
+            if (token) {
+                APIClient.getInstance().getCards(GET_CUSTOMER_PROFILE, token).then(response => {
+                    let result = response;
+                    console.log('customerProfile success **** ' + JSON.stringify(result));
+                    resolve(result);
+                }).catch(error => {
+                    let errorMessage = error.message;
+                    if (!errorMessage)
+                        errorMessage = 'Something Went Wrong '
+                    console.log('customerProfile Error ****', JSON.stringify(error));
+                    reject(errorMessage);
+                });
+            } else {
+                reject(Constants.ACCESS_TOKEN_EXPIRED);
+            }
+        });
+    });
+}
+
+/******************************************************************************************/
+export const resendPhoneOtp = ({ data }) => dispatch => {
+    return new Promise((resolve, reject) => {
+        APIClient.getInstance().postCards(RESEND_OTP, data).then(response => {
+            let result = response.data;
+            console.log('resendPhoneOtp success **** ' + JSON.stringify(result));
+            resolve(result);
+        }).catch(error => {
+            console.log("error:::::::", typeof error);
+            let errorMessage = error.message;
+            if (!errorMessage)
+                errorMessage = 'Something Went Wrong '
+            console.log('resendPhoneOtp Error ****', JSON.stringify(error), error.message);
+            reject(errorMessage);
+        });
+    });
+}
+
+/******************************************************************************************/
+export const startKYC = () => dispatch => {
+    let data = {
+        "platform": "COMMON"
+    }
+    return new Promise((resolve, reject) => {
+        Singleton.getInstance()
+      .newGetData(Constants.CARD_TOKEN).then(token => {
+            if (token) {
+                APIClient.getInstance().postCards(KYC_START, data, token).then(response => {
+                    let result = response;
+                    console.log('startKYC success **** ' + JSON.stringify(result));
+                    resolve(result);
+                }).catch(error => {
+                    let errorMessage = error.message;
+                    if (!errorMessage)
+                        errorMessage = 'Something Went Wrong '
+                    console.log('startKYC Error ****', JSON.stringify(error));
+                    reject(errorMessage);
+                });
+            } else {
+                reject(Constants.ACCESS_TOKEN_EXPIRED);
+            }
+        });
+    });
+}
+/******************************************************************************************/
+export const updateCustomerProfile = ({ data }) => dispatch => {
+    console.log("data:::::", data);
+    return new Promise((resolve, reject) => {
+        Singleton.getInstance()
+      .newGetData(Constants.CARD_TOKEN).then(token => {
+            if (token) {
+                APIClient.getInstance().postCards(GET_CUSTOMER_PROFILE, data, token).then(response => {
+                    let result = response;
+                    console.log('customerProfile success **** ' + JSON.stringify(result));
+                    resolve(result);
+                }).catch(error => {
+                    let errorMessage = error.message;
+                    if (!errorMessage)
+                        errorMessage = 'Something Went Wrong '
+                    console.log('customerProfile Error ****', JSON.stringify(error));
+                    reject(errorMessage);
+                });
+            } else {
+                reject(Constants.ACCESS_TOKEN_EXPIRED);
+            }
+        });
+    });
+}
+export const getVaultDetails = () => dispatch => {
+    return new Promise((resolve, reject) => {
+            APIClient.getInstance()
+              .getCard2(VAULT_DETAILS)
+              .then(res => {
+                console.log('res::::::!1111', res);
+                const key = new NodeRSA(Constants.BANK_DETAIL_PRIVATEKEY);
+                key.setOptions({ encryptionScheme: "pkcs1" });
+                const decrypted =  key.decrypt(res?.data,'utf8');
+                let originalText =  JSON.parse(decrypted);
+                console.log('res::::::!1111222', originalText);
+                Singleton.getInstance().xMerchantId = originalText.X_MERCHANT_ID;
+                Singleton.getInstance().xVErsion = originalText.X_VERSION;
+                Singleton.getInstance().fingerPrintSeed = originalText.FINGERPRINT_SEED;
+              })
+              .catch(error => {
+                console.log('res::::::!11112', error);
+                reject(error)
+              });
+    });
+}
+
+/******************************************************************************************/
+export const userCardList = () => dispatch => {
+    return new Promise((resolve, reject) => {
+        Singleton.getInstance()
+      .newGetData(Constants.CARD_TOKEN).then(token => {
+            if (token) {
+                APIClient.getInstance().getCards(USER_CARD_LIST, token).then(response => {
+                    let result = response;
+                    console.log('userCardList success **** ' + JSON.stringify(result));
+                    resolve(result);
+                }).catch(error => {
+                    let errorMessage = error.message;
+                    if (!errorMessage)
+                        errorMessage = 'Something Went Wrong '
+                    console.log('userCardList Error ****', JSON.stringify(error));
+                    reject(errorMessage);
+                });
+            } else {
+                reject(Constants.ACCESS_TOKEN_EXPIRED);
+            }
+        });
+    });
+}
+
+/******************************************************************************************/
+export const cardTransactions = (data) => dispatch => {
+    return new Promise((resolve, reject) => {
+        Singleton.getInstance()
+      .newGetData(Constants.CARD_TOKEN).then(token => {
+            if (token) {
+                APIClient.getInstance().getCards(CARD_TRANSACTION_HISTORY + `${data.cardId}?cp=${data.cardProgram}&offset=${data.offset}&size=${data.limit}`, token).then(response => {
+                    let result = response;
+                    console.log('cardTransactions success **** ' + JSON.stringify(result));
+                    resolve(result);
+                }).catch(error => {
+                    let errorMessage = error.message;
+                    if (!errorMessage)
+                        errorMessage = 'Something Went Wrong '
+                    console.log('cardTransactions Error ****', JSON.stringify(error));
+                    reject(errorMessage);
+                });
+            } else {
+                reject(Constants.ACCESS_TOKEN_EXPIRED);
+            }
+        });
+    });
+}
+
+/******************************************************************************************/
+export const cardDetailsCode = (data) => dispatch => {
+    return new Promise((resolve, reject) => {
+        Singleton.getInstance()
+      .newGetData(Constants.CARD_TOKEN).then(token => {
+            if (token) {
+                APIClient.getInstance().getCards(otpForCardDetailsCode(data.cardId, data.cardProgram), token).then(response => {
+                    let result = response;
+                    console.log('cardDetailsCode success **** ' + JSON.stringify(result));
+                    resolve(result);
+                }).catch(error => {
+                    let errorMessage = error.message;
+                    if (!errorMessage)
+                        errorMessage = 'Something Went Wrong '
+                    console.log('cardDetailsCode Error ****', JSON.stringify(error));
+                    reject(errorMessage);
+                });
+            } else {
+                reject(Constants.ACCESS_TOKEN_EXPIRED);
+            }
+        });
+    });
+}
+
+/******************************************************************************************/
+export const getCardDetails = ({ data }) => dispatch => {
+    return new Promise((resolve, reject) => {
+
+        Singleton.getInstance()
+      .newGetData(Constants.CARD_TOKEN).then(token => {
+            let newData = {
+                "code": data.code,
+                "publicKey": data.publicKey,
+
+            }
+            let headers = {
+                "Authorization": `Bearer ${token}`
+            }
+            if (token) {
+                APIClient.getInstance().postCardVault(otpForCardDetails(data.cardId, data.cardProgram), JSON.stringify(newData), token, headers).then(response => {
+                    let result = response;
+                    console.log('cardDetails success **** ' + JSON.stringify(result));
+                    resolve(result);
+                }).catch(error => {
+                    let errorMessage = error.message;
+                    if (!errorMessage)
+                        errorMessage = 'Something Went Wrong '
+                    console.log('cardDetails Error ****', JSON.stringify(error));
+                    reject(errorMessage);
+                });
+            } else {
+                reject(Constants.ACCESS_TOKEN_EXPIRED);
+            }
+        });
+    });
+}
+/******************************************************************************************/
+export const logOut = req => {
+    return new Promise((resolve, reject) => {
+        Singleton.getInstance()
+      .newGetData(Constants.CARD_TOKEN).then(token => {
+            APIClient.getInstance()
+                .postCardVault(LOG_OUT, req, token)
+                .then(response => {
+                    let result = response.data;
+                    console.log('user logout success **** ' + JSON.stringify(result));
+                    resolve(result);
+                })
+                .catch(error => {
+                    let errorMessage = error.message;
+                    if (!errorMessage) errorMessage = 'Something Went Wrong ';
+                    console.log('user logout  Error ****', JSON.stringify(error));
+                    reject(errorMessage);
+                });
+        });
+    });
 };
 
-export const resendPhoneOtp = ({data}) => {
-  return new Promise((resolve, reject) => {
-    APIClient.getInstance()
-      .postCards(RESEND_OTP, data)
-      .then(response => {
-        let result = response;
-        resolve(result);
-      })
-      .catch(error => {
-        reject(error);
+/******************************************************************************************/
+export const changePassword = ({ data }) => {
+    return new Promise((resolve, reject) => {
+        Singleton.getInstance()
+      .newGetData(Constants.CARD_TOKEN).then(token => {
+            APIClient.getInstance().putCardVault(CHANGE_PASSWORD, JSON.stringify(data), token).then(response => {
+                let result = response.data;
+                console.log('change password success **** ' + JSON.stringify(result));
+                resolve(result);
+            }).catch(error => {
+                console.log("error:::::::", typeof error);
+                let errorMessage = error.message;
+                if (!errorMessage)
+                    errorMessage = 'Something Went Wrong '
+                console.log('change password  Error ****', JSON.stringify(error), error.message);
+                reject(errorMessage);
+            });
+        });
+    })
+}
+
+export const forgetOtpSend = ({ data })  => {
+    let headers = {
+        "X-Version": Singleton.getInstance().xVErsion,
+        "X-Merchant-ID": Singleton.getInstance().xMerchantId,
+
+    }
+      return new Promise((resolve, reject) => {
+          APIClient.getInstance().postCardVault(FORGET_OTP_SEND, JSON.stringify(data),"",headers).then(response => {
+              let result = response.data;
+              console.log('forget otp send    success **** ' + JSON.stringify(result));
+              resolve(result);
+          }).catch(error => {
+              console.log("error:::::::", typeof error);
+              let errorMessage = error.message;
+              if (!errorMessage)
+                  errorMessage = 'Something Went Wrong '
+              console.log('forget otp send Error ****', JSON.stringify(error), error.message);
+              reject(errorMessage);
+          });
       });
-  });
-};
-export const confirmPhoneOtp = ({data}) => {
-  return new Promise((resolve, reject) => {
-    APIClient.getInstance()
-      .postCards(CONFIRM_PHONE, data)
-      .then(response => {
-        let result = response;
-        resolve(result);
-      })
-      .catch(error => {
-        reject(error);
+  }
+  /******************************************************************************************/
+  export const verifyVaultForgotOtpCard = ({ data })  => {
+    let headers = {
+        "X-Version": Singleton.getInstance().xVErsion,
+        "X-Merchant-ID": Singleton.getInstance().xMerchantId,
+
+    }
+      return new Promise((resolve, reject) => {
+          APIClient.getInstance().postCardVault(FORGET_OTP_CONFIRM, JSON.stringify(data),"",headers).then(response => {
+              let result = response.data;
+              console.log('forget otp confirm success **** ' + JSON.stringify(result));
+              resolve(result);
+          }).catch(error => {
+              console.log("error:::::::", typeof error);
+              let errorMessage = error.message;
+              if (!errorMessage)
+                  errorMessage = 'Something Went Wrong '
+              console.log('forget otp confirm Error ****', JSON.stringify(error), error.message);
+              reject(errorMessage);
+          });
       });
-  });
-};
-export const registerEmailAdded = ({data, token}) => {
-  return new Promise((resolve, reject) => {
-    APIClient.getInstance()
-      .postCards(EMAIL_ADD, data, `Bearer ${token}`)
-      .then(response => {
-        let result = response;
-        resolve(result);
-      })
-      .catch(error => {
-        reject(error);
+  }
+  /******************************************************************************************/
+  export const forgetPasswordConfirm = ({ data })  => {
+    let headers = {
+        "X-Version": Singleton.getInstance().xVErsion,
+        "X-Merchant-ID": Singleton.getInstance().xMerchantId,
+    }
+      return new Promise((resolve, reject) => {
+          APIClient.getInstance().postCardVault(FORGET_PASSWORD_CONFIRM, JSON.stringify(data),"",headers).then(response => {
+              let result = response.data;
+              console.log('forget confirm success **** ' + JSON.stringify(result));
+              resolve(result);
+          }).catch(error => {
+              console.log("error:::::::", typeof error);
+              let errorMessage = error.message;
+              if (!errorMessage)
+                  errorMessage = 'Something Went Wrong '
+              console.log('forget confirm Error ****', JSON.stringify(error), error.message);
+              reject(errorMessage);
+          });
       });
-  });
+  }
+
+  export const getCardWalletList = ({ })  => {
+    return new Promise((resolve, reject) => {
+        Singleton.getInstance()
+      .newGetData(Constants.CARD_TOKEN).then(token => {
+            APIClient.getInstance().getCards(GET_WALLET_LIST, token).then(response => {
+                let result = response.data;
+                resolve(result);
+            }).catch(error => {
+                let errorMessage = error.message;
+                if (!errorMessage)
+                    errorMessage = 'Something Went Wrong '
+                console.log('get wallet list Error ****', error);
+                reject(errorMessage);
+            });
+        });
+    });
 };
-export const setUserProfile = ({data, token}) => {
+export const getVaultCardWalletList = ({data})  => {
     return new Promise((resolve, reject) => {
-      APIClient.getInstance()
-        .postCards(SET_USER_DETAIL, data, `Bearer ${token}`)
-        .then(response => {
-          let result = response;
-          resolve(result);
-        })
-        .catch(error => {
-          reject(error);
+        Singleton.getInstance()
+      .newGetData(Constants.CARD_TOKEN).then(token => {
+            APIClient.getInstance().getCardVault(getValutWalletList(data), token).then(response => {
+                let result = response.currencies;
+                console.log('get vault  wallet list success **** ' + JSON.stringify(result));
+                resolve(result);
+            }).catch(error => {
+                let errorMessage = error.message;
+                if (!errorMessage)
+                    errorMessage = 'Something Went Wrong '
+                console.log('get vault wallet list Error ****', error);
+                reject(errorMessage);
+            });
         });
     });
-  };
-  export const cardUserdata = (dispatch, data) => {
-    dispatch({
-      type: CARD_USER_DETAIL,
-      payload: data,
-    });
-  };
-  export const userLogOut = ({data, token}) => {
+};
+/******************************************************************************************/
+export const getCodeForCardBlock = ({ data }) => dispatch => {
     return new Promise((resolve, reject) => {
-      APIClient.getInstance()
-        .postCards(USER_LOGOUT, data, `Bearer ${token}`)
-        .then(response => {
-          let result = response;
-          resolve(result);
-        })
-        .catch(error => {
-          reject(error);
+        console.log('1');
+        Singleton.getInstance()
+      .newGetData(Constants.CARD_TOKEN).then(token => {
+            console.log('2', token);
+            APIClient.getInstance().getCards(otpForCardBlock(data.cardId, data.cardProgram), token).then(response => {
+                console.log('3',);
+                let result = response.data;
+                console.log('getCodeForCardBlock success **** ' + JSON.stringify(result));
+                resolve(result);
+            }).catch(error => {
+                let errorMessage = error.message;
+                if (!errorMessage)
+                    errorMessage = 'Something Went Wrong '
+                console.log('getCodeForCardBlock Error ****', error);
+                reject(errorMessage);
+            });
         });
     });
-  };
-  export const userLogIn = ({data}) => {
+};
+
+/******************************************************************************************/
+export const getCodeForCardUnBlock = ({ data }) => dispatch => {
     return new Promise((resolve, reject) => {
-      APIClient.getInstance()
-        .postCards(USER_LOGIN, data)
-        .then(response => {
-          let result = response;
-          resolve(result);
-        })
-        .catch(error => {
-          reject(error);
+        console.log('1');
+        Singleton.getInstance()
+      .newGetData(Constants.CARD_TOKEN).then(token => {
+            console.log('2', token);
+            APIClient.getInstance().getCards(otpForCardUnblock(data.cardId, data.cardProgram), token).then(response => {
+                console.log('3',);
+                let result = response.data;
+                console.log('getCodeForCardUnBlock success **** ' + JSON.stringify(result));
+                resolve(result);
+            }).catch(error => {
+                let errorMessage = error.message;
+                if (!errorMessage)
+                    errorMessage = 'Something Went Wrong '
+                console.log('getCodeForCardUnBlock Error ****', error);
+                reject(errorMessage);
+            });
         });
     });
-  };
-  export const getUserProfile = ({token}) => {
+};
+
+/******************************************************************************************/
+export const unBlockCard = ({ data }) => dispatch => {
     return new Promise((resolve, reject) => {
-      APIClient.getInstance()
-        .getCards(GET_USER_PROFILE, `Bearer ${token}`)
-        .then(response => {
-          let result = response;
-          resolve(result);
-        })
-        .catch(error => {
-          reject(error);
+        console.log('1');
+        Singleton.getInstance()
+      .newGetData(Constants.CARD_TOKEN).then(token => {
+            console.log('2', token);
+            let newData = {
+                "code": data.code
+            }
+            APIClient.getInstance().postCardVault(unblockCard(data.cardId, data.cardProgram), JSON.stringify(newData), token).then(response => {
+                console.log('3',);
+                let result = response.data;
+                console.log('unBlockCard success **** ' + JSON.stringify(result));
+                resolve(result);
+            }).catch(error => {
+                let errorMessage = error.message;
+                if (!errorMessage)
+                    errorMessage = 'Something Went Wrong '
+                console.log('unBlockCard Error ****', error);
+                reject(errorMessage);
+            });
         });
     });
-  };
-  export const getKycId = ({data, token}) => {
+};
+
+/******************************************************************************************/
+export const blockCard = ({ data }) => dispatch => {
     return new Promise((resolve, reject) => {
-      APIClient.getInstance()
-        .postCards(GET_KYC_ID, data, `Bearer ${token}`)
-        .then(response => {
-          let result = response;
-          resolve(result);
-        })
-        .catch(error => {
-          reject(error);
+        console.log('1');
+        Singleton.getInstance()
+      .newGetData(Constants.CARD_TOKEN).then(token => {
+            console.log('2', token);
+            let newData = {
+                "code": data.code
+            }
+            APIClient.getInstance().postCardVault(BlockCard(data.cardId, data.cardProgram), JSON.stringify(newData), token).then(response => {
+                console.log('3',);
+                let result = response.data;
+                console.log('blockCard success **** ' + JSON.stringify(result));
+                resolve(result);
+            }).catch(error => {
+                let errorMessage = error.message;
+                if (!errorMessage)
+                    errorMessage = 'Something Went Wrong '
+                console.log('blockCard Error ****', error);
+                reject(errorMessage);
+            });
         });
     });
-  };
-  export const requestVaultCard = ({data, token}) => {
+};
+/******************************************************************************************/
+export const createCardWallets = ({ data }) => dispatch => {
     return new Promise((resolve, reject) => {
-      APIClient.getInstance()
-        .postCards(REQUEST_VAULT_CARD, data, `Bearer ${token}`)
-        .then(response => {
-          let result = response;
-          resolve(result);
-        })
-        .catch(error => {
-          reject(error);
+        Singleton.getInstance()
+      .newGetData(Constants.CARD_TOKEN).then(token => {
+        console.log(token,'tokentokentoken');
+            APIClient.getInstance().postCards(CREATE_WALLETS, data, token).then(response => {
+                let result = response.data;
+                console.log('createCardWallets success **** ' + JSON.stringify(result));
+                resolve(result);
+            }).catch(error => {
+                console.log("error:::::::", typeof error);
+                let errorMessage = error.message;
+                if (!errorMessage)
+                    errorMessage = 'Something Went Wrong '
+                console.log('createCardWallets Error ****', JSON.stringify(error), error.message);
+                reject(errorMessage);
+            });
         });
     });
-  };
+}
+
+/******************************************************************************************/
+export const requestNewCard = ({ data }) => dispatch => {
+    let headers = {
+        'User-Agent':'vault/4.0(508) dart/3.2 (dart:io) ios/17.3.1; iphone 9da12fa6-716c-4cdc-a24'
+    }
+    return new Promise((resolve, reject) => {
+        Singleton.getInstance()
+      .newGetData(Constants.CARD_TOKEN).then(token => {
+            APIClient.getInstance().postCards(requestCard('CP_2'), data, token,headers).then(response => {
+                let result = response.data;
+                console.log('requestCard success **** ' + JSON.stringify(result));
+                resolve(result);
+            }).catch(error => {
+                console.log("error:::::::", typeof error);
+                let errorMessage = error.message;
+                if (!errorMessage)
+                    errorMessage = 'Something Went Wrong '
+                console.log('requestCard Error ****', JSON.stringify(error), error.message);
+                reject(errorMessage);
+            });
+        });
+    });
+}
+
+/******************************************************************************************/
+export const finishKYC = ({ data }) => dispatch => {
+    return new Promise((resolve, reject) => {
+        Singleton.getInstance()
+      .newGetData(Constants.CARD_TOKEN).then(token => {
+            APIClient.getInstance().postCards(FINISH_KYC, data, token).then(response => {
+                let result = response.data;
+                console.log('finishKYC success **** ' + JSON.stringify(result));
+                resolve(result);
+            }).catch(error => {
+                console.log("error:::::::", typeof error);
+                let errorMessage = error.message;
+                if (!errorMessage)
+                    errorMessage = 'Something Went Wrong '
+                console.log('finishKYC Error ****', JSON.stringify(error), error.message);
+                reject(errorMessage);
+            });
+        });
+    });
+}
 
 
-  export const forgetOtpSend = ({data}) => {
+/******************************************************************************************/
+export const addAddressForCardReq = ({ data }) => dispatch => {
+    let headers = {
+        'User-Agent':'vault/4.0(508) dart/3.2 (dart:io) ios/17.3.1; iphone 9da12fa6-716c-4cdc-a24'
+    }
     return new Promise((resolve, reject) => {
-      APIClient.getInstance()
-        .postCards(FORGET_OTP_SEND, data)
-        .then(response => {
-          let result = response;
-          resolve(result);
-        })
-        .catch(error => {
-          reject(error);
+        Singleton.getInstance()
+      .newGetData(Constants.CARD_TOKEN).then(token => {
+            APIClient.getInstance().putCard(cardRequestAddress(data.id,data.cp), data, token,headers).then(response => {
+                let result = response.data;
+                console.log('addAddressForCardReq success **** ' + JSON.stringify(result));
+                resolve(result);
+            }).catch(error => {
+                console.log("error:::::::", typeof error);
+                let errorMessage = error.message;
+                if (!errorMessage)
+                    errorMessage = 'Something Went Wrong '
+                console.log('addAddressForCardReq Error ****', JSON.stringify(error), error.message);
+                reject(errorMessage);
+            });
         });
     });
-  };
+}
 
-  export const forgetOtpConfirm = ({data}) => {
-    console.log('data:::',data);
+/******************************************************************************************/
+export const addAdditionalInfo = ({ data },cp) => dispatch => {
     return new Promise((resolve, reject) => {
-      APIClient.getInstance()
-        .postCards(FORGET_OTP_CONFIRM, data)
-        .then(response => {
-          let result = response;
-          resolve(result);
-        })
-        .catch(error => {
-          reject(error);
+        Singleton.getInstance()
+      .newGetData(Constants.CARD_TOKEN).then(token => {
+            APIClient.getInstance().postCards(ADDITIONAL_INFO + `?cp=${cp}`, data, token).then(response => {
+                let result = response.data;
+                console.log('addAdditionalInfo success **** ' + JSON.stringify(result));
+                resolve(result);
+            }).catch(error => {
+                console.log("error:::::::", typeof error);
+                let errorMessage = error.message;
+                if (!errorMessage)
+                    errorMessage = 'Something Went Wrong '
+                console.log('addAdditionalInfo Error ****', JSON.stringify(error), error.message);
+                reject(errorMessage);
+            });
         });
     });
-  };
+}
+/******************************************************************************************/
+export const getCountryCodes = () => dispatch => {
+    return new Promise((resolve, reject) => {
+        Singleton.getInstance()
+      .newGetData(Constants.access_token).then(token => {
+            APIClient.getInstance().getCards(GET_COUNTRY_CODES, token).then(response => {
+                let result = response;
+                // console.log('getCountryCodes success **** ' + JSON.stringify(result));
+                resolve(result);
+            }).catch(error => {
+                let errorMessage = error.message;
+                if (!errorMessage)
+                    errorMessage = 'Something Went Wrong '
+                console.log('getCountryCodes Error ****', JSON.stringify(error));
+                reject(errorMessage);
+            });
+        });
+    });
+};
 
-  export const forgetPasswordConfirm = ({data}) => {
+/******************************************************************************************/
+
+export const getVaultSettings = () => {
+        return new Promise((resolve, reject) => {
+            APIClient.getInstance().getCards(GET_VAULT_SETTINGS).then((response) => {
+                let result = response.data;
+                resolve(result);
+            })
+                .catch((error) => {
+                    reject(error);
+                });
+        });
+};
+/******************************************************************************************/
+
+export const getCardPrice = (id, currency, cp) => {
     return new Promise((resolve, reject) => {
-      APIClient.getInstance()
-        .postCards(FORGET_PASSWORD_CONFIRM, data)
-        .then(response => {
-          let result = response;
-          resolve(result);
-        })
-        .catch(error => {
-          reject(error);
+        Singleton.getInstance()
+      .newGetData(Constants.CARD_TOKEN).then(token => {
+            APIClient.getInstance().getCards(cardPrice(id, currency, cp), token).then(response => {
+                let result = response.data;
+                console.log('getCardPrice success **** ' + JSON.stringify(result));
+                resolve(result);
+            }).catch(error => {
+                let errorMessage = error.message;
+                if (!errorMessage)
+                    errorMessage = 'Something Went Wrong '
+                console.log('getCardPrice Error ****', error);
+                reject(errorMessage);
+            });
         });
     });
-  };
+}
+/******************************************************************************************/
+
+export const PayCardFee = (id, currency, cp) => {
+    return new Promise((resolve, reject) => {
+        Singleton.getInstance()
+      .newGetData(Constants.CARD_TOKEN).then(token => {
+            APIClient.getInstance().postCards(payCardFee(id, currency, cp), {}, token).then(response => {
+                let result = response.data;
+                console.log('PayCardFee success **** ' + JSON.stringify(result));
+                resolve(result);
+            }).catch(error => {
+                let errorMessage = error.message;
+                if (!errorMessage)
+                    errorMessage = 'Something Went Wrong '
+                console.log('PayCardFee Error ****', error);
+                reject(errorMessage);
+            });
+        });
+    });
+}
+/******************************************************************************************/
+
+export const ConfirmCardFee = (id, cp) => {
+    return new Promise((resolve, reject) => {
+        Singleton.getInstance()
+      .newGetData(Constants.CARD_TOKEN).then(token => {
+            APIClient.getInstance().postCards(confirmCardFee(id, cp), {}, token).then(response => {
+                let result = response.data;
+                console.log('PayCardFee success **** ' + JSON.stringify(result));
+                resolve(result);
+            }).catch(error => {
+                let errorMessage = error.message;
+                if (!errorMessage)
+                    errorMessage = 'Something Went Wrong '
+                console.log('PayCardFee Error ****', error);
+                reject(errorMessage);
+            });
+        });
+    });
+}
+/******************************************************************************************/
+
+export const RechargeConversion = (data, id, cp) => {
+    return new Promise((resolve, reject) => {
+        Singleton.getInstance()
+      .newGetData(Constants.CARD_TOKEN).then(token => {
+            APIClient.getInstance().postCards(rechargeConversion(id, cp), data, token).then(response => {
+                let result = response.data;
+                console.log('RechargeConversion success **** ' + JSON.stringify(result));
+                resolve(result);
+            }).catch(error => {
+                let errorMessage = error.message;
+                if (!errorMessage)
+                    errorMessage = 'Something Went Wrong '
+                console.log('RechargeConversion Error ****', error);
+                reject(errorMessage);
+            });
+        });
+    });
+}
+/******************************************************************************************/
+
+export const ConfirmRecharge = (id, cp, offerId) => {
+    return new Promise((resolve, reject) => {
+        Singleton.getInstance()
+      .newGetData(Constants.CARD_TOKEN).then(token => {
+            APIClient.getInstance().postCards(confirmRecharge(id, cp, offerId),{}, token).then(response => {
+                let result = response.data;
+                console.log('ConfirmRecharge success **** ' + JSON.stringify(result));
+                resolve(result);
+            }).catch(error => {
+                let errorMessage = error.message;
+                if (!errorMessage)
+                    errorMessage = 'Something Went Wrong '
+                console.log('ConfirmRecharge Error ****', error);
+                reject(errorMessage);
+            });
+        });
+    });
+}
+/******************************************************************************************/
+
+export const getCardLimits = (id, cp) => {
+    return new Promise((resolve, reject) => {
+        Singleton.getInstance()
+      .newGetData(Constants.CARD_TOKEN).then(token => {
+            APIClient.getInstance().getCards(cardLimits(id, cp), token).then(response => {
+                let result = response.data;
+                console.log('GetCardLimits success **** ' + JSON.stringify(result));
+                resolve(result);
+            }).catch(error => {
+                let errorMessage = error.message;
+                if (!errorMessage)
+                    errorMessage = 'Something Went Wrong '
+                console.log('GetCardLimits Error ****', error);
+                reject(errorMessage);
+            });
+        });
+    });
+}
+
+export const getCardPrices=()=>{
+    return new Promise((resolve, reject) => {
+        Singleton.getInstance()
+        .newGetData(Constants.CARD_TOKEN).then(token => {
+            APIClient.getInstance().getCards(CARD_PRICES, token).then(response => {
+                let result = response.data;
+                console.log('getCardPrices success **** ' + JSON.stringify(result));
+                resolve(result);
+            }).catch(error => {
+                let errorMessage = error.message;
+                if (!errorMessage)
+                    errorMessage = 'Something Went Wrong '
+                console.log('getCardPrices Error ****', error);
+                reject(errorMessage);
+            });
+        });
+    });
+}

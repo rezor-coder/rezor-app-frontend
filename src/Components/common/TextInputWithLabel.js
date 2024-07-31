@@ -48,7 +48,6 @@ const TextInputWithLabel = ({
       <TouchableOpacity
         style={[styles.inputStyle,customInputStyle]}
         activeOpacity={1}
-        hitSlop={{bottom:15,left:15,top:15,right:15}}
         onPress={onPress}>
         {!!leftIcon ? (
           <View style={styles.iconViewStyle}>

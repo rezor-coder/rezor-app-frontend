@@ -11,9 +11,10 @@ import {
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import { LanguageManager, ThemeManager } from '../../../ThemeManager';
-import { areaDimen, heightDimen } from '../../Utils/themeUtils';
+import { areaDimen, heightDimen, widthDimen } from '../../Utils/themeUtils';
 import { Colors, Fonts, Images } from '../../theme';
 import { Modal } from 'react-native';
+import ShimmerLoader from './ShimmerLoader';
 
 const TopUpCard = ({
   data,
@@ -24,22 +25,15 @@ const TopUpCard = ({
   value,
   onChangeText = () => {},
   walletBalance,
-  onPressShowModal=()=>{}
+  onPressShowModal=()=>{},
+  maxLength,
+  editable=true,
+  showLoader=false
+
+
 }) => {
   console.log(data, 'datadatadatadata');
-  const [showModal, setShowModal] = useState(false);
 
-  const onPressCloseModal = item => {
-    setShowModal(false);
-    onSelectValue(item);
-  };
-  // const onPressShowModal = () => {
-  //   if (data.length <= 0) {
-  //     Alert.alert('Add data first');
-  //     return;
-  //   }
-  //   // setShowModal(!showModal);
-  // };
   return (
     <>
       <View
@@ -50,10 +44,10 @@ const TopUpCard = ({
         <View style={styles.wallePayView}>
           <Text style={styles.lightColorStyle}>{title}</Text>
           {Number(walletBalance) >= 0 ? (
-            <Text style={styles.lightColorStyle}>
-              {LanguageManager.balance}: {walletBalance}
+            <Text style={[styles.lightColorStyle,{color:ThemeManager.colors.textColor}]} numberOfLines={2}>
+              {LanguageManager.balance}: {selectedValue?.availableBalance}
               {'  '}
-              <Text style={{color: Colors.buttonColor1}}>
+              <Text style={{color: ThemeManager.colors.buttonColor1}}>
                 {LanguageManager.all}
               </Text>
             </Text>
@@ -64,17 +58,17 @@ const TopUpCard = ({
           <TouchableOpacity
             style={{...styles.flexRowCenter, flex: 0.4}}
             onPress={onPressShowModal}>
-            {selectedValue?.coin_image ? (
+            {selectedValue?.coin_image|| selectedValue?.iconUrl  ? (
               <FastImage
                 source={
-                  typeof selectedValue?.coin_image == 'string'
-                    ? {uri: selectedValue?.coin_image}
-                    : selectedValue?.coin_image
+                  typeof selectedValue?.coin_image == 'string'|| typeof selectedValue?.iconUrl == 'string' 
+                    ? {uri: selectedValue?.coin_image || selectedValue?.iconUrl }
+                    : selectedValue?.coin_image || selectedValue?.iconUrl 
                 }
                 style={[styles.iconStyle]}
                 resizeMode="contain"
               />
-            ) : !!selectedValue?.coin_name ? (
+            ) : !!selectedValue?.coin_name || selectedValue?.currency? (
               <View
                 style={[
                   styles.iconStyle,
@@ -87,7 +81,7 @@ const TopUpCard = ({
                     fontSize: areaDimen(15),
                     lineHeight: heightDimen(18),
                   }}>
-                  {selectedValue?.coin_name?.charAt(0)}
+                  {selectedValue?.coin_name?.charAt(0) || selectedValue?.currency?.charAt(0) }
                 </Text>
               </View>
             ) : null}
@@ -102,7 +96,8 @@ const TopUpCard = ({
               ]}>
               {!!selectedValue?.coin_name
                 ? selectedValue?.coin_name
-
+                : selectedValue?.currency
+                ? selectedValue.currency
                 : 'Select account'}
             </Text>
             <FastImage
@@ -112,59 +107,39 @@ const TopUpCard = ({
               resizeMode="contain"
             />
           </TouchableOpacity>
-          <TextInput
-            style={{
-              flex: 0.6,
-              ...styles.textInputStyle,
-              color: ThemeManager.colors.textColor,
-            }}
-            placeholder={placeholder}
-            value={value}
-            onChangeText={onChangeText}
-            keyboardType="numeric"
-            placeholderTextColor={Colors.languageItem}
-          />
-        </View>
-      </View>
-      {!!showModal && data.length > 0 ? (
-        <FlatList
-          data={data}
-          nestedScrollEnabled
-          style={{
-            ...styles.modalStyle,
-            backgroundColor: ThemeManager.colors.bg,
-            borderColor: ThemeManager.colors.lightTextColor,
-          }}
-          keyExtractor={(item, index) => index.toString()}
-          renderItem={({item}) => {
-            return (
-              <TouchableOpacity
-                style={{
-                  padding: areaDimen(8),
-                  justifyContent: 'center',
-                }}
-                onPress={() => onPressCloseModal(item)}>
-                <Text
-                  style={[
-                    styles.textStyle,
-                    {color: ThemeManager.colors.textColor},
-                  ]}>
-                  {item?.title}
-                </Text>
-              </TouchableOpacity>
-            );
-          }}
-          ItemSeparatorComponent={() => (
+          {showLoader ? (
             <View
               style={{
-                height: 1,
-                backgroundColor: ThemeManager.colors.lightTextColor,
-                width: '100%',
+                flex: 1,
+                flexDirection: 'row',
+                justifyContent: 'flex-end',
+              }}>
+              <ShimmerLoader
+                style={{
+                  height: heightDimen(30),
+                  width: widthDimen(100),
+                  borderRadius: 10,
+                }}
+              />
+            </View>
+          ) : (
+            <TextInput
+              style={{
+                flex: 0.6,
+                ...styles.textInputStyle,
+                color: ThemeManager.colors.textColor,
               }}
+              placeholder={placeholder}
+              value={value}
+              onChangeText={onChangeText}
+              keyboardType="numeric"
+              placeholderTextColor={Colors.languageItem}
+              maxLength={maxLength}
+              editable={editable}
             />
           )}
-        />
-      ) : null}
+        </View>
+      </View>
     </>
   );
 };

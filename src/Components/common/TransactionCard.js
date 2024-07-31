@@ -7,6 +7,45 @@ import FastImage from 'react-native-fast-image';
 import {ThemeManager} from '../../../ThemeManager';
 
 const TransactionCard = ({item}) => {
+  const getDataOBjectKey = () => {
+    let dataKey = ''
+    Object.keys(item).forEach(function (key, index) {
+      if (key?.includes('Model') && item[`${key}`] != null) {
+        dataKey = key
+
+        
+      }
+    });
+    return dataKey
+  }
+  console.log("getDataOBjectKey:::::::", getDataOBjectKey())
+  const getAmountKey = () => {
+    let key = ''
+    if (getDataOBjectKey()?.includes('reap')) {
+      key = 'billAmount'
+    } else {
+      key = 'amount'
+    }
+    return key
+  }
+    const key = item[`${getDataOBjectKey()}`]
+console.log(item,'keykeykeykeykey');
+    const getColorBg = operationStatus => {
+      switch (operationStatus) {
+        case 'DECLINED':
+        case 'FAILED':
+          return Colors.red;
+        case 'CLEARED':
+        case 'APPROVED':
+          return Colors.darkGreen;
+        case 'PENDING':
+        case 'AUTHORIZED':
+          return Colors.darkYellow;
+        default:
+          return null; // or any default color
+      }
+    };
+    const isCardTransaction = item?.operationStatus == 'DECLINED' || item?.operationStatus == 'CLEARED' || item?.operationStatus == 'AUTHORIZED' || item?.operationStatus == 'VOID'
   return (
     <View
       style={{
@@ -14,22 +53,17 @@ const TransactionCard = ({item}) => {
         ...styles.mainContainer,
       }}>
       <Text style={styles.dateText}>
-        {moment(item?.date).format('DD-MM, HH:mm')}
+        {moment(item?.operationDate).format('DD-MM, HH:mm')}
       </Text>
       <View
         style={{
-          backgroundColor:
-            item?.status === 'pending'
-              ? Colors.darkYellow
-              : item?.status === 'declined'
-              ? Colors.red
-              : Colors.darkGreen,
+          backgroundColor: getColorBg(item?.operationStatus),
           position: 'absolute',
           ...styles.statusView,
         }}>
         <Text
           style={[styles.statusText, {color: ThemeManager.colors.textColor}]}>
-          {item?.status}
+          {item?.operationStatus}
         </Text>
       </View>
 
@@ -41,19 +75,37 @@ const TransactionCard = ({item}) => {
           }}>
           <FastImage
             source={Images.redDoller}
-            style={{height: areaDimen(24), width: areaDimen(24)}}
+            style={
+              !isCardTransaction
+                ? {
+                    height: areaDimen(24),
+                    width: areaDimen(24),
+                    transform: [{rotate: '180deg'}],
+                  }
+                : {height: areaDimen(24), width: areaDimen(24)}
+            }
           />
         </View>
         <View style={{flex: 0.6, paddingLeft: areaDimen(8)}}>
-          <Text style={[styles.titleText,{color: ThemeManager.colors.textColor}]}>{item?.title}</Text>
-          <Text style={styles.dateText}>{item?.discription}</Text>
+          <Text
+            style={[styles.titleText, {color: ThemeManager.colors.textColor}]}>
+            {!!isCardTransaction ? 'Expense' : 'TopUp'}
+          </Text>
+          <Text style={styles.dateText}>
+            {key?.merchantName || key?.walletFrom}
+          </Text>
         </View>
         <View style={{flex: 0.3, alignItems: 'flex-end'}}>
-          <Text style={[styles.titleText,{color:Colors.red}]}>
-            {item?.inUsdt} <Text style={styles.lightColorStyle}>USDT</Text>
+          <Text style={[styles.titleText, {color: Colors.red}]}>
+            -{key?.fee?.value}{' '}
+            <Text style={styles.lightColorStyle}>{key?.fee?.currency}</Text>
           </Text>
-          <Text style={[styles.titleText,{color: ThemeManager.colors.textColor}]}>
-            {item?.inINR} <Text style={styles.lightColorStyle}>INR</Text>
+          <Text
+            style={[styles.titleText, {color: ThemeManager.colors.textColor}]}>
+            {key?.[`${getAmountKey()}`]?.value}{' '}
+            <Text style={styles.lightColorStyle}>
+              {key?.[`${getAmountKey()}`]?.currency}
+            </Text>
           </Text>
         </View>
       </View>

@@ -118,6 +118,7 @@ import {
   confirmTransaction,
   CountryCodes,
   SaitaVirtualForm,
+  ChangePassword,
 } from '../Components/Screens';
 import ConnectWithDapp2 from '../Components/Screens/ConnectWithDapp/ConnectWithDapp2';
 import SaitaCardHyperKycForm from '../Components/Screens/SaitaCardHyperKyc/SaitaCardHyperKycForm';
@@ -132,6 +133,9 @@ import {setNavigationReference} from '../navigationsService';
 import {NavigationStrings} from './NavigationStrings';
 import TabRoutes from './TabRoutes';
 import { NavigationContainer } from '@react-navigation/native';
+import CardKyc from '../Components/Screens/Cards/CardKYC/CardKyc';
+import AfterApplyDetails from '../Components/Screens/Cards/AfterApplyDetails/AfterApplyDetails';
+import VaultTransactionHistory from '../Components/Screens/VaultTransactionHistory/VaultTransactionHistory';
 
 const Stack = createNativeStackNavigator();
 const Routes = () => {
@@ -300,6 +304,10 @@ const Routes = () => {
     {key: NavigationStrings.SaitaVirtualForm, component: SaitaVirtualForm},
     {key: NavigationStrings.SendSTC, component: SendSTC},
     {key: NavigationStrings.MultiSenderSTC, component: MultiSenderSTC},
+    {key: NavigationStrings.CardKyc, component: CardKyc},
+    {key: NavigationStrings.AfterApplyDetails, component: AfterApplyDetails},
+    {key: NavigationStrings.VaultTransactionHistory, component: VaultTransactionHistory},
+
   ];
 
   return (

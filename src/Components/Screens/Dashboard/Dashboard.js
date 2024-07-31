@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -10,19 +10,19 @@ import {
   AppState,
   BackHandler,
   StatusBar,
-  ActivityIndicator
+  ActivityIndicator,
 } from 'react-native';
-import { Images, Colors } from '../../../theme/';
-import { MainHeader, IconText } from '../../common';
+import {Images, Colors} from '../../../theme/';
+import {MainHeader, IconText} from '../../common';
 import styles from './DashboardStyle';
 import FastImage from 'react-native-fast-image';
 import fonts from '../../../theme/Fonts';
-import { SliderBox } from 'react-native-image-slider-box';
+import {SliderBox} from 'react-native-image-slider-box';
 import Singleton from '../../../Singleton';
 import * as constants from '../../../Constant';
-import { EventRegister } from 'react-native-event-listeners';
+import {EventRegister} from 'react-native-event-listeners';
 import images from '../../../theme/Images';
-import { useDispatch, useSelector } from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {
   getDashboardWallets,
   walletDataUpdate,
@@ -35,19 +35,25 @@ import {
   getMyWallets,
   getDexUrls,
   cardUserdata,
+  getVaultDetails,
 } from '../../../Redux/Actions';
 import messaging from '@react-native-firebase/messaging';
 import Loader from '../Loader/Loader';
-import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
-import { areaDimen, heightDimen, widthDimen } from '../../../Utils/themeUtils';
-import { FlatList } from 'react-native';
-import { BASE_IMAGE } from '../../../Endpoints';
-import { showMessage } from 'react-native-flash-message';
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { NavigationStrings } from '../../../Navigation/NavigationStrings';
-import { getCurrentRouteName, goBack, navigate, reset } from '../../../navigationsService';
+import {LanguageManager, ThemeManager} from '../../../../ThemeManager';
+import {areaDimen, heightDimen, widthDimen} from '../../../Utils/themeUtils';
+import {FlatList} from 'react-native';
+import {BASE_IMAGE} from '../../../Endpoints';
+import {showMessage} from 'react-native-flash-message';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import {NavigationStrings} from '../../../Navigation/NavigationStrings';
+import {
+  getCurrentRouteName,
+  goBack,
+  navigate,
+  reset,
+} from '../../../navigationsService';
 const Dashboard = props => {
-  const [viewKey,setViewKey]=useState(new Date())
+  const [viewKey, setViewKey] = useState(new Date());
   const insets = useSafeAreaInsets();
   const dispatch = useDispatch();
   const CoinDataMain = useSelector(state => state?.walletReducer?.myWallets);
@@ -58,65 +64,81 @@ const Dashboard = props => {
   const [isLoading, setisLoading] = useState(true);
   const [showLoader, setShowLoader] = useState(false);
   const [onPressActive, setPressActive] = useState(false);
-  const [bottomLoading, setBottomLoading] = useState(false)
-  const [totalLength, setTotalLength] = useState(CoinData?.length)
-console.log(CoinData.length,'CoinDataCoinDataCoinData');
+  const [bottomLoading, setBottomLoading] = useState(false);
+  const [totalLength, setTotalLength] = useState(CoinData?.length);
+  console.log(CoinData.length, 'CoinDataCoinDataCoinData');
   useEffect(() => {
-    EventRegister.addEventListener('themeChanged',()=>{
-      setViewKey(new Date())
-    })
-    getWalletData();
+    EventRegister.addEventListener('themeChanged', () => {
+      setViewKey(new Date());
+    });
+    // getWalletData();
     // Notification();
-    Bannerimg();
-    let backHandle
+    // Bannerimg();
+    let backHandle;
     backHandle = BackHandler.addEventListener('hardwareBackPress', () => {
       if (getCurrentRouteName() == 'Dashboard') {
-        getCurrentRouteName() != 'Main' && reset(NavigationStrings.Main)
+        getCurrentRouteName() != 'Main' && reset(NavigationStrings.Main);
       } else {
-        goBack()
+        goBack();
       }
-      return true
-    })
+      return true;
+    });
     EventRegister.addEventListener('walletAPIEvent', data1 => {
-      getWalletData();
+      // getWalletData();
     });
     let focus = props.navigation.addListener('focus', () => {
-      setPage(0)
-      setBottomLoading(false)
+      if (
+        !Singleton.getInstance().xMerchantId ||
+        !Singleton.getInstance().xVErsion ||
+        !Singleton.getInstance().fingerPrintSeed ||
+        !Singleton.getInstance().ethLink ||
+        !Singleton.getInstance().bnbLink ||
+        !Singleton.getInstance().maticLink 
+      ) {
+        dispatch(getVaultDetails());
+        getInfuraMainLink();
+        getBNBLink();
+        getNodeDetails();
+
+        dispatch(getSocialList())
+          .then(async response => {
+            Singleton.getInstance().newSaveData(
+              constants.SOCIAL_LINKS,
+              JSON.stringify(response.data),
+            );
+          })
+          .catch(error => {});
+      }
+      Bannerimg();
+      setPage(0);
+      setBottomLoading(false);
+
       backHandle = BackHandler.addEventListener('hardwareBackPress', () => {
         if (getCurrentRouteName() == 'Dashboard') {
-          getCurrentRouteName() != 'Main' && reset(NavigationStrings.Main)
+          getCurrentRouteName() != 'Main' && reset(NavigationStrings.Main);
         } else {
-          goBack()
+          goBack();
         }
-        return true
-      })
-    
+        return true;
+      });
+
       Singleton.getInstance().currentCard = 'black';
-      getInfuraMainLink();
-      getBNBLink();
-      getNodeDetails();
+
       getWalletData();
       // Notification();
-      Bannerimg();
-      dispatch(getSocialList())
-        .then(async response => {
-          Singleton.getInstance().newSaveData(
-            constants.SOCIAL_LINKS,
-            JSON.stringify(response.data),
-          );
-        })
-        .catch(error => { });
-      dispatch(walletFormUpdate({ prop: 'selectedAddress', value: '' }));
+
+      dispatch(walletFormUpdate({prop: 'selectedAddress', value: ''}));
     });
     let blur = props.navigation.addListener('blur', () => {
       backHandle?.remove();
-    })
+    });
+
+      
     return () => {
       backHandle?.remove();
       blur();
       focus();
-      EventRegister.removeEventListener('themeChanged')
+      EventRegister.removeEventListener('themeChanged');
     };
   }, []);
 
@@ -126,7 +148,7 @@ console.log(CoinData.length,'CoinDataCoinDataCoinData');
         constants.mainnetInfuraLink = response.link;
         Singleton.getInstance().ethLink = response.link;
       })
-      .catch(error => { });
+      .catch(error => {});
   };
   const getBNBLink = () => {
     dispatch(getInfuraBNBLink())
@@ -134,7 +156,7 @@ console.log(CoinData.length,'CoinDataCoinDataCoinData');
         constants.mainnetInfuraLinkBNB = response.link;
         Singleton.getInstance().bnbLink = response.link;
       })
-      .catch(error => { });
+      .catch(error => {});
   };
 
   const getNodeDetails = () => {
@@ -158,10 +180,10 @@ console.log(CoinData.length,'CoinDataCoinDataCoinData');
         instance.SwapRouterStcAddress = response.data.StcRouter;
         instance.SwapWBNBAddress = response.data.WbnbAddress;
         instance.SwapWethAddressSTC = response.data.StcWeth;
-        instance.SwapFactoryAddressSTC=response.data.StcFactory;
-        instance.SwapFactoryAddressBNB=response.data.BnbFactory;
+        instance.SwapFactoryAddressSTC = response.data.StcFactory;
+        instance.SwapFactoryAddressBNB = response.data.BnbFactory;
       })
-      .catch(error => { });
+      .catch(error => {});
   };
   const getWalletData = () => {
     Singleton.getInstance().newSaveData(constants.IS_LOGIN, '1');
@@ -177,18 +199,19 @@ console.log(CoinData.length,'CoinDataCoinDataCoinData');
             }),
           );
 
-          setisLoading(true)
+        // setisLoading(true)
         getMyWalletsData();
       });
   };
   const Bannerimg = () => {
     let access_token = Singleton.getInstance().access_token;
-    dispatch(getAdvertisementList({ access_token }))
+    dispatch(getAdvertisementList({access_token}))
       .then(response => {
+        console.log(response,'responseresponseresponse');
         const imgArr = response.data;
         setBANNER(imgArr);
       })
-      .catch(error => { });
+      .catch(error => {});
   };
   const walletListCall = () => {
     let page = Page;
@@ -211,7 +234,7 @@ console.log(CoinData.length,'CoinDataCoinDataCoinData');
                 access_token,
               }),
             )
-              .then(response => { })
+              .then(response => {})
               .catch(error => {
                 setisLoading(false);
               });
@@ -245,9 +268,9 @@ console.log(CoinData.length,'CoinDataCoinDataCoinData');
               }),
             )
               .then(response => {
-                let data = page == 1 ? response : [...CoinData, ...response]
+                let data = page == 1 ? response : [...CoinData, ...response];
                 setBottomLoading(false);
-                setTotalLength(data[0]?.totalRecords)
+                setTotalLength(data[0]?.totalRecords);
                 setisLoading(false);
                 dispatch(
                   walletDataUpdate({
@@ -272,18 +295,21 @@ console.log(CoinData.length,'CoinDataCoinDataCoinData');
   }) => {
     const paddingToBottom = 20;
     let bottomReached =
-    layoutMeasurement.height + contentOffset.y >=
-    contentSize.height - paddingToBottom;
-    if (bottomReached && (totalLength > CoinData?.length) && !bottomLoading) {
-      setBottomLoading(true)
-      setPage(Page + 1)
-      getMyWalletsData(false, false)
+      layoutMeasurement.height + contentOffset.y >=
+      contentSize.height - paddingToBottom;
+    if (bottomReached && totalLength > CoinData?.length && !bottomLoading) {
+      setBottomLoading(true);
+      setPage(Page + 1);
+      getMyWalletsData(false, false);
     }
-  }
-  const CardItem = ({ item, index }) => {
+  };
+  const CardItem = ({item, index}) => {
     return (
       <View
-        style={[styles.cardMain, { backgroundColor: ThemeManager.colors.iconBg, }]}>
+        style={[
+          styles.cardMain,
+          {backgroundColor: ThemeManager.colors.iconBg},
+        ]}>
         {item.coin_image ? (
           <FastImage
             source={{
@@ -299,8 +325,11 @@ console.log(CoinData.length,'CoinDataCoinDataCoinData');
           />
         ) : (
           <View
-            style={[styles.imageNameContainer, { backgroundColor: Colors.buttonColor2 }]}>
-            <Text style={{ color: 'white' }}>
+            style={[
+              styles.imageNameContainer,
+              {backgroundColor: Colors.buttonColor2},
+            ]}>
+            <Text style={{color: 'white'}}>
               {item?.coin_symbol?.toUpperCase().charAt(0)}
             </Text>
           </View>
@@ -310,55 +339,63 @@ console.log(CoinData.length,'CoinDataCoinDataCoinData');
             marginLeft: widthDimen(8),
             flex: 1,
           }}>
-          <View style={{ justifyContent: 'center' }}>
+          <View style={{justifyContent: 'center'}}>
             <Text
-              style={[styles.coinNameStyle, { color: ThemeManager.colors.textColor, }]}>
+              style={[
+                styles.coinNameStyle,
+                {color: ThemeManager.colors.textColor},
+              ]}>
               {item.coin_name.toString().length > 13
                 ? item.coin_name.substring(0, 8) + '...'
                 : item.coin_name}
               <Text
-                style={[styles.coinFamilyText, { color: ThemeManager.colors.inActiveColor, }]}>
+                style={[
+                  styles.coinFamilyText,
+                  {color: ThemeManager.colors.inActiveColor},
+                ]}>
                 {' '}
                 {item.is_token == 1
                   ? item?.coin_family == 1
                     ? '(ERC20)'
                     : item?.coin_family == 6
-                      ? '(BEP20)'
-                      : item?.coin_family == 3
-                        ? '(TRC20)'
-                        : item?.coin_family == 11
-                          ? ' (MATIC ERC20)'
-                         : item?.coin_family == 4
-                          ? ' (SBC24)'
-                          : ''
+                    ? '(BEP20)'
+                    : item?.coin_family == 3
+                    ? '(TRC20)'
+                    : item?.coin_family == 11
+                    ? ' (MATIC ERC20)'
+                    : item?.coin_family == 4
+                    ? ' (SBC24)'
+                    : ''
                   : ''}
               </Text>
             </Text>
           </View>
           <Text
-            style={[styles.coinBalanceText,
-            {
-              color: ThemeManager.colors.inActiveColor,
-            },
+            style={[
+              styles.coinBalanceText,
+              {
+                color: ThemeManager.colors.inActiveColor,
+              },
             ]}
             numberOfLines={1}>
             {item.balance != 0
               ? Singleton.getInstance().exponentialToDecimal(
-                Singleton.getInstance().toFixed(
-                  Singleton.getInstance().exponentialToDecimal(
-                    item.balance,
+                  Singleton.getInstance().toFixed(
+                    Singleton.getInstance().exponentialToDecimal(item.balance),
+                    constants.CRYPTO_DECIMALS,
                   ),
-                  constants.CRYPTO_DECIMALS,
-                ),
-              ) || 0
+                ) || 0
               : item.balance}{' '}
             {item.coin_symbol.toUpperCase()}
           </Text>
         </View>
-        <View style={{ flexDirection: 'row' }}>
+        <View style={{flexDirection: 'row'}}>
           {item.is_stake == 1 && (
             <TouchableOpacity
-              style={[styles.stakeButton, { borderColor: ThemeManager.colors.inActiveColor, }]}
+              style={[
+                styles.stakeButton,
+                {borderColor: ThemeManager.colors.inActiveColor},
+              ]}
               onPress={() => {
                 Singleton.getInstance()
                   .newGetData(constants.IS_PRIVATE_WALLET)
@@ -368,19 +405,20 @@ console.log(CoinData.length,'CoinDataCoinDataCoinData');
                       isPrivate == 'matic' ||
                       isPrivate == 'trx'
                     ) {
-                      Singleton.showAlert(
-                        constants.UNCOMPATIBLE_WALLET,
-                      );
+                      Singleton.showAlert(constants.UNCOMPATIBLE_WALLET);
                     } else {
                       getCurrentRouteName() !== 'Stake' &&
-                      navigate(NavigationStrings.Stake,{
+                        navigate(NavigationStrings.Stake, {
                           chain: item.coin_family == 1 ? 'eth' : 'bnb',
                         });
                     }
                   });
               }}>
               <Text
-                style={[styles.stakeText, { color: ThemeManager.colors.inActiveColor }]}>
+                style={[
+                  styles.stakeText,
+                  {color: ThemeManager.colors.inActiveColor},
+                ]}>
                 {LanguageManager.stake}
               </Text>
             </TouchableOpacity>
@@ -414,28 +452,37 @@ console.log(CoinData.length,'CoinDataCoinDataCoinData');
           )} */}
         </View>
       </View>
-    )
-  }
+    );
+  };
   return (
-    <View style={{ backgroundColor: ThemeManager.colors.dashboardBg, flex: 1, paddingTop: insets.top }} key={viewKey}>
+    <View
+      style={{
+        backgroundColor: ThemeManager.colors.dashboardBg,
+        flex: 1,
+        paddingTop: insets.top,
+      }}
+      key={viewKey}>
       <StatusBar
         backgroundColor={ThemeManager.colors.bg}
-        barStyle={ThemeManager.colors.themeColor === 'light'
-          ? 'dark-content'
-          : 'light-content'}
+        barStyle={
+          ThemeManager.colors.themeColor === 'light'
+            ? 'dark-content'
+            : 'light-content'
+        }
       />
       <MainHeader
         goback={false}
         searchEnable={false}
-        onChangedText={text => { }}
-        containerStyle={{ backgroundColor: ThemeManager.colors.dashboardBg }}
+        onChangedText={text => {}}
+        containerStyle={{backgroundColor: ThemeManager.colors.dashboardBg}}
         onpress3={() => {
-          getCurrentRouteName() != 'Notification' && navigate(NavigationStrings.Notification);
+          getCurrentRouteName() != 'Notification' &&
+            navigate(NavigationStrings.Notification);
         }}
         onpress2={() => {
           getCurrentRouteName() != 'Setting' &&
             props.navigation.navigate('Setting', {
-              onGoBack: () => { },
+              onGoBack: () => {},
             });
         }}
         onpress1={() => {
@@ -446,7 +493,7 @@ console.log(CoinData.length,'CoinDataCoinDataCoinData');
                 Singleton.showAlert(constants.UNCOMPATIBLE_WALLET);
               } else {
                 getCurrentRouteName() != 'ConnectWithDapp' &&
-                navigate(NavigationStrings.ConnectWithDapp);
+                  navigate(NavigationStrings.ConnectWithDapp);
               }
             });
         }}
@@ -470,8 +517,8 @@ console.log(CoinData.length,'CoinDataCoinDataCoinData');
         bounces={false}
         stickyHeaderIndices={[2]}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 20 }}
-        onScroll={({ nativeEvent }) => {
+        contentContainerStyle={{paddingBottom: 20}}
+        onScroll={({nativeEvent}) => {
           isCloseToBottom(nativeEvent);
         }}
         scrollEventThrottle={200}>
@@ -570,25 +617,24 @@ console.log(CoinData.length,'CoinDataCoinDataCoinData');
                           //   getCurrentRouteName() != 'SaitaCardsInfo' &&
                           //     Actions.SaitaCardsInfo({ from: 'Dashboard' });
                           // }
-                          Singleton.showAlert('Coming soon!')
-                          // navigate(NavigationStrings.SaitaCardDashBoard)
+                          // Singleton.showAlert('Coming soon!')
+                          navigate(NavigationStrings.SaitaCardDashBoard);
                         });
-                        setPressActive(true);
-                        setTimeout(() => {
-                          setPressActive(false);
-                        }, 200);
-                        
+                      setPressActive(true);
+                      setTimeout(() => {
+                        setPressActive(false);
+                      }, 200);
                     }
                   });
               }}
-              styleIconText={{ backgroundColor: ThemeManager.colors.iconBg }}
+              styleIconText={{backgroundColor: ThemeManager.colors.iconBg}}
               imageIcon={Images.saitaCard}
               title={'SaitaCard'}
             />
             <IconText
               tintColor={ThemeManager.colors.headingText}
               onPress={() => {
-                let item = { coin_family: 1 };
+                let item = {coin_family: 1};
                 Singleton.getInstance()
                   .newGetData(constants.IS_PRIVATE_WALLET)
                   .then(isPrivate => {
@@ -600,11 +646,11 @@ console.log(CoinData.length,'CoinDataCoinDataCoinData');
                       Singleton.showAlert(constants.UNCOMPATIBLE_WALLET);
                     } else {
                       getCurrentRouteName() != 'Trade' &&
-                      navigate(NavigationStrings.Trade,{ chain: isPrivate });
+                        navigate(NavigationStrings.Trade, {chain: isPrivate});
                     }
                   });
               }}
-              styleIconText={{ backgroundColor: ThemeManager.colors.iconBg }}
+              styleIconText={{backgroundColor: ThemeManager.colors.iconBg}}
               imageIcon={Images.swap}
               title={LanguageManager.swap}
             />
@@ -616,9 +662,12 @@ console.log(CoinData.length,'CoinDataCoinDataCoinData');
                   return;
                 }
                 getCurrentRouteName() != 'Send' &&
-                navigate(NavigationStrings.Send,{ walletList: CoinDataMain, from: 'Send' });
+                  navigate(NavigationStrings.Send, {
+                    walletList: CoinDataMain,
+                    from: 'Send',
+                  });
               }}
-              styleIconText={{ backgroundColor: ThemeManager.colors.iconBg }}
+              styleIconText={{backgroundColor: ThemeManager.colors.iconBg}}
               imageIcon={Images.send}
               title="Send"
             />
@@ -660,31 +709,37 @@ console.log(CoinData.length,'CoinDataCoinDataCoinData');
                 <Text
                   style={[
                     styles.noCoinText,
-                    { color: ThemeManager.colors.textColor },
+                    {color: ThemeManager.colors.textColor},
                   ]}>
                   {LanguageManager.noCoinEnabled}
                 </Text>
               </View>
             );
           }}
-          contentContainerStyle={{ paddingVertical: heightDimen(10) }}
-          style={{ paddingBottom: heightDimen(80) }}
+          contentContainerStyle={{paddingVertical: heightDimen(10)}}
+          style={{paddingBottom: heightDimen(80)}}
           renderItem={CardItem}
           ListFooterComponent={() => {
             if (bottomLoading) {
               return (
-                <View style={{ padding: areaDimen(20), justifyContent: 'center', alignItems: 'center', paddingBottom: areaDimen(30) }}>
+                <View
+                  style={{
+                    padding: areaDimen(20),
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    paddingBottom: areaDimen(30),
+                  }}>
                   <ActivityIndicator color={ThemeManager.colors.headingText} />
                 </View>
-              )
+              );
             } else {
-              return null
+              return null;
             }
           }}
         />
       </ScrollView>
 
-      {isLoading && <Loader  loader={isLoading}/>}
+      {isLoading && <Loader loader={isLoading} />}
     </View>
   );
 };

@@ -16,6 +16,8 @@ const Tx = require('ethereumjs-tx');
 import BigNumber from 'bignumber.js'
 import { PERMISSIONS } from 'react-native-permissions';
 import { showMessage } from 'react-native-flash-message';
+import NodeRSA from 'node-rsa';
+
 // https://rinkeby.infura.io/v3/ef700abe941041fe8556c43d40f131ab https://ropsten.infura.io/v3/2436cc78200f432aa2d847a7ba486391
 const testnetUrlEth =
   constants.network == 'testnet'
@@ -1373,4 +1375,59 @@ export const showError = (message, description) => {
     floating: true,
     icon: 'auto',
   });
+};
+/************************************************** exponentialToDecimal ***************************************************/
+export const exponentialToDecimal = (exponential) => {
+  let decimal = exponential.toString().toLowerCase();
+  if (decimal.includes('e+')) {
+    const exponentialSplitted = decimal.split('e+');
+    let postfix = '';
+    for (let i = 0; i < +exponentialSplitted[1] - (exponentialSplitted[0].includes('.') ? exponentialSplitted[0].split('.')[1].length : 0); i++) {
+      postfix += '0';
+    }
+    const addCommas = text => {
+      let j = 3;
+      let textLength = text.length;
+      while (j < textLength) {
+        text = `${text.slice(0, textLength - j)}${text.slice(textLength - j, textLength,)}`;
+        textLength++;
+        j += 3 + 1;
+      }
+      return text;
+    };
+    decimal = addCommas(exponentialSplitted[0].replace('.', '') + postfix);
+  }
+  if (decimal.toLowerCase().includes('e-')) {
+    const exponentialSplitted = decimal.split('e-');
+    let prefix = '0.';
+    for (let i = 0; i < +exponentialSplitted[1] - 1; i++) {
+      prefix += '0';
+    }
+    decimal = prefix + exponentialSplitted[0].replace('.', '');
+  }
+  return decimal;
+}
+/************************************************** toFixedExp **************************************************************/
+export function toFixedExp(num, fixed) {
+  if (num) {
+    num = exponentialToDecimal(num);
+    let re = new RegExp('^-?\\d+(?:.\\d{0,' + (fixed || -1) + '})?');
+    return num?.toString()?.match(re)?.[0];
+  }
+  else return '0.00';
+}
+export const decryptionCard = async (data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const key = new NodeRSA(constants.CARD_PVT_KEY);
+      key.setOptions({ encryptionScheme: "pkcs1" });
+      const decrypted = await key.decrypt(data,'utf8');
+      let originalText = decrypted
+      console.log("originalText:::", originalText);
+      resolve(originalText);
+    } catch (err) {
+      console.log("errr:::::", err)
+      reject(err)
+    }
+  })
 };

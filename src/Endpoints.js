@@ -6,6 +6,7 @@ export const BASE_URL_SAITACARDS =
   constants.network == 'testnet' ?
    'https://stage-card-api.pro-saitamask.com/api/v1/' 
    :'https://card.saitacard.io/api/v1/';
+   export const VAULT_CARD_URL='https://api.prod.testessential.net/';
 
 export const BASE_URL_CARDS_CENTRALISED =
   constants.network == 'testnet' ? 
@@ -212,17 +213,62 @@ export const STC_GAS_PRICE='saitachain/gasPrices';
 export const STC_GAS_LIMIT='saitachain/gasLimit';
 
 /************************************** Vault APIs ****************************************************/
-export const SIGN_UP = 'user/v3/mobile/signup';
-export const CONFIRM_PHONE = 'user/v3/mobile/phone/confirm';
-export const RESEND_OTP = 'user/v3/mobile/phone/verify/resend';
-export const EMAIL_ADD = 'user/v3/mobile/email/add';
-export const SET_USER_DETAIL='user/v3/customer/profile';
-export const USER_LOGOUT = 'user/v3/signout';
-export const USER_LOGIN = 'user/v3/oauth/token';
-export const GET_USER_PROFILE = 'user/v3/customer/profile';
-export const GET_KYC_ID='user/v3/kyc/start';
-export const REQUEST_VAULT_CARD='card/v3/card/card-requests';
+// export const SIGN_UP = 'user/v3/mobile/signup';
+// export const CONFIRM_PHONE = 'user/v3/mobile/phone/confirm';
+// export const RESEND_OTP = 'user/v3/mobile/phone/verify/resend';
+// export const EMAIL_ADD = 'user/v3/mobile/email/add';
+// export const SET_USER_DETAIL='user/v3/customer/profile';
+// export const USER_LOGOUT = 'user/v3/signout';
+// export const USER_LOGIN = 'user/v3/oauth/token';
+// export const GET_USER_PROFILE = 'user/v3/customer/profile';
+// export const GET_KYC_ID='user/v3/kyc/start';
+// export const REQUEST_VAULT_CARD='card/v3/card/card-requests';
 
-export const FORGET_OTP_SEND = 'user/v3/mobile/password/reset';
-export const FORGET_OTP_CONFIRM = 'user/v3/mobile/password/reset/confirm/code';
-export const FORGET_PASSWORD_CONFIRM = 'user/v3/mobile/password/reset/confirm';
+// export const FORGET_OTP_SEND = 'user/v3/mobile/password/reset';
+// export const FORGET_OTP_CONFIRM = 'user/v3/mobile/password/reset/confirm/code';
+// export const FORGET_PASSWORD_CONFIRM = 'user/v3/mobile/password/reset/confirm';
+
+
+// ----------------------------------------------------------------
+export const GET_SIGNUP_CODE = 'v2/mobile/signup';
+export const CONFIRM_PHONE_OTP = 'user-v3/mobile/phone/confirm';
+export const EMAIL_ADD='user-v3/mobile/email/add';
+export const USER_LOGIN='oauth/token';
+export const KYC_DATA='user-v3/customer/kyc/data';
+export const GET_CUSTOMER_PROFILE='user-v3/customer/profile';
+export const RESEND_OTP='user-v3/mobile/phone/verify/resend';
+export const KYC_START='user-v3/kyc/start';
+export const VAULT_DETAILS='user-v3/vault/details';
+export const USER_CARD_LIST='card-v3/card/list';
+export const CARD_TRANSACTION_HISTORY='card-v3/history/card/';
+export const otpForCardDetailsCode=(cardId,cp)=>`card-v3/card/${cardId}/details/code?cp=${cp}`;
+export const otpForCardDetails=(cardId,cp)=>`v2/card/${cardId}/details?cp=${cp}`;
+export const otpForCardBlock=(cardId,cp)=>`card-v3/card/${cardId}/soft-block/code?cp=${cp}`;
+export const otpForCardUnblock=(cardId,cp)=>`card-v3/card/${cardId}/soft-unblock/code?cp=${cp}`;
+export const BlockCard=(cardId,cp)=>`v2/card/${cardId}/soft-block?cp=${cp}`;
+export const unblockCard=(cardId,cp)=>`v2/card/${cardId}/soft-unblock?cp=${cp}`;
+export const LOG_OUT='signout';
+export const CHANGE_PASSWORD='v2/mobile/password/change';
+// ----------vault forget apis ----------
+export const FORGET_OTP_SEND = 'v2/mobile/password/reset';
+export const FORGET_OTP_CONFIRM = 'v2/mobile/password/reset/confirm/code';
+export const FORGET_PASSWORD_CONFIRM = 'v2/mobile/password/reset/confirm';
+
+export const GET_WALLET_LIST = 'user-v3/wallets';
+export const CREATE_WALLETS = 'user-v3/wallets';
+export const requestCard=(cp)=>`card-v3/card/card-requests?cp=${cp}`;
+export const getValutWalletList=(cp) => `v2/card/payload/currencies?cp=${cp}&force=true`
+export const FINISH_KYC='user-v3/kyc/ondato/finished?platform=COMMON';
+
+export const cardRequestAddress=(cardId,cp)=>`card-v3/card/card-requests/${cardId}/address?cp=${cp}`;
+export const ADDITIONAL_INFO=`card-v3/card/additional-personal-info`;
+export const getTopUpConversionPrice=(cardId,cp) => `card-v3/card/${cardId}/payload/offers?cp=${cp}&force=false`
+export const GET_COUNTRY_CODES = 'card-v3/get_country_codes';
+export const GET_VAULT_SETTINGS = 'card-v3/get_vault_settings';
+export const cardPrice=(cardId,currency,cp)=>`card-v3/card/card-requests/${cardId}/price/${currency}?cp=${cp}`;
+export const payCardFee=(cardId,currency,cp)=>`card-v3/card/card-requests/${cardId}/payment-offer/${currency}?cp=${cp}`
+export const confirmCardFee=(cardId,cp)=>`card-v3/card/card-requests/payment-offer/${cardId}/confirm?cp=${cp}`;
+export const rechargeConversion=(cardId,cp)=>`card-v3/card/${cardId}/payload/offers?cp=${cp}&force=false`;
+export const confirmRecharge=(cardId,cp,offerId)=>`card-v3/card/${cardId}/payload/offers/${offerId}/confirm?cp=${cp}&force=false`;
+export const cardLimits=(cardId,cp)=>`card-v3/card/${cardId}/payload/data?cp=${cp}&force=false`;
+export const CARD_PRICES = 'card-v3/card/prices';

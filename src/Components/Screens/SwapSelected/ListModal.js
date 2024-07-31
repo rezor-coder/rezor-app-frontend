@@ -121,12 +121,12 @@ const ListModal = ({
                       },
                     ]}>
                     <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                      {item?.coin_image ? (
+                      {item?.coin_image || item?.iconUrl  ? (
                         <FastImage
                           style={styles.imgstyle}
                           source={
-                            typeof item?.coin_image == 'string'
-                              ? {uri: item?.coin_image}
+                            typeof item?.coin_image == 'string'|| typeof item?.iconUrl == 'string' 
+                              ? {uri: item?.coin_image ||item?.iconUrl}
                               : item?.coin_image
                           }
                           resizeMode="contain"
@@ -148,7 +148,7 @@ const ListModal = ({
                               fontSize: areaDimen(15),
                               lineHeight: heightDimen(18),
                             }}>
-                            {item?.coin_name?.charAt(0)}
+                               {item?.coin_name?.charAt(0) || item?.currency?.charAt(0)}
                           </Text>
                         </View>
                       )}
@@ -160,7 +160,7 @@ const ListModal = ({
                         ]}>
                         {isEpay
                           ? item?.coin_symbol?.toUpperCase()
-                          : item?.coin_name?.toUpperCase()}
+                          : item?.currency ? item.currency+ (item.baseCurrency?' ('+item.baseCurrency+') ':'') :item?.coin_name?.toUpperCase()}
                       </Text>
                       {item?.is_token == 1 && (
                         <Text
@@ -184,6 +184,7 @@ const ListModal = ({
                       source={ThemeManager.ImageIcons.forwardArrowIcon}
                       style={[styles.arwImg]}
                       tintColor={ThemeManager.colors.lightTextColor}
+                      resizeMode='contain'
                     />
                   </TouchableOpacity>
                 );

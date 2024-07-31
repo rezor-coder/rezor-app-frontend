@@ -35,6 +35,7 @@ import {
   getRouterDetails,
   getUserCardAddress,
   getUserCardDetail,
+  getVaultDetails,
   myWalletListSuccess,
   updateListBalances,
 } from '../../../Redux/Actions';
@@ -74,7 +75,7 @@ const Wallet = props => {
   const themeChange = useSelector(state => state.mnemonicreateReducer?.currentTheme)
   const [accessTokenCard, setAccessTokenCard] = useState(null);
   const [isIncompatible, setInCompatible] = useState(false);
-  const [isLoading, setisLoading] = useState(false);
+  const [isLoading, setisLoading] = useState(true);
   const gradientColor = [
     '#9ABFFF',
     '#4C80FF',
@@ -112,6 +113,7 @@ const Wallet = props => {
   useEffect(() => {
     Notification();
     getRouterDetailsApi()
+    dispatch(getVaultDetails())
     EventRegister.addEventListener('themeChanged', () => {
       setViewKey(new Date())
     })
@@ -167,11 +169,11 @@ const Wallet = props => {
     }
     global.isNotification = true;
   };
-  useEffect(() => {
-    if (activeTab == 'SaitaCard') {
-      getCardDetails();
-    }
-  }, [activeTab]);
+  // useEffect(() => {
+  //   if (activeTab == 'SaitaCard') {
+  //     getCardDetails();
+  //   }
+  // }, [activeTab]);
   const backAction = () => {
     if (!stopAsk) {
       stopAsk = true;
@@ -360,52 +362,19 @@ const Wallet = props => {
           setInCompatible(false);
         }
       });
-    getCardDetails();
+    // getCardDetails();
     getDetails();
   };
 
   const getCardDetails = () => {
     Singleton.getInstance()
-      .newGetData(Constants.access_token_cards)
-      .then(res => {
-        setAccessTokenCard(res);
-        if (res) {
-          dispatch(getUserCardDetail({ access_token: res }))
-            .then(userDetails => {
-              setUserDetails(userDetails);
-              if (userDetails?.cards[0]?.card_id !== null) {
-                setCardActive(true);
-              } else {
-                setCardActive(false);
-                return;
-              }
-              setCardInfo({
-                ...cardInfo,
-                cardNumber: userDetails?.cards[0]?.card_number,
-              });
-              let data = {
-                card_id: userDetails?.cards[0]?.card_id,
-              };
-              dispatch(fetchBankDetails({ data, access_token: res }))
-                .then(res => {
-                  var date = res.expire.substring(0, 3);
-                  var year = res.expire.substring(5, 7);
-                  var expire = date + year;
-                  setActualCardInfo({
-                    cardNumber: res.card_number,
-                    cvv: res.cvv,
-                    expire: expire,
-                  });
-                })
-                .catch(err => {
-                });
-            })
-            .catch(err => {
-              console.log('err:::::', err);
-              setAccessTokenCard(null);
-            });
-        }
-      });
+    .newGetData(Constants.CARD_TOKEN).then(token => {
+      console.log(token,'tokentokentokentoken');
+      if(!!token){
+        navigate(NavigationStrings.SaitaCardDashBoard)
+      }
+
+    })
   };
   const coinSelection = item => {
     getCurrentRouteName() !== 'CoinHome' && navigate(NavigationStrings.CoinHome,{ coin: item });
@@ -414,7 +383,7 @@ const Wallet = props => {
     let access_token = Singleton.getInstance().access_token;
     dispatch(getDexUrls(access_token))
     getMyWalletsData();
-    setisLoading(true);
+    // setisLoading(true);
     Singleton.getInstance()
       .newGetData(Constants.multi_wallet_array)
       .then(res => {
@@ -673,7 +642,7 @@ const Wallet = props => {
   const createWalletAddress = async (card, user = userDetails) => {
     return new Promise(async (resolve, reject) => {
       try {
-        setisLoading(true);
+        // setisLoading(true);
         console.log('createWalletAddress req', card, user);
         let data = {
           full_name: user.full_name,
@@ -1063,23 +1032,8 @@ const Wallet = props => {
           accessTokenCard == null && (
             <BasicButton
               onPress={() => {
-                Singleton.showAlert('Coming soon!')
-                // Singleton.getInstance()
-                //   .newGetData(Constants.IS_PRIVATE_WALLET)
-                //   .then(isPrivate => {
-                //     if (
-                //       isPrivate == 'btc' ||
-                //       isPrivate == 'matic' ||
-                //       isPrivate == 'bnb' ||
-                //       isPrivate == 'trx' ||
-                //       isPrivate == 'eth'
-                //     ) {
-                //       Singleton.showAlert(Constants.UNCOMPATIBLE_WALLET);
-                //     } else {
-                //       getCurrentRouteName() != 'SaitaCardLogin' &&
-                //       navigate(NavigationStrings.SaitaCardLogin,{ from: 'Main' });
-                //     }
-                //   });
+                      getCurrentRouteName() != 'SaitaCardLogin' &&
+                      navigate(NavigationStrings.SaitaCardLogin,{ from: 'Main' });
               }}
               btnStyle={{
                 position: 'absolute',

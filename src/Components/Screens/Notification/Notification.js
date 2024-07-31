@@ -22,6 +22,7 @@ import { Images } from '../../../theme';
 import { BorderLine, SimpleHeader, Wrap } from '../../common';
 import Loader from '../Loader/Loader';
 import styles from './NotificationStyle';
+import { isEmpty } from 'lodash';
 
 class Notification extends Component {
   constructor(props) {
@@ -37,7 +38,17 @@ class Notification extends Component {
     };
   }
   componentDidMount() {
-    this.getNotificationList();
+    Singleton.getInstance()
+      .newGetData(Constants.Notification)
+      .then((res) => {
+        let temp = !!res ? res : '[]'
+        console.log(res, 'resresresresres');
+        this.setState({ isLoading: !isEmpty(JSON.parse(temp)) ? false : true, notificationList: !isEmpty(JSON.parse(temp)) ? JSON.parse(res) : [] });
+        this.getNotificationList();
+      }).catch(error => {
+        console.log(error, 'errorerror');
+      })
+    
     this.props.navigation.addListener('focus', this.screenFocus);
     this.props.navigation.addListener('blur', this.screenBlur);
   }
@@ -58,7 +69,7 @@ class Notification extends Component {
    }
   };
   getNotificationList() {
-    this.setState({ isLoading: true });
+    // this.setState({ isLoading: true });
     let page = this.state.page;
     let limit = this.state.limit;
     let access_token = Singleton.getInstance().access_token;
@@ -79,6 +90,8 @@ class Notification extends Component {
                 access_token,
               })
               .then(res => {
+                console.log(res.data,'res.datares.datares.data');
+                Singleton.getInstance().newSaveData(Constants.Notification,JSON.stringify(res.data))
                 console.log(res.data);
                 this.setState({
                   notificationList: res.data,
@@ -127,7 +140,7 @@ class Notification extends Component {
                       coinFamilyKeys,
                       access_token,
                     })
-                    .then(response => {
+                    .then(async (response) => {
                       ////console.log(
                       // 'response notification list view-- on scroll- ',
                       //   response,

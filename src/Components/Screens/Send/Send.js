@@ -57,6 +57,13 @@ class Send extends Component {
     };
   }
   componentDidMount() {
+    Singleton.getInstance()
+    .newGetData(constants.DASHBOARD_WALLET_LIST)
+      .then(wallet_list => {
+        this.setState({ isLoading: wallet_list == null ? true : false });
+        this.getMyWalletsData();
+      })
+
     AppState.addEventListener('change', state => {
       if (state === 'inactive' || state === 'background') {
         this.setState({
@@ -71,8 +78,8 @@ class Send extends Component {
       return true;
     });
     this.props.navigation.addListener('focus', () => {
-      this.setState({Page: 1, bottomLoading: false,isLoading:true});
-      this.getMyWalletsData();
+      this.setState({Page: 1, bottomLoading: false,});
+      
       this.backHandle = BackHandler.addEventListener(
         'hardwareBackPress',
         () => {

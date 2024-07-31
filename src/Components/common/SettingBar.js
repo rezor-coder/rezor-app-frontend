@@ -39,6 +39,7 @@ const SettingBar = props => {
             style={props.imgStyle}
             source={props.iconImage}
             resizeMode={FastImage.resizeMode.contain}
+            tintColor={props.tintColor}
           />
         </View>
       ) : 
