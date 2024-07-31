@@ -126,7 +126,7 @@ export default class Singleton {
   device_token = '';
   dynamicColor = '';
   statusChange = null;
-  slipageTolerance = '1';
+  slipageTolerance = '2';
   slipageTimeout = '10';
   walletConnectRef = null;
   visible = false;

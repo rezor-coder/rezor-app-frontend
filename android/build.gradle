@@ -3,7 +3,7 @@
 buildscript {
     ext {
         buildToolsVersion = "33.0.0"
-        minSdkVersion = 25
+        minSdkVersion = 21
         compileSdkVersion = 33
         targetSdkVersion = 33
         kotlinVersion = "1.8.0"
@@ -18,7 +18,7 @@ buildscript {
             ndkVersion = "23.1.7779620"
         } else {
             // Otherwise we default to the side-by-side NDK version from AGP.
-            ndkVersion = "21.4.7075529"
+            ndkVersion = "24.0.8215888"
         }
     }
     subprojects { subproject ->
