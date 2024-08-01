@@ -496,7 +496,7 @@ PODS:
     - Charts (= 4.1.0)
     - React
     - SwiftyJSON (= 5.0)
-  - react-native-compat (2.13.2):
+  - react-native-compat (2.14.0):
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
   - react-native-date-picker (4.4.2):
@@ -517,7 +517,7 @@ PODS:
     - React-Core
   - react-native-randombytes (3.6.1):
     - React-Core
-  - react-native-safe-area-context (4.10.4):
+  - react-native-safe-area-context (4.10.8):
     - React-Core
   - react-native-slider (4.5.2):
     - RCT-Folly (= 2021.07.22.00)
@@ -680,7 +680,7 @@ PODS:
     - RNFBApp
   - RNFS (2.20.0):
     - React-Core
-  - RNGestureHandler (2.16.2):
+  - RNGestureHandler (2.18.0):
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
   - RNImageCropPicker (0.37.3):
@@ -696,11 +696,11 @@ PODS:
     - React
   - RNPermissions (3.10.1):
     - React-Core
-  - RNReanimated (3.7.1):
+  - RNReanimated (3.14.0):
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
     - ReactCommon/turbomodule/core
-  - RNScreens (3.31.1):
+  - RNScreens (3.33.0):
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
     - React-RCTImage
@@ -1097,7 +1097,7 @@ SPEC CHECKSUMS:
   react-native-blur: 69ecfe61d81b32ee7baae10f5d17aeb4e2594b10
   react-native-camera: 3eae183c1d111103963f3dd913b65d01aef8110f
   react-native-charts-wrapper: 4461b72f48e737a490e968bf2468cc0fd2281681
-  react-native-compat: 5b81b2d5f3f6be5e149ad2d3af3b9fc03f07f9d3
+  react-native-compat: 24c27f0076c5d094ac54a7c803aa5fd4f582444d
   react-native-date-picker: 312c387d2ff873c66c5e4cf78ff6827fa91644e2
   react-native-document-picker: cd4d6b36a5207ad7a9e599ebb9eb0c2e84fa0b87
   react-native-encrypted-storage: db300a3f2f0aba1e818417c1c0a6be549038deb7
@@ -1107,7 +1107,7 @@ SPEC CHECKSUMS:
   react-native-netinfo: 30fb89fa913c342be82a887b56e96be6d71201dd
   react-native-qr-image-reader: e726001a081b025e03337451eda5fac720c65f11
   react-native-randombytes: 421f1c7d48c0af8dbcd471b0324393ebf8fe7846
-  react-native-safe-area-context: 399a5859f6acbdf67f671c69b53113f535f3b5b0
+  react-native-safe-area-context: b7daa1a8df36095a032dff095a1ea8963cb48371
   react-native-slider: 593253eb5fbc6ea519290e812bd477fc6abafd5a
   react-native-udp: ff9d13e523f2b58e6bc5d4d32321ac60671b5dc9
   react-native-version-check: 6cd36aad4e30b8e3216747e3b4ddeb09e0647af8
@@ -1144,12 +1144,12 @@ SPEC CHECKSUMS:
   RNFBApp: e4439717c23252458da2b41b81b4b475c86f90c4
   RNFBMessaging: 40dac204b4197a2661dec5be964780c6ec39bf65
   RNFS: 4ac0f0ea233904cb798630b3c077808c06931688
-  RNGestureHandler: d678f94a8f74de70ce3d9f5d23eb0f97b686e943
+  RNGestureHandler: 773fcd1d1a1d9b039f2a42861e3528e3daeb2a86
   RNImageCropPicker: 44e2807bc410741f35d4c45b6586aedfe3da39d2
   RNOS: 6f2f9a70895bbbfbdad7196abd952e7b01d45027
   RNPermissions: 4e3714e18afe7141d000beae3755e5b5fb2f5e05
-  RNReanimated: 43675f1f0e704abe8ebf953fd79b00e66302cda2
-  RNScreens: 93ae3be2f119d955620f9bbb39ad372adb53b7a9
+  RNReanimated: 158b2f80fdb043ab5a645ba047209badbd7eb9a9
+  RNScreens: 03acbdcf84e1bf6832ba83dbe3601eae20c55de0
   RNScreenshotPrevent: 105cddf74799cbd81aac76e56a4025a345db8967
   RNSentry: 4ea90ea061624364637e8077d965bf2e50478066
   RNSnackbar: 3727b42bf6c4314a53c18185b5203e915a4ab020
