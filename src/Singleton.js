@@ -543,16 +543,9 @@ export default class Singleton {
       if (value) {
         EncryptedStorage.setItem(key, value.toString())
           .then(res => {
-            //       if(key != 'hotList' && key != 'WALLET_LIST'){
-            //  //  console.warn('MM','##### SAVE NEW ####' , key , res);
-            //       }else{
-
-            //  //  console.warn('MM','##### SAVE NEW ####' , key );
-            //       }
             if (key == 'multi_wallet_array') {
               console.log(key, value);
             }
-            // console.warn('MM','newSaveData res::::', res);
             return resolve(res);
           })
           .catch(err => {

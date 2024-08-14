@@ -1,103 +1,109 @@
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable eqeqeq */
 /* eslint-disable react/self-closing-comp */
-import React, { useEffect, useState } from 'react';
-import {
-  Dimensions,
-  Platform,
-  Text,
-  TextInput,
-  View
-} from 'react-native';
-import { connect, useDispatch, useSelector } from 'react-redux';
-import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
+import React, {useEffect, useState} from 'react';
+import {Dimensions, Platform, Text, TextInput, View} from 'react-native';
+import {connect, useDispatch, useSelector} from 'react-redux';
+import {LanguageManager, ThemeManager} from '../../../../ThemeManager';
 import * as Constants from '../../../Constant';
-import { NavigationStrings } from '../../../Navigation/NavigationStrings';
-import { getColorList, walletFormUpdate } from '../../../Redux/Actions';
+import {NavigationStrings} from '../../../Navigation/NavigationStrings';
+import {getColorList, walletFormUpdate} from '../../../Redux/Actions';
 import Singleton from '../../../Singleton';
-import { getCurrentRouteName, navigate } from '../../../navigationsService';
-import {
-  BasicButton,
-  MainStatusBar
-} from '../../common';
+import {getCurrentRouteName, navigate} from '../../../navigationsService';
+import {BasicButton, MainStatusBar} from '../../common';
 import HeaderwithBackIcon from '../../common/HeaderWithBackIcon';
-import { Wrap } from '../../common/Wrap';
+import {Wrap} from '../../common/Wrap';
 import Loader from '../Loader/Loader';
-import { styles } from './CreateNewWalletStyle';
+import {styles} from './CreateNewWalletStyle';
 
 const windowHeight = Dimensions.get('window').height;
 const CreateNewWallet = props => {
   const dispatch = useDispatch();
   const [btn, setBtn] = useState('');
   const [loading, setLoading] = useState(false);
-  const [color_list, setcolor_list] = useState([]);
   const walletName = useSelector(
     state => state?.createWalletReducer?.walletName,
   );
-  const [walletNameText, setWalletNameText] = useState('');
 
   const letsStart = async () => {
-    Singleton.getInstance().newSaveData(Constants.USER_NAME, walletName);
-    ////console.log(
-    // 'usename00-----',
-    //   Singleton.getInstance().saveData(Constants.USER_NAME, walletName),
-    // );
-    console.log("props.route?.params?.isFrom===", props.route?.params?.isFrom)
-    if (props.route?.params?.isFrom != 'multiWallet') {
-      Singleton.getInstance().newSaveData(Constants.GRADIENT_COLOR, JSON.stringify(btn ? btn : ['#DA539C', '#A73CBE', '#882DD4', '#7C28DD']));
-    }
-    if (walletName.trim().length == 0) {
-      Singleton.showAlert(Constants.VALID_WALLET_NAME);
-      return;
-    }
-    if (walletName.trim().length < 3) {
-      Singleton.showAlert(Constants.VALID_NAME);
-      return;
-    }
-    setLoading(true);
+    try {
+      Singleton.getInstance().newSaveData(Constants.USER_NAME, walletName);
+      console.log(
+        'props.route?.params?.isFrom===',
+        props.route?.params?.isFrom,
+      );
 
-    if (props.route?.params?.isFrom == 'multiWallet') {
-
-      let multiWalletData = JSON.parse(await Singleton.getInstance().newGetData(Constants.multi_wallet_array))
-      let isNameExist = multiWalletData.filter(item => item?.walletName?.trim()?.toLowerCase() == walletName?.trim()?.toLowerCase())
-
-      if (isNameExist?.length > 0) {
-
-        Singleton.showAlert(Constants.wallet_name_already_exist);
-        setLoading(false)
-        return;
-
+      // Save gradient color if not 'multiWallet'
+      if (props.route?.params?.isFrom !== 'multiWallet') {
+        Singleton.getInstance().newSaveData(
+          Constants.GRADIENT_COLOR,
+          JSON.stringify(
+            btn ? btn : ['#DA539C', '#A73CBE', '#882DD4', '#7C28DD'],
+          ),
+        );
       }
-    }
 
-    setTimeout(() => {
-      Singleton.getInstance()
-        .createWallet()
-        .then(res => {
-          console.warn('MM', 'create wallet res--------', res);
-          dispatch(walletFormUpdate({ prop: 'walletData', value: res }));
-          if (props.route?.params?.isFrom == 'multiWallet') {
-           navigate(NavigationStrings.SecureWallet, { isFrom: props.route?.params?.isFrom });
-          } else {
-            getCurrentRouteName() != 'SecureWallet' && navigate(NavigationStrings.SecureWallet);
-          }
+      // Validate wallet name
+      const trimmedWalletName = walletName.trim();
+      if (trimmedWalletName.length === 0) {
+        Singleton.showAlert(Constants.VALID_WALLET_NAME);
+        return;
+      }
+      if (trimmedWalletName.length < 3) {
+        Singleton.showAlert(Constants.VALID_NAME);
+        return;
+      }
+      setLoading(true);
 
+      // Check for existing wallet name if 'multiWallet'
+      if (props.route?.params?.isFrom === 'multiWallet') {
+        const multiWalletData = JSON.parse(
+          await Singleton.getInstance().newGetData(
+            Constants.multi_wallet_array,
+          ),
+        );
+        const isNameExist = multiWalletData.some(
+          item =>
+            item?.walletName?.trim()?.toLowerCase() ===
+            trimmedWalletName.toLowerCase(),
+        );
+
+        if (isNameExist) {
+          Singleton.showAlert(Constants.wallet_name_already_exist);
           setLoading(false);
-        }).catch(err => {
-          console.log('err', err);
-          setLoading(false)
-          Singleton.showAlert('Error while creating the wallet')
-        })
-    }, 300);
+          return;
+        }
+      }
+
+      // Create wallet and navigate
+      const res = await Singleton.getInstance().createWallet();
+      console.warn('MM', 'create wallet res--------', res);
+      dispatch(walletFormUpdate({prop: 'walletData', value: res}));
+
+      if (props.route?.params?.isFrom === 'multiWallet') {
+        navigate(NavigationStrings.SecureWallet, {
+          isFrom: props.route?.params?.isFrom,
+        });
+      } else {
+        if (getCurrentRouteName() !== 'SecureWallet') {
+          navigate(NavigationStrings.SecureWallet);
+        }
+      }
+    } catch (err) {
+      console.log('err', err);
+      Singleton.showAlert('Error while creating the wallet');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const walletNameInputChanged = text => {
-    const walletNameRegex = Constants.ALPHANUMERIC_REGEX_SPACE
+    const walletNameRegex = Constants.ALPHANUMERIC_REGEX_SPACE;
     if (walletNameRegex.test(text)) {
       if (text.length > 20) {
         Singleton.showAlert('Wallet name has maximum length of 20 Character.');
       } else {
-        dispatch(walletFormUpdate({ prop: 'walletName', value: text }));
+        dispatch(walletFormUpdate({prop: 'walletName', value: text}));
       }
     } else {
       Singleton.showAlert('Space not alowed in wallet name');
@@ -105,15 +111,10 @@ const CreateNewWallet = props => {
   };
 
   useEffect(() => {
-    // Singleton.getInstance().saveData(
-    //   Constants.GRADIENT_COLOR,
-    //   JSON.stringify(btn),
-    // );
     props.navigation.addListener('focus', () => {
       // if (Platform.OS == "android")
       // RNPreventScreenshot?.enabled(true)
-      //  console.warn('MM','did focus called::::: createNewWallet');
-      dispatch(walletFormUpdate({ prop: 'walletName', value: '' }));
+      dispatch(walletFormUpdate({prop: 'walletName', value: ''}));
     });
 
     // colorList();
@@ -136,7 +137,7 @@ const CreateNewWallet = props => {
   //     }, 500);
   // };
   return (
-    <Wrap style={{ backgroundColor: ThemeManager.colors.bg }}>
+    <Wrap style={{backgroundColor: ThemeManager.colors.bg}}>
       <MainStatusBar
         backgroundColor={ThemeManager.colors.bg}
         barStyle={
@@ -148,11 +149,11 @@ const CreateNewWallet = props => {
       {/* <ImageBackgroundComponent style={{ height: windowHeight, flex: 1 }}> */}
       <HeaderwithBackIcon iconLeft={ThemeManager.ImageIcons.iconBack} />
       {/* <ScrollView keyboardShouldPersistTaps="handled" bounces={false}> */}
-      <View style={{ height: windowHeight - 250 }}>
-
+      <View style={{height: windowHeight - 250}}>
         <Text
           style={[
-            styles.txtCreateNewWallet, {
+            styles.txtCreateNewWallet,
+            {
               color: ThemeManager.colors.headingText,
             },
           ]}>
@@ -162,7 +163,7 @@ const CreateNewWallet = props => {
         <Text
           style={[
             styles.txtNamingWallet,
-            { color: ThemeManager.colors.lightTextColor },
+            {color: ThemeManager.colors.lightTextColor},
           ]}>
           {LanguageManager.namingYourWallet}
         </Text>
@@ -170,7 +171,7 @@ const CreateNewWallet = props => {
         <Text
           style={[
             styles.txtNameWallet,
-            { color: ThemeManager.colors.textColor },
+            {color: ThemeManager.colors.textColor},
           ]}>
           {LanguageManager.nameYourWallet}
         </Text>
@@ -178,33 +179,30 @@ const CreateNewWallet = props => {
         <View
           style={[
             styles.textInputView,
-            { borderColor: ThemeManager.colors.viewBorderColor },
+            {borderColor: ThemeManager.colors.viewBorderColor},
           ]}>
           <TextInput
-            style={[
-              styles.textInput,
-              { color: ThemeManager.colors.textColor },
-            ]}
+            style={[styles.textInput, {color: ThemeManager.colors.textColor}]}
             placeholder={LanguageManager.NameWallet}
             placeholderTextColor={ThemeManager.colors.placeholderTextColor}
             value={walletName}
-            keyboardType={Platform.OS == 'ios' ? "ascii-capable" : "visible-password"}
-
+            keyboardType={
+              Platform.OS == 'ios' ? 'ascii-capable' : 'visible-password'
+            }
             onChangeText={text => {
               if (text?.charAt(0) == ' ') {
                 return;
               }
-              console.log(")))))))");
-              if(text!=''){
+              if (text != '') {
                 if (Constants.NEW_NAME_REGX.test(text)) {
-                  walletNameInputChanged(text)
+                  walletNameInputChanged(text);
                 } else {
                   Singleton.showAlert(
                     'Please enter valid name. Only Alphabets, numbers and space are allowed',
                   );
                 }
-              }else{
-                walletNameInputChanged(text)
+              } else {
+                walletNameInputChanged(text);
               }
             }}
           />
@@ -258,7 +256,6 @@ const CreateNewWallet = props => {
                 </View>
               )}
             </View> */}
-
       </View>
       <View
         style={[
@@ -280,10 +277,10 @@ const CreateNewWallet = props => {
 
       {loading && <Loader />}
       {/* </ImageBackgroundComponent> */}
-    </Wrap >
+    </Wrap>
   );
 };
 const mapStateToProp = state => {
   return {};
 };
-export default connect(mapStateToProp, { getColorList })(CreateNewWallet);
+export default connect(mapStateToProp, {getColorList})(CreateNewWallet);

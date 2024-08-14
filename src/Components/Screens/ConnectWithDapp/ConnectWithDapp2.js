@@ -7,12 +7,11 @@ import {
   FlatList,
   SafeAreaView,
   BackHandler,
-  Alert,
 } from 'react-native';
 import styles from './ConnectWithDappStyles';
 import QRReaderModal from '../../common/QRReaderModal';
 import Singleton from '../../../Singleton';
-import { launchImageLibrary } from 'react-native-image-picker';
+import {launchImageLibrary} from 'react-native-image-picker';
 import QrImageReader from 'react-native-qr-image-reader';
 import {
   deleteSession,
@@ -20,28 +19,29 @@ import {
   saveCallRequestId,
   wallectConnectParamsUpdate,
 } from '../../../Redux/Actions/WallectConnectActions';
-import { connect, useDispatch } from 'react-redux';
+import {connect} from 'react-redux';
 import ApproveConnection from './ApproveConnection';
 import Loader from '../Loader/Loader';
 import CurrencyCard2 from '../../common/CurrencyCard2';
-import { Fonts } from '../../../theme';
+import {Fonts} from '../../../theme';
 import DisconnectDapp from './DisconnectDapp';
 import * as Constants from '../../../Constant';
-import { EventRegister } from 'react-native-event-listeners';
+import {EventRegister} from 'react-native-event-listeners';
 import {
   BasicButton,
   BorderLine,
   ButtonPrimary as Button,
   SimpleHeader,
 } from '../../common';
-import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
-import { QRreader } from 'react-native-qr-decode-image-camera';
-import { useState } from 'react';
-import { useEffect } from 'react';
-import { areaDimen, heightDimen, widthDimen } from '../../../Utils/themeUtils';
+import {LanguageManager, ThemeManager} from '../../../../ThemeManager';
+import {QRreader} from 'react-native-qr-decode-image-camera';
+import {useState} from 'react';
+import {useEffect} from 'react';
+import {areaDimen, heightDimen, widthDimen} from '../../../Utils/themeUtils';
 import WalletConnect from '../../../Utils/WalletConnect';
-import { getCurrentRouteName, goBack } from '../../../navigationsService';
-let isPrivateKey = null
+import {getCurrentRouteName, goBack} from '../../../navigationsService';
+import {useRoute} from '@react-navigation/native';
+let isPrivateKey = null;
 const ConnectWithDapp2 = props => {
   const [visible, setvisible] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -50,12 +50,13 @@ const ConnectWithDapp2 = props => {
   const [showDisconnect, setShowDisconnect] = useState(false);
   const [selectedDapp, setSelectedDapp] = useState({});
   const [chainList, setChainList] = useState([]);
-  const [is_private_wallet, setis_private_wallet] = useState('0');
+  const [setis_private_wallet] = useState('0');
   let clickDocument = false;
   const [activeSessions, setActiveSessions] = useState([]);
+  const route = useRoute();
 
   useEffect(() => {
-    console.log(visible,'visiblevisiblevisible');
+    route.params?.fromWallet && setvisible(true);
     let backHandle = null;
     backHandle = BackHandler.addEventListener('hardwareBackPress', backAction);
     return () => {
@@ -63,7 +64,6 @@ const ConnectWithDapp2 = props => {
     };
   }, []);
   const backAction = () => {
-
     setvisible(false);
     Singleton.visible = false;
     setShowDisconnect(false);
@@ -71,11 +71,11 @@ const ConnectWithDapp2 = props => {
   };
   useEffect(() => {
     Singleton.getInstance()
-    .newGetData(Constants.IS_PRIVATE_WALLET)
-    .then(isPrivateWallet => {
-      setis_private_wallet(isPrivateWallet)
-      isPrivateKey=isPrivateWallet || '0'
-    });
+      .newGetData(Constants.IS_PRIVATE_WALLET)
+      .then(isPrivateWallet => {
+        setis_private_wallet(isPrivateWallet);
+        isPrivateKey = isPrivateWallet || '0';
+      });
     getActiveConnections();
     EventRegister.addEventListener('wallet_connect_event', link => {
       console.log('----------------wallet_connect_event');
@@ -86,7 +86,6 @@ const ConnectWithDapp2 = props => {
             initializingWalletConnect(link, true);
           }
         });
-
     });
 
     EventRegister.addEventListener('sessionProposal', data => {
@@ -102,8 +101,8 @@ const ConnectWithDapp2 = props => {
       Singleton.getInstance()
         .newGetData(Constants.IS_PRIVATE_WALLET)
         .then(isPrivateWallet => {
-          setis_private_wallet(isPrivateWallet)
-          isPrivateKey=isPrivateWallet || '0'
+          setis_private_wallet(isPrivateWallet);
+          isPrivateKey = isPrivateWallet || '0';
         });
       getActiveConnections();
       if (props?.route?.params?.url) {
@@ -122,7 +121,7 @@ const ConnectWithDapp2 = props => {
     };
   }, []);
   const getActiveConnections = async () => {
-    console.log("getActiveConnections");
+    console.log('getActiveConnections');
     let sessions =
       await WalletConnect.getInstance()?.web3Wallet?.getActiveSessions();
     console.log('sessions:::::::', sessions);
@@ -174,7 +173,7 @@ const ConnectWithDapp2 = props => {
     try {
       let url;
       if (Platform.OS == 'android') {
-        url = await QrImageReader.decode({ path: uri });
+        url = await QrImageReader.decode({path: uri});
       }
       console.log('uri===>>>>>>', uri);
       result = Platform.OS == 'ios' ? await QRreader(uri) : url.result;
@@ -205,7 +204,9 @@ const ConnectWithDapp2 = props => {
     }, 3000);
     console.log('Response', response);
     if (Object.keys(response).includes('error')) {
-      Singleton.showAlert(response.error + '. Please turn on Permisssions in Settings');
+      Singleton.showAlert(
+        response.error + '. Please turn on Permisssions in Settings',
+      );
     } else {
       if (response.didCancel) {
         console.log('User cancelled image picker');
@@ -297,11 +298,11 @@ const ConnectWithDapp2 = props => {
               .then(res => {
                 console.log('WalletConnect.getInstance().connect_res:::', res);
                 setLoading(false);
-                getActiveConnections()
+                getActiveConnections();
               })
               .catch(err => {
                 console.log('connect_catch:::', err);
-                Singleton.showAlert(err)
+                Singleton.showAlert(err);
                 setLoading(false);
               });
           }
@@ -342,7 +343,10 @@ const ConnectWithDapp2 = props => {
   };
 
   const onConnectionConfirm = async (currency, sessionRequestPayload) => {
-    console.log('sessionRequestPayload::::', JSON.stringify(sessionRequestPayload?.params?.optionalNamespaces.eip155));
+    console.log(
+      'sessionRequestPayload::::',
+      JSON.stringify(sessionRequestPayload?.params?.optionalNamespaces.eip155),
+    );
     setLoading(true);
 
     if (global.disconnected) {
@@ -417,7 +421,8 @@ const ConnectWithDapp2 = props => {
           } else {
             console.log('else::::::requiredNamespacesChains');
             accounts = [
-              `${requiredNamespacesChains[0]}:${Singleton.getInstance().defaultEthAddress
+              `${requiredNamespacesChains[0]}:${
+                Singleton.getInstance().defaultEthAddress
               }`,
 
               // `eip155:56:${Singleton.getInstance().defaultEthAddress}`,
@@ -427,34 +432,50 @@ const ConnectWithDapp2 = props => {
             ];
           }
           if (optionalNamespacesChains?.toString()?.includes('eip155:137')) {
-            let isPresent = accounts?.find(item => item?.toString()?.includes('eip155:137:'))
+            let isPresent = accounts?.find(item =>
+              item?.toString()?.includes('eip155:137:'),
+            );
             if (!isPresent) {
-              accounts = [...accounts, `eip155:137:${Singleton.getInstance().defaultEthAddress
-                }`]
+              accounts = [
+                ...accounts,
+                `eip155:137:${Singleton.getInstance().defaultEthAddress}`,
+              ];
             }
           }
           if (optionalNamespacesChains?.toString()?.includes('eip155:56')) {
-            let isPresent = accounts?.find(item => item?.toString()?.includes('eip155:56:'))
+            let isPresent = accounts?.find(item =>
+              item?.toString()?.includes('eip155:56:'),
+            );
             if (!isPresent) {
-              accounts = [...accounts, `eip155:56:${Singleton.getInstance().defaultEthAddress
-                }`]
+              accounts = [
+                ...accounts,
+                `eip155:56:${Singleton.getInstance().defaultEthAddress}`,
+              ];
             }
           }
           if (optionalNamespacesChains?.toString()?.includes('eip155:1209')) {
-            let isPresent = accounts?.find(item => item?.toString()?.includes('eip155:1209:'))
+            let isPresent = accounts?.find(item =>
+              item?.toString()?.includes('eip155:1209:'),
+            );
             if (!isPresent) {
-              accounts = [...accounts, `eip155:1209:${Singleton.getInstance().defaultEthAddress
-                }`]
+              accounts = [
+                ...accounts,
+                `eip155:1209:${Singleton.getInstance().defaultEthAddress}`,
+              ];
             }
           }
           if (optionalNamespacesChains?.toString()?.includes('eip155:1')) {
-            let isPresent = accounts?.find(item => item?.toString()?.includes('eip155:1:'))
+            let isPresent = accounts?.find(item =>
+              item?.toString()?.includes('eip155:1:'),
+            );
             if (!isPresent) {
-              accounts = [...accounts, `eip155:1:${Singleton.getInstance().defaultEthAddress
-                }`]
+              accounts = [
+                ...accounts,
+                `eip155:1:${Singleton.getInstance().defaultEthAddress}`,
+              ];
             }
           }
-          console.log('multiRequest:::::',accounts);
+          console.log('multiRequest:::::', accounts);
           namespaces = {
             eip155: {
               accounts,
@@ -527,15 +548,15 @@ const ConnectWithDapp2 = props => {
     Singleton.showDisconnect = true;
   };
   const onDisconnect = async event => {
-    setLoading(true)
+    setLoading(true);
     try {
       await WalletConnect.getInstance().deleteSession(event);
-      setLoading(false)
+      setLoading(false);
     } catch (error) {
       console.log('dissssss', error);
-      setLoading(false)
+      setLoading(false);
     } finally {
-      setLoading(false)
+      setLoading(false);
       setTimeout(() => {
         getActiveConnections();
       }, 100);
@@ -545,7 +566,7 @@ const ConnectWithDapp2 = props => {
 
   return (
     <SafeAreaView
-      style={[styles.container, { backgroundColor: ThemeManager.colors.bg }]}>
+      style={[styles.container, {backgroundColor: ThemeManager.colors.bg}]}>
       {visible ? (
         <QRReaderModal
           visible={visible}
@@ -606,12 +627,12 @@ const ConnectWithDapp2 = props => {
                   allowFontScaling={false}
                   style={[
                     styles.headTextStyle,
-                    { color: ThemeManager.colors.textColor },
+                    {color: ThemeManager.colors.textColor},
                   ]}>
                   {' '}
                   To make transactions, link your wallet to Wallet Connect.{' '}
                 </Text>
-                <View style={{ flex: 1 }}>
+                <View style={{flex: 1}}>
                   {activeSessions?.length > 0 && (
                     <View style={styles.walletListingStyle}>
                       <View
@@ -649,12 +670,14 @@ const ConnectWithDapp2 = props => {
                             paddingHorizontal: widthDimen(5),
                             paddingTop: heightDimen(5),
                           }}
-                          renderItem={({ item, index }) => {
+                          renderItem={({item, index}) => {
                             let data = item?.peer?.metadata;
                             return (
                               <CurrencyCard2
                                 styleNew={styles.currencyCardStyle2}
-                                image={{ uri: data?.icons[data?.icons?.length - 1] }}
+                                image={{
+                                  uri: data?.icons[data?.icons?.length - 1],
+                                }}
                                 onPress={() => onPressDapp(item)}
                                 style={{
                                   height: areaDimen(35),
@@ -675,7 +698,7 @@ const ConnectWithDapp2 = props => {
                   onPress={() => {
                     onPressNewConnection();
                   }}
-                  customGradient={{ width: widthDimen(370), alignSelf: 'center' }}
+                  customGradient={{width: widthDimen(370), alignSelf: 'center'}}
                   textStyle={{
                     fontSize: 16,
                     fontFamily: Fonts.medium,
@@ -694,9 +717,9 @@ const ConnectWithDapp2 = props => {
 };
 
 const mapStateToProp = state => {
-  const { activeSessions, appActiveSessions } = state.walletConnectReducer;
+  const {activeSessions, appActiveSessions} = state.walletConnectReducer;
   const walletConnectReducer = state.walletConnectReducer;
-  return { activeSessions, appActiveSessions, walletConnectReducer };
+  return {activeSessions, appActiveSessions, walletConnectReducer};
 };
 
 export default connect(mapStateToProp, {

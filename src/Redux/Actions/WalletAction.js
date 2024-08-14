@@ -56,16 +56,16 @@ import {
   UPDATE_WALLET_BALANCES,
 } from '../../Endpoints';
 
-import { APIClient } from '../../Api/APIClient';
+import {APIClient} from '../../Api/APIClient';
 import Singleton from '../../Singleton';
 import * as Constants from '../../Constant';
 import moment from 'moment';
-import { exponentialToDecimalWithoutComma } from '../../utils';
+import {exponentialToDecimalWithoutComma} from '../../utils';
 /**************************************Update prop values ****************************************************/
-export const walletDataUpdate = ({ prop, value }) => {
+export const walletDataUpdate = ({prop, value}) => {
   return {
     type: WALLET_FORM_UPDATE,
-    payload: { prop, value },
+    payload: {prop, value},
   };
 };
 export const refreshWallet = () => {
@@ -160,7 +160,7 @@ export const getMyWallets = ({
         coinFamilyKeys: coinFamilyKeys,
         search: search,
       };
-      console.warn('MM',data);
+      console.warn('MM', data);
       APIClient.getInstance()
         .post(API_MYWALLETS, data, access_token)
         .then(response => {
@@ -195,7 +195,9 @@ export const getMyWallets = ({
                 element.perPrice_in_fiat = selectedData.value;
                 element.high = selectedData.high ? selectedData.high : 0;
                 element.low = selectedData.low ? selectedData.low : 0;
-                element.average = selectedData.average ? selectedData.average : 0;
+                element.average = selectedData.average
+                  ? selectedData.average
+                  : 0;
                 element.change = selectedData.change_price
                   ? selectedData.change_price
                   : 0;
@@ -216,7 +218,8 @@ export const getMyWallets = ({
                   : 0;
                 element.roi = selectedData.roi ? selectedData.roi : 0;
                 element.rank = selectedData.rank ? selectedData.rank : 0;
-                element.currency_symbol = Singleton.getInstance().CurrencySymbol;
+                element.currency_symbol =
+                  Singleton.getInstance().CurrencySymbol;
                 newArray.push(element);
               } else {
                 element.current_pricing = 0;
@@ -233,13 +236,21 @@ export const getMyWallets = ({
                 element.total_supply = 0;
                 element.roi = 0;
                 element.rank = 0;
-                element.currency_symbol = Singleton.getInstance().CurrencySymbol;
+                element.currency_symbol =
+                  Singleton.getInstance().CurrencySymbol;
                 newArray.push(element);
               }
               totalBalance = totalBalance + element.current_pricing;
             }
-            let stcCoin = newArray?.find(item => item?.coin_family == 4 && item?.is_token == 0) || {}
-            let filteredArray =(stcCoin? newArray?.filter(item => item?.coin_id != stcCoin?.coin_id):newArray)?.sort(function (a, b) {
+            let stcCoin =
+              newArray?.find(
+                item => item?.coin_family == 4 && item?.is_token == 0,
+              ) || {};
+            let filteredArray = (
+              stcCoin
+                ? newArray?.filter(item => item?.coin_id != stcCoin?.coin_id)
+                : newArray
+            )?.sort(function (a, b) {
               return (
                 Singleton.getInstance().toFixed(
                   exponentialToDecimalWithoutComma(
@@ -254,8 +265,11 @@ export const getMyWallets = ({
                   2,
                 )
               );
-            })
-            let finalArray = stcCoin?.coin_id?[stcCoin, ...filteredArray]:[...filteredArray]
+            });
+            let finalArray = stcCoin?.coin_id
+              ? [stcCoin, ...filteredArray]
+              : [...filteredArray];
+            finalArray.sort((a, b) => b.balance - a.balance);
             resolve(finalArray);
             Singleton.getInstance().newSaveData(
               Constants.WALLET_LIST,
@@ -274,7 +288,7 @@ export const getMyWallets = ({
             );
             dispatch({
               type: MYWALLET_TOTAL_BALANCE,
-              payload: 0.00,
+              payload: 0.0,
             });
             myWalletListSuccess(dispatch, []);
           }
@@ -415,12 +429,12 @@ export const getGraphData = ({
       APIClient.getInstance()
         .get(
           API_GRAPH_DATA +
-          'coinType=' +
-          coinType +
-          '&fiatType=' +
-          fiatType +
-          '&timePeriod=' +
-          timePeriod,
+            'coinType=' +
+            coinType +
+            '&fiatType=' +
+            fiatType +
+            '&timePeriod=' +
+            timePeriod,
           access_token,
         )
         .then(response => {
@@ -484,7 +498,7 @@ export const coinActiveInactive = ({
 };
 
 /************************************** WALLET_GET_COIN_LIST_ORDER DASHBOARD API ****************************************************/
-export const getWalletCoinListOrder = ({ data, access_token }) => {
+export const getWalletCoinListOrder = ({data, access_token}) => {
   return dispatch => {
     return new Promise((resolve, reject) => {
       //console.warn('MM',data);
@@ -510,7 +524,7 @@ export const getWalletCoinListOrder = ({ data, access_token }) => {
 };
 
 /************************************** Transaction Api****************************************************/
-export const getTransactionList = ({ data, access_token }) => {
+export const getTransactionList = ({data, access_token}) => {
   return dispatch => {
     return new Promise((resolve, reject) => {
       //console.warn('MM',data);
@@ -531,7 +545,7 @@ export const getTransactionList = ({ data, access_token }) => {
 };
 
 /************************************** Buy Transaction Api****************************************************/
-export const getBuyTransactionList = ({ data, access_token }) => {
+export const getBuyTransactionList = ({data, access_token}) => {
   return dispatch => {
     return new Promise((resolve, reject) => {
       //console.warn('MM',data);
@@ -552,7 +566,7 @@ export const getBuyTransactionList = ({ data, access_token }) => {
 };
 
 /************************************** Buy rate Transaction Api****************************************************/
-export const getBuyRAte = ({ data, access_token }) => {
+export const getBuyRAte = ({data, access_token}) => {
   return dispatch => {
     return new Promise((resolve, reject) => {
       //console.warn('MM','>>>>in', data);
@@ -573,7 +587,7 @@ export const getBuyRAte = ({ data, access_token }) => {
 };
 
 /************************************** Transaction Detail Api ****************************************************/
-export const getTransactionDetail = ({ data, access_token }) => {
+export const getTransactionDetail = ({data, access_token}) => {
   return dispatch => {
     return new Promise((resolve, reject) => {
       //console.warn('MM',data);
@@ -617,7 +631,7 @@ export const getSocialList = () => {
 };
 
 /************************************** COLOR LIST ****************************************************/
-export const getColorList = ({ access_token }) => {
+export const getColorList = ({access_token}) => {
   return dispatch => {
     return new Promise((resolve, reject) => {
       APIClient.getInstance()
@@ -636,7 +650,7 @@ export const getColorList = ({ access_token }) => {
   };
 };
 /************************************** FIAT CURRENCY ****************************************************/
-export const getCurrencyPreferenceList = ({ access_token }) => {
+export const getCurrencyPreferenceList = ({access_token}) => {
   return dispatch => {
     return new Promise((resolve, reject) => {
       APIClient.getInstance()
@@ -655,7 +669,7 @@ export const getCurrencyPreferenceList = ({ access_token }) => {
   };
 };
 /************************************** DAPP LIST ****************************************************/
-export const getDappList = ({ access_token }) => {
+export const getDappList = ({access_token}) => {
   return dispatch => {
     return new Promise((resolve, reject) => {
       APIClient.getInstance()
@@ -678,7 +692,7 @@ export const getDappList = ({ access_token }) => {
   };
 };
 /************************************** FINANCE LIST ****************************************************/
-export const getFinanceList = ({ access_token }) => {
+export const getFinanceList = ({access_token}) => {
   return dispatch => {
     return new Promise((resolve, reject) => {
       APIClient.getInstance()
@@ -701,7 +715,7 @@ export const getFinanceList = ({ access_token }) => {
   };
 };
 /************************************** BANNER API ****************************************************/
-export const getAdvertisementList = ({ access_token }) => {
+export const getAdvertisementList = ({access_token}) => {
   //console.warn('MM','herreeeeee');
   return dispatch => {
     return new Promise((resolve, reject) => {
@@ -778,7 +792,7 @@ export const getDexUrls = access_token => {
               data.publicStcUrl = item.url;
             } else if (item?.name?.toUpperCase() == 'SAITACHAIN_EXPLORER') {
               if (item.url) {
-                console.log("item.url:::::", item.url);
+                console.log('item.url:::::', item.url);
                 Singleton.getInstance().stcExplorerLink = item.url;
               }
             }
@@ -831,7 +845,7 @@ export const getCryptoPrice = data => {
   };
 };
 /************************************** get swap coinlist price ****************************************************/
-export const getSwapListAll = ({ access_token, data }) => {
+export const getSwapListAll = ({access_token, data}) => {
   return dispatch => {
     return new Promise((resolve, reject) => {
       APIClient.getInstance()
@@ -849,7 +863,7 @@ export const getSwapListAll = ({ access_token, data }) => {
 };
 
 /************************************** get swap coinlist price ****************************************************/
-export const getStcGasEstimate = ({ access_token }) => {
+export const getStcGasEstimate = ({access_token}) => {
   return dispatch => {
     return new Promise((resolve, reject) => {
       APIClient.getInstance()
@@ -866,7 +880,7 @@ export const getStcGasEstimate = ({ access_token }) => {
   };
 };
 /************************************** get swap coinlist price ****************************************************/
-export const getSwapList = ({ access_token }) => {
+export const getSwapList = ({access_token}) => {
   return dispatch => {
     return new Promise((resolve, reject) => {
       APIClient.getInstance()
@@ -884,7 +898,7 @@ export const getSwapList = ({ access_token }) => {
 };
 
 /************************************** get swap bnb coinlist price ****************************************************/
-export const getSwapBnbList = ({ access_token }) => {
+export const getSwapBnbList = ({access_token}) => {
   return dispatch => {
     return new Promise((resolve, reject) => {
       APIClient.getInstance()
@@ -920,7 +934,7 @@ export const getRouterDetails = () => {
 };
 
 /************************************** get router details ****************************************************/
-export const CheckForSwapToken = ({ data, access_token }) => {
+export const CheckForSwapToken = ({data, access_token}) => {
   return dispatch => {
     console.log('data:::::', data);
     return new Promise((resolve, reject) => {
@@ -937,7 +951,7 @@ export const CheckForSwapToken = ({ data, access_token }) => {
   };
 };
 /************************************** check is contact exist ****************************************************/
-export const CheckIsContactExist = ({ data, access_token }) => {
+export const CheckIsContactExist = ({data, access_token}) => {
   return dispatch => {
     console.log('data:::::', data);
     return new Promise((resolve, reject) => {
@@ -954,7 +968,7 @@ export const CheckIsContactExist = ({ data, access_token }) => {
   };
 };
 /************************************** Logout Api ****************************************************/
-export const logoutUser = ({ data, access_token }) => {
+export const logoutUser = ({data, access_token}) => {
   return dispatch => {
     return new Promise((resolve, reject) => {
       APIClient.getInstance()
@@ -974,7 +988,7 @@ export const logoutUser = ({ data, access_token }) => {
 };
 
 /************************************** get epay merchant ****************************************************/
-export const epayMerchant = ({ data, access_token }) => {
+export const epayMerchant = ({data, access_token}) => {
   return dispatch => {
     return new Promise((resolve, reject) => {
       //console.warn('MM',data);
@@ -993,7 +1007,6 @@ export const epayMerchant = ({ data, access_token }) => {
     });
   };
 };
-
 
 /************************************** on meaintenance ****************************************************/
 export const checkMaintenance = () => {
@@ -1016,26 +1029,25 @@ export const checkMaintenance = () => {
   };
 };
 
-
-export const updateListBalances=()=>{
+export const updateListBalances = () => {
   return dispatch => {
     return new Promise((resolve, reject) => {
       console.warn('MM updateListBalances');
       let access_token = Singleton.getInstance().access_token;
       APIClient.getInstance()
-        .get(UPDATE_WALLET_BALANCES,access_token)
+        .get(UPDATE_WALLET_BALANCES, access_token)
         .then(response => {
-          console.warn('MM','respone updateListBalances--- ', response);
+          console.warn('MM', 'respone updateListBalances--- ', response);
           let result = response;
           resolve(result);
         })
         .catch(error => {
-          console.warn('MM','error updateListBalances+-- ', error);
+          console.warn('MM', 'error updateListBalances+-- ', error);
           reject(error);
         });
     });
   };
-}
+};
 export const coinListSuccess = (dispatch, result) => {
   dispatch({
     type: COIN_LIST,
@@ -1085,8 +1097,7 @@ export const saveDexUrls = (dispatch, result) => {
   });
 };
 
-
-export const clearReducer = (dispatch) => {
+export const clearReducer = dispatch => {
   dispatch({
     type: CLEAR_REDUCER,
     payload: null,

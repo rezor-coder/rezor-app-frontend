@@ -1,13 +1,18 @@
-import React, { useEffect, useState } from 'react';
-import { BackHandler, StyleSheet, Text, View } from 'react-native';
-import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
+import React, {useEffect, useState} from 'react';
+import {BackHandler, Text, View} from 'react-native';
+import {LanguageManager, ThemeManager} from '../../../../ThemeManager';
 import * as constants from '../../../Constant';
-import { NavigationStrings } from '../../../Navigation/NavigationStrings';
+import {NavigationStrings} from '../../../Navigation/NavigationStrings';
 import Singleton from '../../../Singleton';
-import { areaDimen, heightDimen, widthDimen } from '../../../Utils/themeUtils';
-import { getCurrentRouteName, goBack, navigate, reset } from '../../../navigationsService';
-import { Colors, Fonts } from '../../../theme';
-import { BorderLine, SimpleHeaderNew, Wrap } from '../../common';
+import {areaDimen, widthDimen} from '../../../Utils/themeUtils';
+import {
+  getCurrentRouteName,
+  goBack,
+  navigate,
+  reset,
+} from '../../../navigationsService';
+import {Fonts} from '../../../theme';
+import {BorderLine, SimpleHeaderNew, Wrap} from '../../common';
 import SwapSelected from '../SwapSelected/SwapSelected';
 const SwapNew = props => {
   const [showSwap, setShowSwap] = useState(false);
@@ -15,7 +20,11 @@ const SwapNew = props => {
     Singleton.getInstance()
       .newGetData(constants.IS_PRIVATE_WALLET)
       .then(isPrivate => {
-        if (isPrivate == 'btc' || isPrivate == 'trx' || isPrivate == 'matic' ) {
+        if (
+          isPrivate === 'btc' ||
+          isPrivate === 'trx' ||
+          isPrivate === 'matic'
+        ) {
           setShowSwap(false);
         } else {
           setShowSwap(true);
@@ -23,31 +32,31 @@ const SwapNew = props => {
       });
   }, [props]);
   useEffect(() => {
-    let backHandle
-    backHandle= BackHandler.addEventListener('hardwareBackPress',()=>{
-      if( getCurrentRouteName()=='Trade'){
-        getCurrentRouteName() != 'Main' && reset(NavigationStrings.Main)
-      }else{
-        goBack()
+    let backHandle;
+    backHandle = BackHandler.addEventListener('hardwareBackPress', () => {
+      if (getCurrentRouteName() === 'Trade') {
+        getCurrentRouteName() !== 'Main' && reset(NavigationStrings.Main);
+      } else {
+        goBack();
       }
-      return true
-    })
+      return true;
+    });
     let focus = props.navigation.addListener('focus', () => {
-      backHandle= BackHandler.addEventListener('hardwareBackPress',()=>{
-        if( getCurrentRouteName()=='Trade'){
-          getCurrentRouteName() != 'Main' && reset(NavigationStrings.Main)
-        }else{
-          goBack()
+      backHandle = BackHandler.addEventListener('hardwareBackPress', () => {
+        if (getCurrentRouteName() === 'Trade') {
+          getCurrentRouteName() !== 'Main' && reset(NavigationStrings.Main);
+        } else {
+          goBack();
         }
-        return true
-      })
+        return true;
+      });
       Singleton.getInstance()
         .newGetData(constants.IS_PRIVATE_WALLET)
         .then(isPrivate => {
           if (
-            isPrivate == 'btc' ||
-            isPrivate == 'trx' ||
-            isPrivate == 'matic'
+            isPrivate === 'btc' ||
+            isPrivate === 'trx' ||
+            isPrivate === 'matic'
           ) {
             setShowSwap(false);
           } else {
@@ -57,24 +66,24 @@ const SwapNew = props => {
     });
     let blur = props.navigation.addListener('blur', () => {
       backHandle?.remove();
-    })
+    });
     return () => {
       backHandle?.remove();
       blur();
       focus();
     };
   }, [props]);
-  const onBackPressed=() => {
+  const onBackPressed = () => {
     props.navigation.goBack();
-  }
-  const onPressSettings=() => {
-    if(showSwap){
-      getCurrentRouteName() != 'SwapSettings' &&
-      navigate(NavigationStrings.SwapSettings,{
-        onGoBack: data => {},
-      })
+  };
+  const onPressSettings = () => {
+    if (showSwap) {
+      getCurrentRouteName() !== 'SwapSettings' &&
+        navigate(NavigationStrings.SwapSettings, {
+          onGoBack: data => {},
+        });
     }
-  }
+  };
   return (
     <Wrap style={{flex: 1, backgroundColor: ThemeManager.colors.dashboardBg}}>
       <SimpleHeaderNew
@@ -83,15 +92,13 @@ const SwapNew = props => {
         imageShow
         back={false}
         backPressed={onBackPressed}
-        img3style={{tintColor:ThemeManager.colors.iconColor}}
+        img3style={{tintColor: ThemeManager.colors.iconColor}}
         img3={showSwap ? ThemeManager.ImageIcons.setting : null}
         onPress3={onPressSettings}
       />
-      <BorderLine/>
+      <BorderLine />
       {showSwap ? (
-        <SwapSelected
-          navigation={props.navigation}
-        />
+        <SwapSelected navigation={props.navigation} />
       ) : (
         <View style={{justifyContent: 'center', alignItems: 'center', flex: 1}}>
           <Text
@@ -100,7 +107,7 @@ const SwapNew = props => {
               fontFamily: Fonts.medium,
               color: ThemeManager.colors.textColor,
               paddingHorizontal: widthDimen(22),
-              textAlign:'center'
+              textAlign: 'center',
             }}>
             {constants.UNCOMPATIBLE_WALLET}
           </Text>
@@ -109,58 +116,4 @@ const SwapNew = props => {
     </Wrap>
   );
 };
-const styles = StyleSheet.create({
-  viewMainButtons: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    borderRadius: 12,
-    width: '100%',
-    alignSelf: 'center',
-    marginTop: 16,
-  },
-  btnStyle: {
-    width: '50%',
-    height: 50,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 12,
-  },
-
-  btnStyleInner: {
-    width: '100%',
-    height: 50,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 12,
-  },
-
-  gradientStyle: {
-    borderRadius: 12,
-  },
-  tabsContainer: {
-    flexDirection: 'row',
-    height: heightDimen(44),
-    width: widthDimen(370), //370
-    backgroundColor: ThemeManager.colors.backgroundColor,
-    alignSelf: 'center',
-    borderRadius: 100,
-    marginTop: heightDimen(20),
-    borderColor: '#303030',
-    borderWidth: 1,
-  },
-  tabStyle: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    height: heightDimen(40),
-    width: widthDimen(370), //widthDimen(122.7)
-  },
-  tabText: {
-    color: Colors.white,
-    fontSize: areaDimen(16),
-    fontFamily: Fonts.medium,
-    lineHeight: heightDimen(19),
-  },
-});
-
 export default SwapNew;

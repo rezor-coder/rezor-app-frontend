@@ -1,26 +1,36 @@
 /* eslint-disable no-lone-blocks */
 /* eslint-disable react-native/no-inline-styles */
-import { BigNumber } from 'bignumber.js';
+import {BigNumber} from 'bignumber.js';
 import debounce from 'lodash.debounce';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Alert, Dimensions, Modal, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, } from 'react-native';
-import { EventRegister } from 'react-native-event-listeners';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
+import {
+  Alert,
+  Dimensions,
+  Modal,
+  Platform,
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import {EventRegister} from 'react-native-event-listeners';
 import FastImage from 'react-native-fast-image';
 import SelectDropdown from 'react-native-select-dropdown';
-import { useDispatch, useSelector } from 'react-redux';
-import Web3 from 'web3';
+import {useDispatch, useSelector} from 'react-redux';
 import ROUTER_ABI from '../../../../ABI/router.ABI.json';
-import TOKEN_ABI from '../../../../ABI/tokenContract.ABI.json';
-import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
-import { APIClient } from '../../../Api';
+import {LanguageManager, ThemeManager} from '../../../../ThemeManager';
 import * as constants from '../../../Constant';
-import { IS_PRODUCTION } from '../../../Endpoints';
-import { NavigationStrings } from '../../../Navigation/NavigationStrings';
-import { checkMaintenance, getSwapListAll, saveSwapItem, } from '../../../Redux/Actions';
+import {NavigationStrings} from '../../../Navigation/NavigationStrings';
+import {
+  checkMaintenance,
+  getSwapListAll,
+  saveSwapItem,
+} from '../../../Redux/Actions';
 import Singleton from '../../../Singleton';
-import { areaDimen, heightDimen, widthDimen } from '../../../Utils/themeUtils';
-import { getCurrentRouteName, navigate } from '../../../navigationsService';
-import { Colors, Fonts, Images } from '../../../theme';
+import {areaDimen, heightDimen, widthDimen} from '../../../Utils/themeUtils';
+import {getCurrentRouteName, navigate} from '../../../navigationsService';
+import {Colors, Fonts, Images} from '../../../theme';
 import images from '../../../theme/Images';
 import {
   CommaSeprator3,
@@ -28,13 +38,26 @@ import {
   convertToInternationalCurrencySystem,
   exponentialToDecimalWithoutComma,
 } from '../../../utils';
-import { BasicButton, Wrap } from '../../common';
-import { ModalSwap } from '../../common/ModalSwap';
+import {BasicButton, Wrap} from '../../common';
+import {ModalSwap} from '../../common/ModalSwap';
 import Loader from '../Loader/Loader';
 import ListModal from './ListModal';
+import {styles} from './SwapSelectedStyle';
+import {
+  getWeb3Object,
+  getSwapData,
+  getCoinFamilyForActiveWallet,
+  getContractObject,
+  getUserBal,
+  getUserBalSecond,
+  getGasPrice,
+  makeTransaction,
+  calculatePercentage,
+  checkforPair,
+} from './SwapSelectedHelper';
 const GAS_FEE_MULTIPLIER = 0.000000000000000001;
 const GAS_PRICE_EXTRA_BUFFER = 2000000000;
-const SELECTED_INPUT = { firstInput: 'firstInput', secondInput: 'secondInput' };
+const SELECTED_INPUT = {firstInput: 'firstInput', secondInput: 'secondInput'};
 const GAS_BUFFER = 25000;
 let fromSetting = false;
 let typeGlobal = SELECTED_INPUT.firstInput;
@@ -42,7 +65,6 @@ let tokenOneValue = 0;
 let tokenTwoValue = 0;
 let tokenOne = {};
 const SwapSelected = props => {
-  console.log("Singleton:::::::", Singleton.getInstance().SwapRouterStcAddress);
   const swapItem = useSelector(state => state?.swapReducer?.swapItem);
   let timer = useRef();
   const [shouldUpdateCalculation, setShouldUpdateCalculation] = useState(false);
@@ -51,9 +73,10 @@ const SwapSelected = props => {
   const [swapModal, setSwapModal] = useState(false);
   const [showTokenOneList, setShowTokenOneList] = useState(false);
   const [showTokenTwoList, setShowTokenTwoList] = useState(false);
-  const [isInsufficientOutputAmount, setIsInsufficientOutputAmount] = useState(false);
-  const limit = 20
-  const [page, setPage] = useState(0)
+  const [isInsufficientOutputAmount, setIsInsufficientOutputAmount] =
+    useState(false);
+  const limit = 20;
+  const [page, setPage] = useState(0);
   const [totalRecordsAll, settotalRecordsAll] = useState(0);
   const [totalRecordsSelected, settotalRecordsSelected] = useState(0);
   const [tokenOneAmount, setTokenOneAmount] = useState();
@@ -80,8 +103,8 @@ const SwapSelected = props => {
   const [isOnMaintainance, setIsOnMaintainance] = useState(false);
   const [isOnMaintainanceMsg, setIsOnMaintainanceMsg] = useState('');
   const [isInSufficientLiquidity, setIsInSufficientLiquidity] = useState(false);
-  const [searchText, setSearchText] = useState('')
-  const [loadList, setloadList] = useState(false)
+  const [searchText, setSearchText] = useState('');
+  const [loadList, setloadList] = useState(false);
   const dropDownRefFrom = useRef();
   const dropDownRefTo = useRef();
   let SLIPPERAGE_PERCENTAGE = Singleton.getInstance().slipageTolerance; //in percent
@@ -89,12 +112,29 @@ const SwapSelected = props => {
   const dispatch = useDispatch();
   useEffect(() => {
     if (tokenFirst) {
-      tokenFirst && getUserBal(tokenFirst);
+      tokenFirst &&
+        getUserBal(
+          tokenFirst,
+          userAddress,
+          setUserBal,
+          setCoinBalance,
+          setLoading,
+          coinBalance,
+        );
     }
   }, [tokenFirst]);
   useEffect(() => {
     if (tokenSecond) {
-      tokenSecond && getUserBalSecond(tokenSecond);
+      tokenSecond &&
+        getUserBalSecond(
+          tokenSecond,
+          tokenFirst,
+          userAddress,
+          setUserBal,
+          setCoinBalanceSecond,
+          coinBalanceSecond,
+          setLoading,
+        );
     }
   }, [tokenSecond]);
 
@@ -168,10 +208,10 @@ const SwapSelected = props => {
         setTokenTwoAmount(0);
         setInsufficientBalance(false);
         setIsInsufficientOutputAmount(false);
-        setIsInSufficientLiquidity(false)
+        setIsInSufficientLiquidity(false);
         setIsOverFlow(false);
         setIsPairSupported(true);
-        setUserApproval(true)
+        setUserApproval(true);
         setTransferFailed(false);
         setActiveButton(0);
       }
@@ -199,10 +239,8 @@ const SwapSelected = props => {
     setShouldUpdateCalculation(true);
   };
   useEffect(() => {
-    console.log('refresh..... .. .. . .. . ');
     let amount;
     if (shouldUpdateCalculation) {
-      console.log('refresh..... .. .. shouldUpdateCalculation');
       if (selectedInput == SELECTED_INPUT.firstInput) {
         amount = tokenOneAmount;
       } else {
@@ -214,59 +252,43 @@ const SwapSelected = props => {
         tokenSecond: tokenSecond,
         type: selectedInput,
         value: amount,
-        isError:false,
+        isError: false,
       });
       setShouldUpdateCalculation(false);
     }
   }, [shouldUpdateCalculation]);
-  const getSwapData = (coinFamily, swapId, search, page) => {
-    return new Promise((resolve, reject) => {
-      Singleton.getInstance()
-        .newGetData(constants.IS_PRIVATE_WALLET)
-        .then(isPrivate => {
-          console.log('iSprivate::::getSwapListAllNew', isPrivate, coinFamily, swapId);
-          let access_token = Singleton.getInstance().access_token;
-          setUsedFiatType(
-            Singleton.getInstance().CurrencySelected?.toLowerCase(),
-          );
-          let data = {
-            fiatType: Singleton.getInstance().CurrencySelected?.toLowerCase(),
-            page: page ? page + 1 : 1,
-            search: search,
-            selectedSwapId: swapId,
-            coinFamily: coinFamily,
-            limit: limit
-          };
-          dispatch(getSwapListAll({ access_token, data }))
-            .then(res => {
-              setPage(page ? page + 1 : 1)
-              resolve(res)
-            })
-            .catch(err => {
-              setLoading(false);
-              reject(err)
-            });
-        });
-    })
-  }
-  const updateSwap = async (selectedItem) => {
-    console.log("selectedItem::::", selectedItem);
-    setLoading(true)
+
+  const updateSwap = async selectedItem => {
+    console.log('selectedItem::::', selectedItem);
+    setLoading(true);
     try {
       setLoading(true);
-      let responseSelected = await getSwapData(selectedItem?.coin_family, selectedItem?.id)
-      console.log("responseSelected::::", responseSelected);
-      setTokenFirst(selectedItem)
+      let responseSelected = await getSwapData(
+        selectedItem?.coin_family,
+        selectedItem?.id,
+        null,
+        null,
+        setUsedFiatType,
+        setPage,
+        setLoading,
+        dispatch,
+      );
+      console.log('responseSelected::::', responseSelected);
+      setTokenFirst(selectedItem);
       if (responseSelected?.data?.length > 0) {
-        setCoinList(responseSelected.data)
-        setTokenSecond(responseSelected.data[0])
-        settotalRecordsSelected(responseSelected.meta?.total)
-        checkforPair(selectedItem, responseSelected.data[0])
+        setCoinList(responseSelected.data);
+        setTokenSecond(responseSelected.data[0]);
+        settotalRecordsSelected(responseSelected.meta?.total);
+        checkforPair(
+          selectedItem,
+          responseSelected.data[0],
+          setIsPairSupported,
+        );
       }
     } catch (err) {
-      Singleton.showAlert(err?.message || constants.SOMETHING_WRONG)
+      Singleton.showAlert(err?.message || constants.SOMETHING_WRONG);
     } finally {
-      getGasPrice(selectedItem)
+      getGasPrice(selectedItem, setGasPrice);
       setLoading(false);
       dispatch(saveSwapItem({}));
     }
@@ -275,80 +297,14 @@ const SwapSelected = props => {
     setTokenTwoAmount(0);
     setInsufficientBalance(false);
     setIsInsufficientOutputAmount(false);
-    setIsInSufficientLiquidity(false)
+    setIsInSufficientLiquidity(false);
     setIsOverFlow(false);
     setIsPairSupported(true);
     setTransferFailed(false);
-    setUserApproval(true)
+    setUserApproval(true);
     setActiveButton(0);
   };
-  const getWeb3Object = (
-    chain
-  ) => {
-    console.log('chain:::::', chain, Singleton.getInstance().ethLink);
-    let network;
-    console.log('');
-    if (chain) {
-      if (chain == 'eth') {
-        network = new Web3(
-          constants.network == 'testnet'
-            ? constants.testnetEth
-            : Singleton.getInstance().ethLink,
-        );
-      }
-      else if (chain == 'stc') {
-        console.log('stc:::::getWeb3Object:');
-        network = new Web3(
-          Singleton.getInstance().stcLink,
-        );
-      } else {
-        console.warn('MM', 'networkkk getWeb3Object bnb');
-        network = new Web3(
-          constants.network == 'testnet'
-            ? constants.testnetBnb
-            : Singleton.getInstance().bnbLink,
-        );
-      }
-    } else {
-      if (tokenFirst?.coin_family == 1) {
-        console.log('eth:::::getWeb3Object:');
-        network = new Web3(
-          constants.network == 'testnet'
-            ? constants.testnetEth
-            : Singleton.getInstance().ethLink,
-        );
-      } else if (tokenFirst?.coin_family == 4) {
 
-        console.log('eth:::::getWeb3Object:');
-        network = new Web3(
-          Singleton.getInstance().stcLink,
-        );
-
-      } else {
-        console.warn('MM', 'networkkk getWeb3Object bnb');
-        network = new Web3(
-          constants.network == 'testnet'
-            ? constants.testnetBnb
-            : Singleton.getInstance().bnbLink,
-        );
-      }
-    }
-    console.log("network::::", network);
-    return network;
-  };
-  const getCoinFamilyForActiveWallet = (isPrivate) => {
-    let coinFamily;
-    if (isPrivate == 'eth') {
-      coinFamily = 1
-    } else if (isPrivate == 'stc') {
-      coinFamily = 4
-    } else if (isPrivate == 'bnb') {
-      coinFamily = 6
-    } else {
-      coinFamily = null
-    }
-    return coinFamily
-  }
   const getSwapListAllNew = () => {
     Singleton.getInstance()
       .newGetData(constants.IS_PRIVATE_WALLET)
@@ -363,336 +319,46 @@ const SwapSelected = props => {
           fiatType: Singleton.getInstance().CurrencySelected?.toLowerCase(),
           coinFamily: getCoinFamilyForActiveWallet(isPrivate),
           page: 1,
-          limit: limit
+          limit: limit,
         };
-        console.log("swapItem::::::", swapItem);
+        console.log('swapItem::::::', swapItem);
         if (swapItem) {
-          data = { ...data, selectedCoinId: swapItem.w_coin_id }
+          data = {...data, selectedCoinId: swapItem.w_coin_id};
         }
         try {
-          let responseAll = await dispatch(getSwapListAll({ access_token, data }))
-          console.log("responseAll:::::", responseAll);
-          let tokenFirst = responseAll.data[0]
-          tokenOne = responseAll.data[0]
-          console.log("tokenFirst:::::", tokenFirst);
-          let responseSelected = await getSwapData(tokenFirst?.coin_family, tokenFirst?.id)
-          console.log("responseSelected:::::", responseSelected);
-          setFullList(responseAll.data)
-          setTokenFirst(tokenFirst)
-          settotalRecordsAll(responseAll?.meta?.total)
+          let responseAll = await dispatch(
+            getSwapListAll({access_token, data}),
+          );
+          console.log('responseAll:::::', responseAll);
+          let tokenFirst = responseAll.data[0];
+          tokenOne = responseAll.data[0];
+          console.log('tokenFirst:::::', tokenFirst);
+          let responseSelected = await getSwapData(
+            tokenFirst?.coin_family,
+            tokenFirst?.id,
+            null,
+            null,
+            setUsedFiatType,
+            setPage,
+            setLoading,
+            dispatch,
+          );
+          console.log('responseSelected:::::', responseSelected);
+          setFullList(responseAll.data);
+          setTokenFirst(tokenFirst);
+          settotalRecordsAll(responseAll?.meta?.total);
           if (responseSelected?.data?.length > 0) {
-            setCoinList(responseSelected.data)
-            setTokenSecond(responseSelected.data[0])
-            settotalRecordsSelected(responseSelected.meta?.total)
+            setCoinList(responseSelected.data);
+            setTokenSecond(responseSelected.data[0]);
+            settotalRecordsSelected(responseSelected.meta?.total);
           }
         } catch (err) {
-          Singleton.showAlert(err?.message || constants.SOMETHING_WRONG)
+          Singleton.showAlert(err?.message || constants.SOMETHING_WRONG);
         } finally {
           setLoading(false);
           dispatch(saveSwapItem({}));
         }
       });
-  };
-  const getContractObject = async (
-    tokenAddress,
-    tokenFirst,
-    abi = TOKEN_ABI,
-  ) => {
-    console.warn(
-      'MM',
-      'tokenAddress:::getContractObject',
-      tokenFirst?.coin_family,
-    );
-    try {
-      const web3Object = getWeb3Object(
-        tokenFirst?.coin_family == 1 ? 'eth' : tokenFirst?.coin_family == 4 ? 'stc' : 'bnb',
-      );
-      let tokenContractObject = await new web3Object.eth.Contract(
-        abi,
-        tokenAddress,
-      );
-      return tokenContractObject;
-    } catch (e) {
-      console.error('error ===>>', e);
-    }
-  };
-
-  const getUserBal = async (tokenFirst, shouldCache) => {
-    try {
-      console.warn(
-        'MM',
-        '-------------tokenFirst-------------getUserBal',
-        tokenFirst,
-      );
-      console.warn('MM', '===>>', tokenFirst);
-      const web3Object = getWeb3Object(
-        tokenFirst?.coin_family == 1 ? 'eth' : tokenFirst?.coin_family == 4 ? 'stc' : 'bnb',
-      );
-
-      if (tokenFirst?.is_token == 0) {
-        console.warn('MM', '===>>0000');
-        let ethBal = 0;
-        let bal = await web3Object.eth.getBalance(userAddress);
-        ethBal = exponentialToDecimalWithoutComma(bal);
-        console.log(
-          'user ethBal ===>>',
-          ethBal / 10 ** tokenFirst.decimals,
-          'in wei ',
-          ethBal,
-        );
-        let value = bigNumberSafeMath(ethBal, '/', 10 ** tokenFirst.decimals)
-        console.log(
-          'Singleton.getInstance().toFixed(value, 8)',
-          Singleton.getInstance().toFixednew(
-            exponentialToDecimalWithoutComma(isNaN(value) ? 0 : value),
-            tokenFirst.decimals,
-          ),
-          value,
-        );
-        console.log('userBal ETH---Balance====', value);
-        console.log(
-          '--------------------bal',
-          exponentialToDecimalWithoutComma(isNaN(value) ? 0 : value),
-        );
-        setUserBal(isNaN(value) ? 0 : exponentialToDecimalWithoutComma(value));
-        setCoinBalance({
-          ...coinBalance,
-          [tokenFirst?.id]: {
-            balance: isNaN(value) ? 0 : exponentialToDecimalWithoutComma(value),
-
-            is_token: 0,
-          },
-        });
-        return ethBal;
-      } else {
-        console.warn('MM', '===>>1111');
-        let userBal;
-        let bal = await getTokenBalance(
-          tokenFirst.token_address,
-          userAddress,
-          tokenFirst,
-        );
-        console.log('MM', '***********************bal====', bal);
-        userBal = exponentialToDecimalWithoutComma(bal);
-        console.warn('MM', '***********************', bal);
-        console.warn(
-          'MM',
-          '***************userBal / 10 ** tokenFirst.decimals******* * istoken ====1 ',
-          userBal / 10 ** tokenFirst.decimals,
-        );
-
-        let value = bigNumberSafeMath(userBal, '/', 10 ** tokenFirst.decimals)
-        console.log('userBal ETH---Balance============', value);
-
-        setUserBal(isNaN(value) ? 0 : exponentialToDecimalWithoutComma(value));
-        setCoinBalance({
-          ...coinBalance,
-          [tokenFirst?.id]: {
-            balance: isNaN(value) ? 0 : exponentialToDecimalWithoutComma(value),
-
-            is_token: 1,
-          },
-        });
-        return +userBal;
-      }
-    } catch (error) {
-      setLoading(false);
-    }
-  };
-
-  const getUserBalSecond = async (tokenSecond, shouldCache) => {
-    try {
-      console.warn(
-        'MM',
-        '-------------tokenSecond-------------getUserBalSecond',
-        tokenSecond,
-      );
-      console.warn('MM', '===>>', tokenSecond);
-      const web3Object = getWeb3Object(
-        tokenSecond?.coin_family == 1 ? 'eth' : tokenSecond?.coin_family == 4 ? 'stc' : 'bnb',
-      );
-
-      if (tokenSecond?.is_token == 0) {
-        console.warn('MM', '===>>0000--SECOND');
-        let ethBal = 0;
-        let bal = await web3Object.eth.getBalance(userAddress);
-        ethBal = exponentialToDecimalWithoutComma(bal);
-        console.log(
-          'user ethBal ===>>',
-          ethBal / 10 ** tokenSecond.decimals,
-          'in wei ',
-          ethBal,
-        );
-        let value = bigNumberSafeMath(ethBal, '/', 10 ** tokenSecond.decimals)
-        console.log(
-          'Singleton.getInstance().toFixed(value, 8)',
-          Singleton.getInstance().toFixednew(
-            exponentialToDecimalWithoutComma(isNaN(value) ? 0 : value),
-            tokenSecond.decimals,
-          ),
-          value,
-        );
-        console.log('userBal ETH---Balance====', value);
-        console.log(
-          '--------------------bal',
-          exponentialToDecimalWithoutComma(isNaN(value) ? 0 : value),
-        );
-        setUserBal(exponentialToDecimalWithoutComma(isNaN(value) ? 0 : value));
-        setCoinBalanceSecond({
-          ...coinBalanceSecond,
-          [tokenSecond?.id]: {
-            balance: isNaN(value) ? 0 : exponentialToDecimalWithoutComma(value),
-
-            is_token: 0,
-          },
-        });
-        return ethBal;
-      } else {
-        console.warn('MM', '===>>1111--SECOND');
-        let userBal;
-        let bal = await getTokenBalance(
-          tokenSecond.token_address,
-          userAddress,
-          tokenSecond,
-        );
-        console.log('MM', '***********************bal====', bal);
-        userBal = exponentialToDecimalWithoutComma(bal);
-        console.warn('MM', '***********************', bal);
-        console.warn(
-          'MM',
-          '***************userBal / 10 ** tokenFirst.decimals********* istoken ====@nd',
-          userBal / 10 ** tokenSecond.decimals,
-        );
-        let value = bigNumberSafeMath(userBal, '/', 10 ** tokenSecond.decimals)
-        console.log('userBal ETH---Balance============', value);
-
-        setUserBal(isNaN(value) ? 0 : exponentialToDecimalWithoutComma(value));
-        setCoinBalanceSecond({
-          ...coinBalanceSecond,
-          [tokenSecond?.id]: {
-            balance: isNaN(value) ? 0 : exponentialToDecimalWithoutComma(value),
-
-            is_token: 1,
-          },
-        });
-        return +userBal;
-      }
-    } catch (error) {
-      setLoading(false);
-    }
-  };
-
-  const getTokenBalance = async (tokenAddress, address, tokenFirst) => {
-    console.warn('MM', 'chk tokenAddresss::::::', tokenAddress, address);
-    try {
-      const contract = await getContractObject(tokenAddress, tokenFirst);
-      let result = await contract.methods.balanceOf(address).call();
-      console.warn('MM', 'chk result::::::', result);
-      return result;
-    } catch (error) {
-      console.warn('MM', 'Error ==>> :', error);
-      return error;
-    }
-  };
-
-  const getGasPrice = (tokenFirst) => {
-    getWeb3Object(tokenFirst?.coin_family == 1 ? 'eth' : tokenFirst?.coin_family == 4 ? 'stc' : 'bnb')
-      .eth.getGasPrice()
-      .then(gas => {
-        console.log('________-gas', gas);
-        let gasfee = gas;
-        if (tokenFirst?.coin_family == 1) {
-          gasfee = (parseInt(gasfee) + GAS_PRICE_EXTRA_BUFFER).toString();
-        }
-        console.log('________-gas final', gasfee);
-        setGasPrice(gasfee);
-      });
-  };
-
-  const makeTransaction = async (
-    transactionData,
-    gasPrice,
-    gasLimit,
-    nonce,
-    value,
-    to,
-    pvtKey,
-    from,
-    isApproval,
-  ) => {
-    return new Promise(async (resolve, reject) => {
-      console.warn('MM', 'rawTransaction =>111');
-      setTimeout(async () => {
-        try {
-          if (global.disconnected) {
-            reject({ message: constants.NO_NETWORK });
-            return;
-          }
-          const web3Object = getWeb3Object(
-            tokenFirst?.coin_family == 1 ? 'eth' : tokenFirst?.coin_family == 4 ? 'stc' : 'bnb',
-          );
-          let rawTransaction = {
-            gasPrice: gasPrice,
-            gasLimit: gasLimit,
-            to: to,
-            value: value,
-            data: transactionData,
-            nonce: nonce,
-            from: from.toLowerCase(),
-            chainId:
-              tokenFirst?.coin_family == 1
-                ? parseInt(constants.CHAIN_ID_ETH)
-                : tokenFirst?.coin_family == 4
-                  ? IS_PRODUCTION == 0 ? 129 : 1209
-                  : parseInt(constants.CHAIN_ID_BNB),
-          };
-          console.warn('MM', 'rawTransaction =>', rawTransaction);
-          if (global.disconnected) {
-            reject({ message: constants.NO_NETWORK });
-            return;
-          }
-          let txn = await web3Object.eth.accounts.signTransaction(
-            rawTransaction,
-            pvtKey,
-          );
-          console.log("txn:::::", txn);
-          let data = {
-            from: from.toLowerCase(),
-            to: to,
-            amount: isApproved ? tokenOneAmount : 0,
-            gas_price: gasPrice,
-            gas_estimate: gasLimit,
-            tx_raw: txn.rawTransaction.slice(2),
-            tx_type: 'WITHDRAW',
-            nonce: nonce,
-            chat: 0,
-            is_smart: 1,
-          };
-          console.warn('MM', 'serializedTran => data data', data);
-          console.warn('MM', 'serializedTran => data rawTxnObj', rawTxnObj);
-          let serializedTran = txn.rawTransaction.toString('hex');
-          console.warn('MM', 'serializedTran =>', serializedTran);
-          if (global.disconnected) {
-            reject({ message: constants.NO_NETWORK });
-            return;
-          }
-          let result = await getWeb3Object(
-            tokenFirst?.coin_family == 1 ? 'eth' : tokenFirst?.coin_family == 4 ? 'stc' : 'bnb',
-          ).eth.sendSignedTransaction(serializedTran);
-          console.warn('MM', 'serializedTran => result', result);
-          data.tx_hash = result.transactionHash;
-          await sendTransactionToBackend(
-            data,
-            tokenFirst?.coin_family == 1 ? 'ethereum' : tokenFirst?.coin_family == 4 ? 'saitachain' : 'binancesmartchain',
-            value == '0x0' ? rawTxnObj?.tokenContractAddress : tokenFirst?.coin_family == 1 ? 'eth' : tokenFirst?.coin_family == 4 ? 'stc' : 'bnb',
-            isApproval,
-          );
-          return resolve(result);
-        } catch (error) {
-          return reject(error);
-        }
-      }, 1500);
-    });
   };
 
   const getApproval = () => {
@@ -700,8 +366,8 @@ const SwapSelected = props => {
       tokenFirst?.coin_family == 1
         ? Singleton.getInstance().SwapRouterAddress
         : tokenFirst?.coin_family == 4
-          ? Singleton.getInstance().SwapRouterStcAddress
-          : Singleton.getInstance().SwapRouterBNBAddress;
+        ? Singleton.getInstance().SwapRouterStcAddress
+        : Singleton.getInstance().SwapRouterBNBAddress;
     if (global.disconnected) {
       Singleton.showAlert(constants.NO_NETWORK);
       return;
@@ -747,23 +413,39 @@ const SwapSelected = props => {
                     tokenSecond,
                     type: SELECTED_INPUT.firstInput,
                     value: tokenOneValue,
-                    isError:false,
+                    isError: false,
                   });
-                  getUserBalSecond(tokenSecond);
+                  getUserBalSecond(
+                    tokenSecond,
+                    tokenFirst,
+                    userAddress,
+                    setUserBal,
+                    setCoinBalanceSecond,
+                    coinBalanceSecond,
+                    setLoading,
+                  );
                 } else {
                   onChangeText({
                     tokenFirst,
                     tokenSecond,
                     type: SELECTED_INPUT.secondInput,
                     value: tokenTwoValue,
-                    isError:false,
+                    isError: false,
                   });
-                  getUserBalSecond(tokenSecond);
+                  getUserBalSecond(
+                    tokenSecond,
+                    tokenFirst,
+                    userAddress,
+                    setUserBal,
+                    setCoinBalanceSecond,
+                    coinBalanceSecond,
+                    setLoading,
+                  );
                 }
               },
             },
           ],
-          { cancelable: false },
+          {cancelable: false},
         );
         setUserApproval(true);
         setLoading(false);
@@ -772,9 +454,7 @@ const SwapSelected = props => {
         if (
           err?.toString()?.includes("Error: CONNECTION ERROR: Couldn't connect")
         ) {
-          Singleton.showAlert(
-            'Approval Failed. ' + constants.NO_NETWORK,
-          );
+          Singleton.showAlert('Approval Failed. ' + constants.NO_NETWORK);
           console.warn('MM', 'approve send transaction err ==>>', err);
         } else {
           Singleton.showAlert(err?.message || 'Approval Failed');
@@ -805,10 +485,15 @@ const SwapSelected = props => {
           tokenAddress,
         );
         const web3Object = getWeb3Object(
-          tokenFirst?.coin_family == 1 ? 'eth' : tokenFirst?.coin_family == 4 ? 'stc' : 'bnb',
+          tokenFirst?.coin_family == 1
+            ? 'eth'
+            : tokenFirst?.coin_family == 4
+            ? 'stc'
+            : 'bnb',
+          tokenFirst,
         );
         if (global.disconnected) {
-          reject({ message: constants.NO_NETWORK });
+          reject({message: constants.NO_NETWORK});
           return;
         }
         const approveTrans = tokenContractObject.methods.approve(
@@ -817,20 +502,20 @@ const SwapSelected = props => {
         );
         console.warn('MM', 'approveTrans ===>>>', approveTrans);
         if (global.disconnected) {
-          reject({ message: constants.NO_NETWORK });
+          reject({message: constants.NO_NETWORK});
           return;
         }
         const approveGasLimit = await approveTrans.estimateGas({
           from: userAddress,
         });
         if (global.disconnected) {
-          reject({ message: constants.NO_NETWORK });
+          reject({message: constants.NO_NETWORK});
           return;
         }
         console.warn('MM', 'approveGasLimit ===>>>', approveGasLimit);
         const nonce = await web3Object.eth.getTransactionCount(userAddress);
         if (global.disconnected) {
-          reject({ message: constants.NO_NETWORK });
+          reject({message: constants.NO_NETWORK});
           return;
         }
         let privateKey = await Singleton.getInstance().newGetData(
@@ -847,6 +532,10 @@ const SwapSelected = props => {
           privateKey,
           userAddress,
           true,
+          tokenFirst,
+          isApproved,
+          tokenOneAmount,
+          rawTxnObj,
         );
         return resolve(resultApprove);
       } catch (error) {
@@ -856,14 +545,14 @@ const SwapSelected = props => {
     });
   };
 
-  const checkContractApproval = async ({ path, result }) => {
+  const checkContractApproval = async ({path, result}) => {
     return new Promise(async (resolve, reject) => {
       let routerAddress =
         tokenFirst?.coin_family == 1
           ? Singleton.getInstance().SwapRouterAddress
           : tokenFirst?.coin_family == 4
-            ? Singleton.getInstance().SwapRouterStcAddress
-            : Singleton.getInstance().SwapRouterBNBAddress;
+          ? Singleton.getInstance().SwapRouterStcAddress
+          : Singleton.getInstance().SwapRouterBNBAddress;
       try {
         console.warn('MM', 'checkContractApproval****', path, result);
         let tokenContractObject = await getContractObject(path[0], tokenFirst);
@@ -916,7 +605,7 @@ const SwapSelected = props => {
             ? tokenFirstDecimals
             : tokenSecondDecimals;
         // const addAmountIn = (amount * (1 * 10 ** decimals)).toFixed(0);
-        const addAmountIn = bigNumberSafeMath(amount, '*', 10 ** decimals)
+        const addAmountIn = bigNumberSafeMath(amount, '*', 10 ** decimals);
         console.warn(
           'MM',
           'amount ==>>>>> ',
@@ -927,10 +616,10 @@ const SwapSelected = props => {
         let calAmount = BigNumber(addAmountIn).toFixed();
         let routerAddress =
           tokenFirst?.coin_family == 1
-            ? Singleton.getInstance().SwapRouterAddress :
-            tokenFirst?.coin_family == 4
-              ? Singleton.getInstance().SwapRouterStcAddress
-              : Singleton.getInstance().SwapRouterBNBAddress;
+            ? Singleton.getInstance().SwapRouterAddress
+            : tokenFirst?.coin_family == 4
+            ? Singleton.getInstance().SwapRouterStcAddress
+            : Singleton.getInstance().SwapRouterBNBAddress;
 
         console.log('routerAddress::::::', routerAddress);
         let routerContractObject = await getContractObject(
@@ -956,7 +645,7 @@ const SwapSelected = props => {
             .call();
         }
         console.warn('MM', '+++++++++++', result);
-        return resolve({ result });
+        return resolve({result});
       } catch (err) {
         console.warn('MM', 'eeeeeeee   ==== >>>> ' + err);
         setLoading(false);
@@ -973,7 +662,7 @@ const SwapSelected = props => {
           message = 'Pair not Supported at the moment.';
         } else if (err?.toString().includes('INSUFFICIENT_LIQUIDITY')) {
           console.log('::::::INSUFFICIENT_LIQUIDITY:::::');
-          setIsInSufficientLiquidity(true)
+          setIsInSufficientLiquidity(true);
         } else if (err?.toString().includes('IDENTICAL_ADDRESSES')) {
           message = 'Same coin Selected';
           setTokenOneAmount(0);
@@ -981,20 +670,33 @@ const SwapSelected = props => {
         } else if (err?.toString().includes('overflow')) {
           Singleton.showAlert(constants.INSUFFICIENT_BALANCE);
         }
-        return reject({ message });
+        return reject({message});
       }
     });
   };
 
-  const onChangeText = async ({ tokenFirst, tokenSecond, type, value ,isError}) => {
-    setTransferFailed(false)
+  const onChangeText = async ({
+    tokenFirst,
+    tokenSecond,
+    type,
+    value,
+    isError,
+  }) => {
+    setTransferFailed(false);
     let routerAddress =
       tokenFirst?.coin_family == 1
         ? Singleton.getInstance().SwapRouterAddress
         : tokenFirst?.coin_family == 4
-          ? Singleton.getInstance().SwapRouterStcAddress
-          : Singleton.getInstance().SwapRouterBNBAddress;
-    console.log('onChangeText::::', tokenFirst, tokenSecond, type, value, tokenFirst?.coin_family);
+        ? Singleton.getInstance().SwapRouterStcAddress
+        : Singleton.getInstance().SwapRouterBNBAddress;
+    console.log(
+      'onChangeText::::',
+      tokenFirst,
+      tokenSecond,
+      type,
+      value,
+      tokenFirst?.coin_family,
+    );
     if (tokenFirst?.coin_family == 1) {
       if (
         tokenFirst.coin_symbol.toLowerCase() != 'eth' &&
@@ -1053,8 +755,15 @@ const SwapSelected = props => {
     setInsufficientBalance(false);
     setIsOverFlow(false);
     setIsInsufficientOutputAmount(false);
-    setIsInSufficientLiquidity(false)
-    getWeb3Object(tokenFirst?.coin_family == 1 ? 'eth' : tokenFirst?.coin_family == 4 ? 'stc' : 'bnb')
+    setIsInSufficientLiquidity(false);
+    getWeb3Object(
+      tokenFirst?.coin_family == 1
+        ? 'eth'
+        : tokenFirst?.coin_family == 4
+        ? 'stc'
+        : 'bnb',
+      tokenFirst,
+    )
       .eth.getGasPrice()
       .then(async gas => {
         let gasPrice = gas;
@@ -1069,7 +778,14 @@ const SwapSelected = props => {
           SELECTED_INPUT.firstInput,
           type,
         );
-        const userBal = await getUserBal(tokenFirst);
+        const userBal = await getUserBal(
+          tokenFirst,
+          userAddress,
+          setUserBal,
+          setCoinBalance,
+          setLoading,
+          coinBalance,
+        );
         console.warn(
           'MM',
           '?>>>>',
@@ -1090,7 +806,7 @@ const SwapSelected = props => {
         console.warn('MM', 'chk path::::::', path);
         console.warn('MM', 'chk path:::::: tokenFirst', tokenFirst);
         console.warn('MM', 'chk path:::::: tokenSecond', tokenSecond);
-        const { result } = await getAmountsInOut(
+        const {result} = await getAmountsInOut(
           tokenFirst.decimals,
           tokenSecond.decimals,
           value,
@@ -1103,15 +819,15 @@ const SwapSelected = props => {
           let amount =
             parseFloat(result[1]) > 0
               ? Singleton.getInstance().exponentialToDecimal(
-                result[1] / 10 ** tokenSecond.decimals,
-              )
+                  result[1] / 10 ** tokenSecond.decimals,
+                )
               : 0;
           console.warn('MM', 'result >> amount', amount);
           setTokenTwoAmount(
             parseFloat(amount) > 0
               ? `${Singleton.getInstance().exponentialToDecimal(
-                Singleton.getInstance().toFixed(amount, tokenSecond.decimals),
-              )}`
+                  Singleton.getInstance().toFixed(amount, tokenSecond.decimals),
+                )}`
               : 0,
           );
         } else {
@@ -1119,17 +835,17 @@ const SwapSelected = props => {
           let amountTwo =
             parseFloat(result[1]) > 0
               ? Singleton.getInstance().exponentialToDecimal(
-                result[0] / 10 ** tokenFirst.decimals,
-              )
+                  result[0] / 10 ** tokenFirst.decimals,
+                )
               : 0;
           setTokenOneAmount(
             parseFloat(amountTwo) > 0
               ? `${Singleton.getInstance().exponentialToDecimal(
-                Singleton.getInstance().toFixed(
-                  amountTwo,
-                  tokenFirst.decimals,
-                ),
-              )}`
+                  Singleton.getInstance().toFixed(
+                    amountTwo,
+                    tokenFirst.decimals,
+                  ),
+                )}`
               : 0,
           );
         }
@@ -1183,12 +899,13 @@ const SwapSelected = props => {
         if (
           tokenFirst.coin_symbol.toLowerCase() == 'eth' ||
           tokenFirst.coin_symbol.toLowerCase() == 'bnb' ||
-          (tokenFirst.coin_family == 4 && tokenFirst.coin_symbol.toLowerCase() == 'stc')
+          (tokenFirst.coin_family == 4 &&
+            tokenFirst.coin_symbol.toLowerCase() == 'stc')
         ) {
           setUserApproval(true);
           let swapTransaction;
           if (isError) {
-            console.log('here:::::3')
+            console.log('here:::::3');
             console.log(
               '-----swapExactETHForTokensSupportingFeeOnTransferTokens_tokenFirst -------',
             );
@@ -1200,7 +917,7 @@ const SwapSelected = props => {
                 deadline,
               );
           } else {
-            console.log('here:::::4')
+            console.log('here:::::4');
             if (type == SELECTED_INPUT.firstInput) {
               console.warn('MM', '-----swapExactETHForTokens  00 -------');
               swapTransaction =
@@ -1232,7 +949,7 @@ const SwapSelected = props => {
           );
           console.log('amountAMin.toString()::::', amountAMin.toString());
           swapTransaction
-            .estimateGas({ from: userAddress, value: amountAMin.toString() })
+            .estimateGas({from: userAddress, value: amountAMin.toString()})
             .then(gasEstimate => {
               console.warn(
                 'MM',
@@ -1267,24 +984,24 @@ const SwapSelected = props => {
               }
               console.warn('MM', 'hdhshs shsh hshs' + err?.message);
               setLoading(false);
-            if(isError){
-              if (err?.message?.toLowerCase().includes('failed')) {
-                setTransferFailed(true);
-              } else {
-                setInsufficientBalance(true);
+              if (isError) {
+                if (err?.message?.toLowerCase().includes('failed')) {
+                  setTransferFailed(true);
+                } else {
+                  setInsufficientBalance(true);
+                }
+                if (err?.message?.includes('INSUFFICIENT_OUTPUT_AMOUNT')) {
+                  setIsInsufficientOutputAmount(true);
+                  Singleton.showAlert(
+                    'Insufficient output amount. Try increasing your slippage.',
+                  );
+                }
               }
-              if (err?.message?.includes('INSUFFICIENT_OUTPUT_AMOUNT')) {
-                setIsInsufficientOutputAmount(true);
-                Singleton.showAlert(
-                  'Insufficient output amount. Try increasing your slippage.',
-                );
-              }
-            }
             });
         } else {
           let isApproved;
           try {
-            isApproved = await checkContractApproval({ path, result });
+            isApproved = await checkContractApproval({path, result});
           } catch (error) {
             console.log('erererrrrr', error);
             setLoading(false);
@@ -1306,7 +1023,7 @@ const SwapSelected = props => {
             });
             tokenContractObject.methods
               .approve(routerAddress, BigNumber(10 ** 25).toFixed(0))
-              .estimateGas({ from: userAddress })
+              .estimateGas({from: userAddress})
               .then(gasEstimate => {
                 setInsufficientBalance(false);
                 console.warn('MM', 'isApproved ======>>  inside ', gasEstimate);
@@ -1326,7 +1043,9 @@ const SwapSelected = props => {
                 }
                 if (err?.message?.includes('INSUFFICIENT_OUTPUT_AMOUNT')) {
                   setIsInsufficientOutputAmount(true);
-                  Singleton.showAlert('Insufficient output amount. Try increasing your slippage.')
+                  Singleton.showAlert(
+                    'Insufficient output amount. Try increasing your slippage.',
+                  );
                 }
               });
             return;
@@ -1335,21 +1054,26 @@ const SwapSelected = props => {
           if (
             tokenSecond.coin_symbol.toLowerCase() == 'eth' ||
             tokenSecond.coin_symbol.toLowerCase() == 'bnb' ||
-            (tokenSecond.coin_family == 4 && tokenSecond.coin_symbol.toLowerCase() == 'stc')
+            (tokenSecond.coin_family == 4 &&
+              tokenSecond.coin_symbol.toLowerCase() == 'stc')
           ) {
             let swapTransaction;
             if (isError) {
-              console.log('here:::::1'
-              );
+              console.log('here:::::1');
               let amount = amountAMin.toString();
               console.warn(
                 'MM',
                 'Token to ETH ======>>swapExactTokensForETH',
-                " amountAMin.toString()",
+                ' amountAMin.toString()',
                 amount,
-                "amountBMin.toString()",
+                'amountBMin.toString()',
                 amountBMin.toString(),
-                "path", path, "userAddress", userAddress, "deadline", deadline
+                'path',
+                path,
+                'userAddress',
+                userAddress,
+                'deadline',
+                deadline,
               );
               swapTransaction =
                 await routerContractObject.methods.swapExactTokensForETHSupportingFeeOnTransferTokens(
@@ -1360,16 +1084,21 @@ const SwapSelected = props => {
                   deadline,
                 );
             } else {
-              console.log('here:::::2')
+              console.log('here:::::2');
               if (type == SELECTED_INPUT.firstInput) {
                 console.warn(
                   'MM',
                   'Token to ETH ======>>swapExactTokensForETH',
-                  " amountAMin.toString()",
+                  ' amountAMin.toString()',
                   amountAMin.toString(),
-                  "amountBMin.toString()",
+                  'amountBMin.toString()',
                   amountBMin.toString(),
-                  "path", path, "userAddress", userAddress, "deadline", deadline
+                  'path',
+                  path,
+                  'userAddress',
+                  userAddress,
+                  'deadline',
+                  deadline,
                 );
                 swapTransaction =
                   await routerContractObject.methods.swapTokensForExactETH(
@@ -1383,11 +1112,16 @@ const SwapSelected = props => {
                 console.warn(
                   'MM',
                   'Token to ETH ======>>swapExactTokensForETH',
-                  " amountAMin.toString()",
+                  ' amountAMin.toString()',
                   amountAMin.toString(),
-                  "amountBMin.toString()",
+                  'amountBMin.toString()',
                   amountBMin.toString(),
-                  "path", path, "userAddress", userAddress, "deadline", deadline
+                  'path',
+                  path,
+                  'userAddress',
+                  userAddress,
+                  'deadline',
+                  deadline,
                 );
                 swapTransaction =
                   await routerContractObject.methods.swapExactTokensForETH(
@@ -1401,7 +1135,7 @@ const SwapSelected = props => {
             }
             console.warn('MM', 'swapTransaction>', swapTransaction);
             swapTransaction
-              .estimateGas({ from: userAddress })
+              .estimateGas({from: userAddress})
               .then(gasEstimate => {
                 setInsufficientBalance(false);
                 console.log('gas estimary    ', gasEstimate);
@@ -1414,7 +1148,7 @@ const SwapSelected = props => {
                 setLoading(false);
               })
               .catch(err => {
-                if(!isError){
+                if (!isError) {
                   onChangeText({
                     tokenFirst,
                     tokenSecond,
@@ -1423,19 +1157,26 @@ const SwapSelected = props => {
                     isError: true,
                   });
                 }
-                console.warn('MM', 'wwwfsfdfsdf transfer failed', err, err?.message);
-               if(isError){
-                setLoading(false);
-                if (err?.message?.toLowerCase()?.includes('failed')) {
-                  setTransferFailed(true);
-                } else {
-                  setInsufficientBalance(true);
+                console.warn(
+                  'MM',
+                  'wwwfsfdfsdf transfer failed',
+                  err,
+                  err?.message,
+                );
+                if (isError) {
+                  setLoading(false);
+                  if (err?.message?.toLowerCase()?.includes('failed')) {
+                    setTransferFailed(true);
+                  } else {
+                    setInsufficientBalance(true);
+                  }
+                  if (err?.message?.includes('INSUFFICIENT_OUTPUT_AMOUNT')) {
+                    setIsInsufficientOutputAmount(true);
+                    Singleton.showAlert(
+                      'Insufficient output amount. Try increasing your slippage.',
+                    );
+                  }
                 }
-                if (err?.message?.includes('INSUFFICIENT_OUTPUT_AMOUNT')) {
-                  setIsInsufficientOutputAmount(true);
-                  Singleton.showAlert('Insufficient output amount. Try increasing your slippage.')
-                }
-               }
               });
           } else {
             let swapTransaction;
@@ -1459,7 +1200,7 @@ const SwapSelected = props => {
                 );
             }
             swapTransaction
-              .estimateGas({ from: userAddress })
+              .estimateGas({from: userAddress})
               .then(gasEstimate => {
                 setInsufficientBalance(false);
                 setGasEstimate(gasEstimate + GAS_BUFFER);
@@ -1471,7 +1212,7 @@ const SwapSelected = props => {
                 setLoading(false);
               })
               .catch(err => {
-                console.warn('MM', ":::::transfer failed::", err?.message);
+                console.warn('MM', ':::::transfer failed::', err?.message);
                 setLoading(false);
                 if (err?.message?.toLowerCase()?.includes('failed')) {
                   setTransferFailed(true);
@@ -1480,7 +1221,9 @@ const SwapSelected = props => {
                 }
                 if (err?.message?.includes('INSUFFICIENT_OUTPUT_AMOUNT')) {
                   setIsInsufficientOutputAmount(true);
-                  Singleton.showAlert('Insufficient output amount. Try increasing your slippage.')
+                  Singleton.showAlert(
+                    'Insufficient output amount. Try increasing your slippage.',
+                  );
                 }
               });
           }
@@ -1489,7 +1232,12 @@ const SwapSelected = props => {
       .catch(err => {
         console.log('err gas ', err);
         setLoading(false);
-        if (err?.message?.toString()?.toLowerCase()?.includes('invalid json rpc response')) {
+        if (
+          err?.message
+            ?.toString()
+            ?.toLowerCase()
+            ?.includes('invalid json rpc response')
+        ) {
           Singleton.showAlert(constants.SOMETHING_WRONG);
         } else if (err?.message != constants.SOMETHING_WRONG) {
           Singleton.showAlert(err?.message || 'Unable to fetch gas price');
@@ -1504,10 +1252,15 @@ const SwapSelected = props => {
         tokenFirst?.coin_family == 1
           ? Singleton.getInstance().SwapRouterAddress
           : tokenFirst?.coin_family == 4
-            ? Singleton.getInstance().SwapRouterStcAddress
-            : Singleton.getInstance().SwapRouterBNBAddress;
+          ? Singleton.getInstance().SwapRouterStcAddress
+          : Singleton.getInstance().SwapRouterBNBAddress;
       const web3Object = getWeb3Object(
-        tokenFirst?.coin_family == 1 ? 'eth' : tokenFirst?.coin_family == 4 ? 'stc' : 'bnb',
+        tokenFirst?.coin_family == 1
+          ? 'eth'
+          : tokenFirst?.coin_family == 4
+          ? 'stc'
+          : 'bnb',
+        tokenFirst,
       );
       let nonce = await web3Object.eth.getTransactionCount(userAddress);
       console.log('makeTransaction:::::::', rawTxnObj);
@@ -1520,19 +1273,40 @@ const SwapSelected = props => {
         gasPrice,
         gasEstimate,
         nonce,
-        rawTxnObj.type == 'eth' || rawTxnObj.type == 'stc' || rawTxnObj.type == 'bnb'
+        rawTxnObj.type == 'eth' ||
+          rawTxnObj.type == 'stc' ||
+          rawTxnObj.type == 'bnb'
           ? rawTxnObj.value
           : '0x0',
         routerAddress,
         privateKey,
         userAddress,
         false,
+        tokenFirst,
+        isApproved,
+        tokenOneAmount,
+        rawTxnObj,
       );
       console.warn('MM', '--------------result---------------', result);
       setRawTxnObj({});
       setTimeout(() => {
-        getUserBal(tokenFirst);
-        getUserBalSecond(tokenSecond);
+        getUserBal(
+          tokenFirst,
+          userAddress,
+          setUserBal,
+          setCoinBalance,
+          setLoading,
+          coinBalance,
+        );
+        getUserBalSecond(
+          tokenSecond,
+          tokenFirst,
+          userAddress,
+          setUserBal,
+          setCoinBalanceSecond,
+          coinBalanceSecond,
+          setLoading,
+        );
       }, 800);
       setLoading(false);
       Alert.alert(
@@ -1548,7 +1322,7 @@ const SwapSelected = props => {
             },
           },
         ],
-        { cancelable: false },
+        {cancelable: false},
       );
       return result;
     } catch (error) {
@@ -1564,55 +1338,7 @@ const SwapSelected = props => {
       }
     }
   };
-  const sendTransactionToBackend = (
-    data,
-    blockChain = tokenFirst?.coin_family == 1
-      ? 'ethereum'
-      : tokenFirst?.coin_family == 4
-        ? 'saitachain'
-        : 'binancesmartchain',
-    coin_symbol,
-    isApproval,
-  ) => {
-    return new Promise((resolve, reject) => {
-      console.warn('MM', 'eth data:::: ccvc tkn', tokenFirst.coin_symbol);
-      if (tokenFirst?.coin_family == 1) {
-        coin_symbol = isApproval
-          ? 'eth'
-          : tokenFirst.coin_symbol.toLowerCase() == 'eth'
-            ? 'eth'
-            : rawTxnObj?.tokenContractAddress;
-      } else if (tokenFirst?.coin_family == 4) {
-        coin_symbol = isApproval
-          ? 'stc'
-          : (tokenFirst.coin_family == 4 && tokenFirst.coin_symbol.toLowerCase() == 'stc')
-            ? 'stc'
-            : rawTxnObj?.tokenContractAddress;
-      } else {
-        coin_symbol = isApproval
-          ? 'bnb'
-          : tokenFirst.coin_symbol.toLowerCase() == 'bnb'
-            ? 'bnb'
-            : rawTxnObj?.tokenContractAddress;
-      }
-      let access_token = Singleton.getInstance().access_token;
-      console.warn('MM', 'eth data::::', data);
-      console.warn(
-        'MM',
-        'eth data::::',
-        `https://api.saita.pro/prod/api/v1/${blockChain}/${coin_symbol}/savetrnx`,
-        access_token,
-      );
-      APIClient.getInstance()
-        .post(`${blockChain}/${coin_symbol}/savetrnx`, data, access_token)
-        .then(res => {
-          resolve(res);
-        })
-        .catch(err => {
-          reject(err);
-        });
-    });
-  };
+
   const checkForSwapTokenCall = isSecond => {
     console.log(tokenFirst, '::::isSecond::', isSecond);
     try {
@@ -1638,8 +1364,10 @@ const SwapSelected = props => {
       }
     } else if (tokenFirst?.coin_family == 4) {
       if (
-        (tokenFirst.coin_family == 4 && tokenFirst.coin_symbol.toLowerCase() != 'stc') &&
-        (tokenSecond.coin_family == 4 && tokenSecond.coin_symbol.toLowerCase() != 'stc')
+        tokenFirst.coin_family == 4 &&
+        tokenFirst.coin_symbol.toLowerCase() != 'stc' &&
+        tokenSecond.coin_family == 4 &&
+        tokenSecond.coin_symbol.toLowerCase() != 'stc'
       ) {
         Singleton.showAlert('Atleast one asset should be STC');
         return;
@@ -1658,26 +1386,40 @@ const SwapSelected = props => {
     if (tokenOneAmount == undefined || !isValidAmount) {
       Singleton.showAlert('Please enter amount to swap');
     } else if (!isApproved) {
-
-      let totalFee = (gasPrice * (gasEstimate)).toFixed(0);
+      let totalFee = (gasPrice * gasEstimate).toFixed(0);
       const web3Object = getWeb3Object(
-        tokenFirst?.coin_family == 1 ? 'eth' : tokenFirst?.coin_family == 4 ? 'stc' : 'bnb',
+        tokenFirst?.coin_family == 1
+          ? 'eth'
+          : tokenFirst?.coin_family == 4
+          ? 'stc'
+          : 'bnb',
+        tokenFirst,
       );
       let ethBal = await web3Object.eth.getBalance(userAddress);
       if (ethBal - Singleton.getInstance().exponentialToDecimal(totalFee) < 0) {
-        console.log("ethBal", ethBal, "totalFee", totalFee);
-        let type_s = tokenFirst?.coin_family == 1 ? ' ETH ' : tokenFirst?.coin_family == 4 ? ' STC ' : ' BNB ';
+        console.log('ethBal', ethBal, 'totalFee', totalFee);
+        let type_s =
+          tokenFirst?.coin_family == 1
+            ? ' ETH '
+            : tokenFirst?.coin_family == 4
+            ? ' STC '
+            : ' BNB ';
         Singleton.showAlert(
           "You don't have enough" + type_s + 'to perform transaction',
         );
-        setLoading(false)
+        setLoading(false);
         return;
       }
-      let type = tokenFirst?.coin_family == 1 ? 'ETH' : tokenFirst?.coin_family == 4 ? 'STC' : 'BNB';
-      console.log(gasPrice, (gasEstimate), GAS_FEE_MULTIPLIER);
+      let type =
+        tokenFirst?.coin_family == 1
+          ? 'ETH'
+          : tokenFirst?.coin_family == 4
+          ? 'STC'
+          : 'BNB';
+      console.log(gasPrice, gasEstimate, GAS_FEE_MULTIPLIER);
       Alert.alert(
         'Approval',
-        `Pay ${(gasPrice * (gasEstimate) * GAS_FEE_MULTIPLIER).toFixed(
+        `Pay ${(gasPrice * gasEstimate * GAS_FEE_MULTIPLIER).toFixed(
           6,
         )} ${type} transaction fee for token approval`,
         [
@@ -1689,10 +1431,10 @@ const SwapSelected = props => {
           },
           {
             text: 'Cancel',
-            onPress: () => { },
+            onPress: () => {},
           },
         ],
-        { cancelable: false },
+        {cancelable: false},
       );
     } else if (isOverFlow) {
       Singleton.showAlert(
@@ -1709,20 +1451,29 @@ const SwapSelected = props => {
     } else if (parseFloat(userBal) >= parseFloat(tokenOneAmount)) {
       console.warn('MM', '>>>>>>>>>> isApproved', isApproved);
       if (isApproved) {
-        let totalFee = bigNumberSafeMath(gasPrice, '*', (gasEstimate))
+        let totalFee = bigNumberSafeMath(gasPrice, '*', gasEstimate);
         console.warn(
           'MM',
           '>>>>>>>>>> totalFee',
           gasPrice,
-          (gasEstimate),
+          gasEstimate,
           totalFee,
         );
         const web3Object = getWeb3Object(
-          tokenFirst?.coin_family == 1 ? 'eth' : tokenFirst?.coin_family == 4 ? 'stc' : 'bnb',
+          tokenFirst?.coin_family == 1
+            ? 'eth'
+            : tokenFirst?.coin_family == 4
+            ? 'stc'
+            : 'bnb',
+          tokenFirst,
         );
         let ethBal = await web3Object.eth.getBalance(userAddress);
         console.warn('MM', '>>>>>>>>>> ethBal', ethBal);
-        if (rawTxnObj?.type == 'eth' || rawTxnObj?.type == 'stc' || rawTxnObj?.type == 'bnb') {
+        if (
+          rawTxnObj?.type == 'eth' ||
+          rawTxnObj?.type == 'stc' ||
+          rawTxnObj?.type == 'bnb'
+        ) {
           totalFee = await bigNumberSafeMath(
             exponentialToDecimalWithoutComma(totalFee),
             '+',
@@ -1736,39 +1487,58 @@ const SwapSelected = props => {
         ) {
           console.log('totalFee:::', totalFee);
           let required = parseFloat(totalFee * GAS_FEE_MULTIPLIER);
-          let type_s = tokenFirst?.coin_family == 1 ? 'ETH' : tokenFirst?.coin_family == 4 ? 'STC' : ' BNB';
+          let type_s =
+            tokenFirst?.coin_family == 1
+              ? 'ETH'
+              : tokenFirst?.coin_family == 4
+              ? 'STC'
+              : ' BNB';
           Singleton.showAlert(
             "You don't have enough " +
-            type_s +
-            ' to perform transaction! Required amount is ' +
-            Singleton.getInstance().toFixed(required, 6) +
-            ' ' +
-            type_s,
+              type_s +
+              ' to perform transaction! Required amount is ' +
+              Singleton.getInstance().toFixed(required, 6) +
+              ' ' +
+              type_s,
           );
           return;
         }
-        console.log("::::::>>>>:::::");
-        setLoading(false)
+        console.log('::::::>>>>:::::');
+        setLoading(false);
         setSwapModal(true);
-
       } else {
-        let gasEstim = (gasEstimate)
+        let gasEstim = gasEstimate;
         let totalFee = (gasPrice * gasEstim).toFixed(0);
         const web3Object = getWeb3Object(
-          tokenFirst?.coin_family == 1 ? 'eth' : tokenFirst?.coin_family == 4 ? 'stc' : 'bnb',
+          tokenFirst?.coin_family == 1
+            ? 'eth'
+            : tokenFirst?.coin_family == 4
+            ? 'stc'
+            : 'bnb',
+          tokenFirst,
         );
         let ethBal = await web3Object.eth.getBalance(userAddress);
         if (
           ethBal - Singleton.getInstance().exponentialToDecimal(totalFee) <
           0
         ) {
-          let type_s = tokenFirst?.coin_family == 1 ? ' ETH ' : tokenFirst?.coin_family == 4 ? ' STC ' : ' BNB ';
+          let type_s =
+            tokenFirst?.coin_family == 1
+              ? ' ETH '
+              : tokenFirst?.coin_family == 4
+              ? ' STC '
+              : ' BNB ';
           Singleton.showAlert(
             "You don't have enough" + type_s + 'to perform transaction',
           );
           return;
         }
-        let type = tokenFirst?.coin_family == 1 ? 'ETH' : tokenFirst?.coin_family == 4 ? 'STC' : 'BNB';
+        let type =
+          tokenFirst?.coin_family == 1
+            ? 'ETH'
+            : tokenFirst?.coin_family == 4
+            ? 'STC'
+            : 'BNB';
         console.log(gasPrice, gasEstim, GAS_FEE_MULTIPLIER);
         Alert.alert(
           'Approval',
@@ -1784,10 +1554,10 @@ const SwapSelected = props => {
             },
             {
               text: 'Cancel',
-              onPress: () => { },
+              onPress: () => {},
             },
           ],
-          { cancelable: false },
+          {cancelable: false},
         );
       }
     } else if (parseFloat(userBal) < parseFloat(tokenOneAmount)) {
@@ -1799,22 +1569,7 @@ const SwapSelected = props => {
       Singleton.showAlert('Unable to swap at the moment.');
     }
   };
-  const calculatePercentage = (percentage, balance) => {
-    console.log('-----------bal', balance);
-    console.log(
-      'percentage::::::',
-      percentage,
-      'balance:::::::',
-      exponentialToDecimalWithoutComma(balance),
-    );
-    let result = Singleton.getInstance().bigNumberSafeMath(
-      percentage / 100,
-      '*',
-      balance,
-    );
-    console.log('result', exponentialToDecimalWithoutComma(result));
-    return result;
-  };
+
   const onPressPercentageButton = (item, balance, notTab) => {
     setTokenTwoAmount(0);
     console.log(
@@ -1830,7 +1585,10 @@ const SwapSelected = props => {
         setActiveButton(notTab ? 0 : item);
         let coinSymbol = tokenFirst?.coin_symbol?.toLowerCase();
         let percentage =
-          coinSymbol == 'eth' || coinSymbol == 'bnb' || (tokenFirst.coin_family == 4 && tokenFirst.coin_symbol.toLowerCase() == 'stc')
+          coinSymbol == 'eth' ||
+          coinSymbol == 'bnb' ||
+          (tokenFirst.coin_family == 4 &&
+            tokenFirst.coin_symbol.toLowerCase() == 'stc')
             ? item == 100
               ? 90
               : item
@@ -1845,14 +1603,21 @@ const SwapSelected = props => {
           tokenSecond,
           type: SELECTED_INPUT.firstInput,
           value: amount,
-          isError:false,
+          isError: false,
         });
       }
     }
   };
-  const onPressItem1 = async (selectedItem) => {
+  const onPressItem1 = async selectedItem => {
     console.log('selectedItem::::', selectedItem);
-    let userBal = await getUserBal(selectedItem);
+    let userBal = await getUserBal(
+      selectedItem,
+      userAddress,
+      setUserBal,
+      setCoinBalance,
+      setLoading,
+      coinBalance,
+    );
     console.log('userBal::::', userBal);
     setTimeout(() => {
       setActiveButton(0);
@@ -1866,15 +1631,22 @@ const SwapSelected = props => {
       setUserApproval(true);
       setInsufficientBalance(false);
       setIsInsufficientOutputAmount(false);
-      setIsInSufficientLiquidity(false)
+      setIsInSufficientLiquidity(false);
       dispatch(saveSwapItem({}));
       setTokenFirst(selectedItem);
       setTimeout(() => {
-        getUserBal(selectedItem);
+        getUserBal(
+          selectedItem,
+          userAddress,
+          setUserBal,
+          setCoinBalance,
+          setLoading,
+          coinBalance,
+        );
       }, 800);
     }, 500);
-  }
-  const onPressItem2 = async (selectedItem) => {
+  };
+  const onPressItem2 = async selectedItem => {
     if (
       tokenFirst?.coin_family == 1 &&
       tokenFirst.coin_symbol?.toLowerCase() != 'eth' &&
@@ -1903,10 +1675,16 @@ const SwapSelected = props => {
       setTokenOneAmount(0);
       setTokenTwoAmount(0);
       setTokenSecond(selectedItem);
-      checkforPair(selectedItem, tokenFirst)
-      if (selectedItem?.coin_symbol?.toUpperCase() == 'STC' && selectedItem?.coin_family != 4) {
+      checkforPair(selectedItem, tokenFirst, setIsPairSupported);
+      if (
+        selectedItem?.coin_symbol?.toUpperCase() == 'STC' &&
+        selectedItem?.coin_family != 4
+      ) {
         Singleton.getInstance().slipageTolerance = 2;
-      } else if (selectedItem?.coin_symbol?.toUpperCase() == 'SRLTY' && selectedItem?.coin_family != 4) {
+      } else if (
+        selectedItem?.coin_symbol?.toUpperCase() == 'SRLTY' &&
+        selectedItem?.coin_family != 4
+      ) {
         Singleton.getInstance().slipageTolerance = 3;
       } else {
         Singleton.getInstance().slipageTolerance = 1;
@@ -1914,13 +1692,13 @@ const SwapSelected = props => {
       setUserApproval(true);
       setInsufficientBalance(false);
       setIsInsufficientOutputAmount(false);
-      setIsInSufficientLiquidity(false)
+      setIsInSufficientLiquidity(false);
     }
-  }
-  const onChangeTextTop = (text) => {
-    setSearchText(text)
-    debounceLoadData(text)
-  }
+  };
+  const onChangeTextTop = text => {
+    setSearchText(text);
+    debounceLoadData(text);
+  };
   const debounceLoadData = useCallback(
     debounce((text, isSelectedList) => {
       if (isSelectedList) {
@@ -1931,152 +1709,199 @@ const SwapSelected = props => {
     }, 1000),
     [],
   );
-  const searchList1 = async (text) => {
+  const searchList1 = async text => {
     Singleton.getInstance()
       .newGetData(constants.IS_PRIVATE_WALLET)
       .then(async isPrivate => {
-        setLoading(true)
+        setLoading(true);
         try {
-          let response = await getSwapData(getCoinFamilyForActiveWallet(isPrivate), null, text, 0)
-          console.log("searchList1::::::", response);
-          setFullList(response.data)
-          settotalRecordsAll(response?.meta?.total)
+          let response = await getSwapData(
+            getCoinFamilyForActiveWallet(isPrivate),
+            null,
+            text,
+            0,
+            setUsedFiatType,
+            setPage,
+            setLoading,
+            dispatch,
+          );
+          console.log('searchList1::::::', response);
+          setFullList(response.data);
+          settotalRecordsAll(response?.meta?.total);
         } catch (err) {
-          setLoading(false)
+          setLoading(false);
         } finally {
-          setLoading(false)
+          setLoading(false);
         }
-      })
-  }
-  const searchList2 = async (text) => {
-    let tokenF = tokenFirst || tokenOne
-    console.log("tokenF:::::::", tokenFirst, tokenOne);
-    setLoading(true)
+      });
+  };
+  const searchList2 = async text => {
+    let tokenF = tokenFirst || tokenOne;
+    console.log('tokenF:::::::', tokenFirst, tokenOne);
+    setLoading(true);
     try {
-      let response = await getSwapData(tokenF?.coin_family, tokenF?.id, text, 0)
-      console.log("searchList2::::::", response);
-      setCoinList(response.data)
-      settotalRecordsSelected(response?.meta?.total)
+      let response = await getSwapData(
+        tokenF?.coin_family,
+        tokenF?.id,
+        text,
+        0,
+        setUsedFiatType,
+        setPage,
+        setLoading,
+        dispatch,
+      );
+      console.log('searchList2::::::', response);
+      setCoinList(response.data);
+      settotalRecordsSelected(response?.meta?.total);
     } catch (err) {
-      setLoading(false)
+      setLoading(false);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
-  const onChangeTextBottom = (text) => {
-    console.log(":::::onChangeTextBottom::::");
-    setSearchText(text)
-    debounceLoadData(text, true)
-  }
+  };
+  const onChangeTextBottom = text => {
+    console.log(':::::onChangeTextBottom::::');
+    setSearchText(text);
+    debounceLoadData(text, true);
+  };
   const onPressAddCustomToken1 = () => {
-    onCloseAllList()
-    getCurrentRouteName() != 'AddToken' && navigate(NavigationStrings.AddToken,{ from: 'swap' });
-  }
+    onCloseAllList();
+    getCurrentRouteName() != 'AddToken' &&
+      navigate(NavigationStrings.AddToken, {from: 'swap'});
+  };
   const onPressAddCustomToken2 = () => {
-    onCloseSelectedList()
-    getCurrentRouteName() != 'AddToken' && navigate(NavigationStrings.AddToken,{ from: 'swap', coin_family: tokenFirst?.coin_family });
-  }
+    onCloseSelectedList();
+    getCurrentRouteName() != 'AddToken' &&
+      navigate(NavigationStrings.AddToken, {
+        from: 'swap',
+        coin_family: tokenFirst?.coin_family,
+      });
+  };
   const onCloseAllList = async () => {
-
-    console.log("onCloseAllList:::::::::");
-    setShowTokenOneList(false)
-    setSearchText('')
-    console.log("onCloseAllList:::::::::");
+    console.log('onCloseAllList:::::::::');
+    setShowTokenOneList(false);
+    setSearchText('');
+    console.log('onCloseAllList:::::::::');
     Singleton.getInstance()
       .newGetData(constants.IS_PRIVATE_WALLET)
       .then(async isPrivate => {
         try {
-          let responseAll = await getSwapData(getCoinFamilyForActiveWallet(isPrivate), null, '', 0)
-          setFullList(responseAll?.data)
-          settotalRecordsAll(responseAll?.meta?.total)
+          let responseAll = await getSwapData(
+            getCoinFamilyForActiveWallet(isPrivate),
+            null,
+            '',
+            0,
+            setUsedFiatType,
+            setPage,
+            setLoading,
+            dispatch,
+          );
+          setFullList(responseAll?.data);
+          settotalRecordsAll(responseAll?.meta?.total);
         } catch (err) {
-          console.log("err:::::", err);
+          console.log('err:::::', err);
         } finally {
-          setloadList(false)
-          setLoading(false)
+          setloadList(false);
+          setLoading(false);
         }
-      })
-  }
-  const isCloseToBottomAllList = async ({ nativeEvent }) => {
-    console.log("called:::::");
-    let { layoutMeasurement, contentOffset, contentSize } = nativeEvent
+      });
+  };
+  const isCloseToBottomAllList = async ({nativeEvent}) => {
+    console.log('called:::::');
+    let {layoutMeasurement, contentOffset, contentSize} = nativeEvent;
     const paddingToBottom = 60;
     let bottomReached =
       layoutMeasurement.height + contentOffset.y >=
       contentSize.height - paddingToBottom;
-    console.log("called:::::", bottomReached, loadList,);
+    console.log('called:::::', bottomReached, loadList);
     if (bottomReached && !loadList && fullList?.length < totalRecordsAll) {
-      setloadList(true)
+      setloadList(true);
       Singleton.getInstance()
         .newGetData(constants.IS_PRIVATE_WALLET)
         .then(async isPrivate => {
           try {
-            let responseAll = await getSwapData(getCoinFamilyForActiveWallet(isPrivate), null, searchText, page)
-            console.log("responseAll:::::", responseAll);
-            let newList = [...fullList, ...responseAll.data]
-            setFullList(newList)
-            settotalRecordsAll(responseAll?.meta?.total)
+            let responseAll = await getSwapData(
+              getCoinFamilyForActiveWallet(isPrivate),
+              null,
+              searchText,
+              page,
+              setUsedFiatType,
+              setPage,
+              setLoading,
+              dispatch,
+            );
+            console.log('responseAll:::::', responseAll);
+            let newList = [...fullList, ...responseAll.data];
+            setFullList(newList);
+            settotalRecordsAll(responseAll?.meta?.total);
           } catch (err) {
-            console.log("err:::::", err);
+            console.log('err:::::', err);
           } finally {
-            setloadList(false)
-            setLoading(false)
+            setloadList(false);
+            setLoading(false);
           }
-        })
+        });
     }
-  }
+  };
   const onCloseSelectedList = async () => {
-    console.log("onCloseAllList:::::::::");
-    setShowTokenTwoList(false)
-    setSearchText('')
-    console.log("onCloseAllList:::::::::");
+    console.log('onCloseAllList:::::::::');
+    setShowTokenTwoList(false);
+    setSearchText('');
+    console.log('onCloseAllList:::::::::');
     try {
-      let responseSelected = await getSwapData(tokenFirst?.coin_family, tokenFirst?.id, '', 0)
-      setCoinList(responseSelected?.data)
-      settotalRecordsSelected(responseSelected.meta?.total)
+      let responseSelected = await getSwapData(
+        tokenFirst?.coin_family,
+        tokenFirst?.id,
+        '',
+        0,
+        setUsedFiatType,
+        setPage,
+        setLoading,
+        dispatch,
+      );
+      setCoinList(responseSelected?.data);
+      settotalRecordsSelected(responseSelected.meta?.total);
     } catch (err) {
-      console.log("err:::::", err);
+      console.log('err:::::', err);
     } finally {
-      setloadList(false)
-      setLoading(false)
+      setloadList(false);
+      setLoading(false);
     }
-  }
-  const isCloseToBottomSelectedList = async ({ nativeEvent }) => {
-    console.log("called:::::");
-    let { layoutMeasurement, contentOffset, contentSize } = nativeEvent
+  };
+  const isCloseToBottomSelectedList = async ({nativeEvent}) => {
+    console.log('called:::::');
+    let {layoutMeasurement, contentOffset, contentSize} = nativeEvent;
     const paddingToBottom = 60;
     let bottomReached =
       layoutMeasurement.height + contentOffset.y >=
       contentSize.height - paddingToBottom;
-    console.log("called:::::", bottomReached, loadList,);
+    console.log('called:::::', bottomReached, loadList);
     if (bottomReached && !loadList && coinList?.length < totalRecordsSelected) {
-      setloadList(true)
+      setloadList(true);
       try {
-        let responseSelected = await getSwapData(tokenFirst?.coin_family, tokenFirst?.id, searchText, page)
-        console.log("responseAll:::::", responseSelected);
-        let newList = [...coinList, ...responseSelected.data]
-        setCoinList(newList)
-        settotalRecordsSelected(responseSelected?.meta?.total)
+        let responseSelected = await getSwapData(
+          tokenFirst?.coin_family,
+          tokenFirst?.id,
+          searchText,
+          page,
+          setUsedFiatType,
+          setPage,
+          setLoading,
+          dispatch,
+        );
+        console.log('responseAll:::::', responseSelected);
+        let newList = [...coinList, ...responseSelected.data];
+        setCoinList(newList);
+        settotalRecordsSelected(responseSelected?.meta?.total);
       } catch (err) {
-        console.log("err:::::", err);
+        console.log('err:::::', err);
       } finally {
-        setloadList(false)
-        setLoading(false)
+        setloadList(false);
+        setLoading(false);
       }
     }
-  }
-  const checkforPair = (item, tokenSecond) => {
-    let tokenContractAddress = item?.is_token == 0 ? tokenSecond?.token_address : item.token_address
-    Singleton.getInstance().checkFactoryForPair(item.coin_family, tokenContractAddress).then(res => {
-      console.log("res::::::checkforPair", res);
-      if (!res) {
-        setIsPairSupported(false)
-        Singleton.showAlert(`Pair not supported at the moment.`)
-      }
-    }).catch(err => {
-      console.log("err::::::checkforPair", err);
-    })
-  }
+  };
+
   return (
     <Wrap
       style={{
@@ -2105,7 +1930,7 @@ const SwapSelected = props => {
         <>
           <ScrollView>
             <Text
-              style={[styles.txtTo, { color: ThemeManager.colors.textColor }]}>
+              style={[styles.txtTo, {color: ThemeManager.colors.textColor}]}>
               {LanguageManager.swap}
             </Text>
             <View
@@ -2175,15 +2000,23 @@ const SwapSelected = props => {
                           alignItems: 'center',
                           overflow: 'hidden',
                         }}>
-                        {tokenFirst?.coin_image != '' ? <FastImage
-                          source={{ uri: tokenFirst?.coin_image }}
-                          style={{
-                            width: areaDimen(34),
-                            height: areaDimen(34),
-                            borderRadius: areaDimen(40),
-                            resizeMode: 'contain',
-                          }}
-                        /> : <View style={styles.coinSymbol}><Text style={styles.coinSymbolText}>{tokenFirst?.coin_symbol.toUpperCase()?.charAt(0)}</Text></View>}
+                        {tokenFirst?.coin_image != '' ? (
+                          <FastImage
+                            source={{uri: tokenFirst?.coin_image}}
+                            style={{
+                              width: areaDimen(34),
+                              height: areaDimen(34),
+                              borderRadius: areaDimen(40),
+                              resizeMode: 'contain',
+                            }}
+                          />
+                        ) : (
+                          <View style={styles.coinSymbol}>
+                            <Text style={styles.coinSymbolText}>
+                              {tokenFirst?.coin_symbol.toUpperCase()?.charAt(0)}
+                            </Text>
+                          </View>
+                        )}
                         <View
                           style={{
                             height: heightDimen(50),
@@ -2240,22 +2073,27 @@ const SwapSelected = props => {
                             }}
                             numberOfLines={1}
                             ellipsizeMode="tail">
-                            {`1 ${tokenFirst?.coin_symbol.toUpperCase()
-                              ? tokenFirst?.coin_symbol.toUpperCase()
-                              : ''
-                              } = ${Singleton.getInstance().CurrencySymbol}${tokenFirst?.fiat_price == null
-                                ? 0.00
+                            {`1 ${
+                              tokenFirst?.coin_symbol.toUpperCase()
+                                ? tokenFirst?.coin_symbol.toUpperCase()
+                                : ''
+                            } = ${Singleton.getInstance().CurrencySymbol}${
+                              tokenFirst?.fiat_price == null
+                                ? 0.0
                                 : CommaSeprator3(
-                                  exponentialToDecimalWithoutComma(
-                                    isNaN(tokenFirst?.fiat_price)
-                                      ? 0.00
-                                      : tokenFirst?.fiat_price,
-                                  ),
-                                  tokenFirst?.fiat_price_decimal || 2,
-                                  true
-                                )
-                              }`}
-                            {console.log("tokenFirst?.fiat_price::::::::", tokenFirst?.fiat_price)}
+                                    exponentialToDecimalWithoutComma(
+                                      isNaN(tokenFirst?.fiat_price)
+                                        ? 0.0
+                                        : tokenFirst?.fiat_price,
+                                    ),
+                                    tokenFirst?.fiat_price_decimal || 2,
+                                    true,
+                                  )
+                            }`}
+                            {console.log(
+                              'tokenFirst?.fiat_price::::::::',
+                              tokenFirst?.fiat_price,
+                            )}
                           </Text>
                         </View>
                       </View>
@@ -2270,7 +2108,7 @@ const SwapSelected = props => {
                         }}>
                         {item ? (
                           <FastImage
-                            source={{ uri: item?.coin_image }}
+                            source={{uri: item?.coin_image}}
                             style={{
                               borderRadius: 14,
                               width: areaDimen(25),
@@ -2321,13 +2159,13 @@ const SwapSelected = props => {
                 <Text
                   style={[
                     styles.txtSending,
-                    { color: ThemeManager.colors.textColor },
+                    {color: ThemeManager.colors.textColor},
                   ]}>
                   {'Sending'}
                 </Text>
               </View>
               <View
-                style={{ height: heightDimen(52), marginTop: heightDimen(10) }}>
+                style={{height: heightDimen(52), marginTop: heightDimen(10)}}>
                 <TextInput
                   editable={fullList?.length == 0 ? false : true}
                   value={
@@ -2381,7 +2219,7 @@ const SwapSelected = props => {
                           tokenSecond,
                           type: SELECTED_INPUT.firstInput,
                           value,
-                          isError:false,
+                          isError: false,
                         });
                       }, 1000);
                     }
@@ -2411,35 +2249,36 @@ const SwapSelected = props => {
                 <Text
                   style={[
                     styles.balanceLabelStyle,
-                    { color: ThemeManager.colors.lightTextColor },
+                    {color: ThemeManager.colors.lightTextColor},
                   ]}>
                   {'Balance' + ': '}
                 </Text>
                 <Text
                   style={[
                     styles.balanceValueStyle,
-                    { color: ThemeManager.colors.lightTextColor },
+                    {color: ThemeManager.colors.lightTextColor},
                   ]}>
                   {console.log(
                     'Start First Balance-----------4==',
                     coinBalance,
                     tokenFirst,
                   )}
-                  {`${(exponentialToDecimalWithoutComma(
-                    coinBalance[tokenFirst?.id || 0]
-                      ? coinBalance[tokenFirst?.id]?.balance
-                      : '0',
-                  )
-                    ?.toString()
-                    ?.toLowerCase()
-                    ?.includes('nan')
-                    ? 0
-                    : exponentialToDecimalWithoutComma(
+                  {`${
+                    (exponentialToDecimalWithoutComma(
                       coinBalance[tokenFirst?.id || 0]
                         ? coinBalance[tokenFirst?.id]?.balance
                         : '0',
-                    ) || '0') + ' '
-                    }`}
+                    )
+                      ?.toString()
+                      ?.toLowerCase()
+                      ?.includes('nan')
+                      ? 0
+                      : exponentialToDecimalWithoutComma(
+                          coinBalance[tokenFirst?.id || 0]
+                            ? coinBalance[tokenFirst?.id]?.balance
+                            : '0',
+                        ) || '0') + ' '
+                  }`}
                 </Text>
 
                 <TouchableOpacity
@@ -2491,7 +2330,13 @@ const SwapSelected = props => {
                       }
                     }
                   }}>
-                  <Text style={[styles.maxTextStyle, { color: ThemeManager.colors.headingText }]}>{LanguageManager.max}</Text>
+                  <Text
+                    style={[
+                      styles.maxTextStyle,
+                      {color: ThemeManager.colors.headingText},
+                    ]}>
+                    {LanguageManager.max}
+                  </Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -2510,7 +2355,14 @@ const SwapSelected = props => {
                 dispatch(saveSwapItem({}));
                 setTokenFirst(tokenSecond);
                 setTokenSecond(temp);
-                getUserBal(tokenSecond);
+                getUserBal(
+                  tokenSecond,
+                  userAddress,
+                  setUserBal,
+                  setCoinBalance,
+                  setLoading,
+                  coinBalance,
+                );
                 setTokenOneAmount('');
                 setTokenTwoAmount('');
                 setInsufficientBalance(false);
@@ -2521,7 +2373,7 @@ const SwapSelected = props => {
                 setIsInsufficientOutputAmount(false);
                 setIsInSufficientLiquidity(false);
               }}
-              style={[styles.swapStyle, { borderColor: ThemeManager.colors.bg, }]}>
+              style={[styles.swapStyle, {borderColor: ThemeManager.colors.bg}]}>
               <FastImage
                 style={{
                   alignSelf: 'center',
@@ -2599,15 +2451,25 @@ const SwapSelected = props => {
                           alignItems: 'center',
                           overflow: 'hidden',
                         }}>
-                        {tokenSecond?.coin_image != '' ? <FastImage
-                          source={{ uri: tokenSecond?.coin_image }}
-                          style={{
-                            width: areaDimen(34),
-                            height: areaDimen(34),
-                            borderRadius: areaDimen(40),
-                            resizeMode: 'contain',
-                          }}
-                        /> : <View style={styles.coinSymbol}><Text style={styles.coinSymbolText}>{tokenSecond?.coin_symbol.toUpperCase()?.charAt(0)}</Text></View>}
+                        {tokenSecond?.coin_image != '' ? (
+                          <FastImage
+                            source={{uri: tokenSecond?.coin_image}}
+                            style={{
+                              width: areaDimen(34),
+                              height: areaDimen(34),
+                              borderRadius: areaDimen(40),
+                              resizeMode: 'contain',
+                            }}
+                          />
+                        ) : (
+                          <View style={styles.coinSymbol}>
+                            <Text style={styles.coinSymbolText}>
+                              {tokenSecond?.coin_symbol
+                                .toUpperCase()
+                                ?.charAt(0)}
+                            </Text>
+                          </View>
+                        )}
                         <View
                           style={{
                             height: heightDimen(50),
@@ -2659,21 +2521,28 @@ const SwapSelected = props => {
                             }}
                             numberOfLines={1}
                             ellipsizeMode="tail">
-                            {`1 ${tokenSecond?.coin_symbol.toUpperCase()
-                              ? tokenSecond?.coin_symbol.toUpperCase()
-                              : ''
-                              } = ${Singleton.getInstance().CurrencySymbol}${tokenSecond?.fiat_price == null
+                            {`1 ${
+                              tokenSecond?.coin_symbol.toUpperCase()
+                                ? tokenSecond?.coin_symbol.toUpperCase()
+                                : ''
+                            } = ${Singleton.getInstance().CurrencySymbol}${
+                              tokenSecond?.fiat_price == null
                                 ? 0.0
                                 : CommaSeprator3(
-                                  exponentialToDecimalWithoutComma(
-                                    isNaN(tokenSecond?.fiat_price)
-                                      ? 0
-                                      : tokenSecond?.fiat_price,
-                                  ),
-                                  tokenSecond?.fiat_price_decimal || 2,
-                                )
-                              }`}
-                            {console.log("tokenSecond?.fiat_price_decimal:::::::", tokenSecond?.fiat_price_decimal, "tokenSecond?.fiat_price:::::", tokenSecond)}
+                                    exponentialToDecimalWithoutComma(
+                                      isNaN(tokenSecond?.fiat_price)
+                                        ? 0
+                                        : tokenSecond?.fiat_price,
+                                    ),
+                                    tokenSecond?.fiat_price_decimal || 2,
+                                  )
+                            }`}
+                            {console.log(
+                              'tokenSecond?.fiat_price_decimal:::::::',
+                              tokenSecond?.fiat_price_decimal,
+                              'tokenSecond?.fiat_price:::::',
+                              tokenSecond,
+                            )}
                           </Text>
                         </View>
                       </View>
@@ -2688,7 +2557,7 @@ const SwapSelected = props => {
                         }}>
                         {item ? (
                           <FastImage
-                            source={{ uri: item?.coin_image }}
+                            source={{uri: item?.coin_image}}
                             style={{
                               borderRadius: 14,
                               width: areaDimen(25),
@@ -2740,13 +2609,13 @@ const SwapSelected = props => {
                 <Text
                   style={[
                     styles.txtSending,
-                    { color: ThemeManager.colors.textColor },
+                    {color: ThemeManager.colors.textColor},
                   ]}>
                   {'To'}
                 </Text>
               </View>
               <View
-                style={{ height: heightDimen(52), marginTop: heightDimen(10) }}>
+                style={{height: heightDimen(52), marginTop: heightDimen(10)}}>
                 <TextInput
                   editable={fullList?.length == 0 ? false : true}
                   value={
@@ -2794,7 +2663,7 @@ const SwapSelected = props => {
                           tokenSecond,
                           type: SELECTED_INPUT.secondInput,
                           value,
-                          isError:false,
+                          isError: false,
                         });
                       }, 1000);
                     }
@@ -2825,34 +2694,35 @@ const SwapSelected = props => {
                 <Text
                   style={[
                     styles.balanceLabelStyle,
-                    { color: ThemeManager.colors.lightTextColor },
+                    {color: ThemeManager.colors.lightTextColor},
                   ]}>
                   {'Balance' + ': '}
                 </Text>
                 <Text
                   style={[
                     styles.balanceValueStyle,
-                    { color: ThemeManager.colors.lightTextColor },
+                    {color: ThemeManager.colors.lightTextColor},
                   ]}>
                   {console.log(
                     'Start Second Balance-----------4==',
                     coinBalanceSecond,
                   )}
-                  {`${exponentialToDecimalWithoutComma(
-                    coinBalanceSecond[tokenSecond?.id || 0]
-                      ? coinBalanceSecond[tokenSecond?.id]?.balance
-                      : '0',
-                  )
-                    ?.toString()
-                    ?.toLowerCase()
-                    ?.includes('nan')
-                    ? 0
-                    : exponentialToDecimalWithoutComma(
+                  {`${
+                    exponentialToDecimalWithoutComma(
                       coinBalanceSecond[tokenSecond?.id || 0]
                         ? coinBalanceSecond[tokenSecond?.id]?.balance
                         : '0',
-                    ) || '0'
-                    }`}
+                    )
+                      ?.toString()
+                      ?.toLowerCase()
+                      ?.includes('nan')
+                      ? 0
+                      : exponentialToDecimalWithoutComma(
+                          coinBalanceSecond[tokenSecond?.id || 0]
+                            ? coinBalanceSecond[tokenSecond?.id]?.balance
+                            : '0',
+                        ) || '0'
+                  }`}
                 </Text>
               </View>
             </View>
@@ -2860,34 +2730,35 @@ const SwapSelected = props => {
           <BasicButton
             onPress={() => {
               if (!isPairsupported) {
-                setLoading(false)
-                Singleton.showAlert('Pair not supported at the moment.')
+                setLoading(false);
+                Singleton.showAlert('Pair not supported at the moment.');
               } else if (isInSufficientLiquidity) {
-                setLoading(false)
-                Singleton.showAlert('INSUFFICIENT_LIQUIDITY')
-              }
-              else if (isInsufficientOutputAmount) {
-                setLoading(false)
-                Singleton.showAlert('Insufficient output amount. Try increasing your slippage.')
-              }
-              else if (!isInsufficientBalance) {
-                setLoading(false)
+                setLoading(false);
+                Singleton.showAlert('INSUFFICIENT_LIQUIDITY');
+              } else if (isInsufficientOutputAmount) {
+                setLoading(false);
+                Singleton.showAlert(
+                  'Insufficient output amount. Try increasing your slippage.',
+                );
+              } else if (!isInsufficientBalance) {
+                setLoading(false);
                 checkForSwapTokenCall();
               }
             }}
             btnStyle={styles.btnStyle}
             customGradient={styles.customGrad}
             text={
-              isInSufficientLiquidity ? 'INSUFFICIENT_LIQUIDITY' :
-                isInsufficientBalance
-                  ? isInsufficientOutputAmount
-                    ? 'INSUFFICIENT OUTPUT AMOUNT'
-                    : 'Insufficient Balance'
-                  : !isPairsupported
-                    ? 'PAIR NOT SUPPORTED'
-                    : isApproved
-                      ? 'Swap'
-                      : 'Approval'
+              isInSufficientLiquidity
+                ? 'INSUFFICIENT_LIQUIDITY'
+                : isInsufficientBalance
+                ? isInsufficientOutputAmount
+                  ? 'INSUFFICIENT OUTPUT AMOUNT'
+                  : 'Insufficient Balance'
+                : !isPairsupported
+                ? 'PAIR NOT SUPPORTED'
+                : isApproved
+                ? 'Swap'
+                : 'Approval'
             }
           />
         </>
@@ -2901,8 +2772,14 @@ const SwapSelected = props => {
           toValue={tokenTwoAmount}
           fromValue={tokenOneAmount}
           address={Singleton.getInstance().defaultEthAddress}
-          symbol={tokenFirst?.coin_family == 1 ? 'ETH' : tokenFirst?.coin_family == 4 ? 'STC' : 'BNB'}
-          txnFee={(gasPrice * (gasEstimate) * GAS_FEE_MULTIPLIER).toFixed(6)}
+          symbol={
+            tokenFirst?.coin_family == 1
+              ? 'ETH'
+              : tokenFirst?.coin_family == 4
+              ? 'STC'
+              : 'BNB'
+          }
+          txnFee={(gasPrice * gasEstimate * GAS_FEE_MULTIPLIER).toFixed(6)}
           onPress={() => {
             setSwapModal(false);
             if (global.disconnected) {
@@ -2925,9 +2802,8 @@ const SwapSelected = props => {
         animationType="slide"
         transparent={true}
         statusBarTranslucent
-        style={{ flex: 1, justifyContent: 'flex-end' }}
-        onRequestClose={onCloseAllList}
-      >
+        style={{flex: 1, justifyContent: 'flex-end'}}
+        onRequestClose={onCloseAllList}>
         <ListModal
           isAddCustom
           isSearch
@@ -2945,9 +2821,8 @@ const SwapSelected = props => {
         animationType="slide"
         transparent={true}
         statusBarTranslucent
-        style={{ flex: 1, justifyContent: 'flex-end' }}
-        onRequestClose={onCloseSelectedList}
-      >
+        style={{flex: 1, justifyContent: 'flex-end'}}
+        onRequestClose={onCloseSelectedList}>
         <ListModal
           isAddCustom
           isSearch
@@ -2963,174 +2838,11 @@ const SwapSelected = props => {
       {isLoading && (
         <Loader
           smallLoader={false}
-          customheight={{ height: Dimensions.get('window').height - 160 }}
+          customheight={{height: Dimensions.get('window').height - 160}}
         />
       )}
     </Wrap>
   );
 };
-const styles = StyleSheet.create({
-  viewPercentOuter: {
-    marginTop: heightDimen(15),
-    flexDirection: 'row',
-    justifyContent: 'center',
-    paddingHorizontal: widthDimen(5),
-    backgroundColor: 'green',
-  },
-  coinSymbol: {
-    width: areaDimen(34),
-    height: areaDimen(34),
-    borderRadius: areaDimen(40),
-    resizeMode: 'contain',
-    backgroundColor: ThemeManager.colors.primary,
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
-  coinSymbolText: {
-    fontFamily: Fonts.medium,
-    fontSize: areaDimen(14),
-    color: Colors.white,
-  },
-  amountView: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    alignSelf: 'flex-start',
-    marginStart: heightDimen(16),
-    height: heightDimen(30),
-  },
-  balanceLabelStyle: {
-    fontFamily: Fonts.medium,
-    fontSize: areaDimen(14),
-    color: ThemeManager.colors.textColor,
-  },
-  convertedBalanceLabelStyle: {
-    fontFamily: Fonts.medium,
-    fontSize: areaDimen(14),
-    color: ThemeManager.colors.textColor,
-    marginHorizontal: widthDimen(16),
-    marginTop: heightDimen(-10),
-  },
-
-  balanceValueStyle: {
-    fontFamily: Fonts.semibold,
-    fontSize: areaDimen(12),
-    color: ThemeManager.colors.searchTextColor,
-    top: heightDimen(1),
-  },
-  txtTo: {
-    fontSize: areaDimen(14),
-    fontFamily: Fonts.semibold,
-    marginTop: heightDimen(16),
-    marginStart: widthDimen(30),
-  },
-  txtSending: {
-    fontSize: areaDimen(16),
-    fontFamily: Fonts.semibold,
-    lineHeight: areaDimen(22),
-    position: 'relative',
-    zIndex: 222,
-    marginLeft: widthDimen(-70),
-  },
-  btnStyle: {
-    width: '86%',
-    height: heightDimen(60),
-    marginHorizontal: widthDimen(30),
-    bottom: heightDimen(100),
-  },
-  customGrad: {
-    position: 'absolute',
-  },
-  maxTextStyle: {
-    color: ThemeManager.colors.textColor,
-    fontFamily: Fonts.bold,
-    fontSize: areaDimen(16),
-  },
-  btnStylen: {
-    fontFamily: Fonts.regular,
-    justifyContent: 'flex-end',
-    backgroundColor: 'Transparent',
-    borderWidth: 0,
-    alignSelf: 'stretch',
-    width: '100%',
-    paddingHorizontal: widthDimen(20),
-    borderRadius: areaDimen(10),
-    marginBottom: heightDimen(20),
-  },
-  btnTextStyle: {
-    fontFamily: Fonts.regular,
-    fontSize: areaDimen(16),
-    color: Colors.White,
-    textAlign: 'left',
-  },
-  dropDownStyle: {
-    backgroundColor: '#E5E5E5',
-    borderRadius: areaDimen(10),
-    shadowColor: '#fff',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-    width: '88%',
-  },
-  rowStyle: {
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255,255,255,0.04)',
-    paddingLeft: widthDimen(20),
-    backgroundColor: Colors.lightGrey2,
-  },
-  rowTextStyle: {
-    fontFamily: Fonts.regular,
-    fontSize: areaDimen(14),
-    color: Colors.White,
-    textAlign: 'left',
-  },
-  tabButtonsText: {
-    fontFamily: Fonts.semibold,
-    fontSize: areaDimen(16),
-    color: Colors.White,
-    textAlign: 'left',
-    lineHeight: heightDimen(19),
-  },
-  tabButtonsInActiveText: {
-    fontFamily: Fonts.medium,
-    fontSize: areaDimen(14),
-    color: Colors.textColor,
-    textAlign: 'left',
-    lineHeight: heightDimen(19),
-  },
-  tab: {
-    height: heightDimen(44),
-    width: widthDimen(78),
-    borderRadius: 100,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderColor: ThemeManager.colors.inputBorderColor,
-  },
-  buttonsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    minHeight: 10,
-    marginHorizontal: widthDimen(22),
-    marginTop: heightDimen(20),
-  },
-  swapStyle: {
-    width: widthDimen(46),
-    height: widthDimen(46),
-    borderWidth: widthDimen(6),
-    borderColor: ThemeManager.colors.bg,
-    marginTop: heightDimen(-20),
-    alignSelf: 'center',
-    backgroundColor: ThemeManager.colors.primary,
-    borderRadius: 100,
-    justifyContent: 'center',
-    alignItems: 'center',
-    position: 'relative',
-    zIndex: 999,
-  },
-});
 
 export default SwapSelected;

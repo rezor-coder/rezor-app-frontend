@@ -1,15 +1,11 @@
 /* eslint-disable react/self-closing-comp */
 /* eslint-disable react-native/no-inline-styles */
-import messaging from '@react-native-firebase/messaging';
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   ActivityIndicator,
-  Alert,
-  AppState,
   BackHandler,
   Dimensions,
   FlatList,
-  Linking,
   Modal,
   RefreshControl,
   ScrollView,
@@ -18,35 +14,31 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { EventRegister } from 'react-native-event-listeners';
+import {EventRegister} from 'react-native-event-listeners';
 import FastImage from 'react-native-fast-image';
-import { showMessage } from 'react-native-flash-message';
 import LinearGradient from 'react-native-linear-gradient';
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useDispatch, useSelector } from 'react-redux';
-import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import {useDispatch, useSelector} from 'react-redux';
+import {LanguageManager, ThemeManager} from '../../../../ThemeManager';
 import * as Constants from '../../../Constant';
-import { NavigationStrings } from '../../../Navigation/NavigationStrings';
+import {NavigationStrings} from '../../../Navigation/NavigationStrings';
 import {
-  fetchBankDetails,
   getCardList,
   getDexUrls,
   getMyWallets,
-  getRouterDetails,
   getUserCardAddress,
-  getUserCardDetail,
   getVaultDetails,
   myWalletListSuccess,
   updateListBalances,
 } from '../../../Redux/Actions';
-import { wallectConnectParamsUpdate } from '../../../Redux/Actions/WallectConnectActions';
+import {wallectConnectParamsUpdate} from '../../../Redux/Actions/WallectConnectActions';
 import Singleton from '../../../Singleton';
 import WalletConnect from '../../../Utils/WalletConnect';
-import { areaDimen, heightDimen, widthDimen } from '../../../Utils/themeUtils';
-import { getCurrentRouteName, navigate } from '../../../navigationsService';
+import {areaDimen, heightDimen, widthDimen} from '../../../Utils/themeUtils';
+import {getCurrentRouteName, navigate} from '../../../navigationsService';
 import fonts from '../../../theme/Fonts';
 import images from '../../../theme/Images';
-import { exponentialToDecimalWithoutComma } from '../../../utils';
+import {exponentialToDecimalWithoutComma} from '../../../utils';
 import SelectNetworkPopUp from '../../common/SelectNetworkPopUp';
 import {
   BasicButton,
@@ -58,31 +50,33 @@ import {
 } from '../../common/index';
 import Loader from '../Loader/Loader';
 import DepositModalCard from '../SaitaCardBlack/DepositModalCard';
-import { Colors, Images } from './../../../theme/index';
+import {Colors, Images} from './../../../theme/index';
 import WalletCard from './WalletCard';
 import WalletHomeCard from './WalletHomeCard';
 import styles from './WalletStyle';
-let stopAsk = false;
+import {
+  Notification,
+  backAction,
+  getRouterDetailsApi,
+  addDeepLinkListner,
+  getCardDetails,
+  coinSelection,
+} from './WalletHelper';
+
 const tabs = ['Tokens', 'SaitaCard', 'Staking'];
 const Wallet = props => {
   const dispatch = useDispatch();
   const insets = useSafeAreaInsets();
   const CoinData = useSelector(state => state?.walletReducer?.myWallets);
-  const { totalBalance, lastDepositData } = useSelector(
+  const {totalBalance, lastDepositData} = useSelector(
     state => state?.walletReducer,
   );
-  console.log(CoinData.length,'CoinDataCoinData1');
-  const themeChange = useSelector(state => state.mnemonicreateReducer?.currentTheme)
+
   const [accessTokenCard, setAccessTokenCard] = useState(null);
   const [isIncompatible, setInCompatible] = useState(false);
   const [isLoading, setisLoading] = useState(true);
-  const gradientColor = [
-    '#9ABFFF',
-    '#4C80FF',
-    '#6F6CFF',
-    '#4C80FF',
-  ]
-  const [viewKey, setViewKey] = useState(new Date())
+  const gradientColor = ['#9ABFFF', '#4C80FF', '#6F6CFF', '#4C80FF'];
+  const [viewKey, setViewKey] = useState(new Date());
   const [activeWallet, setActiveWallet] = useState(null);
   const [PinModal, setPinModal] = useState(false);
   const [cardActive, setCardActive] = useState(false);
@@ -96,9 +90,9 @@ const Wallet = props => {
   const [depositModal, setDepositModal] = useState(false);
   const [Pin, setPin] = useState('');
   const [Page, setPage] = useState(1);
-  const [bottomLoading, setBottomLoading] = useState(false)
-  const [totalLength, setTotalLength] = useState(CoinData?.length)
-  
+  const [bottomLoading, setBottomLoading] = useState(false);
+  const [totalLength, setTotalLength] = useState(CoinData?.length);
+
   const [cardInfo, setCardInfo] = useState({
     cardNumber: '**** **** **** ****',
     cvv: 'XXX',
@@ -112,11 +106,11 @@ const Wallet = props => {
 
   useEffect(() => {
     Notification();
-    getRouterDetailsApi()
-    dispatch(getVaultDetails())
+    getRouterDetailsApi(dispatch);
+    dispatch(getVaultDetails());
     EventRegister.addEventListener('themeChanged', () => {
-      setViewKey(new Date())
-    })
+      setViewKey(new Date());
+    });
     initialCall();
     let backHandle = null;
     backHandle = BackHandler.addEventListener('hardwareBackPress', backAction);
@@ -126,8 +120,18 @@ const Wallet = props => {
         setAccessTokenCard(res);
       });
     EventRegister.addEventListener('requestFromDapp', data => {
-      dispatch(wallectConnectParamsUpdate({ prop: 'wcTransactionInfo', value: data?.payload, }));
-      dispatch(wallectConnectParamsUpdate({ prop: 'wcCoinFamily', value: data?.coinFamily, }));
+      dispatch(
+        wallectConnectParamsUpdate({
+          prop: 'wcTransactionInfo',
+          value: data?.payload,
+        }),
+      );
+      dispatch(
+        wallectConnectParamsUpdate({
+          prop: 'wcCoinFamily',
+          value: data?.coinFamily,
+        }),
+      );
       if (getCurrentRouteName() != 'ConfirmPin') {
         Singleton.getInstance().walletConnectRef?.showWalletData(true);
       } else {
@@ -135,20 +139,20 @@ const Wallet = props => {
       }
     });
     EventRegister.addEventListener('downModal', () => {
-      setPinModal(false)
-    })
+      setPinModal(false);
+    });
     addDeepLinkListner();
     let focus = props.navigation.addListener('focus', () => {
-      setPage(0)
-      setBottomLoading(false)
+      setPage(0);
+      setBottomLoading(false);
       Notification();
-      getRouterDetailsApi()
-      setPinModal(false)
+      getRouterDetailsApi(dispatch);
+      setPinModal(false);
       backHandle = BackHandler.addEventListener(
         'hardwareBackPress',
         backAction,
       );
-      setActiveTab('Tokens')
+      setActiveTab('Tokens');
       initialCall();
     });
     let blur = props.navigation.addListener('blur', () => {
@@ -158,178 +162,16 @@ const Wallet = props => {
       backHandle?.remove();
       focus();
       blur();
-      EventRegister.removeEventListener('themeChanged')
-      EventRegister.removeEventListener('downModal')
+      EventRegister.removeEventListener('themeChanged');
+      EventRegister.removeEventListener('downModal');
     };
   }, []);
-  const handleNotification = data => {
-    console.log('AppState.currentState::::::', AppState.currentState);
-    if (AppState.currentState == 'active') {
-      global.isAppOpen = true;
-    }
-    global.isNotification = true;
-  };
-  // useEffect(() => {
-  //   if (activeTab == 'SaitaCard') {
-  //     getCardDetails();
-  //   }
-  // }, [activeTab]);
-  const backAction = () => {
-    if (!stopAsk) {
-      stopAsk = true;
-      Alert.alert(
-        Constants.APP_NAME,
-        'Are you sure you want to exit the app?',
-        [
-          {
-            text: 'Cancel',
-            onPress: () => {
-              stopAsk = false;
-            },
-            style: 'cancel',
-          },
-          {
-            text: 'YES',
-            onPress: () => {
-              stopAsk = false;
-              BackHandler.exitApp();
-            },
-          },
-        ],
-      );
-    }
-    return true;
-  };
+
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
     getDetails();
   }, []);
-  const getRouterDetailsApi = () => {
-    dispatch(getRouterDetails())
-      .then(response => {
-        console.warn('MM', 'response== router ==== pin', response.data);
-        let instance = Singleton.getInstance();
-        instance.SwapRouterAddress = response.data.Router;
-        instance.SwapFactoryAddress = response.data.Factory;
-        instance.StakeSaitamaAddress = response.data.SaitamaAddress;
-        instance.StakingContractAddress = response.data.StakingContractAddress;
-        instance.SwapWethAddress = response.data.WethAddress;
-        instance.SwapRouterBNBAddress = response.data.BnbRouter;
-        instance.SwapRouterStcAddress = response.data.StcRouter;
-        instance.SwapRouterStcAddress = response.data.StcRouter;
-        instance.SwapWBNBAddress = response.data.WbnbAddress;
-        instance.SwapWethAddressSTC = response.data.StcWeth;
-        instance.SwapFactoryAddressSTC = response.data.StcFactory;
-        instance.SwapFactoryAddressBNB = response.data.BnbFactory;
-      })
-      .catch(error => {
-        //console.warn('MM','error==contract=== pin', error);
-      });
-  };
-  const handleDeepLink = event => {
-    console.log("::::::deeep linking::::::::::");
-    if (getCurrentRouteName() == 'DappBrowser') {
-      Singleton.getInstance().isCamera = true;
-      global.isCamera = true;
-      global.stop_pin = true;
-    }
-    setTimeout(async () => {
-      const decodedLink = decodeURIComponent(event.url);
-      const link = decodedLink.includes('saitapro')
-        ? decodedLink
-          .replace('saitapro:///wc?uri=', '')
-          .replace('saitapro://wc?uri=', '')
-          .replace('saitapro://app/wc?uri=', '')
-        : decodedLink;
-      if (link.includes('requestId=') || link.includes('sessionTopic=')) {
-        if (getCurrentRouteName() == 'DappBrowser') {
-          global.requestFromDeepLink = false;
-        } else {
-          global.requestFromDeepLink = true;
-        }
-      } else {
-        Singleton.getInstance()
-          .newGetData(Constants.IS_LOGIN)
-          .then(res => {
-            if (res == 1) {
-              Singleton.getInstance()
-                .newGetData(Constants.ENABLE_PIN)
-                .then(pin => {
-                  if (pin == 'false') {
-                    if (getCurrentRouteName() !== 'ConnectWithDapp') {
-                      navigate(NavigationStrings.ConnectWithDapp,{ url: link });
-                    } else {
-                      EventRegister.emitEvent('wallet_connect_event', link);
-                    }
-                  } else {
-                    if (getCurrentRouteName() == 'DappBrowser') {
-                      navigate(NavigationStrings.ConnectWithDapp,{ url: link });
-                    } else {
-                      global.isDeepLink = true;
-                      global.deepLinkUrl = link;
-                    }
-                  }
-                });
-            }
-          });
-      }
-    }, 500);
-  };
-  const addDeepLinkListner = () => {
-    try {
-      Linking.addEventListener('url', event => handleDeepLink(event));
-      Linking.getInitialURL()
-        .then(url => {
-          console.log('------killed------', url);
-          if (url) {
-            Linking.canOpenURL(url).then(async supported => {
-              // console.log('------killed------', url);
-              if (supported) {
-                const decodedLink = decodeURIComponent(url);
-                const link = decodedLink.includes('saitapro')
-                  ? decodedLink
-                    .replace('saitapro:///wc?uri=', '')
-                    .replace('saitapro://wc?uri=', '')
-                    .replace('saitapro://app/wc?uri=', '')
-                  : decodedLink;
-                if (link?.includes('relay')) {
-                  Singleton.getInstance()
-                    .newGetData(Constants.IS_LOGIN)
-                    .then(res => {
-                      if (res == 1) {
-                        Singleton.getInstance()
-                          .newGetData(Constants.ENABLE_PIN)
-                          .then(pin => {
-                            if (pin == 'false') {
-                              if (getCurrentRouteName() !== 'ConnectWithDapp') {
-                                navigate(NavigationStrings.ConnectWithDapp,{ url: link });
-                              } else {
-                                EventRegister.emitEvent(
-                                  'wallet_connect_event',
-                                  link,
-                                );
-                              }
-                            } else {
-                              global.isDeepLink = true;
-                              global.deepLinkUrl = link;
-                            }
-                          });
-                      }
-                    });
-                } else {
-                  global.requestFromDeepLink = true;
-                }
-              } else {
-                global.requestFromDeepLink = true;
-              }
-            });
-          }
-        })
-        .catch(e => console.log('errr::::::', e));
-    } catch (e) {
-      console.log('deeplink listener error::::::', e);
-    }
-  };
+
   const getActiveConnections = async () => {
     let sessions =
       await WalletConnect.getInstance()?.web3Wallet?.getActiveSessions();
@@ -366,22 +208,9 @@ const Wallet = props => {
     getDetails();
   };
 
-  const getCardDetails = () => {
-    Singleton.getInstance()
-    .newGetData(Constants.CARD_TOKEN).then(token => {
-      console.log(token,'tokentokentokentoken');
-      if(!!token){
-        navigate(NavigationStrings.SaitaCardDashBoard)
-      }
-
-    })
-  };
-  const coinSelection = item => {
-    getCurrentRouteName() !== 'CoinHome' && navigate(NavigationStrings.CoinHome,{ coin: item });
-  };
   const getDetails = async () => {
     let access_token = Singleton.getInstance().access_token;
-    dispatch(getDexUrls(access_token))
+    dispatch(getDexUrls(access_token));
     getMyWalletsData();
     // setisLoading(true);
     Singleton.getInstance()
@@ -435,35 +264,36 @@ const Wallet = props => {
             )
               .then(response => {
                 Constants.isFirstTime = false;
-                let data = page == 1 ? response : [...CoinData, ...response]
+                let data = page == 1 ? response : [...CoinData, ...response];
                 setBottomLoading(false);
-                setTotalLength(data[0]?.totalRecords)
-                myWalletListSuccess(dispatch,data)
+                setTotalLength(data[0]?.totalRecords);
+                myWalletListSuccess(dispatch, data);
                 setisLoading(false);
-                setRefreshing(false)
+                setRefreshing(false);
               })
               .catch(error => {
-                setRefreshing(false)
+                setRefreshing(false);
                 setRefreshing(false);
                 setisLoading(false);
               });
           })
           .catch(err => {
-            setRefreshing(false)
+            setRefreshing(false);
             setisLoading(false);
             setRefreshing(false);
           });
       });
-  }
+  };
   const getMyWalletsData = () => {
-
-    dispatch(updateListBalances()).then(res => {
-      getList()
-    }).catch(err => {
-      console.log("err:::::::", err);
-      getList()
-      setisLoading(false);
-    })
+    dispatch(updateListBalances())
+      .then(res => {
+        getList();
+      })
+      .catch(err => {
+        console.log('err:::::::', err);
+        getList();
+        setisLoading(false);
+      });
   };
   const isCloseToBottom = async ({
     layoutMeasurement,
@@ -472,22 +302,22 @@ const Wallet = props => {
   }) => {
     const paddingToBottom = 20;
     let bottomReached =
-    layoutMeasurement.height + contentOffset.y >=
-    contentSize.height - paddingToBottom;
-    if (bottomReached && (totalLength > CoinData?.length) && !bottomLoading) {
-      setBottomLoading(true)
-      setPage(Page + 1)
-      getMyWalletsData(false, false)
+      layoutMeasurement.height + contentOffset.y >=
+      contentSize.height - paddingToBottom;
+    if (bottomReached && totalLength > CoinData?.length && !bottomLoading) {
+      setBottomLoading(true);
+      setPage(Page + 1);
+      getMyWalletsData(false, false);
     }
-  }
+  };
 
   const leftComponent = () => {
     return (
       <TouchableOpacity
-        style={{ flexDirection: 'row', alignItems: 'center',flex:0.7}}
+        style={{flexDirection: 'row', alignItems: 'center', flex: 0.7}}
         onPress={() => {
           getCurrentRouteName() != 'MultiWalletList' &&
-          navigate(NavigationStrings.MultiWalletList);
+            navigate(NavigationStrings.MultiWalletList);
         }}>
         <View
           style={{
@@ -541,19 +371,24 @@ const Wallet = props => {
     }
   };
   const onSelectChain = chain => {
-    getCurrentRouteName() !== 'Stake' && navigate(NavigationStrings.Stake,{ chain: chain });
+    getCurrentRouteName() !== 'Stake' &&
+      navigate(NavigationStrings.Stake, {chain: chain});
   };
   const onPressStake = () => {
     Singleton.getInstance()
       .newGetData(Constants.IS_PRIVATE_WALLET)
       .then(isPrivate => {
-        if (isPrivate == 'btc' || isPrivate == 'matic' || isPrivate == 'trx' || isPrivate == 'stc') {
+        if (
+          isPrivate == 'btc' ||
+          isPrivate == 'matic' ||
+          isPrivate == 'trx' ||
+          isPrivate == 'stc'
+        ) {
         } else if (isPrivate == 'eth') {
           onSelectChain('eth');
         } else if (isPrivate == 'bnb') {
           onSelectChain('bnb');
-        }
-        else {
+        } else {
           setshowSelectChain(true);
         }
       });
@@ -566,7 +401,7 @@ const Wallet = props => {
             showsVerticalScrollIndicator={false}
             contentContainerStyle={styles.coinListWrapStyle}
             data={CoinData || []}
-            renderItem={({ item, index }) => (
+            renderItem={({item, index}) => (
               <WalletCard
                 item={item}
                 onPress={coinSelection}
@@ -576,12 +411,20 @@ const Wallet = props => {
             ListFooterComponent={() => {
               if (bottomLoading) {
                 return (
-                  <View style={{ padding: areaDimen(20), justifyContent: 'center', alignItems: 'center', paddingBottom: areaDimen(30) }}>
-                    <ActivityIndicator color={ThemeManager.colors.headingText} />
+                  <View
+                    style={{
+                      padding: areaDimen(20),
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      paddingBottom: areaDimen(30),
+                    }}>
+                    <ActivityIndicator
+                      color={ThemeManager.colors.headingText}
+                    />
                   </View>
-                )
+                );
               } else {
-                return null
+                return null;
               }
             }}
           />
@@ -591,7 +434,7 @@ const Wallet = props => {
         if (activeWallet == 0) {
           if (!accessTokenCard) {
             return (
-              <View style={[styles.cardContainer, { height: heightDimen(392) }]}>
+              <View style={[styles.cardContainer, {height: heightDimen(392)}]}>
                 <FastImage
                   source={images.not_found}
                   style={styles.notFoundImage}
@@ -619,7 +462,7 @@ const Wallet = props => {
             );
           } else {
             return (
-              <View style={[styles.cardContainer, { height: heightDimen(392) }]}>
+              <View style={[styles.cardContainer, {height: heightDimen(392)}]}>
                 <FastImage
                   source={images.not_found}
                   style={styles.notFoundImage}
@@ -652,7 +495,7 @@ const Wallet = props => {
           card_status: card?.card_status,
           card_id: card?.card_id,
         };
-        let res = await dispatch(getUserCardAddress({ data }));
+        let res = await dispatch(getUserCardAddress({data}));
         return resolve(res);
       } catch (err) {
         setisLoading(false);
@@ -666,7 +509,7 @@ const Wallet = props => {
       .newGetData(Constants.access_token_cards)
       .then(res => {
         getCurrentRouteName() != 'SaitaCardDepositBinance' &&
-        navigate(NavigationStrings.SaitaCardDepositBinance,{
+          navigate(NavigationStrings.SaitaCardDepositBinance, {
             token: res,
           });
       });
@@ -688,7 +531,7 @@ const Wallet = props => {
             );
             setisLoading(false);
             getCurrentRouteName() != 'SaitaCardDepositQr' &&
-            navigate(NavigationStrings.SaitaCardDepositQr,{
+              navigate(NavigationStrings.SaitaCardDepositQr, {
                 myAddress: wallet?.wallet[0]?.address,
                 token: wallet?.access_token,
                 tokenListItem: [],
@@ -747,48 +590,31 @@ const Wallet = props => {
     });
     return selectedPrice?.value;
   };
-  const Notification = () => {
-    messaging()
-      .getInitialNotification()
-      .then(notificationOpen => { });
-    messaging().onNotificationOpenedApp(notificationOpen => {
-      console.warn('MM', 'data notify----', notificationOpen);
-      handleNotification(notificationOpen);
-    });
-    messaging().onMessage(async notification => {
-      console.warn(
-        'MM',
-        'A new FCM message arrived!',
-        JSON.stringify(notification),
-      );
-      showMessage({
-        message: notification.data.body,
-        backgroundColor: '#fff',
-        titleStyle: { color: '#000', marginTop: -12, marginBottom: 10 },
-        style: { borderRadius: 8, margin: 10 },
-        duration: 4000,
-        type: 'success',
-        onPress: () => { },
-      });
-    });
-  };
   return (
     <View
-      style={{ flex: 1, backgroundColor: ThemeManager.colors.bg, position: 'relative', paddingTop: insets.top }} key={viewKey}>
+      style={{
+        flex: 1,
+        backgroundColor: ThemeManager.colors.bg,
+        position: 'relative',
+        paddingTop: insets.top,
+      }}
+      key={viewKey}>
       <StatusBar
         backgroundColor={ThemeManager.colors.bg}
-        barStyle={ThemeManager.colors.themeColor === 'light'
-          ? 'dark-content'
-          : 'light-content'}
+        barStyle={
+          ThemeManager.colors.themeColor === 'light'
+            ? 'dark-content'
+            : 'light-content'
+        }
       />
       <View style={styles.container}>
-
         <MainHeader
           leftComponent={leftComponent}
           goback={false}
           searchEnable={false}
           onpress2={() => {
-            getCurrentRouteName() != 'Setting' && navigate(NavigationStrings.Setting);
+            getCurrentRouteName() != 'Setting' &&
+              navigate(NavigationStrings.Setting);
           }}
           onpress1={() =>
             Singleton.getInstance()
@@ -798,7 +624,9 @@ const Wallet = props => {
                   Singleton.showAlert(Constants.UNCOMPATIBLE_WALLET);
                 } else {
                   getCurrentRouteName() != 'ConnectWithDapp' &&
-                  navigate(NavigationStrings.ConnectWithDapp);
+                    navigate(NavigationStrings.ConnectWithDapp, {
+                      fromWallet: true,
+                    });
                 }
               })
           }
@@ -814,16 +642,17 @@ const Wallet = props => {
             tintColor: ThemeManager.colors.iconColor,
             width: widthDimen(20),
           }}
-          onChangedText={text => { }}
+          onChangedText={text => {}}
           onpress3={() => {
-            getCurrentRouteName() != 'Notification' && navigate(NavigationStrings.Notification);
+            getCurrentRouteName() != 'Notification' &&
+              navigate(NavigationStrings.Notification);
           }}
           secondImg={ThemeManager.ImageIcons.setting}
           firstImg={images.walletConnect}
           thridImg={ThemeManager.ImageIcons.bellIcon}
         />
         <ScrollView
-          contentContainerStyle={{ flexGrow: 1 }}
+          contentContainerStyle={{flexGrow: 1}}
           keyboardShouldPersistTaps={true}
           stickyHeaderIndices={[2]}
           refreshControl={
@@ -834,17 +663,16 @@ const Wallet = props => {
               }}
               tintColor={ThemeManager.colors.headingText}
             />
-            
           }
-          onScroll={({ nativeEvent }) => {
+          onScroll={({nativeEvent}) => {
             isCloseToBottom(nativeEvent);
           }}
           scrollEventThrottle={200}
           showsVerticalScrollIndicator={false}>
           {gradientColor ? (
             <LinearGradient
-              start={{ x: 0, y: 0 }}
-              end={{ x: 0.8, y: 1 }}
+              start={{x: 0, y: 0}}
+              end={{x: 0.8, y: 1}}
               colors={gradientColor}
               style={styles.balanceBoxStyle}>
               <Text style={styles.balanceTextTotal}>Total Balance</Text>
@@ -855,8 +683,9 @@ const Wallet = props => {
                   height: heightDimen(68),
                   flex: 1,
                 }}>
-                <Text style={styles.balanceTextStyle}>{`${Singleton.getInstance().CurrencySymbol
-                  } `}</Text>
+                <Text style={styles.balanceTextStyle}>{`${
+                  Singleton.getInstance().CurrencySymbol
+                } `}</Text>
 
                 <Text
                   style={[
@@ -865,16 +694,17 @@ const Wallet = props => {
                       marginLeft: widthDimen(0),
                       paddingBottom: !showBalance ? heightDimen(15) : 0,
                     },
-                  ]}>{`${showBalance
+                  ]}>{`${
+                  showBalance
                     ? Singleton.getInstance().toFixed(
-                      exponentialToDecimalWithoutComma(totalBalance || 0),
-                      2,
-                    )
+                        exponentialToDecimalWithoutComma(totalBalance || 0),
+                        2,
+                      )
                     : '...'
-                    } `}</Text>
+                } `}</Text>
                 <TouchableOpacity
                   onPress={() => setShowBalance(!showBalance)}
-                  style={{ padding: areaDimen(10) }}>
+                  style={{padding: areaDimen(10)}}>
                   <FastImage
                     source={
                       showBalance ? images.hideShow : images.amountHideIcon
@@ -901,30 +731,32 @@ const Wallet = props => {
                     ? getMarketPrice(lastDepositData)
                       ? lastDepositData?.amount.toString().includes('e')
                         ? (
-                          getMarketPrice(lastDepositData) *
-                          Singleton.getInstance().exponentialToDecimal(
-                            parseFloat(lastDepositData?.amount).toFixed(8),
-                          )
-                        ).toFixed(2)
+                            getMarketPrice(lastDepositData) *
+                            Singleton.getInstance().exponentialToDecimal(
+                              parseFloat(lastDepositData?.amount).toFixed(8),
+                            )
+                          ).toFixed(2)
                         : (
-                          getMarketPrice(lastDepositData) *
-                          Singleton.getInstance().toFixed(
-                            lastDepositData?.amount != ''
-                              ? parseFloat(lastDepositData?.amount)
-                              : 0,
-                            5,
-                          )
-                        ).toFixed(2)
+                            getMarketPrice(lastDepositData) *
+                            Singleton.getInstance().toFixed(
+                              lastDepositData?.amount != ''
+                                ? parseFloat(lastDepositData?.amount)
+                                : 0,
+                              5,
+                            )
+                          ).toFixed(2)
                       : '0.00'
                     : '0.00'}{' '}
                   {lastDepositData?.coin?.toUpperCase()}
                 </Text>
                 <TouchableOpacity
-                  style={{ paddingHorizontal: widthDimen(10) }}
+                  style={{paddingHorizontal: widthDimen(10)}}
                   onPress={() => {
                     global.currentScreen = 'Settings';
                     getCurrentRouteName() != 'HistoryComponent' &&
-                    navigate(NavigationStrings.HistoryComponent,{ fromSetting: true });
+                      navigate(NavigationStrings.HistoryComponent, {
+                        fromSetting: true,
+                      });
                   }}>
                   <Text style={styles.lastDepositText}>Statement</Text>
                 </TouchableOpacity>
@@ -950,21 +782,21 @@ const Wallet = props => {
                       onPressStake();
                     }
                     if (tab == 'SaitaCard') {
-                      getCardDetails()
+                      getCardDetails();
                     }
                     setActiveTab(tab);
                   }}
                   customGradient={[
                     styles.tabStyle,
-                    { width: widthDimen(358 / 3) },
+                    {width: widthDimen(358 / 3)},
                   ]}
                   customColor={
                     activeTab == tab
                       ? [Colors.buttonColor1, Colors.buttonColor2]
                       : [
-                        ThemeManager.colors.backgroundColor,
-                        ThemeManager.colors.backgroundColor,
-                      ]
+                          ThemeManager.colors.backgroundColor,
+                          ThemeManager.colors.backgroundColor,
+                        ]
                   }
                   text={tab}
                   textStyle={[
@@ -986,11 +818,11 @@ const Wallet = props => {
             }}></View>
           {switchTabs()}
           {CoinData?.length == 0 && activeTab == 'Tokens' && (
-            <View style={{ height: Dimensions.get('screen').height / 3 }}>
+            <View style={{height: Dimensions.get('screen').height / 3}}>
               <Text
                 style={[
                   styles.noCoinText,
-                  { color: ThemeManager.colors.textColor },
+                  {color: ThemeManager.colors.textColor},
                 ]}>
                 {LanguageManager.noCoinEnabled}
               </Text>
@@ -1005,9 +837,11 @@ const Wallet = props => {
               <Text
                 style={[
                   styles.noCoinText,
-                  { color: ThemeManager.colors.textColor },
+                  {color: ThemeManager.colors.textColor},
                 ]}>
-                {activeWallet == 'stc' ? 'Coming Soon' : Constants.UNCOMPATIBLE_WALLET}
+                {activeWallet == 'stc'
+                  ? 'Coming Soon'
+                  : Constants.UNCOMPATIBLE_WALLET}
               </Text>
             </View>
           )}
@@ -1020,7 +854,7 @@ const Wallet = props => {
               <Text
                 style={[
                   styles.noCoinText,
-                  { color: ThemeManager.colors.textColor },
+                  {color: ThemeManager.colors.textColor},
                 ]}>
                 {Constants.UNCOMPATIBLE_WALLET}
               </Text>
@@ -1032,8 +866,8 @@ const Wallet = props => {
           accessTokenCard == null && (
             <BasicButton
               onPress={() => {
-                      getCurrentRouteName() != 'SaitaCardLogin' &&
-                      navigate(NavigationStrings.SaitaCardLogin,{ from: 'Main' });
+                getCurrentRouteName() != 'SaitaCardLogin' &&
+                  navigate(NavigationStrings.SaitaCardLogin, {from: 'Main'});
               }}
               btnStyle={{
                 position: 'absolute',
@@ -1072,7 +906,10 @@ const Wallet = props => {
         <BasicButton
           onPress={() =>
             getCurrentRouteName() != 'ManageWallet' &&
-            navigate(NavigationStrings.ManageWallet,{ walletList: CoinData || [], from: 'Manage' })
+            navigate(NavigationStrings.ManageWallet, {
+              walletList: CoinData || [],
+              from: 'Manage',
+            })
           }
           btnStyle={{
             position: 'absolute',
@@ -1087,15 +924,15 @@ const Wallet = props => {
           text={LanguageManager.addCustomToken}
         />
       )}
-          {isLoading && <Loader  loader={isLoading}/>}
+      {isLoading && <Loader loader={isLoading} />}
       <Modal
         visible={showSelectChain}
         animationType="fade"
         transparent={true}
         statusBarTranslucent
-        style={{ flex: 1, justifyContent: 'flex-end' }}>
+        style={{flex: 1, justifyContent: 'flex-end'}}>
         <SelectNetworkPopUp
-        isDisableStc={true}
+          isDisableStc={true}
           onClose={() => {
             setshowSelectChain(false);
             setActiveTab('Tokens');
@@ -1111,7 +948,7 @@ const Wallet = props => {
           onPressStc={() => {
             setshowSelectChain(false);
             // Singleton.showAlert('Coming soon!')
-            onSelectChain('stc')
+            onSelectChain('stc');
           }}
         />
       </Modal>
@@ -1120,13 +957,13 @@ const Wallet = props => {
         transparent={true}
         visible={PinModal}
         onRequestClose={() => setPinModal(false)}>
-        <Wrap style={{ backgroundColor: ThemeManager.colors.bg }}>
+        <Wrap style={{backgroundColor: ThemeManager.colors.bg}}>
           <SimpleHeader
             back={false}
             backPressed={() => setPinModal(false)}
             title={''}
           />
-          <View style={{ paddingHorizontal: widthDimen(22) }}>
+          <View style={{paddingHorizontal: widthDimen(22)}}>
             <Text
               style={{
                 fontFamily: fonts.semibold,
