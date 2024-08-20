@@ -183,27 +183,27 @@ const Splash = props => {
           }
           let wallet_addresses = [
             {
-              coin_symbol: 'eth',
+              coin_symbol: Constants.COIN_SYMBOL.ETH,
               wallet_address: res?.ethAddress,
             },
             {
-              coin_symbol: 'stc',
+              coin_symbol: Constants.COIN_SYMBOL.STC,
               wallet_address: res?.ethAddress,
             },
             {
-              coin_symbol: 'bnb',
+              coin_symbol: Constants.COIN_SYMBOL.BNB,
               wallet_address: res?.ethAddress,
             },
             {
-              coin_symbol: 'btc',
+              coin_symbol: Constants.COIN_SYMBOL.BTC,
               wallet_address: res?.btcAddress,
             },
             {
-              coin_symbol: 'matic',
+              coin_symbol: Constants.COIN_SYMBOL.MATIC,
               wallet_address: res?.ethAddress,
             },
             {
-              coin_symbol: 'trx',
+              coin_symbol: Constants.COIN_SYMBOL.TRX,
               wallet_address: res?.trxAddress,
             },
           ];
@@ -337,7 +337,7 @@ const Splash = props => {
           };
           let addrsListKeys = [loginRequest?.address];
           let coinFamilyKeys
-          if (blockChain == 'eth') {
+          if (blockChain == Constants.COIN_SYMBOL.ETH) {
             coinFamilyKeys = [1]
           } else if (blockChain == 'bsc') {
             coinFamilyKeys = [6]
@@ -464,7 +464,7 @@ const Splash = props => {
               const element = multiwalletData[i];
 
 
-              if (element?.blockChain == 'all' || element?.blockChain == 'eth' || element?.blockChain == 'bnb' || element?.blockChain == 'matic') {
+              if (element?.blockChain == 'all' || element?.blockChain == Constants.COIN_SYMBOL.ETH || element?.blockChain == Constants.COIN_SYMBOL.BNB || element?.blockChain == Constants.COIN_SYMBOL.MATIC) {
 
                 let address = element?.loginRequest?.address
 

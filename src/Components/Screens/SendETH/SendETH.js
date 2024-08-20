@@ -221,7 +221,7 @@ const SendETH = props => {
   const findMaxSend = () => {
     //console.warn('MM','tlhis.state.totaFee:::::::::', maxClicked, totalFee);
     if (maxClicked) {
-      if (walletData?.coin_symbol?.toLowerCase() == 'eth') {
+      if (walletData?.coin_symbol?.toLowerCase() == Constants.COIN_SYMBOL.ETH) {
         if (parseFloat(walletData?.balance - totalFee) <= 0) {
           Singleton.showAlert(LanguageManager.lowBalanceAlert);
           maxClicked = false;
@@ -350,7 +350,7 @@ const SendETH = props => {
       to: Singleton.getInstance().defaultEthAddress,
       amount: amount,
     };
-    let blockChain = 'ethereum';
+    let blockChain = Constants.NETWORK.ETHEREUM;
     let access_token = Singleton.getInstance().access_token;
     let contractAddress = walletData?.token_address;
     props
@@ -403,7 +403,7 @@ const SendETH = props => {
       // chat: this.props.chat
     };
     let access_token = Singleton.getInstance().access_token;
-    let blockChain = 'ethereum';
+    let blockChain = Constants.NETWORK.ETHEREUM;
     let coin_symbol = coinSymbol;
     props
       .sendETH({ data, access_token, blockChain, coin_symbol })
@@ -450,7 +450,7 @@ const SendETH = props => {
     };
 
     let access_token = Singleton.getInstance().access_token;
-    let blockChain = 'ethereum';
+    let blockChain = Constants.NETWORK.ETHEREUM;
     let contractAddress = walletData?.token_address;
     props
       .getEthTokenRaw({ blockChain, data, contractAddress, access_token })

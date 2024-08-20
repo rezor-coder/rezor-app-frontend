@@ -45,27 +45,27 @@ var that = undefined;
 class DappBrowserSwap extends Component {
   constructor(props) {
     super(props);
-    console.log('props:::::',this.props?.route?.params?.chain,  `${this.props.stakeUrl}?chainId=${this.props?.route?.params?.chain=='stc'?'sbc':this.props?.route?.params?.chain=='bnb'?'bsc':this.props?.route?.params?.chain}`,Singleton.getInstance().defaultEthAddress);
+    console.log('props:::::',this.props?.route?.params?.chain,  `${this.props.stakeUrl}?chainId=${this.props?.route?.params?.chain==Constants.COIN_SYMBOL.STC?'sbc':this.props?.route?.params?.chain==Constants.COIN_SYMBOL.BNB?'bsc':this.props?.route?.params?.chain}`,Singleton.getInstance().defaultEthAddress);
     this.state = {
       content: '',
       jsContent: '',
       address: Singleton.getInstance().defaultEthAddress,
       chainId:
-        this.props?.route?.params?.chain == 'eth'
+        this.props?.route?.params?.chain == Constants.COIN_SYMBOL.ETH
           ? IS_PRODUCTION == 0
             ? 5
             : 1
-          : this.props?.route?.params?.chain == 'stc'
+          : this.props?.route?.params?.chain == Constants.COIN_SYMBOL.STC
           ? IS_PRODUCTION==0 ? 129:1209
           : IS_PRODUCTION == 0
           ? 97
           : 56,
       rpcUrl:
-        this.props?.route?.params?.chain == 'eth'
+        this.props?.route?.params?.chain == Constants.COIN_SYMBOL.ETH
           ? IS_PRODUCTION == 0
             ? Constants.testnetEth
             : this.props.publicEthUrl
-          :  this.props?.route?.params?.chain == 'stc'
+          :  this.props?.route?.params?.chain == Constants.COIN_SYMBOL.STC
           ? IS_PRODUCTION == 0
             ? Constants.testnetStc
             : this.props.publicStcUrl
@@ -84,13 +84,13 @@ class DappBrowserSwap extends Component {
       canGoForward: false,
       isLoading: false,
       mnemonics: '',
-      selectedNetwork: this.props?.route?.params?.chain == 'eth' ? 'Ethereum' : this.props?.route?.params?.chain == 'stc' ? 'Saitachain' :'Binance',
+      selectedNetwork: this.props?.route?.params?.chain == Constants.COIN_SYMBOL.ETH ? 'Ethereum' : this.props?.route?.params?.chain == Constants.COIN_SYMBOL.STC ? 'Saitachain' :'Binance',
       url: '',
-      enteredURL: `${this.props.stakeUrl}?chainId=${this.props?.route?.params?.chain=='stc'?'sbc':this.props?.route?.params?.chain=='bnb'?'bsc':this.props?.route?.params?.chain}`,
-      startUrl: `${this.props.stakeUrl}?chainId=${this.props?.route?.params?.chain=='stc'?'sbc':this.props?.route?.params?.chain=='bnb'?'bsc':this.props?.route?.params?.chain}`,
+      enteredURL: `${this.props.stakeUrl}?chainId=${this.props?.route?.params?.chain==Constants.COIN_SYMBOL.STC?'sbc':this.props?.route?.params?.chain==Constants.COIN_SYMBOL.BNB?'bsc':this.props?.route?.params?.chain}`,
+      startUrl: `${this.props.stakeUrl}?chainId=${this.props?.route?.params?.chain==Constants.COIN_SYMBOL.STC?'sbc':this.props?.route?.params?.chain==Constants.COIN_SYMBOL.BNB?'bsc':this.props?.route?.params?.chain}`,
 
-      // enteredURL: `${this.props.stakeUrl}staking-pool?chainId=${this.props?.route?.params?.chain=='stc'?'sbc':this.props?.route?.params?.chain=='bnb'?'bsc':this.props?.route?.params?.chain}`,
-      // startUrl: `${this.props.stakeUrl}staking-pool?chainId=${this.props?.route?.params?.chain=='stc'?'sbc':this.props?.route?.params?.chain=='bnb'?'bsc':this.props?.route?.params?.chain}`,
+      // enteredURL: `${this.props.stakeUrl}staking-pool?chainId=${this.props?.route?.params?.chain==Constants.COIN_SYMBOL.STC?'sbc':this.props?.route?.params?.chain==Constants.COIN_SYMBOL.BNB?'bsc':this.props?.route?.params?.chain}`,
+      // startUrl: `${this.props.stakeUrl}staking-pool?chainId=${this.props?.route?.params?.chain==Constants.COIN_SYMBOL.STC?'sbc':this.props?.route?.params?.chain==Constants.COIN_SYMBOL.BNB?'bsc':this.props?.route?.params?.chain}`,
       isNetworkModalVisible: false,
       advanceModalVisible: false,
       favoriteArray: [],
@@ -258,11 +258,11 @@ class DappBrowserSwap extends Component {
       this.getNonceAndGas(
         this.hex2dec(message.object.value),
         this.state.selectedNetwork == 'Ethereum'
-          ? 'eth'
+          ? Constants.COIN_SYMBOL.ETH
           : this.state.selectedNetwork == 'Binance'
-          ? 'bnb'
-          : 'stc',
-        this.state.selectedNetwork == 'Ethereum' ? 'transaction' :this.state.selectedNetwork == 'Saitachain' ? 'saitachain' : 'binance',
+          ? Constants.COIN_SYMBOL.BNB
+          : Constants.COIN_SYMBOL.STC,
+        this.state.selectedNetwork == 'Ethereum' ? 'transaction' :this.state.selectedNetwork == 'Saitachain' ? Constants.NETWORK.SAITACHAIN : Constants.NETWORK.BINANCE,
         message?.object?.gas 
       );
     } else if (message.name == 'requestAccounts') {
@@ -331,7 +331,7 @@ class DappBrowserSwap extends Component {
             ethereum: {
               address: '${address}',
               chainId: '${this.props.chainId}',
-              rpcUrl: '${this.props?.route?.params?.chain == 'eth' ? this.props.publicEthUrl : this.props?.route?.params?.chain == 'stc' ? this.props.publicStcUrl :this.props.publicBscUrl}'
+              rpcUrl: '${this.props?.route?.params?.chain == Constants.COIN_SYMBOL.ETH ? this.props.publicEthUrl : this.props?.route?.params?.chain == Constants.COIN_SYMBOL.STC ? this.props.publicStcUrl :this.props.publicBscUrl}'
           }
           };
           trustwallet.ethereum = new trustwallet.Provider(config);
@@ -359,7 +359,7 @@ class DappBrowserSwap extends Component {
     return this.ConvertBase(num).from(16).to(10);
   }
   async getNonceAndGas(amount, coinsym, coinType,gas) {
-    if (coinsym.toLowerCase() == 'eth') {
+    if (coinsym.toLowerCase() == Constants.COIN_SYMBOL.ETH) {
       var gasFees = await getTotalGasFeeDapp();
       var currentNonce = await getNonceValueDapp(this.state.address);
       this.nonce = currentNonce;
@@ -372,7 +372,7 @@ class DappBrowserSwap extends Component {
         gasPrice: gasFees,
       });
     }
-    if (coinsym.toLowerCase() == 'bnb') {
+    if (coinsym.toLowerCase() == Constants.COIN_SYMBOL.BNB) {
       let data = {
         from: Singleton.getInstance().defaultBnbAddress,
         to: Singleton.getInstance().defaultBnbAddress,
@@ -380,9 +380,9 @@ class DappBrowserSwap extends Component {
       };
       let wallet_address = Singleton.getInstance().defaultBnbAddress;
       let access_token = Singleton.getInstance().access_token;
-      let blockChain = 'binancesmartchain';
-      let coin_symbol = 'bnb';
-      let contractAddress = 'bnb';
+      let blockChain = Constants.NETWORK.BINANCE_SMART_CHAIN;
+      let coin_symbol = Constants.COIN_SYMBOL.BNB;
+      let contractAddress = Constants.COIN_SYMBOL.BNB;
       this.props
         .getBnbNonce({wallet_address, access_token, blockChain, coin_symbol})
         .then(nonce => {
@@ -410,7 +410,7 @@ class DappBrowserSwap extends Component {
             });
         });
     }
-    if (coinsym.toLowerCase() == 'stc') {
+    if (coinsym.toLowerCase() == Constants.COIN_SYMBOL.STC) {
       console.log("gas:::::::::",gas);
       let access_token = Singleton.getInstance().access_token;
       this.props.getSTCGasPrice().then(gasPrices => {
@@ -523,7 +523,7 @@ class DappBrowserSwap extends Component {
   }
   async makeRaxTxn() {
     console.log('++++++++++');
-    if (this.props?.route?.params?.chain == 'eth') {
+    if (this.props?.route?.params?.chain == Constants.COIN_SYMBOL.ETH) {
       Singleton.getInstance()
         .newGetData(`${Singleton.getInstance().defaultEthAddress}_pk`)
         .then(ethPvtKey => {
@@ -552,7 +552,7 @@ class DappBrowserSwap extends Component {
               this.state.signingData.object.to,
               this.state.signingData.object.from,
               this.state.signingData.object.data,
-              'eth',
+              Constants.COIN_SYMBOL.ETH,
               hexedPriorityPrice,
             ).then(serializedTxn => {
               console.warn('MM', 'chk signed txn::::::eth:::::', serializedTxn);
@@ -565,7 +565,7 @@ class DappBrowserSwap extends Component {
         .catch(err => {
           console.log(err);
         });
-    } else if (this.props?.route?.params?.chain == 'bnb') {
+    } else if (this.props?.route?.params?.chain == Constants.COIN_SYMBOL.BNB) {
       Singleton.getInstance()
         .newGetData(`${Singleton.getInstance().defaultBnbAddress}_pk`)
         .then(pk => {
@@ -601,7 +601,7 @@ class DappBrowserSwap extends Component {
         .catch(err => {
           Singleton.showAlert('Unable to process transaction.');
         });
-    }else if (this.props?.route?.params?.chain == 'stc') {
+    }else if (this.props?.route?.params?.chain == Constants.COIN_SYMBOL.STC) {
       Singleton.getInstance()
         .newGetData(`${Singleton.getInstance().defaultStcAddress}_pk`)
         .then(pk => {
@@ -658,11 +658,11 @@ class DappBrowserSwap extends Component {
     let access_token = Singleton.getInstance().access_token;
     let blockChain =
       this.state.selectedNetwork == 'Ethereum'
-        ? 'ethereum'
+        ? Constants.NETWORK.ETHEREUM
         :   this.state.selectedNetwork == 'Saitachain'
-        ? 'saitachain'
-        :'binancesmartchain';
-        let coin_symbol = this.state.selectedNetwork == 'Ethereum' ? 'eth' : this.state.selectedNetwork == 'Saitachain'?'stc': 'bnb';
+        ? Constants.NETWORK.SAITACHAIN
+        : Constants.NETWORK.BINANCE_SMART_CHAIN;
+        let coin_symbol = this.state.selectedNetwork == 'Ethereum' ? Constants.COIN_SYMBOL.ETH : this.state.selectedNetwork == 'Saitachain'?Constants.COIN_SYMBOL.STC: Constants.COIN_SYMBOL.BNB;
     console.log('data:::::', data);
     this.props
       .sendBNB({data, access_token, blockChain, coin_symbol})
@@ -736,7 +736,7 @@ class DappBrowserSwap extends Component {
                   address: "${this.state.address}",
                   chainId: ${this.state.chainId},
                   rpcUrl: "${
-                    this.props?.route?.params?.chain == 'eth' ? this.props.publicEthUrl :  this.props?.route?.params?.chain == 'stc' ? this.props.publicStcUrl: this.props.publicBscUrl
+                    this.props?.route?.params?.chain == Constants.COIN_SYMBOL.ETH ? this.props.publicEthUrl :  this.props?.route?.params?.chain == Constants.COIN_SYMBOL.STC ? this.props.publicStcUrl: this.props.publicBscUrl
                   }"
                 }
             };

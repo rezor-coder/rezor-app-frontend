@@ -28,12 +28,30 @@ const nextPressed = async (
 
     // Prepare wallet addresses
     const walletAddresses = [
-      {coin_symbol: 'eth', wallet_address: DATA?.ethAddress},
-      {coin_symbol: 'bnb', wallet_address: DATA?.ethAddress},
-      {coin_symbol: 'stc', wallet_address: DATA?.ethAddress},
-      {coin_symbol: 'btc', wallet_address: DATA?.btcAddress},
-      {coin_symbol: 'matic', wallet_address: DATA?.ethAddress},
-      {coin_symbol: 'trx', wallet_address: DATA?.trxAddress},
+      {
+        coin_symbol: Constants.COIN_SYMBOL.ETH,
+        wallet_address: DATA?.ethAddress,
+      },
+      {
+        coin_symbol: Constants.COIN_SYMBOL.BNB,
+        wallet_address: DATA?.ethAddress,
+      },
+      {
+        coin_symbol: Constants.COIN_SYMBOL.STC,
+        wallet_address: DATA?.ethAddress,
+      },
+      {
+        coin_symbol: Constants.COIN_SYMBOL.BTC,
+        wallet_address: DATA?.btcAddress,
+      },
+      {
+        coin_symbol: Constants.COIN_SYMBOL.MATIC,
+        wallet_address: DATA?.ethAddress,
+      },
+      {
+        coin_symbol: Constants.COIN_SYMBOL.TRX,
+        wallet_address: DATA?.trxAddress,
+      },
     ];
 
     // Prepare data for the createWallet API call

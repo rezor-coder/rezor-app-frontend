@@ -143,7 +143,7 @@ export default class Singleton {
     {
       coin_family: 1,
       coin_name: 'Ethereum',
-      coin_symbol: 'eth',
+      coin_symbol: Constants.COIN_SYMBOL.ETH,
       coin_image:
         'https://assets.coingecko.com/coins/images/279/small/ethereum.png?1595348880',
       is_token: 0,
@@ -154,7 +154,7 @@ export default class Singleton {
     {
       coin_family: 6,
       coin_name: 'Binance',
-      coin_symbol: 'bnb',
+      coin_symbol: Constants.COIN_SYMBOL.BNB,
       coin_image:
         'https://assets-cdn.trustwallet.com/blockchains/smartchain/info/logo.png',
       is_token: 0,
@@ -164,7 +164,7 @@ export default class Singleton {
     {
       coin_family: 11,
       coin_name: 'Polygon',
-      coin_symbol: 'matic',
+      coin_symbol: Constants.COIN_SYMBOL.MATIC,
       coin_image:
         'https://s2.coinmarketcap.com/static/img/coins/64x64/3890.png',
       is_token: 0,
@@ -174,7 +174,7 @@ export default class Singleton {
     {
       coin_family: 2,
       coin_name: 'Bitcoin',
-      coin_symbol: 'btc',
+      coin_symbol: Constants.COIN_SYMBOL.BTC,
       coin_image:
         'https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579',
       is_token: 0,
@@ -184,7 +184,7 @@ export default class Singleton {
     {
       coin_family: 3,
       coin_name: 'Tron',
-      coin_symbol: 'trx',
+      coin_symbol: Constants.COIN_SYMBOL.TRX,
       coin_image:
         'https://s2.coinmarketcap.com/static/img/coins/64x64/1958.png',
       is_token: 0,
@@ -194,7 +194,7 @@ export default class Singleton {
     {
       coin_family: 4,
       coin_name: 'SaitaChain',
-      coin_symbol: 'stc',
+      coin_symbol: Constants.COIN_SYMBOL.STC,
       coin_image:
         'https://s2.coinmarketcap.com/static/img/coins/64x64/20513.png',
       is_token: 0,

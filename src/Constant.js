@@ -1,4 +1,4 @@
-import { Dimensions } from 'react-native';
+import {Dimensions} from 'react-native';
 
 export const windowWidth = Dimensions.get('window').width;
 export const windowHeight = Dimensions.get('window').height;
@@ -24,7 +24,7 @@ export const testnetMatic =
 //   'https://goerli.infura.io/v3/805096ce0ba141b797b939635f778424';
 export const testnetEth =
   'https://ethereum-sepolia.blockpi.network/v1/rpc/e358716e6295edfe6dc53885450a8777f8ca9013';
-  export const testnetStc ='https://testnet-rpc-nodes.saitascan.io/'
+export const testnetStc = 'https://testnet-rpc-nodes.saitascan.io/';
 // 'https://api.zan.top/node/v1/eth/sepolia/public';
 export const testnetBnb = 'https://data-seed-prebsc-1-s1.binance.org:8545/';
 export const NETWORK_NAME_ETH_TESTNET = 'sepolia'; // 'goerli'
@@ -36,7 +36,7 @@ export const SwapRouterStcAddress = '';
 export const SwapFactoryAddress = '';
 export const StakeSaitamaAddress = '';
 export const StakingContractAddress = '';
-export const SwapWethAddress = ''; 
+export const SwapWethAddress = '';
 
 export const isFirstTime = false;
 export const network = ismainnet ? 'mainnet' : 'testnet';
@@ -98,8 +98,8 @@ export const FAVORITE = 'favorite';
 export const CARD_TOKEN = 'card_token';
 export const CARD_KYC_STATUSES = {
   undefined: 'UNDEFINED',
-}
-export const ACCESS_TOKEN_EXPIRED = "Access token expired";
+};
+export const ACCESS_TOKEN_EXPIRED = 'Access token expired';
 export const ANDROID_APP_ID =
   'https://play.google.com/store/apps/details?id=com.saitapro';
 export const IOS_APP_ID = 'https://apps.apple.com/in/app/saitapro/id1636523777';
@@ -134,8 +134,8 @@ export const SPACE_REGEX = /[^-\s]/;
 export const NAME_REGEX = /^[a-zA-Z ]*$/;
 export const urlRegex =
   /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gi;
-  export const ALPHANUMERIC_REGEX_SPACE = /^[a-zA-Z0-9 ]*$/;
-  export const NEW_NAME_REGX = /^[\w\s ]+$/
+export const ALPHANUMERIC_REGEX_SPACE = /^[a-zA-Z0-9 ]*$/;
+export const NEW_NAME_REGX = /^[\w\s ]+$/;
 
 export let getRandomString = () => {
   return (
@@ -144,10 +144,10 @@ export let getRandomString = () => {
   );
 };
 export const PERCENTAGE_VALUES = [
-  { value: 25, title: '25%' },
-  { value: 50, title: '50%' },
-  { value: 75, title: '75%' },
-  { value: 100, title: '100%' },
+  {value: 25, title: '25%'},
+  {value: 50, title: '50%'},
+  {value: 75, title: '75%'},
+  {value: 100, title: '100%'},
 ];
 
 /************************************** Error messages ****************************************************/
@@ -176,8 +176,7 @@ export const VALID_PVTKEY = 'Please enter private key to import your wallet.';
 export const CHECK_EMAIL = 'Please enter an email address';
 export const CHECK_OTP = 'Please enter an otp';
 export const VALID_OTP = 'Please enter a valid otp';
-export const WALLET_ALREADY_EXIST =
-  'Wallet already exist';
+export const WALLET_ALREADY_EXIST = 'Wallet already exist';
 export const OTP_SUCCESS = 'Otp successfully sent to your email.';
 export const OTP_SUCCESS_MOB = 'Otp successfully sent to your mobile number.';
 export const VALID_EMAIL = 'Please enter a valid email address';
@@ -199,7 +198,8 @@ export const VALID_DOCUMENT_NUMBER = 'Please enter Passport/ID number.';
 export const VALID_NATIONALITY_NAME = 'Please enter nationality.';
 export const VALID_BVN_NUMBER = 'BVN should be of 11 digits.';
 export const USER_LOGOUT = 'User Logged In on other device.';
-export const SESSION_OUT = 'Your saitacard account has been logged out. Please login again';
+export const SESSION_OUT =
+  'Your saitacard account has been logged out. Please login again';
 export const ENTER_PERSONAL_INFO =
   'Please enter your Personal Information before entering your address.';
 export const ENTER_ADDRESS_INFO =
@@ -265,7 +265,7 @@ export const BLOCKED_MSG = 'Unblock user to continue chat.';
 export const BLOCKED_SUCCESS = 'User blocked successfully.';
 export const UNBLOCKED_SUCCESS = 'User unblocked successfully.';
 export const UPLOAD_CSV = 'Please upload CSV file';
-export const DASHBOARD_WALLET_LIST='dashboardWalletList'
+export const DASHBOARD_WALLET_LIST = 'dashboardWalletList';
 export const SECRET_KEY =
   'RfUjXn2r5u8x/A?D(G+JJHbg69NGF6bcUIBCRHudnds9(bGJkbhE)H@McQfTjHtGbVOSkhsw!z%C*K-H';
 
@@ -279,36 +279,37 @@ lpkQfI1KvRI8ngjIbwIDAQAB
 `;
 
 // MAIN
-export const CARD_KEY = 
-ismainnet ? `-----BEGIN PUBLIC KEY-----
+export const CARD_KEY = ismainnet
+  ? `-----BEGIN PUBLIC KEY-----
 MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCxDSieamd3WokSGeMzVn8kxnRU
 Ux7xhpFohM0RFzVPmDJLpFmutHDFjNT5eH/sHWT3qiHu6jYNldd07UHqnpGZL2BH
 dszPD2UENpSKnY+gigWMkWAExlC6s0GphIdGlzHpixVJwOi8Slp5mVEU/crlUfB9
 1CoBsz5rkwBPTNM2LwIDAQAB
 -----END PUBLIC KEY-----
-` :
-  `-----BEGIN PUBLIC KEY-----
+`
+  : `-----BEGIN PUBLIC KEY-----
 MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCiD8nV5eM+qWR3WRUKLRXcmMLU
 2awDZtne6jwwGruvMLqJ8KxnJIT9wC8a0p7Bqo+An9uJZTTrVYzL/abp1UglxQjC
 86nem32YF7T1p/tq2ExVWe3QWB97l5rQ+wWA4SAov0zmxXWPNFO7ZP256yeTvu2s
 Ue85sf65M07NR8JoKQIDAQAB
------END PUBLIC KEY-----`
-export const CENTRALIZED_KEY = 
-ismainnet ? `-----BEGIN PUBLIC KEY-----
+-----END PUBLIC KEY-----`;
+export const CENTRALIZED_KEY = ismainnet
+  ? `-----BEGIN PUBLIC KEY-----
 MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCZnlS96B6itl12lH39dBL8igG+
 9PM45RivGfkwiBX/8RxLpEyFDKNb4TEhGI1i74BDRhQ1Ih/zqFp0LwRyiQXmZb6k
 l+GtwdEyKiYwgXZnV85cJMFJE4uMDnQDijI+UD5IC3XEs//1+2gZuHO4K9IVnvzi
 VIWtY4HllUu/jyI82QIDAQAB
 -----END PUBLIC KEY-----
-` :
-  `-----BEGIN PUBLIC KEY-----
+`
+  : `-----BEGIN PUBLIC KEY-----
 MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDaZglyLtjL1fEajfaJoG8mpnsF
 HfInaHjn0jNQ56xGEhrx7pG5PksH2Qg1BYLWhjVcyg6ks9Ta3iV5yZ89K6FQuAjX
 Ar0UdgTi+p4NY7caJYm62cUASz9IjJFis+/3gyETxqnQFvKoSjmvvwRnKvIaQVoT
 5W+Lqi3lUhDHydcvawIDAQAB
------END PUBLIC KEY-----`
+-----END PUBLIC KEY-----`;
 
-export const BANK_DETAIL_PRIVATEKEY = ismainnet ? `-----BEGIN RSA PRIVATE KEY-----
+export const BANK_DETAIL_PRIVATEKEY = ismainnet
+  ? `-----BEGIN RSA PRIVATE KEY-----
 MIICXAIBAAKBgQCxDSieamd3WokSGeMzVn8kxnRUUx7xhpFohM0RFzVPmDJLpFmu
 tHDFjNT5eH/sHWT3qiHu6jYNldd07UHqnpGZL2BHdszPD2UENpSKnY+gigWMkWAE
 xlC6s0GphIdGlzHpixVJwOi8Slp5mVEU/crlUfB91CoBsz5rkwBPTNM2LwIDAQAB
@@ -322,8 +323,8 @@ h3hh3ZmFj0cjKcN0gQ+CgOzJe5eAqmEGaEG1jtZwqsUHFCliY1OrDPsecQJBANBd
 zZ/XsAU2lZaIcvagpSUc5YLTur+LzKj+1gScHfRL1AxafWazMbTW46kOzqIY7c5q
 8CnOET/EfjfgM7eNRvMCQCKnpNafx/qd+mYEezNHDj7jtPSLQdd3TCpmT9nO2OIv
 lafuu4A9yPNbMZvmxj/j/Edsp8pxapuhD9lRF19lO5s=
------END RSA PRIVATE KEY-----` :
-  `-----BEGIN RSA PRIVATE KEY-----
+-----END RSA PRIVATE KEY-----`
+  : `-----BEGIN RSA PRIVATE KEY-----
 MIICXAIBAAKBgQCiD8nV5eM+qWR3WRUKLRXcmMLU2awDZtne6jwwGruvMLqJ8Kxn
 JIT9wC8a0p7Bqo+An9uJZTTrVYzL/abp1UglxQjC86nem32YF7T1p/tq2ExVWe3Q
 WB97l5rQ+wWA4SAov0zmxXWPNFO7ZP256yeTvu2sUe85sf65M07NR8JoKQIDAQAB
@@ -338,7 +339,7 @@ r9igkKALm6BU11zw5NHQ//JM664LIC/hNhDCZreyRsVJCUPns5H/yQHTmTe9M23Y
 XRwI/2GJkj+Jq1e6CM0CQGUBtJMtKJV0vq/IAeRpUy3GKCzmfLq+v4RPxn6uFwtr
 ScC/xR+ChGQMepwx2APkYOT2zvp2RdhqARKWViUf/nM=
 -----END RSA PRIVATE KEY-----
-`
+`;
 
 // STAGE
 // export const CARD_KEY = `-----BEGIN PUBLIC KEY-----
@@ -398,8 +399,27 @@ ScC/xR+ChGQMepwx2APkYOT2zvp2RdhqARKWViUf/nM=
 // lpkQfI1KvRI8ngjIbwIDAQAB
 // -----END PUBLIC KEY-----
 // `
-export const USER_DATA = 'userData'
-export const CARD_PUBLIC_KEY = `MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCaNjkO5B78o2HZxecBs6Xn7KT2NDHrwid8aACEfp+1v7BLGkdDcgRhzrm7AHvOWVJ8U/a8xhbnWv547UYjOzI/+HqDCQ/sBenABF/3yzICL+5DukCtj970JIXA3xSG/ClnYuyp3LejlmPrMLRFHmmToRkSudOv+/0hs4+x/WtDiwIDAQAB`
+export const USER_DATA = 'userData';
+export const CARD_PUBLIC_KEY = `MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCaNjkO5B78o2HZxecBs6Xn7KT2NDHrwid8aACEfp+1v7BLGkdDcgRhzrm7AHvOWVJ8U/a8xhbnWv547UYjOzI/+HqDCQ/sBenABF/3yzICL+5DukCtj970JIXA3xSG/ClnYuyp3LejlmPrMLRFHmmToRkSudOv+/0hs4+x/WtDiwIDAQAB`;
 export const CARD_PVT_KEY = `-----BEGIN PRIVATE KEY-----
 MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJo2OQ7kHvyjYdnF5wGzpefspPY0MevCJ3xoAIR+n7W/sEsaR0NyBGHOubsAe85ZUnxT9rzGFuda/njtRiM7Mj/4eoMJD+wF6cAEX/fLMgIv7kO6QK2P3vQkhcDfFIb8KWdi7Knct6OWY+swtEUeaZOhGRK506/7/SGzj7H9a0OLAgMBAAECgYATzaLGJsVT7CdEsAVaUpebkOgeNdWzUNuBPlnSqfAYhuU8v8MnBh1J8iInwYgkl5PgI2gsFcQbMbQ8EzxOieuJ18TvNRvEHPxfYBhG7ql/3SL482k6W6uxkP1a/m9vAkUGRZK2+BoFhcTBPCkvm6JQoA53j374KaYjPT8x7Lx1AQJBAOpPV3XZYPU0KJYer7aiUHgol3F8WmGr/x2wFYKwVX1wBXQXj1zrzdnYGvZB22uoIB7ZILFoNwzrUBLGP9+Sc3UCQQCofLjlne2Y9+Rve3iJ10hj+ZBZP4ae7XG4gpE1I4qCAiBk00MNZLp89qwvbDbviJ89Ksk2dPkojQvtnDVnYvr/AkEAwuoZwYmBpLktAiSo228PLcXmpZtivFmOMi4m1r7Ff0HO55IpyozGg2/Ijg6e72G+xqqtDae6E980j0moHN4BeQJAHIytw/LDzPTMV3ujjC/Xi2FBbW4PQKTZbTtqoYd5M9hqZstJhF56HyypNovurx4GZZX3bGvbwFxOFiAvCGrEPwJARzVfPEeCk47er4oAc4gvEULR/k3G07cbD5gAwlFA+fPoDQfwFUno7y6Ze1+fauy/iAeso8zyHVMh424e7NbAxw==
------END PRIVATE KEY-----`
+-----END PRIVATE KEY-----`;
+
+export const NETWORK = {
+  ETHEREUM: 'ethereum',
+  BINANCE: 'binance',
+  POLYGON: 'polygon',
+  TRON: 'tron',
+  SAITACHAIN: 'saitachain',
+  BITCOIN: 'bitcoin',
+  BINANCE_SMART_CHAIN: 'binancesmartchain',
+};
+
+export const COIN_SYMBOL = {
+  ETH: 'eth',
+  MATIC: 'matic',
+  BNB: 'bnb',
+  STC: 'stc',
+  BTC: 'btc',
+  TRX: 'trx',
+};

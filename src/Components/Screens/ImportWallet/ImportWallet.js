@@ -124,15 +124,15 @@ const ImportWallet = props => {
         .then(res => {
           let wallet_addresses = [
             {
-              coin_symbol: 'eth',
+              coin_symbol: constants.COIN_SYMBOL.ETH,
               wallet_address: res?.ethAddress,
             },
             {
-            coin_symbol: 'bnb',
+            coin_symbol: constants.COIN_SYMBOL.BNB,
               wallet_address: res?.ethAddress,
             },
             {
-              coin_symbol: 'stc',
+              coin_symbol: constants.COIN_SYMBOL.STC,
               wallet_address: res?.ethAddress,
             },
             // {

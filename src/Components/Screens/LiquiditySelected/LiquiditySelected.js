@@ -544,7 +544,7 @@ let WETH = Singleton.getInstance().SwapWethAddress; // Using Wrapped Ether (WETH
       let tokenvalueDesired;
       let TokenAddress
       let TokenDecimal
-      if (tokenFirst.coin_symbol.toLowerCase() == 'eth') {
+      if (tokenFirst.coin_symbol.toLowerCase() == constants.COIN_SYMBOL.ETH) {
         TokenAddress = tokenSecond.token_address
         TokenDecimal = tokenSecond.decimals
 
@@ -561,7 +561,7 @@ let WETH = Singleton.getInstance().SwapWethAddress; // Using Wrapped Ether (WETH
       }
 
       const routerContractObject = await getContractObject(routerAddress, ROUTER_ABI,);
-      if (tokenFirst.coin_symbol.toLowerCase() == 'eth' || tokenSecond.coin_symbol.toLowerCase() == "eth") {
+      if (tokenFirst.coin_symbol.toLowerCase() == constants.COIN_SYMBOL.ETH || tokenSecond.coin_symbol.toLowerCase() == "eth") {
         //console.warn('MM','-----params------- eth new', TokenAddress, tokenvalueDesired,
         // amountBMin.toString(), amountAMin.toString(),
         //   userAddress, deadline, "ethValue " + ethValue, tokenFirst.coin_symbol, tokenSecond.coin_symbol);
@@ -663,11 +663,11 @@ let WETH = Singleton.getInstance().SwapWethAddress; // Using Wrapped Ether (WETH
             return;
           }
           const firstAddress =
-            tokenFirst.coin_symbol.toLowerCase() == 'eth'
+            tokenFirst.coin_symbol.toLowerCase() == constants.COIN_SYMBOL.ETH
               ? WETH
               : tokenFirst.token_address;
           const secondAddress =
-            tokenSecond.coin_symbol.toLowerCase() == 'eth'
+            tokenSecond.coin_symbol.toLowerCase() == constants.COIN_SYMBOL.ETH
               ? WETH
               : tokenSecond.token_address;
           let path = [firstAddress, secondAddress];
@@ -684,7 +684,7 @@ let WETH = Singleton.getInstance().SwapWethAddress; // Using Wrapped Ether (WETH
 
             setLoading(false);
 
-            if (tokenFirst.coin_symbol.toLowerCase() == 'eth') {
+            if (tokenFirst.coin_symbol.toLowerCase() == constants.COIN_SYMBOL.ETH) {
               TokenAddressFirstSupply = tokenSecond.token_address
               TokenAddressSecond = tokenFirst
               TokenDecimalFirstSupply = tokenSecond.decimals
@@ -821,7 +821,7 @@ let WETH = Singleton.getInstance().SwapWethAddress; // Using Wrapped Ether (WETH
           let TokenDecimal;
           //  let tokenvalueDesired = (valueget * (10 ** TokenDecimal)).toFixed(0)
           let tokenvalueDesired;
-          if (tokenFirst.coin_symbol.toLowerCase() == 'eth') {
+          if (tokenFirst.coin_symbol.toLowerCase() == constants.COIN_SYMBOL.ETH) {
             TokenAddress = tokenSecond.token_address
             TokenDecimal = tokenSecond.decimals
             if (type == SELECTED_INPUT.firstInput) {
@@ -890,7 +890,7 @@ let WETH = Singleton.getInstance().SwapWethAddress; // Using Wrapped Ether (WETH
 
 
 
-            if (tokenFirst.coin_symbol.toLowerCase() == 'eth' || tokenSecond.coin_symbol.toLowerCase() == "eth") {
+            if (tokenFirst.coin_symbol.toLowerCase() == constants.COIN_SYMBOL.ETH || tokenSecond.coin_symbol.toLowerCase() == "eth") {
               //console.warn('MM','-----params------- eth old', tokenSecond.token_address, tokenvalueDesired,
               // amountBMin.toString(), amountAMin.toString(),
               //   userAddress, deadline, "ethValue " + ethValue, tokenFirst.coin_symbol, tokenSecond.coin_symbol);
@@ -1007,7 +1007,7 @@ let WETH = Singleton.getInstance().SwapWethAddress; // Using Wrapped Ether (WETH
         const web3Object = getWeb3Object();
         let ethBal = await web3Object.eth.getBalance(userAddress);
         //console.warn('MM','>>>>>>>>>> ethBal', ethBal);
-        if (rawTxnObj?.type == 'eth') {
+        if (rawTxnObj?.type == constants.COIN_SYMBOL.ETH) {
           totalFee = await bigNumberSafeMath(
             totalFee,
             '+',
@@ -1190,17 +1190,17 @@ let WETH = Singleton.getInstance().SwapWethAddress; // Using Wrapped Ether (WETH
     let result = await getWeb3Object().eth.sendSignedTransaction(serializedTran,);
     //console.warn('MM','serializedTran => result', result);
     data.tx_hash = result.transactionHash;
-    await sendTransactionToBackend(data, 'ethereum', value == '0x0' ? rawTxnObj?.tokenContractAddress : 'eth',);
+    await sendTransactionToBackend(data, Constants.NETWORK.ETHEREUM, value == '0x0' ? rawTxnObj?.tokenContractAddress : constants.COIN_SYMBOL.ETH,);
     return result;
   };
 
   const sendTransactionToBackend = (
     data,
-    blockChain = 'ethereum',
+    blockChain = Constants.NETWORK.ETHEREUM,
     coin_symbol,
   ) => {
     return new Promise((resolve, reject) => {
-      coin_symbol = tokenFirst.coin_symbol.toLowerCase() == 'eth' ? "eth" : rawTxnObj?.tokenContractAddress
+      coin_symbol = tokenFirst.coin_symbol.toLowerCase() == constants.COIN_SYMBOL.ETH ? "eth" : rawTxnObj?.tokenContractAddress
       let access_token = Singleton.getInstance().access_token;
       //console.warn('MM','eth data::::', data);
       //console.warn('MM','eth data::::', `https://api.saita.pro/prod/api/v1/${blockChain}/${coin_symbol}/savetrnx`, access_token,);

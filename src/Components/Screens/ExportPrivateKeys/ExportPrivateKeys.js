@@ -114,7 +114,7 @@ const ExportPrivateKeys = props => {
 
           break;
 
-        case 'eth':
+        case Constants.COIN_SYMBOL.ETH:
           Singleton.getInstance().newGetData(`${address}_pk`).then(ethPvtKey => {
             setEthPvtKey(ethPvtKey);
             setAddressObj([

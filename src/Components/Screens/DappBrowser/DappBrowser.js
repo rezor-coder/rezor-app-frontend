@@ -372,11 +372,11 @@ class DappBrowser extends Component {
       this.getNonceAndGas(
         this.hex2dec(message.object.value),
         this.state.selectedNetwork == 'Ethereum'
-          ? 'eth'
+          ? Constants.COIN_SYMBOL.ETH
           : this.state.selectedNetwork == 'Binance'
-          ? 'bnb'
-          : 'matic',
-        this.state.selectedNetwork == 'Ethereum' ? 'transaction' : 'binance',
+          ? Constants.COIN_SYMBOL.BNB
+          : Constants.COIN_SYMBOL.MATIC,
+        this.state.selectedNetwork == 'Ethereum' ? 'transaction' : Constants.NETWORK.BINANCE,
       );
     } else if (message.name == 'requestAccounts') {
       let js = `trustwallet.${message?.network}.setAddress('${this.state.address}');`;
@@ -471,11 +471,11 @@ class DappBrowser extends Component {
         this.changeNetwork('Polygon');
         let js1 = `trustwallet.${message?.network}.sendResponse(${mmid}, null)`;
         this.webview.injectJavaScript(js1);
-      } else if ((chainId == 56 || chainId == 97) && (this.props?.route?.params?.chain == 'bnb' || this.props?.route?.params?.chain == '')) {
+      } else if ((chainId == 56 || chainId == 97) && (this.props?.route?.params?.chain == Constants.COIN_SYMBOL.BNB || this.props?.route?.params?.chain == '')) {
         this.changeNetwork('Binance');
         let js1 = `trustwallet.${message?.network}.sendResponse(${mmid}, null)`;
         this.webview.injectJavaScript(js1);
-      } else if ((chainId == 1 || chainId == 5) && (this.props?.route?.params?.chain == 'eth' || this.props?.route?.params?.chain == '')) {
+      } else if ((chainId == 1 || chainId == 5) && (this.props?.route?.params?.chain == Constants.COIN_SYMBOL.ETH || this.props?.route?.params?.chain == '')) {
         this.changeNetwork('Ethereum');
         let js1 = `trustwallet.${message?.network}.sendResponse(${mmid}, null)`;
         this.webview.injectJavaScript(js1);
@@ -541,7 +541,7 @@ class DappBrowser extends Component {
     return this.ConvertBase(num).from(16).to(10);
   }
   async getNonceAndGas(amount, coinsym, coinType) {
-    if (coinsym.toLowerCase() == 'eth') {
+    if (coinsym.toLowerCase() == Constants.COIN_SYMBOL.ETH) {
       var gasFees = await getTotalGasFeeDapp();
       var currentNonce = await getNonceValueDapp(this.state.address);
       this.nonce = currentNonce;
@@ -554,7 +554,7 @@ class DappBrowser extends Component {
         gasPrice: gasFees,
       });
     }
-    if (coinsym.toLowerCase() == 'bnb') {
+    if (coinsym.toLowerCase() == Constants.COIN_SYMBOL.BNB) {
       let data = {
         from: Singleton.getInstance().defaultBnbAddress,
         to: Singleton.getInstance().defaultBnbAddress,
@@ -562,8 +562,8 @@ class DappBrowser extends Component {
       };
       let wallet_address = Singleton.getInstance().defaultBnbAddress;
       let access_token = Singleton.getInstance().access_token;
-      let blockChain = 'binancesmartchain';
-      let coin_symbol = 'bnb';
+      let blockChain = Constants.NETWORK.BINANCE_SMART_CHAIN;
+      let coin_symbol = Constants.COIN_SYMBOL.BNB;
       let contractAddress = 'bnb';
       this.props
         .getBnbNonce({wallet_address, access_token, blockChain, coin_symbol})
@@ -603,8 +603,8 @@ class DappBrowser extends Component {
       };
       let wallet_address = Singleton.getInstance().defaultBnbAddress;
       let access_token = Singleton.getInstance().access_token;
-      let blockChain = 'polygon';
-      let coin_symbol = 'matic';
+      let blockChain = Constants.NETWORK.POLYGON;
+      let coin_symbol = Constants.COIN_SYMBOL.MATIC;
       let contractAddress = 'matic';
       this.props
         .getBnbNonce({wallet_address, access_token, blockChain, coin_symbol})
@@ -743,7 +743,7 @@ class DappBrowser extends Component {
           this.state.signingData.object.to,
           this.state.signingData.object.from,
           this.state.signingData.object.data,
-          'eth',
+          Constants.COIN_SYMBOL.ETH,
           hexedPriorityPrice,
         ).then(serializedTxn => {
           //console.warn('MM','chk signed txn::::::eth:::::', serializedTxn);
@@ -838,18 +838,18 @@ class DappBrowser extends Component {
     };
     let access_token = Singleton.getInstance().access_token;
     let blockChain =
-      this.state.selectedNetwork == 'Ethereum'
-        ? 'ethereum'
-        : this.state.selectedNetwork == 'Binance'
-        ? 'binancesmartchain'
-        : 'polygon';
+      this.state.selectedNetwork === 'Ethereum'
+        ? Constants.NETWORK.ETHEREUM
+        : this.state.selectedNetwork === 'Binance'
+        ? Constants.NETWORK.BINANCE_SMART_CHAIN
+        : Constants.NETWORK.POLYGON;
 
     let coin_symbol =
-      this.state.selectedNetwork == 'Ethereum'
-        ? 'eth'
-        : this.state.selectedNetwork == 'Binance'
-        ? 'bnb'
-        : 'matic';
+      this.state.selectedNetwork === 'Ethereum'
+        ? Constants.COIN_SYMBOL.ETH
+        : this.state.selectedNetwork === 'Binance'
+        ? Constants.COIN_SYMBOL.BNB
+        : Constants.COIN_SYMBOL.MATIC;
     this.props
       .sendBNB({data, access_token, blockChain, coin_symbol})
       .then(res => {
@@ -1392,7 +1392,7 @@ class DappBrowser extends Component {
             {this.state.isNetworkModalVisible && (
               <View style={styles.dropdown}>
                   {
-               (this.props?.route?.params?.chain=='eth' || this.props?.route?.params?.chain=='') &&   <TouchableOpacity
+               (this.props?.route?.params?.chain==Constants.COIN_SYMBOL.ETH || this.props?.route?.params?.chain=='') &&   <TouchableOpacity
                   style={{padding: 10}}
                   onPress={() => {
                     this.changeNetwork('Ethereum');

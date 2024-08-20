@@ -73,16 +73,16 @@ const AddToken = props => {
         if (res == 'matic') {
           setselectedCurrency('Polygon')
           setCurrencyData(["Polygon"])
-        } else if (res == 'bnb') {
+        } else if (res === constants.COIN_SYMBOL.BNB) {
           setselectedCurrency('Binance')
           setCurrencyData(["Binance"])
-        } else if (res == 'eth') {
+        } else if (res === constants.COIN_SYMBOL.ETH) {
           setselectedCurrency('Ethereum')
           setCurrencyData(["Ethereum"])
-        } else if (res == 'trx') {
+        } else if (res === constants.COIN_SYMBOL.TRX) {
           setselectedCurrency('Tron')
           setCurrencyData(["Tron"])
-        } else if (res == 'stc') {
+        } else if (res == constants.COIN_SYMBOL.STC) {
           setselectedCurrency('SaitaChain')
           setCurrencyData(["SaitaChain"])
         }
@@ -165,12 +165,12 @@ const AddToken = props => {
     let data = {
       tokenAddress: text,
       coinFamily:
-        selectedCurrency.toLowerCase() == 'ethereum'
+        selectedCurrency.toLowerCase() == constants.NETWORK.ETHEREUM
           ? 1
-          : selectedCurrency.toLowerCase() == 'binance'
-            ? 6 : selectedCurrency.toLowerCase() == 'polygon' ?
-              11 : selectedCurrency.toLowerCase() == 'saitachain' ? 4 : 3,
-      tokenType: selectedCurrency.toLowerCase() == 'tron' ? 2 : 1,
+          : selectedCurrency.toLowerCase() == constants.NETWORK.BINANCE
+            ? 6 : selectedCurrency.toLowerCase() == constants.NETWORK.POLYGON ?
+              11 : selectedCurrency.toLowerCase() == constants.NETWORK.SAITACHAIN ? 4 : 3,
+      tokenType: selectedCurrency.toLowerCase() == constants.NETWORK.TRON ? 2 : 1,
 
     };
     let access_token = Singleton.getInstance().access_token;
@@ -263,21 +263,21 @@ const AddToken = props => {
   const addToken = coin_gicko_alias => {
     let data = {
       coin_family:
-        selectedCurrency.toLowerCase() == 'ethereum'
+        selectedCurrency.toLowerCase() == constants.NETWORK.ETHEREUM
           ? 1
-          : selectedCurrency.toLowerCase() == 'binance'
+          : selectedCurrency.toLowerCase() == constants.NETWORK.BINANCE
             ? 6
-            : selectedCurrency.toLowerCase() == 'polygon' ? 11
-              :selectedCurrency.toLowerCase() == 'saitachain' ? 4 :
+            : selectedCurrency.toLowerCase() == constants.NETWORK.POLYGON ? 11
+              :selectedCurrency.toLowerCase() == constants.NETWORK.SAITACHAIN ? 4 :
               3,
       token_address: contractAddress,
       name: name,
-      token_type: selectedCurrency.toLowerCase() == 'tron' ? 2 : 1,
+      token_type: selectedCurrency.toLowerCase() == constants.NETWORK.TRON ? 2 : 1,
       symbol: tokenSymbol.toLowerCase(),
       coin_gicko_alias: coin_gicko_alias,
       decimals: NoOfdecimals,
       wallet_address:
-        selectedCurrency.toLowerCase() == 'tron'
+        selectedCurrency.toLowerCase() == constants.NETWORK.TRON
           ? Singleton.getInstance().defaultTrxAddress
           : Singleton.getInstance().defaultEthAddress
 

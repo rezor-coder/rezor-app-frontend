@@ -482,7 +482,7 @@ const SendTRX = props => {
       // chat: this.props.chat
     };
     let access_token = Singleton.getInstance().access_token;
-    let blockChain = 'tron';
+    let blockChain = Constants.NETWORK.TRON;
     let coin_symbol = coinSymbol;
     console.log('DATA======', data);
     props

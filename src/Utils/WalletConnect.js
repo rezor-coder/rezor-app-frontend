@@ -227,13 +227,13 @@ export default class WalletConnect {
             .newGetData(Constants.IS_PRIVATE_WALLET)
             .then(isPrivateWallet => {
               console.log("isPrivateWallet", isPrivateWallet);
-              if (isPrivateWallet == 'eth' && coinFamily == 1) {
+              if (isPrivateWallet == Constants.COIN_SYMBOL.ETH && coinFamily == 1) {
                 EventRegister.emitEvent("requestFromDapp", data)
-              } else if (isPrivateWallet == 'bnb' && coinFamily == 6) {
+              } else if (isPrivateWallet == Constants.COIN_SYMBOL.BNB && coinFamily == 6) {
                 EventRegister.emitEvent("requestFromDapp", data)
-              } else if (isPrivateWallet == 'matic' && coinFamily == 11) {
+              } else if (isPrivateWallet == Constants.COIN_SYMBOL.MATIC && coinFamily == 11) {
                 EventRegister.emitEvent("requestFromDapp", data)
-              } else if (isPrivateWallet == 'stc' && coinFamily == 4) {
+              } else if (isPrivateWallet == Constants.COIN_SYMBOL.STC && coinFamily == 4) {
                 EventRegister.emitEvent("requestFromDapp", data)
               }else {
                 console.log("fgegeg1");

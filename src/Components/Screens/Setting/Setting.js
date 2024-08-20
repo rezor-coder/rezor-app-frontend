@@ -98,7 +98,7 @@ const Languages = [
   { name: 'Italian', flag: Images.italian },
   { name: 'Português', flag: Images.portugues },
 ];
-let chain = 'eth';
+let chain = constants.COIN_SYMBOL.ETH;
 const Setting = props => {
   const liquidityUrl = useSelector(
     state => state?.walletReducer?.dex_data?.liquidityUrl,
@@ -277,12 +277,12 @@ const Setting = props => {
     Singleton.getInstance()
       .newGetData(constants.IS_PRIVATE_WALLET)
       .then(isPrivate => {
-        if (isPrivate == 'btc' || isPrivate == 'matic' || isPrivate == 'trx' || isPrivate=='stc') {
+        if (isPrivate == constants.COIN_SYMBOL.BTC || isPrivate == constants.COIN_SYMBOL.MATIC || isPrivate == constants.COIN_SYMBOL.TRX || isPrivate==constants.COIN_SYMBOL.STC) {
           Singleton.showAlert(constants.UNCOMPATIBLE_WALLET);
-        } else if (isPrivate == 'eth') {
-          onSelectChain('eth');
-        } else if (isPrivate == 'bnb') {
-          onSelectChain('bnb');
+        } else if (isPrivate == constants.COIN_SYMBOL.ETH) {
+          onSelectChain(constants.COIN_SYMBOL.ETH);
+        } else if (isPrivate == constants.COIN_SYMBOL.BNB) {
+          onSelectChain(constants.COIN_SYMBOL.BNB);
         } else {
           setshowSelectChain(true);
         }
@@ -292,13 +292,13 @@ const Setting = props => {
     Singleton.getInstance()
       .newGetData(constants.IS_PRIVATE_WALLET)
       .then(isPrivate => {
-        if (isPrivate == 'btc' || isPrivate == 'matic' || isPrivate == 'trx' ) {
+        if (isPrivate == constants.COIN_SYMBOL.BTC || isPrivate == constants.COIN_SYMBOL.MATIC || isPrivate == constants.COIN_SYMBOL.TRX ) {
           Singleton.showAlert(constants.UNCOMPATIBLE_WALLET);
-        } else if (isPrivate == 'eth') {
-          onSelectChainLiq('eth');
-        } else if (isPrivate == 'bnb') {
+        } else if (isPrivate == constants.COIN_SYMBOL.ETH) {
+          onSelectChainLiq(constants.COIN_SYMBOL.ETH);
+        } else if (isPrivate == constants.COIN_SYMBOL.BNB) {
           onSelectChainLiq('bsc');
-        }else if (isPrivate == 'stc') {
+        }else if (isPrivate == constants.COIN_SYMBOL.STC) {
           onSelectChainLiq('sbc');
         } else {
           setshowSelectChainLiq(true);
@@ -556,7 +556,7 @@ const Setting = props => {
                     Singleton.getInstance()
                       .newGetData(constants.IS_PRIVATE_WALLET)
                       .then(isPrivate => {
-                        if (isPrivate == 'btc' || isPrivate == 'trx' ) {
+                        if (isPrivate == constants.COIN_SYMBOL.BTC || isPrivate == constants.COIN_SYMBOL.TRX ) {
                           Singleton.showAlert(constants.UNCOMPATIBLE_WALLET);
                         } else {
                           getCurrentRouteName() != 'ConnectWithDapp' &&
@@ -583,7 +583,7 @@ const Setting = props => {
                       Singleton.getInstance()
                         .newGetData(constants.IS_PRIVATE_WALLET)
                         .then(isPrivate => {
-                          if (isPrivate == 'btc' || isPrivate == 'trx') {
+                          if (isPrivate == constants.COIN_SYMBOL.BTC || isPrivate == constants.COIN_SYMBOL.TRX) {
                             Singleton.showAlert(constants.UNCOMPATIBLE_WALLET);
                           } else {
                             console.log('walletList=======', walletList);
@@ -701,15 +701,15 @@ const Setting = props => {
                 onClose={() => setshowSelectChain(false)}
                 onPressEth={() => {
                   setshowSelectChain(false);
-                  onSelectChain('eth');
+                  onSelectChain(constants.COIN_SYMBOL.ETH);
                 }}
                 onPressBnb={() => {
                   setshowSelectChain(false);
-                  onSelectChain('bnb');
+                  onSelectChain(constants.COIN_SYMBOL.BNB);
                 }}
                 onPressStc={()=>{
                   setshowSelectChain(false);
-                  onSelectChain('stc');
+                  onSelectChain(constants.COIN_SYMBOL.STC);
                 }}
               />
             </Modal>
@@ -726,7 +726,7 @@ const Setting = props => {
                 onClose={() => setshowSelectChainLiq(false)}
                 onPressEth={() => {
                   setshowSelectChainLiq(false);
-                  onSelectChainLiq('eth');
+                  onSelectChainLiq(constants.COIN_SYMBOL.ETH);
                 }}
                 onPressBnb={() => {
                   setshowSelectChainLiq(false);
@@ -777,7 +777,7 @@ const Setting = props => {
               chain={chain}
                 url={liquidityUrl + `?chainId=${chain}`}
                 // url={'https://www.new-dex.saita.pro/liquidity/liquidity-form' + `?chainId=${chain}`}
-                item={{ coin_family: chain=='eth'?1:chain=='sbc'?4:6 }}
+                item={{ coin_family: chain==constants.COIN_SYMBOL.ETH?1:chain=='sbc'?4:6 }}
               />
             </View>
           </Wrap>

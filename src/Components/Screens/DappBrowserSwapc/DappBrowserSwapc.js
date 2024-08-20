@@ -201,7 +201,7 @@ class DappBrowserSwapc extends Component {
 
   getEthPriceinFiat() {
     this.props.myWallets.find(value => {
-      if ('eth' == value.coin_symbol.toLowerCase()) {
+      if (Constants.COIN_SYMBOL.ETH === value.coin_symbol.toLowerCase()) {
         let perPrice_in_fiat = parseFloat(value.perPrice_in_fiat);
         this.setState({ ethPrice: perPrice_in_fiat });
         //console.warn('MM','-----value.perPrice_in_fiat', perPrice_in_fiat);
@@ -260,8 +260,8 @@ class DappBrowserSwapc extends Component {
       this.setState({ signingData: message });
       this.getNonceAndGas(
         this.hex2dec(message.object.value),
-        this.state.selectedNetwork == 'Ethereum' ? 'eth' : 'bnb',
-        this.state.selectedNetwork == 'Ethereum' ? 'transaction' : 'binance',
+        this.state.selectedNetwork == 'Ethereum' ? Constants.COIN_SYMBOL.ETH : Constants.COIN_SYMBOL.BNB,
+        this.state.selectedNetwork == 'Ethereum' ? 'transaction' : Constants.NETWORK.BINANCE,
       );
     } else if (message.name == 'requestAccounts') {
       let js = `window.ethereum.setAddress('${this.state.address}');`;
@@ -333,7 +333,7 @@ class DappBrowserSwapc extends Component {
   }
   async getNonceAndGas(amount, coinsym, coinType) {
     //  alert(coinsym)
-    if (coinsym.toLowerCase() == 'eth') {
+    if (coinsym.toLowerCase() == Constants.COIN_SYMBOL.ETH) {
       var gasFees = await getTotalGasFeeDapp();
       var currentNonce = await getNonceValueDapp(this.state.address);
       ////console.log(
@@ -356,7 +356,7 @@ class DappBrowserSwapc extends Component {
         gasPrice: gasFees,
       });
     }
-    if (coinsym.toLowerCase() == 'bnb') {
+    if (coinsym.toLowerCase() == Constants.COIN_SYMBOL.BNB) {
       let data = {
         from: Singleton.getInstance().defaultBnbAddress,
         to: Singleton.getInstance().defaultBnbAddress,
@@ -364,9 +364,9 @@ class DappBrowserSwapc extends Component {
       };
       let wallet_address = Singleton.getInstance().defaultBnbAddress;
       let access_token = Singleton.getInstance().access_token;
-      let blockChain = 'binancesmartchain';
-      let coin_symbol = 'bnb';
-      let contractAddress = 'bnb';
+      let blockChain = Constants.NETWORK.BINANCE_SMART_CHAIN;
+      let coin_symbol = Constants.COIN_SYMBOL.BNB;
+      let contractAddress = Constants.COIN_SYMBOL.BNB;
       this.props
         .getBnbNonce({ wallet_address, access_token, blockChain, coin_symbol })
         .then(nonce => {
@@ -509,7 +509,7 @@ class DappBrowserSwapc extends Component {
           this.state.signingData.object.to,
           this.state.signingData.object.from,
           this.state.signingData.object.data,
-          'eth',
+          Constants.COIN_SYMBOL.ETH,
           hexedPriorityPrice,
         ).then(serializedTxn => {
           //console.warn('MM','chk signed txn::::::eth:::::', serializedTxn);
@@ -573,9 +573,9 @@ class DappBrowserSwapc extends Component {
     let access_token = Singleton.getInstance().access_token;
     let blockChain =
       this.state.selectedNetwork == 'Ethereum'
-        ? 'ethereum'
-        : 'binancesmartchain';
-    let coin_symbol = this.state.selectedNetwork == 'Ethereum' ? 'eth' : 'bnb';
+        ? Constants.NETWORK.ETHEREUM
+        : Constants.NETWORK.BINANCE_SMART_CHAIN;
+    let coin_symbol = this.state.selectedNetwork == 'Ethereum' ? Constants.COIN_SYMBOL.ETH : Constants.COIN_SYMBOL.BNB;
     this.props
       .sendBNB({ data, access_token, blockChain, coin_symbol })
       .then(res => {

@@ -19,6 +19,7 @@ import images from '../../theme/Images';
 import { exponentialToDecimalWithoutComma } from '../../utils';
 import { BorderLine } from './BorderLine';
 import { SimpleHeaderNew } from './SimpleHeaderNew';
+import * as Constants from '../../Constant';
 const ModalSwap = props => {
   const {
     toCoinName,
@@ -40,8 +41,8 @@ const ModalSwap = props => {
   const getnativeFiatPrice = () => {
     let price;
     if (
-      fromCoinSymbol?.toLowerCase() == 'eth' ||
-      fromCoinSymbol?.toLowerCase() == 'bnb'
+      fromCoinSymbol?.toLowerCase() == Constants.COIN_SYMBOL.ETH ||
+      fromCoinSymbol?.toLowerCase() == Constants.COIN_SYMBOL.BNB
     ) {
       price = fromCoin?.fiat_price;
     } else {

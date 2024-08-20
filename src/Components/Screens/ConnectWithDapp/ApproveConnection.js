@@ -350,7 +350,7 @@ const ApproveConnection = ({
             Wallet Name
           </Text>
           <View>
-            {(isPrivateKey == 'eth' || isPrivateKey == '0') && getCurrencyFromChainId(1)?.isAvailable && (
+            {(isPrivateKey === Constants.COIN_SYMBOL.ETH || isPrivateKey == '0') && getCurrencyFromChainId(1)?.isAvailable && (
               <CurrencyCard
                 disabled={true}
                 styleNew={styles.currencyCardStyle}

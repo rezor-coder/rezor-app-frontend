@@ -586,7 +586,7 @@ const StakingPools = () => {
 
   const sendTransactionToBackend = (
     data,
-    blockChain = 'ethereum',
+    blockChain = constants.NETWORK.ETHEREUM,
     coin_symbol = TokenContractAddress,
   ) => {
     return new Promise((resolve, reject) => {

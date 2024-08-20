@@ -83,7 +83,7 @@ class MultiSenderEth extends Component {
       showImage: false,
       maxClicked: false,
       amountAfterCommission: 0,
-      blockChain: 'ethereum',
+      blockChain: constants.NETWORK.ETHEREUM,
       dataEncoded: '',
       gas_price_eth: '',
       totalFee: '',
@@ -194,7 +194,7 @@ class MultiSenderEth extends Component {
         if (success) {
           //console.warn('MM','successful biometrics provided');
           this.setState({ pinModal: false }, () => {
-            this.props.route?.params?.selectedCoin.coin_symbol.toLowerCase() == 'eth'
+            this.props.route?.params?.selectedCoin.coin_symbol.toLowerCase() == constants.COIN_SYMBOL.ETH
               ? this.send_ETH()
               : this.send_ERC20();
           });
@@ -215,7 +215,7 @@ class MultiSenderEth extends Component {
   //   if (pin.length == 4) {
   //     if (pin == this.state.existingPin) {
   //       this.setState({ pinModal: false }, () => {
-  //         this.props.route?.params?.selectedCoin.coin_symbol.toLowerCase() == 'eth'
+  //         this.props.route?.params?.selectedCoin.coin_symbol.toLowerCase() == constants.COIN_SYMBOL.ETH
   //           ? this.send_ETH()
   //           : this.send_ERC20();
   //       });
@@ -267,7 +267,7 @@ class MultiSenderEth extends Component {
           //     : this.send_BNB();
           //   this.setState({pinModal: false});
           this.setState({ pinModal: false }, () => {
-            this.props.route?.params?.selectedCoin.coin_symbol.toLowerCase() == 'eth'
+            this.props.route?.params?.selectedCoin.coin_symbol.toLowerCase() == constants.COIN_SYMBOL.ETH
               ? this.send_ETH()
               : this.send_ERC20();
           });
@@ -368,7 +368,7 @@ class MultiSenderEth extends Component {
       nonce: nonce,
       chat: 0,
       multisender_reward:
-        this.props.route?.params?.selectedCoin.coin_symbol.toLowerCase() == 'eth'
+        this.props.route?.params?.selectedCoin.coin_symbol.toLowerCase() == constants.COIN_SYMBOL.ETH
           ? parseFloat(this.state.commissionAmt).toFixed(8)
           : parseFloat(this.state.commissionAmt / 10 ** 18).toFixed(8),
     };
@@ -470,7 +470,7 @@ class MultiSenderEth extends Component {
     }
     const Totalfee = await getTotalGasFee();
     console.warn('MM', 'Totalfee', Totalfee);
-    if (this.props.route?.params?.selectedCoin.coin_symbol.toLowerCase() == 'eth') {
+    if (this.props.route?.params?.selectedCoin.coin_symbol.toLowerCase() == constants.COIN_SYMBOL.ETH) {
       //  console.warn('MM','address arr' , addressArr);
       //  console.warn('MM','this.props?.route?.params?.referralAddress' , this.props?.route?.params?.referralAddress);
       //  console.warn('MM','amount' , this.state.amount);
@@ -876,7 +876,7 @@ class MultiSenderEth extends Component {
                     </View>
 
                     {this.props.route?.params?.selectedCoin.coin_symbol.toUpperCase() ==
-                      'ETH' && (
+                      constants.COIN_SYMBOL.ETH && (
                         <Text
                           style={[
                             styles.balanceValueStyle,
@@ -890,7 +890,7 @@ class MultiSenderEth extends Component {
                         </Text>
                       )}
                     {this.props.route?.params?.selectedCoin.coin_symbol.toUpperCase() !=
-                      'ETH' && (
+                      constants.COIN_SYMBOL.ETH && (
                         <Text
                           style={[
                             styles.balanceValueStyle,

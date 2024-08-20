@@ -198,7 +198,7 @@ class DappBrowserSwap extends Component {
   }
 
   getEthPriceinFiat() {
-    let chain = this.props.chain=='sbc'?'stc':this.props.chain=='bsc'?'bnb':'eth'
+    let chain = this.props.chain=='sbc'?Constants.COIN_SYMBOL.STC:this.props.chain=='bsc'?Constants.COIN_SYMBOL.BNB:Constants.COIN_SYMBOL.ETH
     console.log("::::::::::::",chain);
     this.props.myWallets.find(value => {
       if (chain == value.coin_symbol.toLowerCase() && this.props.item?.coin_family == value?.coin_family) {
@@ -363,8 +363,8 @@ class DappBrowserSwap extends Component {
       this.setState({ signingData: message });
       this.getNonceAndGas(
         this.hex2dec(message.object.value),
-        this.state.selectedNetwork == 'Ethereum' ? 'eth' : this.state.selectedNetwork == 'Saitachain' ? 'stc' : 'bnb',
-        this.state.selectedNetwork == 'Ethereum' ? 'transaction' : 'binance',
+        this.state.selectedNetwork == 'Ethereum' ? Constants.COIN_SYMBOL.ETH : this.state.selectedNetwork == 'Saitachain' ? Constants.COIN_SYMBOL.STC : Constants.COIN_SYMBOL.BNB,
+        this.state.selectedNetwork == 'Ethereum' ? 'transaction' : Constants.NETWORK.BINANCE,
         message
       );
     } else if (message.name == 'requestAccounts') {
@@ -397,7 +397,7 @@ class DappBrowserSwap extends Component {
         this.changeNetwork('Binance');
         let js1 = `trustwallet.${message?.network}.sendResponse(${mmid}, null)`;
         this.webview.injectJavaScript(js1);
-      } else if ((chainId == 1 || chainId == 5) && (this.props.chain == 'eth' || this.props.chain == '')) {
+      } else if ((chainId == 1 || chainId == 5) && (this.props.chain == Constants.COIN_SYMBOL.ETH || this.props.chain == '')) {
         this.changeNetwork('Ethereum');
         let js1 = `trustwallet.${message?.network}.sendResponse(${mmid}, null)`;
         this.webview.injectJavaScript(js1);
@@ -453,7 +453,7 @@ class DappBrowserSwap extends Component {
   async getNonceAndGas(amount, coinsym, coinType,signingData) {
     console.log("coinsym:::::",coinsym);
     //  alert(coinsym)
-    if (coinsym.toLowerCase() == 'eth') {
+    if (coinsym.toLowerCase() === Constants.COIN_SYMBOL.ETH) {
       var gasFees = await getTotalGasFeeDapp();
       var currentNonce = await getNonceValueDapp(this.state.address);
       ////console.log(
@@ -476,7 +476,7 @@ class DappBrowserSwap extends Component {
         gasPrice: gasFees,
       });
     }
-    if (coinsym.toLowerCase() == 'bnb') {
+    if (coinsym.toLowerCase() == Constants.COIN_SYMBOL.BNB) {
       let data = {
         from: Singleton.getInstance().defaultBnbAddress,
         to: Singleton.getInstance().defaultBnbAddress,
@@ -484,9 +484,9 @@ class DappBrowserSwap extends Component {
       };
       let wallet_address = Singleton.getInstance().defaultBnbAddress;
       let access_token = Singleton.getInstance().access_token;
-      let blockChain = 'binancesmartchain';
-      let coin_symbol = 'bnb';
-      let contractAddress = 'bnb';
+      let blockChain = Constants.NETWORK.BINANCE_SMART_CHAIN;
+      let coin_symbol = Constants.COIN_SYMBOL.BNB;
+      let contractAddress = Constants.COIN_SYMBOL.BNB;
       this.props
         .getBnbNonce({ wallet_address, access_token, blockChain, coin_symbol })
         .then(nonce => {
@@ -656,7 +656,7 @@ class DappBrowserSwap extends Component {
           this.state.signingData.object.to,
           this.state.signingData.object.from,
           this.state.signingData.object.data,
-          'eth',
+          Constants.COIN_SYMBOL.ETH,
           hexedPriorityPrice,
         ).then(serializedTxn => {
           //console.warn('MM','chk signed txn::::::eth:::::', serializedTxn);
@@ -755,11 +755,11 @@ class DappBrowserSwap extends Component {
     let access_token = Singleton.getInstance().access_token;
     let blockChain =
       this.state.selectedNetwork == 'Ethereum'
-        ? 'ethereum'
+        ? Constants.NETWORK.ETHEREUM
         : this.state.selectedNetwork == 'Saitachain'
-          ? 'saitachain'
-          : 'binancesmartchain';
-    let coin_symbol = this.state.selectedNetwork == 'Ethereum' ? 'eth' : this.state.selectedNetwork == 'Saitachain' ? 'stc' : 'bnb';
+          ? Constants.NETWORK.SAITACHAIN
+          : Constants.NETWORK.BINANCE_SMART_CHAIN;
+    let coin_symbol = this.state.selectedNetwork == 'Ethereum' ? Constants.COIN_SYMBOL.ETH : this.state.selectedNetwork == 'Saitachain' ? Constants.COIN_SYMBOL.STC : Constants.COIN_SYMBOL.BNB;
     console.log('data:::::', data);
     this.props
       .sendBNB({ data, access_token, blockChain, coin_symbol })

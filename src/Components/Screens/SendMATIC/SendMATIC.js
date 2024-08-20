@@ -352,7 +352,7 @@ const SendMATIC = props => {
       to: Singleton.getInstance().defaultEthAddress,
       amount: amount,
     };
-    let blockChain = 'polygon';
+    let blockChain = constants.NETWORK.POLYGON;
     let access_token = Singleton.getInstance().access_token;
     let contractAddress = walletData?.token_address;
     //console.warn('MM','getEthGasEstimate');
@@ -426,7 +426,7 @@ const SendMATIC = props => {
       // chat: this.props.chat
     };
     let access_token = Singleton.getInstance().access_token;
-    let blockChain = 'polygon';
+    let blockChain = constants.NETWORK.POLYGON;
     let coin_symbol = coinSymbol;
     console.log('data::::::', data);
     props.sendETH({ data, access_token, blockChain, coin_symbol })
@@ -466,7 +466,7 @@ const SendMATIC = props => {
     };
 
     let access_token = Singleton.getInstance().access_token;
-    let blockChain = 'polygon';
+    let blockChain = constants.NETWORK.POLYGON;
     let contractAddress = walletData?.token_address;
     props
       .getEthTokenRaw({ blockChain, data, contractAddress, access_token })

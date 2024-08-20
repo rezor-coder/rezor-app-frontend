@@ -401,15 +401,15 @@ const Dashboard = props => {
                   .newGetData(constants.IS_PRIVATE_WALLET)
                   .then(isPrivate => {
                     if (
-                      isPrivate == 'btc' ||
-                      isPrivate == 'matic' ||
-                      isPrivate == 'trx'
+                      isPrivate == constants.COIN_SYMBOL.BTC ||
+                      isPrivate == constants.COIN_SYMBOL.MATIC ||
+                      isPrivate == constants.COIN_SYMBOL.TRX
                     ) {
                       Singleton.showAlert(constants.UNCOMPATIBLE_WALLET);
                     } else {
                       getCurrentRouteName() !== 'Stake' &&
                         navigate(NavigationStrings.Stake, {
-                          chain: item.coin_family == 1 ? 'eth' : 'bnb',
+                          chain: item.coin_family == 1 ? constants.COIN_SYMBOL.ETH : constants.COIN_SYMBOL.BNB,
                         });
                     }
                   });
@@ -598,12 +598,12 @@ const Dashboard = props => {
                   .newGetData(constants.IS_PRIVATE_WALLET)
                   .then(isPrivate => {
                     if (
-                      isPrivate == 'btc' ||
-                      isPrivate == 'matic' ||
-                      isPrivate == 'bnb' ||
-                      isPrivate == 'trx' ||
-                      isPrivate == 'eth' ||
-                      isPrivate == 'stc'
+                      isPrivate == constants.COIN_SYMBOL.BTC ||
+                      isPrivate == constants.COIN_SYMBOL.MATIC ||
+                      isPrivate == constants.COIN_SYMBOL.BNB ||
+                      isPrivate == constants.COIN_SYMBOL.TRX ||
+                      isPrivate == constants.COIN_SYMBOL.ETH ||
+                      isPrivate == constants.COIN_SYMBOL.STC
                     ) {
                       Singleton.showAlert(constants.UNCOMPATIBLE_WALLET);
                     } else {

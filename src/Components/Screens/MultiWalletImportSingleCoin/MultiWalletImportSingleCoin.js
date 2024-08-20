@@ -32,6 +32,7 @@ import {
 import HeaderwithBackIcon from '../../common/HeaderWithBackIcon';
 import Loader from '../Loader/Loader';
 import styles from './MultiWalletImportSingleCoinStyle';
+import * as Constants from '../../../Constant';
 const windowHeight = Dimensions.get('window').height;
 
 class MultiWalletImportSingleCoin extends Component {
@@ -104,7 +105,7 @@ class MultiWalletImportSingleCoin extends Component {
                 .newGetData(constants.multi_wallet_array)
                 .then(multiWalletArray => {
                   var array = JSON.parse(multiWalletArray);
-                  let addressToCheck = this.props.route?.params.coin_symbol.toLowerCase() == ('eth' || 'matic' || 'bnb' || 'stc') ? res.ethAddress : this.props.route?.params.coin_symbol.toLowerCase() == ('btc') ? res.btcAddress : res.trxAddress
+                  let addressToCheck = this.props.route?.params.coin_symbol.toLowerCase() == (Constants.COIN_SYMBOL.ETH || 'matic' || 'bnb' || 'stc') ? res.ethAddress : this.props.route?.params.coin_symbol.toLowerCase() == ('btc') ? res.btcAddress : res.trxAddress
                   const isExistArray = array.filter(item => {
                     console.log("addressToCheck::", addressToCheck);
                    let isExistInside =  item.loginRequest.wallet_addresses.find(
@@ -139,7 +140,7 @@ class MultiWalletImportSingleCoin extends Component {
                       {
                         coin_symbol: this.props.route?.params.coin_symbol,
                         wallet_address:
-                          this.props.route?.params.coin_symbol == 'eth'
+                          this.props.route?.params.coin_symbol == Constants.COIN_SYMBOL.ETH
                             ? res.ethAddress
                             : this.props.route?.params.coin_symbol == 'trx'
                               ? res.trxAddress
@@ -156,7 +157,7 @@ class MultiWalletImportSingleCoin extends Component {
                     ];
                     let data = {
                       address:
-                        this.props.route?.params.coin_symbol == 'eth'
+                        this.props.route?.params.coin_symbol == Constants.COIN_SYMBOL.ETH
                           ? res.ethAddress
                           : this.props.route?.params.coin_symbol == 'trx'
                             ? res.trxAddress
@@ -170,7 +171,7 @@ class MultiWalletImportSingleCoin extends Component {
                                   ? res.ethAddress
                                   : res.ethAddress,
                       addresses: [
-                        this.props.route?.params.coin_symbol == 'eth'
+                        this.props.route?.params.coin_symbol == Constants.COIN_SYMBOL.ETH
                           ? res.ethAddress
                           : this.props.route?.params.coin_symbol == 'trx'
                             ? res.trxAddress
@@ -242,7 +243,7 @@ class MultiWalletImportSingleCoin extends Component {
         }, 200);
       } else if (this.state.mnemonicsEnable == false) {
         this.setState({ pvtKey: this.state.pvtKey.trim() });
-        if (this.props.route?.params.coin_symbol.toLowerCase() == 'eth') {
+        if (this.props.route?.params.coin_symbol.toLowerCase() == Constants.COIN_SYMBOL.ETH) {
           const { address, error } =
             Singleton.getInstance().getEthAddressFromPrivateKey(
               this.state.pvtKey,

@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   Alert,
   BackHandler,
@@ -9,80 +9,77 @@ import {
   Platform,
   SafeAreaView,
   Text,
-  View
+  View,
 } from 'react-native';
-import { TextInput, TouchableOpacity } from 'react-native-gesture-handler';
-import { connect } from 'react-redux';
-import { saveWalletContact } from '../../../Redux/Actions/ContactsAction';
+import {TextInput, TouchableOpacity} from 'react-native-gesture-handler';
+import {connect} from 'react-redux';
+import {saveWalletContact} from '../../../Redux/Actions/ContactsAction';
 import Singleton from '../../../Singleton';
-import { Colors, Images } from '../../../theme/index';
-import { BasicButton, BorderLine, Wrap } from '../../common';
-import { BasicInputBox } from '../../common/BasicInputBox';
-import { SimpleHeader } from '../../common/SimpleHeader';
+import {Colors, Images} from '../../../theme/index';
+import {BasicButton, BorderLine, Wrap} from '../../common';
+import {BasicInputBox} from '../../common/BasicInputBox';
+import {SimpleHeader} from '../../common/SimpleHeader';
 import Loader from '../Loader/Loader';
-import { APP_NAME, NEW_NAME_REGX } from './../../../Constant';
-import { styles } from './AddNewContactsStyle';
-// import {CameraScreen} from 'react-native-camera-kit';
-import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
-import { NavigationStrings } from '../../../Navigation/NavigationStrings';
-import { heightDimen, widthDimen } from '../../../Utils/themeUtils';
-import { goBack, navigate } from '../../../navigationsService';
+import {APP_NAME, NEW_NAME_REGX, NETWORK} from './../../../Constant';
+import {styles} from './AddNewContactsStyle';
+import {LanguageManager, ThemeManager} from '../../../../ThemeManager';
+import {NavigationStrings} from '../../../Navigation/NavigationStrings';
+import {heightDimen, widthDimen} from '../../../Utils/themeUtils';
+import {goBack, navigate} from '../../../navigationsService';
 import QRReaderModal from '../../common/QRReaderModal';
-let scanner = false
+let scanner = false;
 const AddNewContacts = props => {
   const [contactName, setContactName] = useState('');
   const [contactAddress, setContactAddress] = useState(
     props?.route?.params?.address ? props?.route?.params?.address : '',
   );
-  const [coinFamily, setCoinFamily] = useState('');
+  const [setCoinFamily] = useState('');
   const [network, setNetwork] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [Start_Scanner, setStart_Scanner] = useState(false);
   const setNetworkState = () => {
-    let coinFamily = props?.route?.params?.coinFamily ? props?.route?.params?.coinFamily : 1;
+    let coinFamily = props?.route?.params?.coinFamily
+      ? props?.route?.params?.coinFamily
+      : 1;
     setCoinFamily(props?.route?.params?.coinFamily);
     switch (coinFamily) {
       case 1:
-        setNetwork('ethereum');
+        setNetwork(NETWORK.ETHEREUM);
         break;
       case 6:
-        setNetwork('binance');
+        setNetwork(NETWORK.BINANCE);
         break;
       case 11:
-        setNetwork('polygon');
+        setNetwork(NETWORK.POLYGON);
         break;
       case 3:
-        setNetwork('tron');
+        setNetwork(NETWORK.TRON);
         break;
-        case 4:
-          setNetwork('saitachain');
-          break;
+      case 4:
+        setNetwork(NETWORK.SAITACHAIN);
+        break;
       default:
-        setNetwork('bitcoin');
+        setNetwork(NETWORK.BITCOIN);
     }
   };
   useEffect(() => {
-    //  console.warn('MM','****************i walletData.decimals', props.walletData.decimals , props.walletData);
     props.navigation.addListener('focus', onScreenFocus);
     props.navigation.addListener('blur', onScreenBlur);
   }, [props]);
 
   const onScreenFocus = () => {
-    console.log("onScreenFocus----------------------FOCUS")
     BackHandler.addEventListener('hardwareBackPress', backAction);
   };
   const onScreenBlur = () => {
-    console.log("onScreenFocus----------------------BLUR")
     BackHandler.removeEventListener('hardwareBackPress', backAction);
   };
   const backAction = () => {
-    console.log("Start_Scanner::::",scanner);
-    if(scanner){
-     setStart_Scanner(false)
-     scanner=false
-     return true;
-    } else{
-      goBack(); 
+    if (scanner) {
+      setStart_Scanner(false);
+      scanner = false;
+      return true;
+    } else {
+      goBack();
       return true;
     }
   };
@@ -90,16 +87,12 @@ const AddNewContacts = props => {
     setNetworkState();
     return;
   }, []);
-  // const onChangeNameText = text => {
-  //   if(ALPHABET_REGEX.test(text))
-  //   setContactName(text);
-  // };
   const onChangeAddressText = text => {
     setContactAddress(text);
   };
   const savePressed = () => {
     console.log(contactName);
-    if (contactName?.trim()?.length == 0) {
+    if (contactName?.trim()?.length === 0) {
       Singleton.showAlert('Name can not be empty');
       return;
     }
@@ -108,18 +101,18 @@ const AddNewContacts = props => {
       Singleton.showAlert('Name should be of atleast 3 words');
       return;
     }
-    if (contactAddress.trim().length == 0) {
+    if (contactAddress.trim().length === 0) {
       Singleton.showAlert('Please Add Wallet Address');
       return;
     } else {
-      if (network == 'tron') {
+      if (network === NETWORK.TRON) {
         if (Singleton.getInstance().validateTronAddress(contactAddress)) {
           setIsLoading(true);
           saveContact();
         } else {
           Singleton.showAlert('Invalid Wallet Address');
         }
-      } else if (network == 'bitcoin') {
+      } else if (network === NETWORK.BITCOIN) {
         if (Singleton.getInstance().validateBTCAddress(contactAddress)) {
           setIsLoading(true);
           saveContact();
@@ -155,8 +148,9 @@ const AddNewContacts = props => {
             {
               text: 'OK',
               onPress: () => {
-                props?.route?.params?.isPop ? goBack(): navigate(NavigationStrings.Wallet)
-                
+                props?.route?.params?.isPop
+                  ? goBack()
+                  : navigate(NavigationStrings.Wallet);
               },
             },
           ],
@@ -182,12 +176,12 @@ const AddNewContacts = props => {
   };
   const qrClose = () => {
     setStart_Scanner(false);
-    scanner=false
+    scanner = false;
   };
   const onQR_Code_Scan_Done = QR_Code => {
     setContactAddress(QR_Code);
     setStart_Scanner(false);
-    scanner=false
+    scanner = false;
   };
   const open_QR_Code_Scanner = () => {
     var that = this;
@@ -204,7 +198,7 @@ const AddNewContacts = props => {
           if (granted === PermissionsAndroid.RESULTS.GRANTED) {
             setContactAddress('');
             setStart_Scanner(true);
-            scanner=true
+            scanner = true;
           } else {
             Singleton.showAlert('CAMERA permission denied');
           }
@@ -217,7 +211,7 @@ const AddNewContacts = props => {
     } else {
       setContactAddress('');
       setStart_Scanner(true);
-      scanner=true
+      scanner = true;
     }
   };
 
@@ -233,16 +227,16 @@ const AddNewContacts = props => {
           style={{
             flex: 1,
             backgroundColor: Colors.black,
-            paddingTop: Platform.OS == 'ios' ? 20 : 0,
+            paddingTop: Platform.OS === 'ios' ? 20 : 0,
           }}>
-             <QRReaderModal
-          visible={Start_Scanner}
-          setvisible={(data)=>{
-            setStart_Scanner(data);
-            scanner=data
-          }}
-          onCodeRead={onQR_Code_Scan_Done}
-        />
+          <QRReaderModal
+            visible={Start_Scanner}
+            setvisible={data => {
+              setStart_Scanner(data);
+              scanner = data;
+            }}
+            onCodeRead={onQR_Code_Scan_Done}
+          />
           {/* <TouchableOpacity
             onPress={() => qrClose()}
             style={[styles.addressIcon]}>
@@ -293,14 +287,14 @@ const AddNewContacts = props => {
                     borderColor: ThemeManager.colors.viewBorderColor,
                   }}
                   keyboardType={
-                    Platform.OS == 'ios' ? 'ascii-capable' : 'visible-password'
+                    Platform.OS === 'ios' ? 'ascii-capable' : 'visible-password'
                   }
                   text={contactName}
                   placeholder={LanguageManager.enterNameHere}
                   title={LanguageManager.nameYourContact}
                   width={'100%'}
                   onChangeText={text => {
-                    if (text != '') {
+                    if (text !== '') {
                       if (NEW_NAME_REGX.test(text)) {
                         setContactName(text);
                       }

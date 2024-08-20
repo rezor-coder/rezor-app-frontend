@@ -20,7 +20,6 @@ import FastImage from 'react-native-fast-image';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { connect } from 'react-redux';
 import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
-import * as Constants from '../../../Constant';
 import * as constants from '../../../Constant';
 import { IS_PRODUCTION } from '../../../Endpoints';
 import { NavigationStrings } from '../../../Navigation/NavigationStrings';
@@ -304,18 +303,18 @@ class SendSTC extends Component {
             );
           } else {
             this.setState({ isLoading: false });
-            Singleton.showAlert(response.message || Constants.SOMETHING_WRONG);
+            Singleton.showAlert(response.message || constants.SOMETHING_WRONG);
           }
         })
         .catch(error => {
           console.log(error);
           this.setState({ isLoading: false });
-          Singleton.showAlert(error?.message || Constants.SOMETHING_WRONG);
+          Singleton.showAlert(error?.message || constants.SOMETHING_WRONG);
         });
     }).catch(err => {
       console.log(err);
       this.setState({ isLoading: false });
-      Singleton.showAlert(err?.message || Constants.SOMETHING_WRONG);
+      Singleton.showAlert(err?.message || constants.SOMETHING_WRONG);
     })
 
   }
@@ -386,7 +385,7 @@ class SendSTC extends Component {
   onProceed = text => {
     this.setState({ Pin: text });
     Singleton.getInstance()
-      .newGetData(Constants.PIN)
+      .newGetData(constants.PIN)
       .then(pin => {
         if (text == pin) {
           if (global.disconnected) {

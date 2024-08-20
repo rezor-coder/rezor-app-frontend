@@ -27,6 +27,7 @@ import { styles } from './EditContactStyle';
 import { heightDimen, widthDimen } from '../../../Utils/themeUtils';
 import QRReaderModal from '../../common/QRReaderModal';
 import { goBack } from '../../../navigationsService';
+import * as Constants from '../../../Constant';
 let scanner = false
 const EditContact = props => {
   const [contactName, setContactName] = useState('');
@@ -102,7 +103,7 @@ const EditContact = props => {
           Singleton.showAlert('Invalid Wallet Address');
         }
       } else
-        if (network == 'bitcoin') {
+        if (network == Constants.NETWORK.BITCOIN) {
           if (Singleton.getInstance().validateBTCAddress(contactAddress)) {
             setIsLoading(true);
             editContact();

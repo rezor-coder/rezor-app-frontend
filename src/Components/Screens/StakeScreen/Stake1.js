@@ -389,7 +389,7 @@ const Stake = props => {
 
   const sendTransactionToBackend = (
     data,
-    blockChain = 'ethereum',
+    blockChain = constants.NETWORK.ETHEREUM,
     coin_symbol = Singleton.getInstance().StakeSaitamaAddress,
   ) => {
     return new Promise((resolve, reject) => {

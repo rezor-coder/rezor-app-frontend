@@ -182,9 +182,9 @@ const Market = props => {
     console.log("val:::",val);
     if(val?.trim() == ''){
       console.log(":::::");
-      // if (activeWallet == 'bnb') {
+      // if (activeWallet == Constants.COIN_SYMBOL.BNB) {
       //   list = searchFilteredArray?.filter(item => item?.coin_family == 6);
-      // } else if (activeWallet == 'eth') {
+      // } else if (activeWallet == Constants.COIN_SYMBOL.ETH) {
       //   list = searchFilteredArray?.filter(item => item?.coin_family == 1);
       // }
       showSaitaDex
@@ -201,9 +201,9 @@ const Market = props => {
           );
         });
         let list = filteredData;
-        // if (activeWallet == 'bnb') {
+        // if (activeWallet == Constants.COIN_SYMBOL.BNB) {
         //   list = filteredData?.filter(item => item?.coin_family == 6);
-        // } else if (activeWallet == 'eth') {
+        // } else if (activeWallet == Constants.COIN_SYMBOL.ETH) {
         //   list = filteredData?.filter(item => item?.coin_family == 1);
         // }
         setSaitaDexListing(list);
@@ -219,9 +219,9 @@ const Market = props => {
       }
     } else {
       let list = searchFilteredArray;
-      // if (activeWallet == 'bnb') {
+      // if (activeWallet == Constants.COIN_SYMBOL.BNB) {
       //   list = searchFilteredArray?.filter(item => item?.coin_family == 6);
-      // } else if (activeWallet == 'eth') {
+      // } else if (activeWallet == Constants.COIN_SYMBOL.ETH) {
       //   list = searchFilteredArray?.filter(item => item?.coin_family == 1);
       // }
       showSaitaDex
@@ -284,11 +284,11 @@ const Market = props => {
     .newGetData(Constants.IS_PRIVATE_WALLET)
     .then(isPrivate => {
       console.log("isPrivate::",isPrivate);
-      if (isPrivate !='eth' && isPrivate !='bnb' && isPrivate !='matic' && isPrivate!='trx' && isPrivate != 'btc' && isPrivate != 'stc') {
+      if (isPrivate !=Constants.COIN_SYMBOL.ETH && isPrivate !=Constants.COIN_SYMBOL.BNB && isPrivate !=Constants.COIN_SYMBOL.MATIC && isPrivate!=Constants.COIN_SYMBOL.TRX && isPrivate != Constants.COIN_SYMBOL.BTC && isPrivate != Constants.COIN_SYMBOL.STC) {
         console.log("activeWallet all:::::",item);
         dispatch(saveSwapItem(item))
         getCurrentRouteName() != 'Trade' && navigate(NavigationStrings.Trade,{ chain: isPrivate ,item:item});
-      } else if (isPrivate == 'eth') {
+      } else if (isPrivate == Constants.COIN_SYMBOL.ETH) {
         console.log("activeWallet eth:::::",item);
         if (item?.coin_family == 1) {
           console.log("coin_family eth inside:::::",item);
@@ -298,7 +298,7 @@ const Market = props => {
           console.log("coin_family eth::::else:",);
           Singleton.showAlert(Constants.UNCOMPATIBLE_WALLET);
         }
-      } else if (isPrivate == 'bnb') {
+      } else if (isPrivate == Constants.COIN_SYMBOL.BNB) {
         console.log("activeWallet bnb:::::",item);
         if (item?.coin_family == 6) {
           dispatch(saveSwapItem(item))
@@ -306,7 +306,7 @@ const Market = props => {
         } else {
           Singleton.showAlert(Constants.UNCOMPATIBLE_WALLET);
         }
-      }else if (isPrivate == 'stc') {
+      }else if (isPrivate == Constants.COIN_SYMBOL.STC) {
         console.log("activeWallet stc:::::",item);
         if (item?.coin_family == 4) {
           dispatch(saveSwapItem(item))
@@ -323,7 +323,7 @@ const Market = props => {
 
   const onPressBuySell = item => {
     console.log('activeWallet::', activeWallet);
-    if (activeWallet == 'eth' || activeWallet == 0) {
+    if (activeWallet == Constants.COIN_SYMBOL.ETH || activeWallet == 0) {
       console.log('----------------item', item);
       getCurrentRouteName() != 'TradeSwap' && navigate(NavigationStrings.TradeSwap,{item: item});
     } else {

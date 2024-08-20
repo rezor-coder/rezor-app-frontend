@@ -98,9 +98,9 @@ class DefiAccessmainIOS extends Component {
             this.setState({isPrivate: isPrivate, showDefi: false});
           } else {
             if (
-              isPrivate == 'bnb' ||
-              isPrivate == 'eth' ||
-              isPrivate == 'matic'
+              isPrivate == Constants.COIN_SYMBOL.BNB ||
+              isPrivate == Constants.COIN_SYMBOL.ETH ||
+              isPrivate == Constants.COIN_SYMBOL.MATIC
             ) {
               this.setState({isPrivate: isPrivate, showDefi: true});
             } else {
@@ -298,11 +298,11 @@ class DefiAccessmainIOS extends Component {
                   chain: this.state.isPrivate,
                   item: {
                     coin_family:
-                      this.state.isPrivate == 'eth'
+                      this.state.isPrivate == Constants.COIN_SYMBOL.ETH
                         ? 1
-                        : this.state.isPrivate == 'bnb'
+                        : this.state.isPrivate == Constants.COIN_SYMBOL.BNB
                         ? 6
-                        : this.state.isPrivate == 'matic'
+                        : this.state.isPrivate == Constants.COIN_SYMBOL.MATIC
                         ? ''
                         : 1,
                   },
@@ -359,11 +359,11 @@ class DefiAccessmainIOS extends Component {
                   chain: this.state.isPrivate,
                   item: {
                     coin_family:
-                      this.state.isPrivate == 'eth'
+                      this.state.isPrivate == Constants.COIN_SYMBOL.ETH
                         ? 1
-                        : this.state.isPrivate == 'bnb'
+                        : this.state.isPrivate == Constants.COIN_SYMBOL.BNB
                         ? 6
-                        : this.state.isPrivate == 'matic'
+                        : this.state.isPrivate == Constants.COIN_SYMBOL.MATIC
                         ? ''
                         : 1,
                   },
@@ -456,11 +456,11 @@ class DefiAccessmainIOS extends Component {
                           chain: this.state.isPrivate,
                           item: {
                             coin_family:
-                              this.state.isPrivate == 'eth'
+                              this.state.isPrivate == Constants.COIN_SYMBOL.ETH
                                 ? 1
-                                : this.state.isPrivate == 'bnb'
+                                : this.state.isPrivate == Constants.COIN_SYMBOL.BNB
                                 ? 6
-                                : this.state.isPrivate == 'matic'
+                                : this.state.isPrivate == Constants.COIN_SYMBOL.MATIC
                                 ? ''
                                 : 1,
                           },
@@ -500,11 +500,11 @@ class DefiAccessmainIOS extends Component {
                                 chain: this.state.isPrivate,
                                 item: {
                                   coin_family:
-                                    this.state.isPrivate == 'eth'
+                                    this.state.isPrivate == Constants.COIN_SYMBOL.ETH
                                       ? 1
-                                      : this.state.isPrivate == 'bnb'
+                                      : this.state.isPrivate == Constants.COIN_SYMBOL.BNB
                                       ? 6
-                                      : this.state.isPrivate == 'matic'
+                                      : this.state.isPrivate == Constants.COIN_SYMBOL.MATIC
                                       ? ''
                                       : 1,
                                 },

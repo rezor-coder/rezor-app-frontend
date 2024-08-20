@@ -486,10 +486,10 @@ const SwapSelected = props => {
         );
         const web3Object = getWeb3Object(
           tokenFirst?.coin_family == 1
-            ? 'eth'
+            ? constants.COIN_SYMBOL.ETH
             : tokenFirst?.coin_family == 4
-            ? 'stc'
-            : 'bnb',
+            ? constants.COIN_SYMBOL.STC
+            : constants.COIN_SYMBOL.BNB,
           tokenFirst,
         );
         if (global.disconnected) {
@@ -699,8 +699,8 @@ const SwapSelected = props => {
     );
     if (tokenFirst?.coin_family == 1) {
       if (
-        tokenFirst.coin_symbol.toLowerCase() != 'eth' &&
-        tokenSecond.coin_symbol.toLowerCase() != 'eth'
+        tokenFirst.coin_symbol.toLowerCase() != constants.COIN_SYMBOL.ETH &&
+        tokenSecond.coin_symbol.toLowerCase() != constants.COIN_SYMBOL.ETH
       ) {
         console.log('if12:::');
         Singleton.showAlert('Atleast one asset should be ETH');
@@ -711,8 +711,8 @@ const SwapSelected = props => {
       }
     } else if (tokenFirst?.coin_family == 4) {
       if (
-        tokenFirst.coin_symbol.toLowerCase() != 'stc' &&
-        tokenSecond.coin_symbol.toLowerCase() != 'stc'
+        tokenFirst.coin_symbol.toLowerCase() != constants.COIN_SYMBOL.STC &&
+        tokenSecond.coin_symbol.toLowerCase() != constants.COIN_SYMBOL.STC
       ) {
         console.log('if12:::');
         Singleton.showAlert('Atleast one asset should be STC');
@@ -723,8 +723,8 @@ const SwapSelected = props => {
       }
     } else {
       if (
-        tokenFirst.coin_symbol.toLowerCase() != 'bnb' &&
-        tokenSecond.coin_symbol.toLowerCase() != 'bnb'
+        tokenFirst.coin_symbol.toLowerCase() != constants.COIN_SYMBOL.BNB &&
+        tokenSecond.coin_symbol.toLowerCase() != constants.COIN_SYMBOL.BNB
       ) {
         console.log('if1::::');
         Singleton.showAlert('Atleast one asset should be BNB');
@@ -758,10 +758,10 @@ const SwapSelected = props => {
     setIsInSufficientLiquidity(false);
     getWeb3Object(
       tokenFirst?.coin_family == 1
-        ? 'eth'
+        ? constants.COIN_SYMBOL.ETH
         : tokenFirst?.coin_family == 4
-        ? 'stc'
-        : 'bnb',
+        ? constants.COIN_SYMBOL.STC
+        : constants.COIN_SYMBOL.BNB,
       tokenFirst,
     )
       .eth.getGasPrice()
@@ -897,10 +897,10 @@ const SwapSelected = props => {
           setInsufficientBalance(false);
         }
         if (
-          tokenFirst.coin_symbol.toLowerCase() == 'eth' ||
-          tokenFirst.coin_symbol.toLowerCase() == 'bnb' ||
+          tokenFirst.coin_symbol.toLowerCase() == constants.COIN_SYMBOL.ETH ||
+          tokenFirst.coin_symbol.toLowerCase() == constants.COIN_SYMBOL.BNB ||
           (tokenFirst.coin_family == 4 &&
-            tokenFirst.coin_symbol.toLowerCase() == 'stc')
+            tokenFirst.coin_symbol.toLowerCase() == constants.COIN_SYMBOL.STC)
         ) {
           setUserApproval(true);
           let swapTransaction;
@@ -1052,10 +1052,10 @@ const SwapSelected = props => {
           }
           console.warn('MM', 'isApproved ======>>  after approved');
           if (
-            tokenSecond.coin_symbol.toLowerCase() == 'eth' ||
-            tokenSecond.coin_symbol.toLowerCase() == 'bnb' ||
+            tokenSecond.coin_symbol.toLowerCase() == constants.COIN_SYMBOL.ETH ||
+            tokenSecond.coin_symbol.toLowerCase() == constants.COIN_SYMBOL.BNB ||
             (tokenSecond.coin_family == 4 &&
-              tokenSecond.coin_symbol.toLowerCase() == 'stc')
+              tokenSecond.coin_symbol.toLowerCase() == constants.COIN_SYMBOL.STC)
           ) {
             let swapTransaction;
             if (isError) {
@@ -1256,10 +1256,10 @@ const SwapSelected = props => {
           : Singleton.getInstance().SwapRouterBNBAddress;
       const web3Object = getWeb3Object(
         tokenFirst?.coin_family == 1
-          ? 'eth'
+          ? constants.COIN_SYMBOL.ETH
           : tokenFirst?.coin_family == 4
-          ? 'stc'
-          : 'bnb',
+          ? constants.COIN_SYMBOL.STC
+          : constants.COIN_SYMBOL.BNB,
         tokenFirst,
       );
       let nonce = await web3Object.eth.getTransactionCount(userAddress);
@@ -1273,9 +1273,9 @@ const SwapSelected = props => {
         gasPrice,
         gasEstimate,
         nonce,
-        rawTxnObj.type == 'eth' ||
-          rawTxnObj.type == 'stc' ||
-          rawTxnObj.type == 'bnb'
+        rawTxnObj.type == constants.COIN_SYMBOL.ETH ||
+          rawTxnObj.type == constants.COIN_SYMBOL.STC ||
+          rawTxnObj.type == constants.COIN_SYMBOL.BNB
           ? rawTxnObj.value
           : '0x0',
         routerAddress,
@@ -1356,8 +1356,8 @@ const SwapSelected = props => {
     }
     if (tokenFirst?.coin_family == 1) {
       if (
-        tokenFirst.coin_symbol.toLowerCase() != 'eth' &&
-        tokenSecond.coin_symbol.toLowerCase() != 'eth'
+        tokenFirst.coin_symbol.toLowerCase() != constants.COIN_SYMBOL.ETH &&
+        tokenSecond.coin_symbol.toLowerCase() != constants.COIN_SYMBOL.ETH
       ) {
         Singleton.showAlert('Atleast one asset should be ETH');
         return;
@@ -1365,17 +1365,17 @@ const SwapSelected = props => {
     } else if (tokenFirst?.coin_family == 4) {
       if (
         tokenFirst.coin_family == 4 &&
-        tokenFirst.coin_symbol.toLowerCase() != 'stc' &&
+        tokenFirst.coin_symbol.toLowerCase() != constants.COIN_SYMBOL.STC &&
         tokenSecond.coin_family == 4 &&
-        tokenSecond.coin_symbol.toLowerCase() != 'stc'
+        tokenSecond.coin_symbol.toLowerCase() != constants.COIN_SYMBOL.STC
       ) {
         Singleton.showAlert('Atleast one asset should be STC');
         return;
       }
     } else {
       if (
-        tokenFirst.coin_symbol.toLowerCase() != 'bnb' &&
-        tokenSecond.coin_symbol.toLowerCase() != 'bnb'
+        tokenFirst.coin_symbol.toLowerCase() != constants.COIN_SYMBOL.BNB &&
+        tokenSecond.coin_symbol.toLowerCase() != constants.COIN_SYMBOL.BNB
       ) {
         Singleton.showAlert('Atleast one asset should be BNB');
         return;
@@ -1389,10 +1389,10 @@ const SwapSelected = props => {
       let totalFee = (gasPrice * gasEstimate).toFixed(0);
       const web3Object = getWeb3Object(
         tokenFirst?.coin_family == 1
-          ? 'eth'
+          ? constants.COIN_SYMBOL.ETH
           : tokenFirst?.coin_family == 4
-          ? 'stc'
-          : 'bnb',
+          ? constants.COIN_SYMBOL.STC
+          : constants.COIN_SYMBOL.BNB,
         tokenFirst,
       );
       let ethBal = await web3Object.eth.getBalance(userAddress);
@@ -1461,18 +1461,18 @@ const SwapSelected = props => {
         );
         const web3Object = getWeb3Object(
           tokenFirst?.coin_family == 1
-            ? 'eth'
+            ? constants.COIN_SYMBOL.ETH
             : tokenFirst?.coin_family == 4
-            ? 'stc'
-            : 'bnb',
+            ? constants.COIN_SYMBOL.STC
+            : constants.COIN_SYMBOL.BNB,
           tokenFirst,
         );
         let ethBal = await web3Object.eth.getBalance(userAddress);
         console.warn('MM', '>>>>>>>>>> ethBal', ethBal);
         if (
-          rawTxnObj?.type == 'eth' ||
-          rawTxnObj?.type == 'stc' ||
-          rawTxnObj?.type == 'bnb'
+          rawTxnObj?.type == constants.COIN_SYMBOL.ETH ||
+          rawTxnObj?.type == constants.COIN_SYMBOL.STC ||
+          rawTxnObj?.type == constants.COIN_SYMBOL.BNB
         ) {
           totalFee = await bigNumberSafeMath(
             exponentialToDecimalWithoutComma(totalFee),
@@ -1511,10 +1511,10 @@ const SwapSelected = props => {
         let totalFee = (gasPrice * gasEstim).toFixed(0);
         const web3Object = getWeb3Object(
           tokenFirst?.coin_family == 1
-            ? 'eth'
+            ? constants.COIN_SYMBOL.ETH
             : tokenFirst?.coin_family == 4
-            ? 'stc'
-            : 'bnb',
+            ? constants.COIN_SYMBOL.STC
+            : constants.COIN_SYMBOL.BNB,
           tokenFirst,
         );
         let ethBal = await web3Object.eth.getBalance(userAddress);
@@ -1585,10 +1585,10 @@ const SwapSelected = props => {
         setActiveButton(notTab ? 0 : item);
         let coinSymbol = tokenFirst?.coin_symbol?.toLowerCase();
         let percentage =
-          coinSymbol == 'eth' ||
-          coinSymbol == 'bnb' ||
+          coinSymbol == constants.COIN_SYMBOL.ETH ||
+          coinSymbol == constants.COIN_SYMBOL.BNB ||
           (tokenFirst.coin_family == 4 &&
-            tokenFirst.coin_symbol.toLowerCase() == 'stc')
+            tokenFirst.coin_symbol.toLowerCase() == constants.COIN_SYMBOL.STC)
             ? item == 100
               ? 90
               : item
@@ -1649,20 +1649,20 @@ const SwapSelected = props => {
   const onPressItem2 = async selectedItem => {
     if (
       tokenFirst?.coin_family == 1 &&
-      tokenFirst.coin_symbol?.toLowerCase() != 'eth' &&
-      selectedItem.coin_symbol?.toLowerCase() != 'eth'
+      tokenFirst.coin_symbol?.toLowerCase() != constants.COIN_SYMBOL.ETH &&
+      selectedItem.coin_symbol?.toLowerCase() != constants.COIN_SYMBOL.ETH
     ) {
       Singleton.showAlert('Atleast one asset should be ETH');
     } else if (
       tokenFirst?.coin_family == 6 &&
-      tokenFirst.coin_symbol?.toLowerCase() != 'bnb' &&
-      selectedItem.coin_symbol?.toLowerCase() != 'bnb'
+      tokenFirst.coin_symbol?.toLowerCase() != constants.COIN_SYMBOL.BNB &&
+      selectedItem.coin_symbol?.toLowerCase() != constants.COIN_SYMBOL.BNB
     ) {
       Singleton.showAlert('Atleast one asset should be BNB');
     } else if (
       tokenFirst?.coin_family == 4 &&
-      tokenFirst.coin_symbol?.toLowerCase() != 'stc' &&
-      selectedItem.coin_symbol?.toLowerCase() != 'stc'
+      tokenFirst.coin_symbol?.toLowerCase() != constants.COIN_SYMBOL.STC &&
+      selectedItem.coin_symbol?.toLowerCase() != constants.COIN_SYMBOL.STC
     ) {
       Singleton.showAlert('Atleast one asset should be STC');
     } else {

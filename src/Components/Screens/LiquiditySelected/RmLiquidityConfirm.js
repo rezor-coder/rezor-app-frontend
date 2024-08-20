@@ -318,9 +318,9 @@ const RmLiquidityConfirm = props => {
         setIsSigned(true)
         Singleton.showAlert("Signed Succesfully.")
         //console.warn('MM','--------r', r, '---------s', s, '--------v', v)
-        if (selectedToCoin.coin_symbol.toLowerCase() == 'eth' || selectedFromCoin.coin_symbol.toLowerCase() == 'eth') {
+        if (selectedToCoin.coin_symbol.toLowerCase() == constants.COIN_SYMBOL.ETH || selectedFromCoin.coin_symbol.toLowerCase() == constants.COIN_SYMBOL.ETH) {
           //6 E/T
-          if (selectedToCoin.coin_symbol.toLowerCase() == 'eth') {
+          if (selectedToCoin.coin_symbol.toLowerCase() == constants.COIN_SYMBOL.ETH) {
             if (selectedFromCoin.is_fee == 0) {
               //no fee
               //console.warn('MM',">>>>> removeLiquidityETHWithPermit 1");
@@ -461,19 +461,19 @@ const RmLiquidityConfirm = props => {
     let result = await getWeb3Object().eth.sendSignedTransaction(serializedTran);
     //console.warn('MM','serializedTran => result', result);
     data.tx_hash = result.transactionHash;
-    await sendTransactionToBackend(data, 'ethereum', value == '0x0' ? rawTxnObj?.tokenContractAddress : 'eth',);
+    await sendTransactionToBackend(data, constants.NETWORK.ETHEREUM, value == '0x0' ? rawTxnObj?.tokenContractAddress : constants.COIN_SYMBOL.ETH,);
     return result;
   };
 
   const sendTransactionToBackend = (
     data,
-    blockChain = 'ethereum',
+    blockChain = constants.NETWORK.ETHEREUM,
     coin_symbol
 
   ) => {
     return new Promise((resolve, reject) => {
       //console.warn('MM','eth data:::: ccvc tkn', FilteredCoinOne.coin_symbol)
-      coin_symbol = FilteredCoinOne.coin_symbol.toLowerCase() == 'eth' ? "eth" : rawTxnObj?.tokenContractAddress
+      coin_symbol = FilteredCoinOne.coin_symbol.toLowerCase() == constants.COIN_SYMBOL.ETH ? "eth" : rawTxnObj?.tokenContractAddress
       let access_token = Singleton.getInstance().access_token;
       //console.warn('MM','eth data::::', data);
       //console.warn('MM','eth data::::', `https://api.saita.pro/prod/api/v1/${blockChain}/${coin_symbol}/savetrnx`, access_token,);

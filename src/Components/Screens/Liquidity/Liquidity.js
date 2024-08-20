@@ -604,8 +604,8 @@ const SwapScreen = ({ slippage, timeout }) => {
             return;
           }
 
-          const firstAddress = tokenFirst.coin_symbol.toLowerCase() == 'eth' ? WETH : tokenFirst.token_address;
-          const secondAddress = tokenSecond.coin_symbol.toLowerCase() == 'eth' ? WETH : tokenSecond.token_address;
+          const firstAddress = tokenFirst.coin_symbol.toLowerCase() == constants.COIN_SYMBOL.ETH ? WETH : tokenFirst.token_address;
+          const secondAddress = tokenSecond.coin_symbol.toLowerCase() == constants.COIN_SYMBOL.ETH ? WETH : tokenSecond.token_address;
           let path = [firstAddress, secondAddress];
           //console.warn('MM','chk path::::::', path);
           //console.warn('MM','chk path:::::: tokenFirst', tokenFirst);
@@ -648,7 +648,7 @@ const SwapScreen = ({ slippage, timeout }) => {
           let valueget = result * value;
           let TokenAddress;
           let TokenDecimal;
-          if (tokenFirst.coin_symbol.toLowerCase() == 'eth') {
+          if (tokenFirst.coin_symbol.toLowerCase() == constants.COIN_SYMBOL.ETH) {
             TokenAddress = tokenSecond.token_address
             TokenDecimal = tokenSecond.decimals
           }
@@ -697,7 +697,7 @@ const SwapScreen = ({ slippage, timeout }) => {
               ethValue = "0x0"
             }
 
-            if (tokenFirst.coin_symbol.toLowerCase() == 'eth' || tokenSecond.coin_symbol.toLowerCase() == "eth") {
+            if (tokenFirst.coin_symbol.toLowerCase() == constants.COIN_SYMBOL.ETH || tokenSecond.coin_symbol.toLowerCase() == "eth") {
               //console.warn('MM','-----params------- eth', tokenSecond.token_address, tokenvalueDesired,
               // amountBMin.toString(), amountAMin.toString(),
               //   userAddress, deadline, "ethValue " + ethValue);
@@ -817,7 +817,7 @@ const SwapScreen = ({ slippage, timeout }) => {
     );
     //console.warn('MM','serializedTran => result', result);
     data.tx_hash = result.transactionHash;
-    await sendTransactionToBackend(data, 'ethereum', value == '0x0' ? rawTxnObj?.tokenContractAddress : 'eth',);
+    await sendTransactionToBackend(data, Constants.NETWORK.ETHEREUM, value == '0x0' ? rawTxnObj?.tokenContractAddress : constants.COIN_SYMBOL.ETH,);
     return result;
     // return await dispatch(sendETH({ data, access_token, blockChain, coin_symbol })).then((res) => {
     //   setLoading(false)
@@ -913,8 +913,8 @@ const SwapScreen = ({ slippage, timeout }) => {
 
   const sendTransactionToBackend = (
     data,
-    blockChain = 'ethereum',
-    coin_symbol = 'eth',
+    blockChain = Constants.NETWORK.ETHEREUM,
+    coin_symbol = constants.COIN_SYMBOL.ETH,
   ) => {
     return new Promise((resolve, reject) => {
       let access_token = Singleton.getInstance().access_token;
@@ -1152,7 +1152,7 @@ const SwapScreen = ({ slippage, timeout }) => {
                       const web3Object = getWeb3Object();
                       let ethBal = await web3Object.eth.getBalance(userAddress,);
                       //console.warn('MM',">>>>>>>>>> ethBal", ethBal);
-                      if (rawTxnObj?.type == 'eth') {
+                      if (rawTxnObj?.type == constants.COIN_SYMBOL.ETH) {
                         totalFee = await bigNumberSafeMath(totalFee, '+', rawTxnObj?.value,);
                         //console.warn('MM',">>>>>>>>>> totalFee", totalFee);
                       }

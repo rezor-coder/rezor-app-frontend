@@ -87,12 +87,12 @@ class MultiSenderEthToken extends Component {
       amountAfterCommission: 0,
       blockChain:
         this.props.route?.params?.selectedCoin.coin_family == 1
-          ? 'ethereum'
+          ? constants.NETWORK.ETHEREUM
           : this.props.route?.params?.selectedCoin.coin_family == 6
-            ? 'binancesmartchain'
+            ? constants.NETWORK.BINANCE_SMART_CHAIN
             : this.props.route?.params?.selectedCoin.coin_family == 4
-              ? 'saitachain'
-              : 'polygon',
+              ? constants.NETWORK.SAITACHAIN
+              : constants.NETWORK.POLYGON,
       ethPvtKey: '',
       bnbPvtKey: '',
       gasPriceForTxnSlow: 1000000000,

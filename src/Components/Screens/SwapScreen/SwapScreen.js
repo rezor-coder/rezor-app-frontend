@@ -297,8 +297,8 @@ const SwapScreen = ({ slippage, timeout }) => {
             setLoading(false);
             return;
           }
-          const firstAddress = tokenFirst.coin_symbol.toLowerCase() == 'eth' ? WETH : tokenFirst.token_address;
-          const secondAddress = tokenSecond.coin_symbol.toLowerCase() == 'eth' ? WETH : tokenSecond.token_address;
+          const firstAddress = tokenFirst.coin_symbol.toLowerCase() == constants.COIN_SYMBOL.ETH ? WETH : tokenFirst.token_address;
+          const secondAddress = tokenSecond.coin_symbol.toLowerCase() == constants.COIN_SYMBOL.ETH ? WETH : tokenSecond.token_address;
           let path = [firstAddress, secondAddress];
           //console.warn('MM','chk path::::::', path);
           //console.warn('MM','chk path:::::: tokenFirst', tokenFirst);
@@ -327,7 +327,7 @@ const SwapScreen = ({ slippage, timeout }) => {
           }
 
 
-          if (tokenFirst.coin_symbol.toLowerCase() == 'eth') {
+          if (tokenFirst.coin_symbol.toLowerCase() == constants.COIN_SYMBOL.ETH) {
             // ETH to Token 
             setUserApproval(true);
             let swapTransaction;
@@ -383,7 +383,7 @@ const SwapScreen = ({ slippage, timeout }) => {
               return;
             }
             //console.warn('MM','isApproved ======>>  after approved');
-            if (tokenSecond.coin_symbol.toLowerCase() == 'eth') {
+            if (tokenSecond.coin_symbol.toLowerCase() == constants.COIN_SYMBOL.ETH) {
               // Token to ETH swapExactTokensForETH
               //console.warn('MM','Token to ETH ======>>', amountAMin.toString(), amountBMin.toString(), path, userAddress, deadline,);
               let swapTransaction
@@ -514,7 +514,7 @@ const SwapScreen = ({ slippage, timeout }) => {
     );
 
     data.tx_hash = result.transactionHash;
-    await sendTransactionToBackend(data, 'ethereum', value == '0x0' ? rawTxnObj?.tokenContractAddress : 'eth',);
+    await sendTransactionToBackend(data, constants.NETWORK.ETHEREUM, value == '0x0' ? rawTxnObj?.tokenContractAddress : constants.COIN_SYMBOL.ETH,);
     return result;
     // return await dispatch(sendETH({ data, access_token, blockChain, coin_symbol })).then((res) => {
     //   setLoading(false)
@@ -607,11 +607,11 @@ const SwapScreen = ({ slippage, timeout }) => {
     );
     return result;
   };
-  // await sendTransactionToBackend(data, 'ethereum', value == '0x0' ? rawTxnObj?.tokenContractAddress : 'eth',);
+  // await sendTransactionToBackend(data, 'ethereum', value == '0x0' ? rawTxnObj?.tokenContractAddress : constants.COIN_SYMBOL.ETH,);
   const sendTransactionToBackend = (
     data,
-    blockChain = 'ethereum',
-    coin_symbol = 'eth',
+    blockChain = constants.NETWORK.ETHEREUM,
+    coin_symbol = constants.COIN_SYMBOL.ETH,
   ) => {
     return new Promise((resolve, reject) => {
       let access_token = Singleton.getInstance().access_token;
@@ -799,7 +799,7 @@ const SwapScreen = ({ slippage, timeout }) => {
                       const web3Object = getWeb3Object();
                       let ethBal = await web3Object.eth.getBalance(userAddress,);
                       //console.warn('MM',">>>>>>>>>> ethBal", ethBal);
-                      if (rawTxnObj?.type == 'eth') {
+                      if (rawTxnObj?.type == constants.COIN_SYMBOL.ETH) {
                         totalFee = await bigNumberSafeMath(totalFee, '+', rawTxnObj?.value,);
                         //console.warn('MM',">>>>>>>>>> totalFee", totalFee);
                       }
@@ -1143,7 +1143,7 @@ const SwapScreen = ({ slippage, timeout }) => {
           fromCoinSymbol={tokenSecond.coin_symbol}
           toValue={tokenOneAmount}
           fromValue={tokenTwoAmount}
-          symbol={'ETH'}
+          symbol={constants.COIN_SYMBOL.ETH}
           txnFee={(gasPrice * gasEstimate * GAS_FEE_MULTIPLIER).toFixed(6)}
           onPress={() => {
             setSwapModal(false);
@@ -1161,7 +1161,7 @@ const SwapScreen = ({ slippage, timeout }) => {
 
 // const EthClick = () => {
 
-//   alert('eth')
+//   alert(constants.COIN_SYMBOL.ETH)
 // }
 // const BnbClick = () => {
 //   alert('bnb')

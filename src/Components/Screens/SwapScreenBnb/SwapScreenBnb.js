@@ -281,8 +281,8 @@ const SwapScreenBnb = ({ slippage, timeout }) => {
             setLoading(false);
             return;
           }
-          const firstAddress = tokenFirst.coin_symbol.toLowerCase() == 'eth' ? WETH : tokenFirst.token_address;
-          const secondAddress = tokenSecond.coin_symbol.toLowerCase() == 'eth' ? WETH : tokenSecond.token_address;
+          const firstAddress = tokenFirst.coin_symbol.toLowerCase() == constants.COIN_SYMBOL.ETH ? WETH : tokenFirst.token_address;
+          const secondAddress = tokenSecond.coin_symbol.toLowerCase() == constants.COIN_SYMBOL.ETH ? WETH : tokenSecond.token_address;
           let path = [firstAddress, secondAddress];
           //console.warn('MM','chk path::::::', path);
           //console.warn('MM','chk path:::::: tokenFirst', tokenFirst);
@@ -495,7 +495,7 @@ const SwapScreenBnb = ({ slippage, timeout }) => {
     );
 
     data.tx_hash = result.transactionHash;
-    await sendTransactionToBackend(data, 'binance', value == '0x0' ? rawTxnObj?.tokenContractAddress : 'bnb',);
+    await sendTransactionToBackend(data, constants.NETWORK.BINANCE, value == '0x0' ? rawTxnObj?.tokenContractAddress : 'bnb',);
     return result;
     // return await dispatch(sendETH({ data, access_token, blockChain, coin_symbol })).then((res) => {
     //   setLoading(false)
@@ -591,7 +591,7 @@ const SwapScreenBnb = ({ slippage, timeout }) => {
   //console.warn('MM',"slipaggeeeee",slippage,timeout)
   const sendTransactionToBackend = (
     data,
-    blockChain = 'binance',
+    blockChain = constants.NETWORK.BINANCE,
     coin_symbol = 'bnb',
   ) => {
     return new Promise((resolve, reject) => {

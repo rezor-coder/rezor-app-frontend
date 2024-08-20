@@ -94,10 +94,10 @@ const Epay = props => {
     Singleton.getInstance()
       .newGetData(Constants.IS_PRIVATE_WALLET)
       .then(isPrivate => {
-        if (isPrivate == 'eth' || isPrivate == 'bnb') {
+        if (isPrivate == Constants.COIN_SYMBOL.ETH || isPrivate == Constants.COIN_SYMBOL.BNB) {
           setcoinType(isPrivate?.toUpperCase());
           setCoinImage(
-            isPrivate == 'eth'
+            isPrivate == Constants.COIN_SYMBOL.ETH
               ? 'https://assets.coingecko.com/coins/images/279/small/ethereum.png?1595348880'
               : 'https://assets-cdn.trustwallet.com/blockchains/smartchain/info/logo.png',
           );

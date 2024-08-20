@@ -17,13 +17,13 @@ export const getWeb3Object = (chain, tokenFirst) => {
   let network;
   console.log('');
   if (chain) {
-    if (chain === 'eth') {
+    if (chain === constants.COIN_SYMBOL.ETH) {
       network = new Web3(
         constants.network === 'testnet'
           ? constants.testnetEth
           : Singleton.getInstance().ethLink,
       );
-    } else if (chain === 'stc') {
+    } else if (chain === constants.COIN_SYMBOL.STC) {
       console.log('stc:::::getWeb3Object:');
       network = new Web3(Singleton.getInstance().stcLink);
     } else {
@@ -105,11 +105,11 @@ export const getSwapData = (
 
 export const getCoinFamilyForActiveWallet = isPrivate => {
   let coinFamily;
-  if (isPrivate === 'eth') {
+  if (isPrivate === constants.COIN_SYMBOL.ETH) {
     coinFamily = 1;
-  } else if (isPrivate === 'stc') {
+  } else if (isPrivate === constants.COIN_SYMBOL.STC) {
     coinFamily = 4;
-  } else if (isPrivate === 'bnb') {
+  } else if (isPrivate === constants.COIN_SYMBOL.BNB) {
     coinFamily = 6;
   } else {
     coinFamily = null;
@@ -130,10 +130,10 @@ export const getContractObject = async (
   try {
     const web3Object = getWeb3Object(
       tokenFirst?.coin_family === 1
-        ? 'eth'
+        ? constants.COIN_SYMBOL.ETH
         : tokenFirst?.coin_family === 4
-        ? 'stc'
-        : 'bnb',
+        ? constants.COIN_SYMBOL.STC
+        : constants.COIN_SYMBOL.BNB,
       tokenFirst,
     );
     let tokenContractObject = await new web3Object.eth.Contract(
@@ -176,10 +176,10 @@ export const getUserBal = async (
     console.warn('MM', '===>>', tokenFirst);
     const web3Object = getWeb3Object(
       tokenFirst?.coin_family === 1
-        ? 'eth'
+        ? constants.COIN_SYMBOL.ETH
         : tokenFirst?.coin_family === 4
-        ? 'stc'
-        : 'bnb',
+        ? constants.COIN_SYMBOL.STC
+        : constants.COIN_SYMBOL.BNB,
       tokenFirst,
     );
 
@@ -272,10 +272,10 @@ export const getUserBalSecond = async (
     console.warn('MM', '===>>', tokenSecond);
     const web3Object = getWeb3Object(
       tokenSecond?.coin_family === 1
-        ? 'eth'
+        ? constants.COIN_SYMBOL.ETH
         : tokenSecond?.coin_family === 4
-        ? 'stc'
-        : 'bnb',
+        ? constants.COIN_SYMBOL.STC
+        : constants.COIN_SYMBOL.BNB,
       tokenFirst,
     );
 
@@ -352,10 +352,10 @@ export const getUserBalSecond = async (
 export const getGasPrice = (tokenFirst, setGasPrice) => {
   getWeb3Object(
     tokenFirst?.coin_family === 1
-      ? 'eth'
+      ? constants.COIN_SYMBOL.ETH
       : tokenFirst?.coin_family === 4
-      ? 'stc'
-      : 'bnb',
+      ? constants.COIN_SYMBOL.STC
+      : constants.COIN_SYMBOL.BNB,
     tokenFirst,
   )
     .eth.getGasPrice()
@@ -379,30 +379,30 @@ const sendTransactionToBackend = (
 ) => {
   let blockChain =
     tokenFirst?.coin_family === 1
-      ? 'ethereum'
+      ? constants.NETWORK.ETHEREUM
       : tokenFirst?.coin_family === 4
-      ? 'saitachain'
-      : 'binancesmartchain';
+      ? constants.NETWORK.SAITACHAIN
+      : constants.NETWORK.BINANCE_SMART_CHAIN;
   return new Promise((resolve, reject) => {
     console.warn('MM', 'eth data:::: ccvc tkn', tokenFirst.coin_symbol);
     if (tokenFirst?.coin_family === 1) {
       coin_symbol = isApproval
-        ? 'eth'
-        : tokenFirst.coin_symbol.toLowerCase() === 'eth'
-        ? 'eth'
+        ? constants.COIN_SYMBOL.ETH
+        : tokenFirst.coin_symbol.toLowerCase() === constants.COIN_SYMBOL.ETH
+        ? constants.COIN_SYMBOL.ETH
         : rawTxnObj?.tokenContractAddress;
     } else if (tokenFirst?.coin_family === 4) {
       coin_symbol = isApproval
-        ? 'stc'
+        ? constants.COIN_SYMBOL.STC
         : tokenFirst.coin_family === 4 &&
-          tokenFirst.coin_symbol.toLowerCase() === 'stc'
-        ? 'stc'
+          tokenFirst.coin_symbol.toLowerCase() === constants.COIN_SYMBOL.STC
+        ? constants.COIN_SYMBOL.STC
         : rawTxnObj?.tokenContractAddress;
     } else {
       coin_symbol = isApproval
-        ? 'bnb'
-        : tokenFirst.coin_symbol.toLowerCase() === 'bnb'
-        ? 'bnb'
+        ? constants.COIN_SYMBOL.BNB
+        : tokenFirst.coin_symbol.toLowerCase() === constants.COIN_SYMBOL.BNB
+        ? constants.COIN_SYMBOL.BNB
         : rawTxnObj?.tokenContractAddress;
     }
     let access_token = Singleton.getInstance().access_token;
@@ -449,10 +449,10 @@ export const makeTransaction = async (
         }
         const web3Object = getWeb3Object(
           tokenFirst?.coin_family === 1
-            ? 'eth'
+            ? constants.COIN_SYMBOL.ETH
             : tokenFirst?.coin_family === 4
-            ? 'stc'
-            : 'bnb',
+            ? constants.COIN_SYMBOL.STC
+            : constants.COIN_SYMBOL.BNB,
           tokenFirst,
         );
         let rawTransaction = {
@@ -504,10 +504,10 @@ export const makeTransaction = async (
         }
         let result = await getWeb3Object(
           tokenFirst?.coin_family === 1
-            ? 'eth'
+            ? constants.COIN_SYMBOL.ETH
             : tokenFirst?.coin_family === 4
-            ? 'stc'
-            : 'bnb',
+            ? constants.COIN_SYMBOL.STC
+            : constants.COIN_SYMBOL.BNB,
           tokenFirst,
         ).eth.sendSignedTransaction(serializedTran);
         console.warn('MM', 'serializedTran => result', result);
@@ -518,10 +518,10 @@ export const makeTransaction = async (
           value === '0x0'
             ? rawTxnObj?.tokenContractAddress
             : tokenFirst?.coin_family === 1
-            ? 'eth'
+            ? constants.COIN_SYMBOL.ETH
             : tokenFirst?.coin_family === 4
-            ? 'stc'
-            : 'bnb',
+            ? constants.COIN_SYMBOL.STC
+            : constants.COIN_SYMBOL.BNB,
           isApproval,
           rawTxnObj,
         );

@@ -32,6 +32,7 @@ import { BasicButton, BorderLine, Wrap } from '../../common';
 import { SimpleHeader } from '../../common/SimpleHeader';
 import Loader from '../Loader/Loader';
 import { styles } from './SendCryptoContactsStyle';
+import * as Constants from '../../../Constant';
 const rowSwipeAnimatedValues = {};
 Array(500)
   .fill('')
@@ -97,16 +98,16 @@ const SendCryptoContacts = props => {
     let access_token = Singleton.getInstance().access_token;
     let network =
       props?.route?.params?.item.coin_family == 1
-        ? 'ethereum'
+        ? Constants.NETWORK.ETHEREUM
         : props?.route?.params?.item.coin_family == 6
-        ? 'binance'
+        ? Constants.NETWORK.BINANCE
         : props?.route?.params?.item.coin_family == 11
-        ? 'polygon'
+        ? Constants.NETWORK.POLYGON
         : props?.route?.params?.item.coin_family == 3
-        ? 'tron'
+        ? Constants.NETWORK.TRON
         : props?.route?.params?.item.coin_family == 4
-        ? 'saitachain'
-        : 'bitcoin';
+        ? Constants.NETWORK.SAITACHAIN
+        : Constants.NETWORK.BITCOIN;
 
     props
       .getWalletContactList({network, access_token})

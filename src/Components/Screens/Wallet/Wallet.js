@@ -198,7 +198,7 @@ const Wallet = props => {
         setActiveWallet(isPrivate);
         if (!isPrivate) {
           setInCompatible(false);
-        } else if (isPrivate != 'bnb' && isPrivate != 'eth' && isPrivate != 0) {
+        } else if (isPrivate != Constants.COIN_SYMBOL.BNB && isPrivate != Constants.COIN_SYMBOL.ETH && isPrivate != 0) {
           setInCompatible(true);
         } else {
           setInCompatible(false);
@@ -379,15 +379,15 @@ const Wallet = props => {
       .newGetData(Constants.IS_PRIVATE_WALLET)
       .then(isPrivate => {
         if (
-          isPrivate == 'btc' ||
-          isPrivate == 'matic' ||
-          isPrivate == 'trx' ||
-          isPrivate == 'stc'
+          isPrivate == Constants.COIN_SYMBOL.BTC ||
+          isPrivate == Constants.COIN_SYMBOL.MATIC ||
+          isPrivate == Constants.COIN_SYMBOL.TRX ||
+          isPrivate == Constants.COIN_SYMBOL.STC
         ) {
-        } else if (isPrivate == 'eth') {
-          onSelectChain('eth');
-        } else if (isPrivate == 'bnb') {
-          onSelectChain('bnb');
+        } else if (isPrivate == Constants.COIN_SYMBOL.ETH) {
+          onSelectChain(Constants.COIN_SYMBOL.ETH);
+        } else if (isPrivate == Constants.COIN_SYMBOL.BNB) {
+          onSelectChain(Constants.COIN_SYMBOL.BNB);
         } else {
           setshowSelectChain(true);
         }
@@ -620,7 +620,7 @@ const Wallet = props => {
             Singleton.getInstance()
               .newGetData(Constants.IS_PRIVATE_WALLET)
               .then(isPrivate => {
-                if (isPrivate == 'btc' || isPrivate == 'trx') {
+                if (isPrivate == Constants.COIN_SYMBOL.BTC || isPrivate == Constants.COIN_SYMBOL.TRX) {
                   Singleton.showAlert(Constants.UNCOMPATIBLE_WALLET);
                 } else {
                   getCurrentRouteName() != 'ConnectWithDapp' &&
@@ -839,7 +839,7 @@ const Wallet = props => {
                   styles.noCoinText,
                   {color: ThemeManager.colors.textColor},
                 ]}>
-                {activeWallet == 'stc'
+                {activeWallet == Constants.COIN_SYMBOL.STC
                   ? 'Coming Soon'
                   : Constants.UNCOMPATIBLE_WALLET}
               </Text>
@@ -939,16 +939,16 @@ const Wallet = props => {
           }}
           onPressEth={() => {
             setshowSelectChain(false);
-            onSelectChain('eth');
+            onSelectChain(Constants.COIN_SYMBOL.ETH);
           }}
           onPressBnb={() => {
             setshowSelectChain(false);
-            onSelectChain('bnb');
+            onSelectChain(Constants.COIN_SYMBOL.BNB);
           }}
           onPressStc={() => {
             setshowSelectChain(false);
             // Singleton.showAlert('Coming soon!')
-            onSelectChain('stc');
+            onSelectChain(Constants.COIN_SYMBOL.STC);
           }}
         />
       </Modal>

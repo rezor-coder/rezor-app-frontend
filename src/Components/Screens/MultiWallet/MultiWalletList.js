@@ -119,27 +119,27 @@ function MultiWalletList(props) {
             //  console.warn('MM', 'response updateWalletAfterUpdate -- ', res);
             let wallet_addresses = [
               {
-                coin_symbol: 'eth',
+                coin_symbol: constants.COIN_SYMBOL.ETH,
                 wallet_address: res?.ethAddress,
               },
               {
-                coin_symbol: 'bnb',
+                coin_symbol: constants.COIN_SYMBOL.BNB,
                 wallet_address: res?.ethAddress,
               },
               {
-                coin_symbol: 'btc',
+                coin_symbol: constants.COIN_SYMBOL.BTC,
                 wallet_address: res?.btcAddress,
               },
               {
-                coin_symbol: 'matic',
+                coin_symbol: constants.COIN_SYMBOL.MATIC,
                 wallet_address: res?.ethAddress,
               },
               {
-                coin_symbol: 'trx',
+                coin_symbol: constants.COIN_SYMBOL.TRX,
                 wallet_address: res?.trxAddress,
               },
               {
-                coin_symbol: 'stc',
+                coin_symbol: constants.COIN_SYMBOL.STC,
                 wallet_address: res?.ethAddress,
               },
             ];
@@ -384,8 +384,8 @@ function MultiWalletList(props) {
             login_data?.defaultBtcAddress;
           Singleton.getInstance().defaultTrxAddress =
             login_data?.defaultTrxAddress;
-        } else if (item.blockChain == 'eth') {
-          isPrivateWallet = 'eth';
+        } else if (item.blockChain == constants.COIN_SYMBOL.ETH) {
+          isPrivateWallet = constants.COIN_SYMBOL.ETH;
           coinFamilyKeys = [1];
           login_data = {
             access_token: item.user_jwtToken,
@@ -401,8 +401,8 @@ function MultiWalletList(props) {
             login_data.defaultEthAddress;
           // Singleton.getInstance().defaultBtcAddress =
           //   login_data.defaultBtcAddress;
-        } else if (item.blockChain == 'bnb') {
-          isPrivateWallet = 'bnb';
+        } else if (item.blockChain == constants.COIN_SYMBOL.BNB) {
+          isPrivateWallet = constants.COIN_SYMBOL.BNB;
           coinFamilyKeys = [6];
           login_data = {
             access_token: item.user_jwtToken,
@@ -419,8 +419,8 @@ function MultiWalletList(props) {
             login_data.defaultBnbAddress;
           // Singleton.getInstance().defaultBtcAddress =
           //   login_data.defaultBtcAddress;
-        } else if (item.blockChain == 'stc') {
-          isPrivateWallet = 'stc';
+        } else if (item.blockChain == constants.COIN_SYMBOL.STC) {
+          isPrivateWallet = constants.COIN_SYMBOL.STC;
           coinFamilyKeys = [4];
           login_data = {
             access_token: item.user_jwtToken,
@@ -440,8 +440,8 @@ function MultiWalletList(props) {
             login_data.defaultEthAddress;
           // Singleton.getInstance().defaultBtcAddress =
           //   login_data.defaultBtcAddress;
-        }else if (item.blockChain == 'btc') {
-          isPrivateWallet = 'btc';
+        }else if (item.blockChain == constants.COIN_SYMBOL.BTC) {
+          isPrivateWallet = constants.COIN_SYMBOL.BTC;
           login_data = {
             access_token: item.user_jwtToken,
             defaultBtcAddress: item?.loginRequest.address,
@@ -454,8 +454,8 @@ function MultiWalletList(props) {
           //   login_data.defaultBnbAddress;
           Singleton.getInstance().defaultBtcAddress =
             login_data.defaultBtcAddress;
-        } else if (item.blockChain == 'matic') {
-          isPrivateWallet = 'matic';
+        } else if (item.blockChain == constants.COIN_SYMBOL.MATIC) {
+          isPrivateWallet = constants.COIN_SYMBOL.MATIC;
           coinFamilyKeys = [11];
           login_data = {
             access_token: item.user_jwtToken,
@@ -472,8 +472,8 @@ function MultiWalletList(props) {
             login_data.defaultMaticAddress;
           // Singleton.getInstance().defaultBtcAddress =
           //   login_data.defaultBtcAddress;
-        } else if (item.blockChain == 'trx') {
-          isPrivateWallet = 'trx';
+        } else if (item.blockChain == constants.COIN_SYMBOL.TRX) {
+          isPrivateWallet = constants.COIN_SYMBOL.TRX;
           coinFamilyKeys = [3];
           login_data = {
             access_token: item.user_jwtToken,
@@ -747,15 +747,15 @@ function MultiWalletList(props) {
                     }}>
                     {item?.defaultWallet
                       ? ' Default Wallet'
-                      : item?.blockChain == 'eth'
+                      : item?.blockChain == constants.COIN_SYMBOL.ETH
                         ? 'Ethereum Wallet'
-                        : item?.blockChain == 'bnb'
+                        : item?.blockChain == constants.COIN_SYMBOL.BNB
                           ? 'Binance Wallet'
-                          : item?.blockChain == 'matic'
+                          : item?.blockChain == constants.COIN_SYMBOL.MATIC
                             ? 'Matic Wallet'
-                            : item?.blockChain == 'btc'
+                            : item?.blockChain == constants.COIN_SYMBOL.BTC
                               ? 'Bitcoin Wallet'
-                              : item?.blockChain == 'trx'
+                              : item?.blockChain == constants.COIN_SYMBOL.TRX
                                 ? 'Tron Wallet'
                                 : 'Multicoin Wallet'}
                   </Text>

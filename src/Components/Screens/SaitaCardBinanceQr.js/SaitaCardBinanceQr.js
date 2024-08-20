@@ -31,7 +31,7 @@ const SaitaCardBinanceQr = props => {
   const timerRef = useRef();
   const [tokenFirst, setTokenFirst] = useState({
     coin_name: 'Ethereum',
-    coin_symbol: 'eth',
+    coin_symbol: constants.COIN_SYMBOL.ETH,
     coin_image:
       'https://assets.coingecko.com/coins/images/279/small/ethereum.png?1595348880',
     wallet_address: '',
