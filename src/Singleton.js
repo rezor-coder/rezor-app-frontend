@@ -24,6 +24,10 @@ import Address from '@bitsler/tron-address';
 import TronWeb from 'tronweb';
 
 import { NativeModules } from 'react-native';
+import * as bip39 from 'bip39';
+import {derivePath} from 'ed25519-hd-key';
+import {Keypair} from '@solana/web3.js';
+import {Buffer} from 'buffer';
 
 const { CreateWallet } = NativeModules;
 
@@ -105,9 +109,9 @@ let routerAddressCards =
 // '0x12f939E4FB9d9ccd955a1793A39D87672649706f'; // upto 3 cards ( old production)
 
 export default class Singleton {
-  xMerchantId='';
-  xVErsion='';
-  fingerPrintSeed='';
+  xMerchantId = '';
+  xVErsion = '';
+  fingerPrintSeed = '';
   access_token = '';
   access_token_cards = '';
   defaultEthAddress = '';
@@ -133,10 +137,11 @@ export default class Singleton {
   approveRequest = false;
   showDisconnect = false;
   privateKey = null;
-  isCamera = false
+  isCamera = false;
   bnbLink = 'https://bsc-dataseed1.binance.org:443';
   ethLink = 'https://mainnet.infura.io/v3/2436cc78200f432aa2d847a7ba486391';
-  maticLink = 'https://polygon-mumbai.infura.io/v3/4458cf4d1689497b9a38b1d6bbf05e78';
+  maticLink =
+    'https://polygon-mumbai.infura.io/v3/4458cf4d1689497b9a38b1d6bbf05e78';
   stcLink = 'https://rpc-nodes.saitascan.io';
   stcExplorerLink = 'https://saitascan.io/tx/';
   data = [
@@ -220,7 +225,7 @@ export default class Singleton {
     eth: [],
     bnb: [],
     all: [],
-    stc: []
+    stc: [],
   };
 
   static getInstance() {
@@ -231,24 +236,42 @@ export default class Singleton {
   }
 
   static showAlert(msgs) {
-    let msg = msgs
+    let msg = msgs;
     console.log('==>', msg, global.is_alert);
     if (global.is_alert) {
       return;
     }
-    if (msg?.toLowerCase()?.includes(Singleton.getInstance().bnbLink?.toLowerCase())) {
-      msg = Constants.SOMETHING_WRONG
-    } else if (msg?.toLowerCase()?.includes(Singleton.getInstance().ethLink?.toLowerCase())) {
-      msg = Constants.SOMETHING_WRONG
-    } else if (msg?.toLowerCase()?.includes(Singleton.getInstance().maticLink?.toLowerCase())) {
-      msg = Constants.SOMETHING_WRONG
-    } else if (msg?.toLowerCase()?.includes("CONNECTION ERROR: Couldn't connect"?.toLowerCase())) {
+    if (
+      msg
+        ?.toLowerCase()
+        ?.includes(Singleton.getInstance().bnbLink?.toLowerCase())
+    ) {
+      msg = Constants.SOMETHING_WRONG;
+    } else if (
+      msg
+        ?.toLowerCase()
+        ?.includes(Singleton.getInstance().ethLink?.toLowerCase())
+    ) {
+      msg = Constants.SOMETHING_WRONG;
+    } else if (
+      msg
+        ?.toLowerCase()
+        ?.includes(Singleton.getInstance().maticLink?.toLowerCase())
+    ) {
+      msg = Constants.SOMETHING_WRONG;
+    } else if (
+      msg
+        ?.toLowerCase()
+        ?.includes("CONNECTION ERROR: Couldn't connect"?.toLowerCase())
+    ) {
       msg = Constants.SOMETHING_WRONG;
     } else if (msg?.toLowerCase()?.includes('invalid json rpc response')) {
       msg = Constants.SOMETHING_WRONG;
     } else if (msg?.toLowerCase()?.includes('undefined')) {
       msg = Constants.SOMETHING_WRONG;
-    } else if (msg?.toLowerCase()?.includes('transaction has been reverted by the evm')) {
+    } else if (
+      msg?.toLowerCase()?.includes('transaction has been reverted by the evm')
+    ) {
       msg = Constants.SOMETHING_WRONG;
     }
     global.is_alert = true;
@@ -325,7 +348,7 @@ export default class Singleton {
     }
   }
   toFixednew(num, fixed) {
-    console.log("num", num, "fixed", fixed);
+    console.log('num', num, 'fixed', fixed);
     if (num == undefined) {
       return (num = ' 0.00');
     } else if (num) {
@@ -353,23 +376,33 @@ export default class Singleton {
       num = this.exponentialToDecimalNew(num);
       let re = new RegExp('^-?\\d+(?:.\\d{0,' + (fixed || -1) + '})?');
       return num.toString().match(re)[0];
-    }
-    else return '0.00';
+    } else return '0.00';
   }
   /************************************************** exponentialToDecimal ***************************************************/
-  exponentialToDecimalNew = (exponential) => {
+  exponentialToDecimalNew = exponential => {
     let decimal = exponential.toString().toLowerCase();
     if (decimal.includes('e+')) {
       const exponentialSplitted = decimal.split('e+');
       let postfix = '';
-      for (let i = 0; i < +exponentialSplitted[1] - (exponentialSplitted[0].includes('.') ? exponentialSplitted[0].split('.')[1].length : 0); i++) {
+      for (
+        let i = 0;
+        i <
+        +exponentialSplitted[1] -
+          (exponentialSplitted[0].includes('.')
+            ? exponentialSplitted[0].split('.')[1].length
+            : 0);
+        i++
+      ) {
         postfix += '0';
       }
       const addCommas = text => {
         let j = 3;
         let textLength = text.length;
         while (j < textLength) {
-          text = `${text.slice(0, textLength - j)}${text.slice(textLength - j, textLength,)}`;
+          text = `${text.slice(0, textLength - j)}${text.slice(
+            textLength - j,
+            textLength,
+          )}`;
           textLength++;
           j += 3 + 1;
         }
@@ -386,16 +419,16 @@ export default class Singleton {
       decimal = prefix + exponentialSplitted[0].replace('.', '');
     }
     return decimal;
-  }
+  };
 
   // ********************************  GENEARATE ETH ADDRESS FROM PVT KEY  ************************************
   getEthAddressFromPrivateKey(pvtKey) {
     try {
       let wall = loadWalletFromPrivateKey(pvtKey.replace(' ', ''));
       this.newSaveData(wall.address.toString() + '_pk', wall.privateKey);
-      return { address: wall.address, error: '' };
+      return {address: wall.address, error: ''};
     } catch (error) {
-      return { address: '', error: 'Invalid Private Key' };
+      return {address: '', error: 'Invalid Private Key'};
     }
   }
   clearStorage() {
@@ -437,7 +470,7 @@ export default class Singleton {
   }
 
   bigNumberSafeMath = (c, operation, d, precision) => {
-    BigNumber.config({ DECIMAL_PLACES: 18 });
+    BigNumber.config({DECIMAL_PLACES: 18});
     var a = new BigNumber(c);
     var b = new BigNumber(d);
     var rtn;
@@ -473,9 +506,9 @@ export default class Singleton {
           let i = 0;
           i <
           +exponentialSplitted[1] -
-          (exponentialSplitted[0].includes('.')
-            ? exponentialSplitted[0].split('.')[1].length
-            : 0);
+            (exponentialSplitted[0].includes('.')
+              ? exponentialSplitted[0].split('.')[1].length
+              : 0);
           i++
         ) {
           postfix += '0';
@@ -588,7 +621,7 @@ export default class Singleton {
       const address = addressobj.getAddressInfo(0).address;
       const privateKey = addressobj.getAddressInfo(0).privateKey;
       // console.log('tron address created', address, 'and private key ...');
-      return { address, privateKey };
+      return {address, privateKey};
     } catch (error) {
       console.log('createTronAddress error==', error);
     }
@@ -599,7 +632,7 @@ export default class Singleton {
       const address = TronWeb.address.fromPrivateKey(privateKey);
       // console.log('tron address', address);
       this.newSaveData(`${address}_pk`, privateKey);
-      return { address: address, privateKey: privateKey, error: '' };
+      return {address: address, privateKey: privateKey, error: ''};
     } catch (error) {
       return {
         address: '',
@@ -607,6 +640,33 @@ export default class Singleton {
       };
     }
   }
+
+  generateSolanaWallet(mnemonic) {
+    return new Promise((resolve, reject) => {
+      try {
+        // const keypair = Keypair.generate();
+        // const publicKey = keypair.publicKey.toString();
+        // const secretKey = keypair.secretKey;
+        // Convert mnemonic to seed
+        const seed = bip39.mnemonicToSeedSync(mnemonic);
+
+        // Derive the keypair from seed
+        const path = "m/44'/501'/0'/0'"; // Standard path for Solana (adjust as needed)
+        const {key} = derivePath(path, seed.toString('hex'));
+
+        // Create Keypair from derived key
+        const keypair = Keypair.fromSeed(Buffer.from(key, 'hex'));
+
+        // Get public and private keys
+        const address = keypair.publicKey.toBase58();
+        const pvtKey = Buffer.from(keypair.secretKey).toString('hex'); // Private key in hex format
+        return resolve({address, pvtKey});
+      } catch (error) {
+        return reject(error);
+      }
+    });
+  }
+
   // prod
   async createWallet() {
     //console.warn('MM','enter create wallet---->>>');
@@ -632,6 +692,14 @@ export default class Singleton {
           let tronObj = await this.generateTronAddress(mnemonics);
           console.log('---------tronObj', tronObj);
 
+          //Generate SOLANA Wallet
+          const wallet = this.generateSolanaWallet(mnemonics);
+          const solWallet = wallet._result;
+          await this.newSaveData(solWallet.address + '_pk', solWallet.pvtKey);
+          await this.newSaveData(solWallet.address, mnemonics);
+          console.log('Solana Wallet:', solWallet);
+          //END
+
           // const mnemonics = await generateMnemonics();
           // ********************************  FOR ETH  ************************************
           // const ethWallet = await generateEthWallet(mnemonics);
@@ -654,6 +722,7 @@ export default class Singleton {
             ethAddress: ethWallet.address,
             btcAddress: BTC_obj.address,
             trxAddress: tronObj.address,
+            solAddress: solWallet.address,
           });
         });
       } catch (e) {
@@ -758,14 +827,21 @@ export default class Singleton {
     pvtkey,
     feeLimit,
   ) => {
-    console.log(fromAddress, toAddress, amount, token_address, pvtkey, feeLimit);
+    console.log(
+      fromAddress,
+      toAddress,
+      amount,
+      token_address,
+      pvtkey,
+      feeLimit,
+    );
     try {
       const tronWeb = new TronWeb(fullNode, solidityNode, eventServer, pvtkey);
       let parameter = [
-        { type: 'address', value: toAddress },
-        { type: 'uint256', value: amount },
+        {type: 'address', value: toAddress},
+        {type: 'uint256', value: amount},
       ];
-      let options = { feeLimit: feeLimit, callValue: 0 };
+      let options = {feeLimit: feeLimit, callValue: 0};
       const transaction = await tronWeb.transactionBuilder.triggerSmartContract(
         token_address,
         'transfer(address,uint256)',
@@ -786,7 +862,10 @@ export default class Singleton {
         console.error('Transaction was not signed properly');
         return Promise.reject('Transaction was not signed properly');
       }
-      console.log('signed transaction44444  ', JSON.stringify(signedTransaction));
+      console.log(
+        'signed transaction44444  ',
+        JSON.stringify(signedTransaction),
+      );
       console.log(
         'signed transaction44444signedTransaction  ',
         signedTransaction,
@@ -860,7 +939,7 @@ export default class Singleton {
       const privateKey = accountPrivateKey;
       const network = bitcoin.networks.mainnet;
       const keyPair = bitcoin.ECPair.fromWIF(privateKey, network);
-      const { address } = bitcoin.payments.p2wpkh({
+      const {address} = bitcoin.payments.p2wpkh({
         pubkey: keyPair.publicKey,
         network,
       });
@@ -929,7 +1008,7 @@ export default class Singleton {
       );
       let res = await APIClient.getInstance().post(
         UPDATE_BALANCE,
-        { coin_id, wallet_address },
+        {coin_id, wallet_address},
         token,
       );
       console.log('res updateBalance', res);
@@ -938,7 +1017,7 @@ export default class Singleton {
     }
   }
   // ********************************  CHECK FACTORY FOR PAIR  ************************************
-  checkFactoryForPair = (coin_family, tokenContractAddress,isDummy) => {
+  checkFactoryForPair = (coin_family, tokenContractAddress, isDummy) => {
     return new Promise(async (resolve, reject) => {
       let factoryAddress, rpcUrl, wrappedCoin;
       if (coin_family == 1) {
@@ -954,28 +1033,82 @@ export default class Singleton {
         wrappedCoin = this.SwapWBNBAddress;
         rpcUrl = web3BscUrl;
       }
-      const liqABI = [{ "inputs": [], "name": "decimals", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" }, { "constant": true, "inputs": [], "name": "token0", "outputs": [{ "internalType": "address", "name": "", "type": "address" }], "payable": false, "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "factory", "outputs": [{ "internalType": "address", "name": "", "type": "address" }], "stateMutability": "view", "type": "function" }, { "constant": true, "inputs": [{ "internalType": "address", "name": "", "type": "address" }, { "internalType": "address", "name": "", "type": "address" }], "name": "getPair", "outputs": [{ "internalType": "address", "name": "", "type": "address" }], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": true, "inputs": [], "name": "getReserves", "outputs": [{ "internalType": "uint112", "name": "_reserve0", "type": "uint112" }, { "internalType": "uint112", "name": "_reserve1", "type": "uint112" }, { "internalType": "uint32", "name": "_blockTimestampLast", "type": "uint32" }], "payable": false, "stateMutability": "view", "type": "function" }];
+      const liqABI = [
+        {
+          inputs: [],
+          name: 'decimals',
+          outputs: [{internalType: 'uint256', name: '', type: 'uint256'}],
+          stateMutability: 'view',
+          type: 'function',
+        },
+        {
+          constant: true,
+          inputs: [],
+          name: 'token0',
+          outputs: [{internalType: 'address', name: '', type: 'address'}],
+          payable: false,
+          stateMutability: 'view',
+          type: 'function',
+        },
+        {
+          inputs: [],
+          name: 'factory',
+          outputs: [{internalType: 'address', name: '', type: 'address'}],
+          stateMutability: 'view',
+          type: 'function',
+        },
+        {
+          constant: true,
+          inputs: [
+            {internalType: 'address', name: '', type: 'address'},
+            {internalType: 'address', name: '', type: 'address'},
+          ],
+          name: 'getPair',
+          outputs: [{internalType: 'address', name: '', type: 'address'}],
+          payable: false,
+          stateMutability: 'view',
+          type: 'function',
+        },
+        {
+          constant: true,
+          inputs: [],
+          name: 'getReserves',
+          outputs: [
+            {internalType: 'uint112', name: '_reserve0', type: 'uint112'},
+            {internalType: 'uint112', name: '_reserve1', type: 'uint112'},
+            {
+              internalType: 'uint32',
+              name: '_blockTimestampLast',
+              type: 'uint32',
+            },
+          ],
+          payable: false,
+          stateMutability: 'view',
+          type: 'function',
+        },
+      ];
       const web3 = new Web3(rpcUrl);
       const web3Factory = new web3.eth.Contract(liqABI, factoryAddress);
       try {
-        web3Factory.methods.getPair(wrappedCoin, tokenContractAddress).call(function (err, pairAddress) {
-          console.log("Pair Address: ", pairAddress);
-          if (pairAddress == '0x0000000000000000000000000000000000000000') {
-            resolve(false)
-          } else {
-            if(isDummy){
-              resolve(pairAddress)
-            }else{
-              resolve(true)
+        web3Factory.methods
+          .getPair(wrappedCoin, tokenContractAddress)
+          .call(function (err, pairAddress) {
+            console.log('Pair Address: ', pairAddress);
+            if (pairAddress == '0x0000000000000000000000000000000000000000') {
+              resolve(false);
+            } else {
+              if (isDummy) {
+                resolve(pairAddress);
+              } else {
+                resolve(true);
+              }
             }
-
-          }
-        })
+          });
       } catch (err) {
-        reject(false)
+        reject(false);
       }
-    })
-  }
+    });
+  };
   // ********************************  GET COMMISSION FOR COINS  ************************************
   async getDataForMultiEth(
     addressArr,
@@ -1012,28 +1145,28 @@ export default class Singleton {
           {
             inputs: [],
             name: 'getCommisionAddress',
-            outputs: [{ internalType: 'address', name: '', type: 'address' }],
+            outputs: [{internalType: 'address', name: '', type: 'address'}],
             stateMutability: 'view',
             type: 'function',
           },
           {
             inputs: [],
             name: 'getCommissionPercentage',
-            outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+            outputs: [{internalType: 'uint256', name: '', type: 'uint256'}],
             stateMutability: 'view',
             type: 'function',
           },
           {
             inputs: [],
             name: 'getRefferalCommissionPercentage',
-            outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+            outputs: [{internalType: 'uint256', name: '', type: 'uint256'}],
             stateMutability: 'view',
             type: 'function',
           },
           {
             inputs: [
-              { internalType: 'address[]', name: 'addresses', type: 'address[]' },
-              { internalType: 'uint256[]', name: 'amt', type: 'uint256[]' },
+              {internalType: 'address[]', name: 'addresses', type: 'address[]'},
+              {internalType: 'uint256[]', name: 'amt', type: 'uint256[]'},
               {
                 internalType: 'address',
                 name: '_referralAddress',
@@ -1048,13 +1181,13 @@ export default class Singleton {
           {
             inputs: [],
             name: 'owner',
-            outputs: [{ internalType: 'address', name: '', type: 'address' }],
+            outputs: [{internalType: 'address', name: '', type: 'address'}],
             stateMutability: 'view',
             type: 'function',
           },
           {
             inputs: [
-              { internalType: 'address', name: 'newOwner', type: 'address' },
+              {internalType: 'address', name: 'newOwner', type: 'address'},
             ],
             name: 'transferOwnership',
             outputs: [],
@@ -1132,12 +1265,20 @@ export default class Singleton {
         const commissionPercentage = await contract.methods
           .getCommissionPercentage()
           .call();
-        console.warn('MM', 'commissionPercentage----------------', commissionPercentage);
+        console.warn(
+          'MM',
+          'commissionPercentage----------------',
+          commissionPercentage,
+        );
 
         const RefcommissionPercentage = await contract.methods
           .getRefferalCommissionPercentage()
           .call();
-        console.warn('MM', 'RefcommissionPercentage----------------', RefcommissionPercentage);
+        console.warn(
+          'MM',
+          'RefcommissionPercentage----------------',
+          RefcommissionPercentage,
+        );
         console.log(
           'total value in gwei RefcommissionPercentage',
           RefcommissionPercentage,
@@ -1151,15 +1292,26 @@ export default class Singleton {
           parseFloat(totalAmount * (commission / 100)) +
           parseFloat(totalAmount * (RefCommission / 100))
         ).toString();
-        console.warn('MM', 'parseFloat(totalAmount * (commission / 100))----------------', parseFloat(totalAmount * (commission / 100)));
-        console.warn('MM', 'parseFloat(totalAmount * (RefCommission / 100))----------------', parseFloat(totalAmount * (RefCommission / 100)));
+        console.warn(
+          'MM',
+          'parseFloat(totalAmount * (commission / 100))----------------',
+          parseFloat(totalAmount * (commission / 100)),
+        );
+        console.warn(
+          'MM',
+          'parseFloat(totalAmount * (RefCommission / 100))----------------',
+          parseFloat(totalAmount * (RefCommission / 100)),
+        );
         console.warn('MM', 'amountAfterCommission', amountAfterCommission);
 
-        const amountToSend = web3.utils.toWei(this.toFixednew(amountAfterCommission, 8), 'ether');
+        const amountToSend = web3.utils.toWei(
+          this.toFixednew(amountAfterCommission, 8),
+          'ether',
+        );
         console.warn('MM', 'amountToSend', amountToSend);
         const gasLimit = await contract.methods
           .multipleOutputs(addressArr, amountArray, referalAddress)
-          .estimateGas({ value: amountToSend?.toString(), from: myAddress });
+          .estimateGas({value: amountToSend?.toString(), from: myAddress});
         console.warn('MM', 'total value in gwei', amountToSend);
         console.warn('MM', 'amountAfterCommission', amountAfterCommission);
         console.warn('MM', 'commission', commission);
@@ -1181,7 +1333,7 @@ export default class Singleton {
         return resolve({
           data: data,
           commissionPercentage: commissionPercentage,
-          gasLimit: (gasLimit).toFixed(0),
+          gasLimit: gasLimit.toFixed(0),
           amountAfterCommission: amountAfterCommission,
           commissionAmt: this.exponentialToDecimal(
             parseFloat(totalAmount * (commission / 100)),
@@ -1190,19 +1342,17 @@ export default class Singleton {
       } catch (err) {
         console.warn('MM', 'errrrrr:::::::::::::', err);
         const isExist = err.toString().includes('insufficient funds');
-        console.log("isExist", isExist);
+        console.log('isExist', isExist);
         if (global.disconnected) {
           Singleton.showAlert(Constants.NO_NETWORK);
           return reject(Constants.NO_NETWORK);
-        }
-        else if (isExist) {
+        } else if (isExist) {
           Singleton.showAlert('Insufficient funds for Group Transfer.');
           return reject(err);
         } else {
           Singleton.showAlert('Something went wrong.');
           return reject(err);
         }
-
       }
     });
   }
@@ -1218,7 +1368,93 @@ export default class Singleton {
     return new Promise(async (resolve, reject) => {
       const emptyAddress = /^0x0+$/.test(referalAddress);
       try {
-        let minAbi = [{ "anonymous": false, "inputs": [{ "indexed": true, "internalType": "address", "name": "previousOwner", "type": "address" }, { "indexed": true, "internalType": "address", "name": "newOwner", "type": "address" }], "name": "OwnershipTransferred", "type": "event" }, { "inputs": [], "name": "getCommisionAddress", "outputs": [{ "internalType": "address", "name": "", "type": "address" }], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "getCommissionPercentage", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" }, { "inputs": [{ "internalType": "address[]", "name": "addresses", "type": "address[]" }, { "internalType": "uint256[]", "name": "amt", "type": "uint256[]" }], "name": "multipleOutputs", "outputs": [], "stateMutability": "payable", "type": "function" }, { "inputs": [], "name": "owner", "outputs": [{ "internalType": "address", "name": "", "type": "address" }], "stateMutability": "view", "type": "function" }, { "inputs": [{ "internalType": "address", "name": "newOwner", "type": "address" }], "name": "transferOwnership", "outputs": [], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [{ "internalType": "address", "name": "_commissionAddress", "type": "address" }], "name": "updateCommissionAddress", "outputs": [], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [{ "internalType": "uint256", "name": "_commissionPercentage", "type": "uint256" }], "name": "updateComssionPercentage", "outputs": [], "stateMutability": "nonpayable", "type": "function" }];
+        let minAbi = [
+          {
+            anonymous: false,
+            inputs: [
+              {
+                indexed: true,
+                internalType: 'address',
+                name: 'previousOwner',
+                type: 'address',
+              },
+              {
+                indexed: true,
+                internalType: 'address',
+                name: 'newOwner',
+                type: 'address',
+              },
+            ],
+            name: 'OwnershipTransferred',
+            type: 'event',
+          },
+          {
+            inputs: [],
+            name: 'getCommisionAddress',
+            outputs: [{internalType: 'address', name: '', type: 'address'}],
+            stateMutability: 'view',
+            type: 'function',
+          },
+          {
+            inputs: [],
+            name: 'getCommissionPercentage',
+            outputs: [{internalType: 'uint256', name: '', type: 'uint256'}],
+            stateMutability: 'view',
+            type: 'function',
+          },
+          {
+            inputs: [
+              {internalType: 'address[]', name: 'addresses', type: 'address[]'},
+              {internalType: 'uint256[]', name: 'amt', type: 'uint256[]'},
+            ],
+            name: 'multipleOutputs',
+            outputs: [],
+            stateMutability: 'payable',
+            type: 'function',
+          },
+          {
+            inputs: [],
+            name: 'owner',
+            outputs: [{internalType: 'address', name: '', type: 'address'}],
+            stateMutability: 'view',
+            type: 'function',
+          },
+          {
+            inputs: [
+              {internalType: 'address', name: 'newOwner', type: 'address'},
+            ],
+            name: 'transferOwnership',
+            outputs: [],
+            stateMutability: 'nonpayable',
+            type: 'function',
+          },
+          {
+            inputs: [
+              {
+                internalType: 'address',
+                name: '_commissionAddress',
+                type: 'address',
+              },
+            ],
+            name: 'updateCommissionAddress',
+            outputs: [],
+            stateMutability: 'nonpayable',
+            type: 'function',
+          },
+          {
+            inputs: [
+              {
+                internalType: 'uint256',
+                name: '_commissionPercentage',
+                type: 'uint256',
+              },
+            ],
+            name: 'updateComssionPercentage',
+            outputs: [],
+            stateMutability: 'nonpayable',
+            type: 'function',
+          },
+        ];
 
         const web3Dapp = new Web3(this.stcLink);
         let contract = await new web3Dapp.eth.Contract(
@@ -1235,9 +1471,14 @@ export default class Singleton {
           .encodeABI();
 
         // console.warn('MM', 'data----------------', data);
-        const commissionPercentage = await contract.methods.getCommissionPercentage().call();
-        console.warn('MM', 'commissionPercentage----------------', commissionPercentage);
-
+        const commissionPercentage = await contract.methods
+          .getCommissionPercentage()
+          .call();
+        console.warn(
+          'MM',
+          'commissionPercentage----------------',
+          commissionPercentage,
+        );
 
         const commission = commissionPercentage / 100;
         const RefCommission = 0;
@@ -1246,18 +1487,33 @@ export default class Singleton {
           parseFloat(totalAmount * (commission / 100)) +
           parseFloat(totalAmount * (RefCommission / 100))
         ).toString();
-        console.log("amountAfterCommissionOld::::::", amountAfterCommissionOld);
-        let commisonFinal = bigNumberSafeMath(totalAmount, '*', bigNumberSafeMath(commission, '/', 100))
-        console.log("commisonFinal::::::", commisonFinal);
-        let RefCommissionFinal = bigNumberSafeMath(totalAmount, '*', bigNumberSafeMath(RefCommission, '/', 100))
-        console.log("RefCommissionFinal::::::", amountAfterCommissionOld);
-        const amountAfterCommission = bigNumberSafeMath(totalAmount, "+", bigNumberSafeMath(commisonFinal, "+", RefCommissionFinal))
+        console.log('amountAfterCommissionOld::::::', amountAfterCommissionOld);
+        let commisonFinal = bigNumberSafeMath(
+          totalAmount,
+          '*',
+          bigNumberSafeMath(commission, '/', 100),
+        );
+        console.log('commisonFinal::::::', commisonFinal);
+        let RefCommissionFinal = bigNumberSafeMath(
+          totalAmount,
+          '*',
+          bigNumberSafeMath(RefCommission, '/', 100),
+        );
+        console.log('RefCommissionFinal::::::', amountAfterCommissionOld);
+        const amountAfterCommission = bigNumberSafeMath(
+          totalAmount,
+          '+',
+          bigNumberSafeMath(commisonFinal, '+', RefCommissionFinal),
+        );
         console.warn('MM', 'amountAfterCommission', amountAfterCommission);
-        const amountToSend = web3.utils.toWei(this.toFixednew(amountAfterCommission, 8)?.toString(), 'ether');
-        console.log("amountToSend::::::", amountToSend);
+        const amountToSend = web3.utils.toWei(
+          this.toFixednew(amountAfterCommission, 8)?.toString(),
+          'ether',
+        );
+        console.log('amountToSend::::::', amountToSend);
         const gasLimit = await contract.methods
           .multipleOutputs(addressArr, amountArray)
-          .estimateGas({ value: amountToSend?.toString(), from: myAddress });
+          .estimateGas({value: amountToSend?.toString(), from: myAddress});
         console.warn('MM', 'total value in gwei', amountToSend);
         console.warn('MM', 'amountAfterCommission', amountAfterCommission);
         console.warn('MM', 'commission', commission);
@@ -1267,7 +1523,9 @@ export default class Singleton {
         console.warn('MM', 'let TOTT amount--- ', parseFloat(totalAmount));
         console.log(
           'let comm amount--- ',
-          this.exponentialToDecimal(parseFloat(totalAmount * (commission / 100))),
+          this.exponentialToDecimal(
+            parseFloat(totalAmount * (commission / 100)),
+          ),
         );
         console.log(
           'let REFcomm amount--- ',
@@ -1279,7 +1537,7 @@ export default class Singleton {
         return resolve({
           data: data,
           commissionPercentage: commissionPercentage,
-          gasLimit: (gasLimit).toFixed(0),
+          gasLimit: gasLimit.toFixed(0),
           amountAfterCommission: amountAfterCommission,
           commissionAmt: this.exponentialToDecimal(
             parseFloat(totalAmount * (commission / 100)),
@@ -1288,19 +1546,17 @@ export default class Singleton {
       } catch (err) {
         console.warn('MM', 'errrrrr:::::::::::::', err);
         const isExist = err.toString().includes('insufficient funds');
-        console.log("isExist", isExist);
+        console.log('isExist', isExist);
         if (global.disconnected) {
           Singleton.showAlert(Constants.NO_NETWORK);
           return reject(Constants.NO_NETWORK);
-        }
-        else if (isExist) {
+        } else if (isExist) {
           Singleton.showAlert('Insufficient funds for Group Transfer.');
           return reject(err);
         } else {
           Singleton.showAlert('Something went wrong.');
           return reject(err);
         }
-
       }
     });
   }
@@ -1338,28 +1594,28 @@ export default class Singleton {
         {
           inputs: [],
           name: 'getCommisionAddress',
-          outputs: [{ internalType: 'address', name: '', type: 'address' }],
+          outputs: [{internalType: 'address', name: '', type: 'address'}],
           stateMutability: 'view',
           type: 'function',
         },
         {
           inputs: [],
           name: 'getCommissionPercentage',
-          outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+          outputs: [{internalType: 'uint256', name: '', type: 'uint256'}],
           stateMutability: 'view',
           type: 'function',
         },
         {
           inputs: [],
           name: 'getRefferalCommissionPercentage',
-          outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+          outputs: [{internalType: 'uint256', name: '', type: 'uint256'}],
           stateMutability: 'view',
           type: 'function',
         },
         {
           inputs: [
-            { internalType: 'address[]', name: 'addresses', type: 'address[]' },
-            { internalType: 'uint256[]', name: 'amt', type: 'uint256[]' },
+            {internalType: 'address[]', name: 'addresses', type: 'address[]'},
+            {internalType: 'uint256[]', name: 'amt', type: 'uint256[]'},
           ],
           name: 'multipleOutputs',
           outputs: [],
@@ -1369,13 +1625,13 @@ export default class Singleton {
         {
           inputs: [],
           name: 'owner',
-          outputs: [{ internalType: 'address', name: '', type: 'address' }],
+          outputs: [{internalType: 'address', name: '', type: 'address'}],
           stateMutability: 'view',
           type: 'function',
         },
         {
           inputs: [
-            { internalType: 'address', name: 'newOwner', type: 'address' },
+            {internalType: 'address', name: 'newOwner', type: 'address'},
           ],
           name: 'transferOwnership',
           outputs: [],
@@ -1423,9 +1679,10 @@ export default class Singleton {
         },
       ];
       let contract;
-      let rpcUrls = Constants.network == 'testnet'
-        ? 'https://polygon-mumbai.infura.io/v3/4458cf4d1689497b9a38b1d6bbf05e78'
-        : Singleton.getInstance().maticLink;
+      let rpcUrls =
+        Constants.network == 'testnet'
+          ? 'https://polygon-mumbai.infura.io/v3/4458cf4d1689497b9a38b1d6bbf05e78'
+          : Singleton.getInstance().maticLink;
       const web3Dapp = new Web3(rpcUrls);
       // if (coin_family == 1) {
       //   contract = await new web3.eth.Contract(
@@ -1491,11 +1748,14 @@ export default class Singleton {
         .toString();
       // console.log('amountAfterCommission', amountAfterCommission);
 
-      const amountToSend = web3.utils.toWei(this.toFixednew(amountAfterCommission, 8), 'ether');
+      const amountToSend = web3.utils.toWei(
+        this.toFixednew(amountAfterCommission, 8),
+        'ether',
+      );
       // console.log('amountToSend', amountToSend);
       const gasLimit = await contract.methods
         .multipleOutputs(addressArr, amountArray)
-        .estimateGas({ value: amountToSend?.toString(), from: myAddress });
+        .estimateGas({value: amountToSend?.toString(), from: myAddress});
       // //console.log('total value in gwei', amountToSend);
       // //console.log('amountAfterCommission', amountAfterCommission);
       // //console.log('commission', commission);
@@ -1529,8 +1789,7 @@ export default class Singleton {
       if (global.disconnected) {
         Singleton.showAlert(Constants.NO_NETWORK);
         return reject(Constants.NO_NETWORK);
-      }
-      else if (isExist) {
+      } else if (isExist) {
         Singleton.showAlert('Insufficient funds for Group Transfer.');
         return reject(err);
       } else {
@@ -1560,7 +1819,10 @@ export default class Singleton {
     //   dataEncoded + 'dataEncoded',
     // );
     try {
-      var amountToSend = web3.utils.toWei(this.toFixednew(toAmount, 8), 'ether');
+      var amountToSend = web3.utils.toWei(
+        this.toFixednew(toAmount, 8),
+        'ether',
+      );
       var amount = web3.utils.toHex(amountToSend);
       const web3Raw = createAlchemyWeb3(testnetUrlEth);
       var priorityOrTip = await web3Raw.eth.getMaxPriorityFeePerGas();
@@ -1592,14 +1854,14 @@ export default class Singleton {
             : 'mainnet',
         hardfork: 'london',
       });
-      const tx = FeeMarketEIP1559Transaction.fromTxData(txData, { common });
+      const tx = FeeMarketEIP1559Transaction.fromTxData(txData, {common});
       const privateKey = Buffer.from(pKey.substring(2), 'hex');
       const signedTx = await tx.sign(privateKey);
       const serializedTx = signedTx.serialize();
       //console.warn('MM','serializedTx:::::::::::::::', serializedTx.toString('hex'));
-      return { signedRaw: serializedTx.toString('hex'), nonce: nonce };
+      return {signedRaw: serializedTx.toString('hex'), nonce: nonce};
     } catch (e) {
-      return e
+      return e;
     }
   };
 
@@ -1685,17 +1947,22 @@ export default class Singleton {
       'gasLimit----- ' + gasLimitTxn,
       'my_address---- ' + my_address,
       'dataEncoded ' + dataEncoded,
-      'Singleton.getInstance().stcLink', this.stcLink,
-      "gasPriceTxn_____", gasPriceTxn
+      'Singleton.getInstance().stcLink',
+      this.stcLink,
+      'gasPriceTxn_____',
+      gasPriceTxn,
     );
     var amountToSend;
     if (toAmount != '0x0') {
-      amountToSend = Web3.utils.toWei(this.toFixednew(exponentialToDecimalWithoutComma(toAmount), 8), 'ether');
+      amountToSend = Web3.utils.toWei(
+        this.toFixednew(exponentialToDecimalWithoutComma(toAmount), 8),
+        'ether',
+      );
     } else {
       amountToSend = toAmount;
     }
-    const web3STC = new Web3(this.stcLink)
-    console.log("web3STC::::", web3STC, amountToSend);
+    const web3STC = new Web3(this.stcLink);
+    console.log('web3STC::::', web3STC, amountToSend);
     return new Promise((resolve, reject) => {
       const rawTxn = {
         nonce: nonce,
@@ -1705,7 +1972,7 @@ export default class Singleton {
         value: Web3.utils.toHex(exponentialToDecimalWithoutComma(amountToSend)),
         from: my_address,
         data: dataEncoded,
-        chainId: 1209
+        chainId: 1209,
       };
       console.warn('MM', 'RAW-----', rawTxn);
 
@@ -1747,10 +2014,11 @@ export default class Singleton {
     dataEncoded,
   ) => {
     return new Promise(async (resolve, reject) => {
-      let rpcUrls = Constants.network == 'testnet'
-        ? 'https://polygon-mumbai.infura.io/v3/4458cf4d1689497b9a38b1d6bbf05e78'
-        : Singleton.getInstance().maticLink;
-      const web3Matic = new Web3(rpcUrls)
+      let rpcUrls =
+        Constants.network == 'testnet'
+          ? 'https://polygon-mumbai.infura.io/v3/4458cf4d1689497b9a38b1d6bbf05e78'
+          : Singleton.getInstance().maticLink;
+      const web3Matic = new Web3(rpcUrls);
       console.log(
         '>>>>>>>>>>>>>>>>>>>>' + 'pKey--- ' + pKey,
         'token_address----- ' + token_address,
@@ -1762,7 +2030,10 @@ export default class Singleton {
       );
       var amountToSend;
       if (toAmount != '0x0') {
-        amountToSend = web3Matic.utils.toWei(this.toFixednew(toAmount, 8), 'ether');
+        amountToSend = web3Matic.utils.toWei(
+          this.toFixednew(toAmount, 8),
+          'ether',
+        );
       } else {
         amountToSend = toAmount;
       }
@@ -1814,11 +2085,19 @@ export default class Singleton {
 
   // ********************************  CHECK ALLOWANCE FOR MULTISENDER ETH, BNB COIN  ************************************
   async checkAllowance(contractAdd, walletAddress, coin_family) {
-    console.log("coin_family::::", coin_family, "walletAddress:::::", walletAddress, "contractAdd::::", contractAdd);
+    console.log(
+      'coin_family::::',
+      coin_family,
+      'walletAddress:::::',
+      walletAddress,
+      'contractAdd::::',
+      contractAdd,
+    );
     return new Promise(async (resolve, reject) => {
-      let rpcUrls = Constants.network == 'testnet'
-        ? 'https://polygon-mumbai.infura.io/v3/4458cf4d1689497b9a38b1d6bbf05e78'
-        : Singleton.getInstance().maticLink;
+      let rpcUrls =
+        Constants.network == 'testnet'
+          ? 'https://polygon-mumbai.infura.io/v3/4458cf4d1689497b9a38b1d6bbf05e78'
+          : Singleton.getInstance().maticLink;
       try {
         const mintokenABI = idaAbi;
         const contractAddress = contractAdd;
@@ -1853,7 +2132,11 @@ export default class Singleton {
           //console.log('allowance---- ', allowance);
           resolve(allowance);
         } else if (coin_family == 4) {
-          console.log("coinfamily4:::::::::::::", this.stcLink, multiSenderSTCERC20ContractAddress);
+          console.log(
+            'coinfamily4:::::::::::::',
+            this.stcLink,
+            multiSenderSTCERC20ContractAddress,
+          );
           let web3Dapp = new Web3(this.stcLink);
           var contract = new web3Dapp.eth.Contract(
             mintokenABI,
@@ -1868,7 +2151,7 @@ export default class Singleton {
       } catch (error) {
         console.log('error in alloance', error);
         if (error?.includes('Out of Gas')) {
-          return reject({ message: 'Insufficient funds' });
+          return reject({message: 'Insufficient funds'});
         }
         reject(error);
       }
@@ -1890,13 +2173,13 @@ export default class Singleton {
       var contract;
       let rpc;
       if (coin_family == 6) {
-        rpc = this.bnbLink
+        rpc = this.bnbLink;
       } else if (coin_family == 4) {
-        rpc = this.stcLink
+        rpc = this.stcLink;
       } else if (coin_family == 1) {
-        rpc = this.ethLink
+        rpc = this.ethLink;
       }
-      console.log("rpc::::", rpc);
+      console.log('rpc::::', rpc);
       let web3Dapp = new Web3(rpc);
       if (coin_family == 1) {
         contract = await new web3.eth.Contract(
@@ -1919,17 +2202,20 @@ export default class Singleton {
       const data = contract.methods
         .makeTransfer(addressArr, amountArray, tokenAddress, referalAddress)
         .encodeABI();
-      console.log("data:::::::", data);
+      console.log('data:::::::', data);
       const commissionAmount = await contract.methods
         .getCommissionAmount()
         .call();
-      console.log("commissionAmount:::::::", commissionAmount);
+      console.log('commissionAmount:::::::', commissionAmount);
       const commission = commissionAmount;
       const amountAfterCommission = parseFloat(commission).toString();
       console.log('parseFloat(commission)  ', parseFloat(commission));
       const gasLimit = await contract.methods
         .makeTransfer(addressArr, amountArray, tokenAddress, referalAddress)
-        .estimateGas({ value: amountAfterCommission?.toString(), from: myAddress });
+        .estimateGas({
+          value: amountAfterCommission?.toString(),
+          from: myAddress,
+        });
       return {
         data: data,
         commissionAmount: commissionAmount,
@@ -1946,8 +2232,7 @@ export default class Singleton {
       if (global.disconnected) {
         Singleton.showAlert(Constants.NO_NETWORK);
         return Constants.NO_NETWORK;
-      }
-      else if (isExist) {
+      } else if (isExist) {
         Singleton.showAlert('Insufficient funds for Group Transfer.');
         return err;
       } else {
@@ -1964,7 +2249,92 @@ export default class Singleton {
     myAddress,
     referalAddress,
   ) {
-    let minAbis =[ { "anonymous": false, "inputs": [ { "indexed": true, "internalType": "address", "name": "previousOwner", "type": "address" }, { "indexed": true, "internalType": "address", "name": "newOwner", "type": "address" } ], "name": "OwnershipTransferred", "type": "event" }, { "inputs": [], "name": "getCommisionAddress", "outputs": [ { "internalType": "address", "name": "", "type": "address" } ], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "getCommissionAmount", "outputs": [ { "internalType": "uint256", "name": "", "type": "uint256" } ], "stateMutability": "view", "type": "function" }, { "inputs": [ { "internalType": "address payable[]", "name": "addressArray", "type": "address[]" }, { "internalType": "uint256[]", "name": "amountArray", "type": "uint256[]" }, { "internalType": "address", "name": "contractAddress", "type": "address" } ], "name": "makeTransfer", "outputs": [], "stateMutability": "payable", "type": "function" }, { "inputs": [], "name": "owner", "outputs": [ { "internalType": "address", "name": "", "type": "address" } ], "stateMutability": "view", "type": "function" }, { "inputs": [ { "internalType": "address", "name": "newOwner", "type": "address" } ], "name": "transferOwnership", "outputs": [], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [ { "internalType": "address", "name": "_commissionAddress", "type": "address" } ], "name": "updateCommissionAddress", "outputs": [], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [ { "internalType": "uint256", "name": "_commissionAmount", "type": "uint256" } ], "name": "updateComssionAmount", "outputs": [], "stateMutability": "nonpayable", "type": "function" } ];
+    let minAbis = [
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'previousOwner',
+            type: 'address',
+          },
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'newOwner',
+            type: 'address',
+          },
+        ],
+        name: 'OwnershipTransferred',
+        type: 'event',
+      },
+      {
+        inputs: [],
+        name: 'getCommisionAddress',
+        outputs: [{internalType: 'address', name: '', type: 'address'}],
+        stateMutability: 'view',
+        type: 'function',
+      },
+      {
+        inputs: [],
+        name: 'getCommissionAmount',
+        outputs: [{internalType: 'uint256', name: '', type: 'uint256'}],
+        stateMutability: 'view',
+        type: 'function',
+      },
+      {
+        inputs: [
+          {
+            internalType: 'address payable[]',
+            name: 'addressArray',
+            type: 'address[]',
+          },
+          {internalType: 'uint256[]', name: 'amountArray', type: 'uint256[]'},
+          {internalType: 'address', name: 'contractAddress', type: 'address'},
+        ],
+        name: 'makeTransfer',
+        outputs: [],
+        stateMutability: 'payable',
+        type: 'function',
+      },
+      {
+        inputs: [],
+        name: 'owner',
+        outputs: [{internalType: 'address', name: '', type: 'address'}],
+        stateMutability: 'view',
+        type: 'function',
+      },
+      {
+        inputs: [{internalType: 'address', name: 'newOwner', type: 'address'}],
+        name: 'transferOwnership',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
+      {
+        inputs: [
+          {
+            internalType: 'address',
+            name: '_commissionAddress',
+            type: 'address',
+          },
+        ],
+        name: 'updateCommissionAddress',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
+      {
+        inputs: [
+          {internalType: 'uint256', name: '_commissionAmount', type: 'uint256'},
+        ],
+        name: 'updateComssionAmount',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
+    ];
     try {
       let web3Dapp = new Web3(this.stcLink);
       let contract = new web3Dapp.eth.Contract(
@@ -1977,21 +2347,34 @@ export default class Singleton {
         const removedDecimal = amountToSendwithouexpo.split('.')[0];
         return removedDecimal;
       });
-      console.warn('MM', 'amountArray---->', amountArray, "addressArr____", addressArr, "tokenAddress", tokenAddress, "referalAddress", referalAddress);
+      console.warn(
+        'MM',
+        'amountArray---->',
+        amountArray,
+        'addressArr____',
+        addressArr,
+        'tokenAddress',
+        tokenAddress,
+        'referalAddress',
+        referalAddress,
+      );
       const data = contract.methods
         .makeTransfer(addressArr, amountArray, tokenAddress)
         .encodeABI();
-      console.log("data:::::::", data);
+      console.log('data:::::::', data);
       const commissionAmount = await contract.methods
         .getCommissionAmount()
         .call();
-      console.log("commissionAmount:::::::", commissionAmount);
+      console.log('commissionAmount:::::::', commissionAmount);
       const commission = commissionAmount;
       const amountAfterCommission = parseFloat(commission).toString();
       console.log('parseFloat(commission)  ', parseFloat(commission));
       const gasLimit = await contract.methods
         .makeTransfer(addressArr, amountArray, tokenAddress)
-        .estimateGas({ value: amountAfterCommission?.toString(), from: myAddress });
+        .estimateGas({
+          value: amountAfterCommission?.toString(),
+          from: myAddress,
+        });
       console.log('---gasLimit', gasLimit);
       return {
         data: data,
@@ -2000,7 +2383,7 @@ export default class Singleton {
           parseFloat(amountAfterCommission) /
           10 ** 18
         ).toString(),
-        gasLimit: (gasLimit).toFixed(0),
+        gasLimit: gasLimit.toFixed(0),
         commissionAmt: this.exponentialToDecimal(parseFloat(commission)),
       };
     } catch (err) {
@@ -2009,8 +2392,7 @@ export default class Singleton {
       if (global.disconnected) {
         Singleton.showAlert(Constants.NO_NETWORK);
         return Constants.NO_NETWORK;
-      }
-      else if (isExist) {
+      } else if (isExist) {
         Singleton.showAlert('Insufficient funds for Group Transfer.');
         return err;
       } else {
@@ -2034,9 +2416,10 @@ export default class Singleton {
     let minAbis = multiSendTokenMaticAbi;
     try {
       let contract;
-      let rpcUrls = Constants.network == 'testnet'
-        ? 'https://polygon-mumbai.infura.io/v3/4458cf4d1689497b9a38b1d6bbf05e78'
-        : Singleton.getInstance().maticLink;
+      let rpcUrls =
+        Constants.network == 'testnet'
+          ? 'https://polygon-mumbai.infura.io/v3/4458cf4d1689497b9a38b1d6bbf05e78'
+          : Singleton.getInstance().maticLink;
       let web3Dapp = new Web3(rpcUrls);
       // if (coin_family == 1) {
       //   contract = await new web3.eth.Contract(
@@ -2088,7 +2471,10 @@ export default class Singleton {
       const amountAfterCommission = parseFloat(commission).toString();
       const gasLimit = await contract.methods
         .makeTransfer(addressArr, amountArray, tokenAddress)
-        .estimateGas({ value: amountAfterCommission?.toString(), from: myAddress });
+        .estimateGas({
+          value: amountAfterCommission?.toString(),
+          from: myAddress,
+        });
       //console.log('---gasLimit', gasLimit);
 
       //console.warn('MM','parseFloat(commission)  ', parseFloat(commission));
@@ -2108,8 +2494,7 @@ export default class Singleton {
       if (global.disconnected) {
         Singleton.showAlert(Constants.NO_NETWORK);
         return reject(Constants.NO_NETWORK);
-      }
-      else if (isExist) {
+      } else if (isExist) {
         Singleton.showAlert('Insufficient funds for Group Transfer.');
         return reject(err);
       } else {
@@ -2169,13 +2554,13 @@ export default class Singleton {
           : 'mainnet',
       hardfork: 'london',
     });
-    const tx = FeeMarketEIP1559Transaction.fromTxData(txData, { common });
+    const tx = FeeMarketEIP1559Transaction.fromTxData(txData, {common});
     const privateKey = Buffer.from(pKey.substring(2), 'hex');
     const signedTx = await tx.sign(privateKey);
     const serializedTx = signedTx.serialize();
     //console.warn('MM','serializedTx:::::::::::::::', serializedTx.toString('hex'));
 
-    return { signedRaw: serializedTx.toString('hex'), nonce: nonce };
+    return {signedRaw: serializedTx.toString('hex'), nonce: nonce};
   };
 
   ParseFloatNumber(str, val) {
@@ -2221,10 +2606,10 @@ export default class Singleton {
         coin_family == 1
           ? erc20MultiSenderContractAddress
           : coin_family == 6
-            ? bep20MultiSenderContractAddress
-            : coin_family == 4
-              ? multiSenderSTCERC20ContractAddress
-              : matic20MultiSenderContractAddress,
+          ? bep20MultiSenderContractAddress
+          : coin_family == 4
+          ? multiSenderSTCERC20ContractAddress
+          : matic20MultiSenderContractAddress,
         amountToApprove,
       )
       .encodeABI();
@@ -2262,7 +2647,7 @@ export default class Singleton {
         accessList: [],
         type: '0x02',
       };
-      console.log("txData:::::", txData);
+      console.log('txData:::::', txData);
       const common = new Common({
         chain:
           Constants.network == 'testnet'
@@ -2270,12 +2655,16 @@ export default class Singleton {
             : 'mainnet',
         hardfork: 'london',
       });
-      const tx = FeeMarketEIP1559Transaction.fromTxData(txData, { common });
+      const tx = FeeMarketEIP1559Transaction.fromTxData(txData, {common});
       const privateKey = Buffer.from(pKey.substring(2), 'hex');
       const signedTx = await tx.sign(privateKey);
       const serializedTx = signedTx.serialize();
-      console.warn('MM', 'serializedTx:::::::::::::::', serializedTx.toString('hex'));
-      return { signedRaw: serializedTx.toString('hex'), nonce: nonce };
+      console.warn(
+        'MM',
+        'serializedTx:::::::::::::::',
+        serializedTx.toString('hex'),
+      );
+      return {signedRaw: serializedTx.toString('hex'), nonce: nonce};
     } else if (coin_family == 6) {
       const non = await web3BNB.eth.getTransactionCount(my_address);
       console.warn('MM', 'RAW_DATA==== non =', non);
@@ -2295,7 +2684,11 @@ export default class Singleton {
         web3BNB.eth.accounts
           .signTransaction(rawTransaction, pKey)
           .then(res => {
-            console.warn('MM', '------------raw txn-----------', res.rawTransaction);
+            console.warn(
+              'MM',
+              '------------raw txn-----------',
+              res.rawTransaction,
+            );
             web3BNB.eth
               .sendSignedTransaction(res.rawTransaction)
               .then(res1 => {
@@ -2312,10 +2705,11 @@ export default class Singleton {
           });
       });
     } else if (coin_family == 11) {
-      let rpcUrls = Constants.network == 'testnet'
-        ? 'https://polygon-mumbai.infura.io/v3/4458cf4d1689497b9a38b1d6bbf05e78'
-        : Singleton.getInstance().maticLink;
-      const web3Matic = new Web3(rpcUrls)
+      let rpcUrls =
+        Constants.network == 'testnet'
+          ? 'https://polygon-mumbai.infura.io/v3/4458cf4d1689497b9a38b1d6bbf05e78'
+          : Singleton.getInstance().maticLink;
+      const web3Matic = new Web3(rpcUrls);
       const non = await web3Matic.eth.getTransactionCount(my_address);
       console.log('RAW_DATA==== non =', non);
       return new Promise((resolve, reject) => {
@@ -2352,7 +2746,7 @@ export default class Singleton {
       });
     } else if (coin_family == 4) {
       let rpcUrls = this.stcLink;
-      const web3STC = new Web3(rpcUrls)
+      const web3STC = new Web3(rpcUrls);
       const non = await web3STC.eth.getTransactionCount(my_address);
       console.log('RAW_DATA==== non =', non);
       return new Promise((resolve, reject) => {
@@ -2426,6 +2820,12 @@ export default class Singleton {
           // let ethWallet1 = await generateEthWallet(mnemonics);
           // console.log(ethWallet1);
           tronObj = await this.generateTronAddress(mnemonics);
+
+          const wallet = this.generateSolanaWallet(mnemonics);
+          const solWallet = wallet._result;
+          await this.newSaveData(solWallet.address + '_pk', solWallet.pvtKey);
+          await this.newSaveData(solWallet.address, mnemonics);
+          console.log('Import Solana Wallet:', solWallet);
           // console.log('ethWallet' , ethWallet);
           // if(!ethWallet.address){
           //   return reject('Invalid Mnemonics')
@@ -2450,6 +2850,7 @@ export default class Singleton {
             ethAddress: ethWallet.address,
             btcAddress: BTC_obj.address,
             trxAddress: tronObj.address,
+            solAddress: solWallet.address,
           });
           // }else{
 
@@ -2561,10 +2962,10 @@ export default class Singleton {
         checkCardType?.toLowerCase() == 'black'
           ? 0
           : checkCardType?.toLowerCase() == 'diamond'
-            ? 1
-            : checkCardType?.toLowerCase() == 'gold'
-              ? 2
-              : 0;
+          ? 1
+          : checkCardType?.toLowerCase() == 'gold'
+          ? 2
+          : 0;
       //console.warn('MM','+++++++++++cardFees33', cardType);
       let cardFees = await routerContractObject.methods
         .cardTypeToFees(cardType)
@@ -2629,14 +3030,14 @@ export default class Singleton {
 
   encodeJWT = data => {
     const second = new NodeRSA(Constants.SAITAMASK_WALLET_KEY);
-    second.setOptions({ encryptionScheme: 'pkcs1' });
+    second.setOptions({encryptionScheme: 'pkcs1'});
     const enc = second.encrypt(data, 'base64');
     //  console.warn('MM','enc::::', enc);
     return enc;
   };
   async dappApprovalHash(pvt_key, approvalParam) {
-    console.log("approvalParam", approvalParam);
-    console.log("pvt_key", pvt_key);
+    console.log('approvalParam', approvalParam);
+    console.log('pvt_key', pvt_key);
     return new Promise((resolve, reject) => {
       let wallet = new Wallet(pvt_key);
       wallet
