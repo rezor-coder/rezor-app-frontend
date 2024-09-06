@@ -52,6 +52,10 @@ const nextPressed = async (
         coin_symbol: Constants.COIN_SYMBOL.TRX,
         wallet_address: DATA?.trxAddress,
       },
+      {
+        coin_symbol: Constants.COIN_SYMBOL.SOL,
+        wallet_address: DATA?.solAddress,
+      },
     ];
 
     // Prepare data for the createWallet API call
@@ -90,11 +94,12 @@ const nextPressed = async (
       defaultMaticAddress: DATA.ethAddress,
       defaultBtcAddress: DATA.btcAddress,
       defaultTrxAddress: DATA.trxAddress,
+      defaultSolAddress: DATA.solAddress,
       walletName: walletName,
     };
 
     const addrsListKeys = [DATA.ethAddress, DATA.btcAddress, DATA.trxAddress];
-    const coinFamilyKeys = [1, 2, 6, 11, 3, 4];
+    const coinFamilyKeys = [1, 2, 6, 11, 3, 4, 8];
 
     const walletData = {
       walletName: walletName,
@@ -139,6 +144,7 @@ const nextPressed = async (
       defaultBtcAddress: DATA.btcAddress,
       defaultTrxAddress: DATA.trxAddress,
       defaultStcAddress: DATA.ethAddress,
+      defaultSolAddress: DATA.solAddress,
       walletName: walletName,
     });
 

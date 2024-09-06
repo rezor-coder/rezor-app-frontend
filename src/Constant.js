@@ -413,6 +413,7 @@ export const NETWORK = {
   SAITACHAIN: 'saitachain',
   BITCOIN: 'bitcoin',
   BINANCE_SMART_CHAIN: 'binancesmartchain',
+  SOLANA: 'solana',
 };
 
 export const COIN_SYMBOL = {
@@ -422,4 +423,5 @@ export const COIN_SYMBOL = {
   STC: 'stc',
   BTC: 'btc',
   TRX: 'trx',
+  SOL: 'sol',
 };

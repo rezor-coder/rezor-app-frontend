@@ -24,9 +24,8 @@ import Address from '@bitsler/tron-address';
 import TronWeb from 'tronweb';
 
 import { NativeModules } from 'react-native';
-import * as bip39 from 'bip39';
-import {derivePath} from 'ed25519-hd-key';
-import {Keypair} from '@solana/web3.js';
+import {Keypair, PublicKey} from '@solana/web3.js';
+import * as bip39 from "bip39";
 import {Buffer} from 'buffer';
 
 const { CreateWallet } = NativeModules;
@@ -119,6 +118,7 @@ export default class Singleton {
   defaultBtcAddress = '';
   defaultStcAddress = '';
   defaultTrxAddress = '';
+  defaultSolAddress = '';
   static walletConnectObj = {};
   defaultMaticAddress = '';
   currentCard = 'black';
@@ -202,6 +202,16 @@ export default class Singleton {
       coin_symbol: Constants.COIN_SYMBOL.STC,
       coin_image:
         'https://s2.coinmarketcap.com/static/img/coins/64x64/20513.png',
+      is_token: 0,
+      token_address: null,
+      decimals: 1000000000000000000,
+    },
+    {
+      coin_family: 8,
+      coin_name: 'Solana',
+      coin_symbol: Constants.COIN_SYMBOL.SOL,
+      coin_image:
+        'https://assets.coingecko.com/coins/images/4128/large/solana.png?1639702671',
       is_token: 0,
       token_address: null,
       decimals: 1000000000000000000,
@@ -642,29 +652,20 @@ export default class Singleton {
   }
 
   generateSolanaWallet(mnemonic) {
-    return new Promise((resolve, reject) => {
-      try {
-        // const keypair = Keypair.generate();
-        // const publicKey = keypair.publicKey.toString();
-        // const secretKey = keypair.secretKey;
-        // Convert mnemonic to seed
-        const seed = bip39.mnemonicToSeedSync(mnemonic);
-
-        // Derive the keypair from seed
-        const path = "m/44'/501'/0'/0'"; // Standard path for Solana (adjust as needed)
-        const {key} = derivePath(path, seed.toString('hex'));
-
-        // Create Keypair from derived key
-        const keypair = Keypair.fromSeed(Buffer.from(key, 'hex'));
-
-        // Get public and private keys
-        const address = keypair.publicKey.toBase58();
-        const pvtKey = Buffer.from(keypair.secretKey).toString('hex'); // Private key in hex format
-        return resolve({address, pvtKey});
-      } catch (error) {
-        return reject(error);
+    try {
+      const seed = bip39.mnemonicToSeedSync(mnemonic);
+      const seedBuffer = Buffer.from(seed).slice(0, 32);
+      if (seedBuffer.length !== 32) {
+        throw new Error('Seed must be 32 bytes long.');
       }
-    });
+      const solaData = Keypair.fromSeed(seedBuffer);
+      const address = solaData.publicKey.toBase58();
+      const pvtKey = Buffer.from(solaData.secretKey).toString('hex');
+
+      return {address, pvtKey};
+    } catch (error) {
+      throw new Error(`Failed to generate wallet: ${error.message}`);
+    }
   }
 
   // prod
@@ -693,11 +694,9 @@ export default class Singleton {
           console.log('---------tronObj', tronObj);
 
           //Generate SOLANA Wallet
-          const wallet = this.generateSolanaWallet(mnemonics);
-          const solWallet = wallet._result;
+          const solWallet = await this.generateSolanaWallet(mnemonics);
           await this.newSaveData(solWallet.address + '_pk', solWallet.pvtKey);
           await this.newSaveData(solWallet.address, mnemonics);
-          console.log('Solana Wallet:', solWallet);
           //END
 
           // const mnemonics = await generateMnemonics();
@@ -786,6 +785,15 @@ export default class Singleton {
     if (isTrxAddress) {
       return true;
     } else {
+      return false;
+    }
+  };
+
+  validateSolAddress = text => {
+    try {
+      PublicKey.isOnCurve(text);
+      return true;
+    } catch (e) {
       return false;
     }
   };
@@ -2821,11 +2829,10 @@ export default class Singleton {
           // console.log(ethWallet1);
           tronObj = await this.generateTronAddress(mnemonics);
 
-          const wallet = this.generateSolanaWallet(mnemonics);
-          const solWallet = wallet._result;
+          const solWallet = await this.generateSolanaWallet(mnemonics);
           await this.newSaveData(solWallet.address + '_pk', solWallet.pvtKey);
           await this.newSaveData(solWallet.address, mnemonics);
-          console.log('Import Solana Wallet:', solWallet);
+  
           // console.log('ethWallet' , ethWallet);
           // if(!ethWallet.address){
           //   return reject('Invalid Mnemonics')

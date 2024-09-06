@@ -107,6 +107,8 @@ const SendCryptoContacts = props => {
         ? Constants.NETWORK.TRON
         : props?.route?.params?.item.coin_family == 4
         ? Constants.NETWORK.SAITACHAIN
+        : props?.route?.params?.item.coin_family == 8
+        ? Constants.NETWORK.SOLANA
         : Constants.NETWORK.BITCOIN;
 
     props

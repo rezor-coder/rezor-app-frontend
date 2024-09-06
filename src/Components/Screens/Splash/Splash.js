@@ -206,6 +206,10 @@ const Splash = props => {
               coin_symbol: Constants.COIN_SYMBOL.TRX,
               wallet_address: res?.trxAddress,
             },
+            {
+              coin_symbol: Constants.COIN_SYMBOL.SOL,
+              wallet_address: res?.solAddress,
+            },
           ];
           let address = res.ethAddress;
           let wallet_name = activeWallet?.walletName;
@@ -235,6 +239,7 @@ const Splash = props => {
                 defaultMaticAddress: res.ethAddress,
                 defaultBtcAddress: res.btcAddress,
                 defaultTrxAddress: res.trxAddress,
+                defaultSolAddress: res.solAddress,
                 walletName: wallet_name,
               };
               let addrsListKeys = [res.ethAddress, res.btcAddress, res.trxAddress];
@@ -293,6 +298,7 @@ const Splash = props => {
               Singleton.getInstance().defaultBnbAddress = res.ethAddress;
               Singleton.getInstance().defaultStcAddress = res.ethAddress;
               Singleton.getInstance().defaultTrxAddress = res.trxAddress;
+              Singleton.getInstance().defaultSolAddress = res.solAddress;
               Singleton.getInstance().walletName = wallet_name;
               // }
               Singleton.getInstance().newSaveData(
@@ -392,6 +398,7 @@ const Splash = props => {
           Singleton.getInstance().defaultEthAddress = login_data?.defaultEthAddress;
           Singleton.getInstance().defaultBnbAddress = login_data?.defaultEthAddress;
           Singleton.getInstance().defaultStcAddress = login_data?.defaultStcAddress;
+          Singleton.getInstance().defaultSolAddress = login_data?.defaultSolAddress;
           Singleton.getInstance().walletName = login_data?.walletName;
           Singleton.getInstance().newSaveData(
             Constants.UPDATE_ASYNC_KEY,
@@ -514,6 +521,7 @@ const Splash = props => {
         Singleton.getInstance().defaultStcAddress = response?.defaultEthAddress;
         Singleton.getInstance().defaultBnbAddress = response?.defaultBnbAddress;
         Singleton.getInstance().defaultBtcAddress = response?.defaultBtcAddress;
+        Singleton.getInstance().defaultSolAddress = response?.defaultSolAddress;
         Singleton.getInstance().defaultMaticAddress =
           response?.defaultMaticAddress;
         Singleton.getInstance().walletName = response.walletName;

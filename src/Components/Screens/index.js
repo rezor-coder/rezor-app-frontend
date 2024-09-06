@@ -126,6 +126,7 @@ import UserDetail from './Cards/UserDetail/UserDetail';
 import SaitaCardLogin from './Cards/SaitaCardLogin';
 import CardSetting from './Cards/CardSetting/CardSetting';
 import SaitaCardNewPassword from './Cards/SaitaCardNewPassword/SaitaCardNewPassword';
+import SendSOL from './SendSOL/SendSOL';
 
 // import Stake from './StakeScreen/Stake';
 export {
@@ -252,4 +253,5 @@ export {
   DepositScreen,
   RegisterNow,
   UserDetail,
+  SendSOL,
 };

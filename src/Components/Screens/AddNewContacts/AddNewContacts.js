@@ -33,7 +33,7 @@ const AddNewContacts = props => {
   const [contactAddress, setContactAddress] = useState(
     props?.route?.params?.address ? props?.route?.params?.address : '',
   );
-  const [setCoinFamily] = useState('');
+  const [coinFamily, setCoinFamily] = useState('');
   const [network, setNetwork] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [Start_Scanner, setStart_Scanner] = useState(false);
@@ -57,6 +57,9 @@ const AddNewContacts = props => {
         break;
       case 4:
         setNetwork(NETWORK.SAITACHAIN);
+        break;
+      case 8:
+        setNetwork(NETWORK.SOLANA);
         break;
       default:
         setNetwork(NETWORK.BITCOIN);
@@ -114,6 +117,13 @@ const AddNewContacts = props => {
         }
       } else if (network === NETWORK.BITCOIN) {
         if (Singleton.getInstance().validateBTCAddress(contactAddress)) {
+          setIsLoading(true);
+          saveContact();
+        } else {
+          Singleton.showAlert('Invalid Wallet Address');
+        }
+      } else if (network === NETWORK.SOLANA) {
+        if (Singleton.getInstance().validateSolAddress(contactAddress)) {
           setIsLoading(true);
           saveContact();
         } else {

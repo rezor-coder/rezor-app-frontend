@@ -21,7 +21,7 @@ import { BasicButton, BorderLine, Wrap } from '../../common';
 import { BasicInputBox } from '../../common/BasicInputBox';
 import { SimpleHeader } from '../../common/SimpleHeader';
 import Loader from '../Loader/Loader';
-import { ALPHABET_REGEX, APP_NAME } from './../../../Constant';
+import { APP_NAME, NETWORK } from './../../../Constant';
 import { styles } from './EditContactStyle';
 // import { CameraScreen } from 'react-native-camera-kit';
 import { heightDimen, widthDimen } from '../../../Utils/themeUtils';
@@ -93,37 +93,35 @@ const EditContact = props => {
       Singleton.showAlert('Invalid Address');
       return;
     } else {
-
-
-      if (network == 'tron') {
+      if (network === NETWORK.TRON) {
         if (Singleton.getInstance().validateTronAddress(contactAddress)) {
           setIsLoading(true);
           editContact();
         } else {
           Singleton.showAlert('Invalid Wallet Address');
         }
-      } else
-        if (network == Constants.NETWORK.BITCOIN) {
-          if (Singleton.getInstance().validateBTCAddress(contactAddress)) {
-            setIsLoading(true);
-            editContact();
-          } else {
-            Singleton.showAlert('Invalid Wallet Address');
-          }
+      } else if (network === NETWORK.BITCOIN) {
+        if (Singleton.getInstance().validateBTCAddress(contactAddress)) {
+          setIsLoading(true);
+          editContact();
         } else {
-          if (Singleton.getInstance().validateEthAddress(contactAddress)) {
-            setIsLoading(true);
-            editContact();
-          } else {
-            Singleton.showAlert('Invalid Wallet Address');
-          }
+          Singleton.showAlert('Invalid Wallet Address');
         }
-      // if (validateAddress(contactAddress)) {
-      //   setIsLoading(true);
-      //   editContact();
-      // } else {
-      //   Singleton.showAlert('Invalid Address');
-      // }
+      } else if (network === NETWORK.SOLANA) {
+        if (Singleton.getInstance().validateSolAddress(contactAddress)) {
+          setIsLoading(true);
+          editContact();
+        } else {
+          Singleton.showAlert('Invalid Wallet Address');
+        }
+      } else {
+        if (Singleton.getInstance().validateEthAddress(contactAddress)) {
+          setIsLoading(true);
+          editContact();
+        } else {
+          Singleton.showAlert('Invalid Wallet Address');
+        }
+      }
     }
   };
 
@@ -292,7 +290,6 @@ const EditContact = props => {
                   }}
                   keyboardType={Platform.OS == 'ios' ? "ascii-capable" : "visible-password"}
                   onChangeText={text => {
-                    if (ALPHABET_REGEX.test(text))
                       setContactName(text);
                   }}
                   text={contactName}

@@ -52,6 +52,7 @@ export const NavigationStrings = {
   SendBNB: 'SendBNB',
   SendBTC: 'SendBTC',
   SendTRX: 'SendTRX',
+  SendSOL: 'SendSOL',
   confirmTransaction: 'confirmTransaction',
   Hot: 'Hot',
   Send: 'Send',

@@ -63,8 +63,142 @@ import {
   coinSelection,
 } from './WalletHelper';
 
+import {
+  Connection,
+  Keypair,
+  LAMPORTS_PER_SOL,
+  Transaction,
+  SystemProgram,
+  sendAndConfirmTransaction,
+  PublicKey,
+} from '@solana/web3.js';
+import { Buffer } from 'buffer';
+
 const tabs = ['Tokens', 'SaitaCard', 'Staking'];
 const Wallet = props => {
+
+  const sendSOL = async (connection, transaction, senderKeypair) => {
+    try {
+      // Sign and send the transaction
+      const signature = await sendAndConfirmTransaction(
+        connection,
+        transaction,
+        [senderKeypair],
+      );
+      console.log('Transaction successful with signature:', signature);
+    } catch (error) {
+      console.error('Transaction failed:', error);
+    }
+  }
+
+  //SOLANA TRANSACTION
+  // Replace with your cluster URL
+  const connection = new Connection(
+    'https://api.testnet.solana.com',
+    'confirmed',
+  );
+
+  const hexSecretKey =
+    '8422c2a4c136d36fcf7a990d9ba79a74faaa51049217fb6839253b55e4b1b446a41c7c513b184257a6dd062c3569508ea6191438a879068d78a4ff816538a21f';
+
+  // Convert hex string to Uint8Array
+  const secretKeyArray = Uint8Array.from(Buffer.from(hexSecretKey, 'hex'));
+
+  // Ensure the key length is 64 bytes
+  if (secretKeyArray.length !== 64) {
+    throw new Error('Invalid secret key length. It should be 64 bytes.');
+  }
+
+  // Create Keypair from the secret key
+  const senderKeypair = Keypair.fromSecretKey(secretKeyArray);
+
+  // Replace with the recipient's public key
+  const recipientPublicKey = 'GpbYuF21K2hBG5ez2RNCqeFeAModA7jVvadjcU1UF7tH';
+
+  // Amount to send in SOL
+  const amountInSol = 0.1; // Amount in SOL
+  const amountInLamports = amountInSol * LAMPORTS_PER_SOL;
+
+  // (async () => {
+  //   try {
+  //     // Check sender's account balance
+  //     const senderBalance = await connection.getBalance(
+  //       senderKeypair.publicKey,
+  //     );
+  //     console.log(
+  //       `Sender's account balance: ${senderBalance / LAMPORTS_PER_SOL} SOL`,
+  //     );
+
+  //     if (senderBalance < amountInLamports) {
+  //       throw new Error('Insufficient funds');
+  //     }
+
+  //     // Create a transaction
+  //     const transaction = new Transaction().add(
+  //       SystemProgram.transfer({
+  //         fromPubkey: senderKeypair.publicKey,
+  //         toPubkey: recipientPublicKey,
+  //         lamports: amountInLamports,
+  //       }),
+  //     );
+  //     // Sign and send the transaction
+  //     const signature = await sendSOL(connection, transaction, [senderKeypair]);
+  //     console.log('Transaction successful with signature:', signature);
+  //   } catch (error) {
+  //     console.error('Transaction failed:', error);
+  //   }
+  // })();
+
+  // Replace with your Testnet account's public key
+  const publicKey = new PublicKey(
+    'GpbYuF21K2hBG5ez2RNCqeFeAModA7jVvadjcU1UF7tH',
+  );
+  (async () => {
+    try {
+      // Fetch balance
+      const senderBalance = await connection.getBalance(
+        senderKeypair.publicKey,
+      );
+      console.log(
+        `Sender's account balance: ${senderBalance / LAMPORTS_PER_SOL} SOL`,
+      );
+      const balance = await connection.getBalance(publicKey);
+      console.log(
+        `Receiver's Account balance: ${balance / LAMPORTS_PER_SOL} SOL`,
+      );
+    } catch (error) {
+      console.error('Failed to fetch balance:', error);
+    }
+  })();
+
+  // Create a transaction
+  // const transaction = new Transaction().add(
+  //   SystemProgram.transfer({
+  //     fromPubkey: senderKeypair.publicKey,
+  //     toPubkey: recipientPublicKey,
+  //     lamports: amountInLamports,
+  //   })
+  // );
+
+  // const trans = sendSOL(connection, transaction, senderKeypair);
+  // console.log('------transss---', trans);
+
+  // (async () => {
+  //   try {
+  //     // Sign and send the transaction
+  //     const signature = await sendAndConfirmTransaction(
+  //       connection,
+  //       transaction,
+  //       [senderKeypair],
+  //     );
+  //     console.log('Transaction successful with signature:', signature);
+  //   } catch (error) {
+  //     console.error('Transaction failed:', error);
+  //   }
+  // })();
+
+  //END SOL
+
   const dispatch = useDispatch();
   const insets = useSafeAreaInsets();
   const CoinData = useSelector(state => state?.walletReducer?.myWallets);

@@ -142,15 +142,15 @@ class MultiWalletImportSingleCoin extends Component {
                         wallet_address:
                           this.props.route?.params.coin_symbol == Constants.COIN_SYMBOL.ETH
                             ? res.ethAddress
-                            : this.props.route?.params.coin_symbol == 'trx'
+                            : this.props.route?.params.coin_symbol == Constants.COIN_SYMBOL.TRX
                               ? res.trxAddress
-                              : this.props.route?.params.coin_symbol == 'sol'
+                              : this.props.route?.params.coin_symbol == Constants.COIN_SYMBOL.SOL
                                 ? res.solAddress
-                                : this.props.route?.params.coin_symbol == 'bnb'
+                                : this.props.route?.params.coin_symbol == Constants.COIN_SYMBOL.BNB
                                   ? res.ethAddress
-                                  : this.props.route?.params.coin_symbol == 'btc'
+                                  : this.props.route?.params.coin_symbol == Constants.COIN_SYMBOL.BTC
                                     ? res.btcAddress
-                                    : this.props.route?.params.coin_symbol == 'stc'
+                                    : this.props.route?.params.coin_symbol == Constants.COIN_SYMBOL.STC
                                     ? res.ethAddress
                                     : res.ethAddress,
                       },
@@ -159,36 +159,36 @@ class MultiWalletImportSingleCoin extends Component {
                       address:
                         this.props.route?.params.coin_symbol == Constants.COIN_SYMBOL.ETH
                           ? res.ethAddress
-                          : this.props.route?.params.coin_symbol == 'trx'
+                          : this.props.route?.params.coin_symbol == Constants.COIN_SYMBOL.TRX
                             ? res.trxAddress
-                            : this.props.route?.params.coin_symbol == 'sol'
+                            : this.props.route?.params.coin_symbol == Constants.COIN_SYMBOL.SOL
                               ? res.solAddress
-                              : this.props.route?.params.coin_symbol == 'bnb'
+                              : this.props.route?.params.coin_symbol == Constants.COIN_SYMBOL.BNB
                                 ? res.ethAddress
-                                : this.props.route?.params.coin_symbol == 'btc'
+                                : this.props.route?.params.coin_symbol == Constants.COIN_SYMBOL.BTC
                                   ? res.btcAddress
-                                  : this.props.route?.params.coin_symbol == 'stc'
+                                  : this.props.route?.params.coin_symbol == Constants.COIN_SYMBOL.STC
                                   ? res.ethAddress
                                   : res.ethAddress,
                       addresses: [
                         this.props.route?.params.coin_symbol == Constants.COIN_SYMBOL.ETH
                           ? res.ethAddress
-                          : this.props.route?.params.coin_symbol == 'trx'
+                          : this.props.route?.params.coin_symbol == Constants.COIN_SYMBOL.TRX
                             ? res.trxAddress
-                            : this.props.route?.params.coin_symbol == 'sol'
+                            : this.props.route?.params.coin_symbol == Constants.COIN_SYMBOL.SOL
                               ? res.solAddress
-                              : this.props.route?.params.coin_symbol == 'bnb'
+                              : this.props.route?.params.coin_symbol == Constants.COIN_SYMBOL.BNB
                                 ? res.ethAddress
-                                : this.props.route?.params.coin_symbol == 'btc'
+                                : this.props.route?.params.coin_symbol == Constants.COIN_SYMBOL.BTC
                                   ? res.btcAddress
-                                  : this.props.route?.params.coin_symbol == 'stc'
+                                  : this.props.route?.params.coin_symbol == Constants.COIN_SYMBOL.STC
                                   ? res.ethAddress
                                   : res.ethAddress,
                       ],
                       btcAddress:
-                        this.props.route?.params.coin_symbol == 'btc' ? res.btcAddress : '',
+                        this.props.route?.params.coin_symbol == Constants.COIN_SYMBOL.BTC ? res.btcAddress : '',
                       trxAddress:
-                        this.props.route?.params.coin_symbol == 'trx' ? res.trxAddress : '',
+                        this.props.route?.params.coin_symbol == Constants.COIN_SYMBOL.TRX ? res.trxAddress : '',
                       wallet_addresses: wallet_addresses,
                       wallet_name: this.props.multiWalletName,
                       walletName: this.props.multiWalletName,

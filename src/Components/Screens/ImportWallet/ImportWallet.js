@@ -241,6 +241,7 @@ const ImportWallet = props => {
                 Singleton.getInstance().defaultBnbAddress = res.ethAddress;
                 Singleton.getInstance().defaultTrxAddress = res.trxAddress;
                 Singleton.getInstance().defaultStcAddress = res.ethAddress;
+                Singleton.getInstance().defaultSolAddress = res.solAddress;
                 Singleton.getInstance().walletName = 'Basic';
               }
               Singleton.getInstance().newSaveData(

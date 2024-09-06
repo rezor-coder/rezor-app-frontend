@@ -205,7 +205,6 @@ const APIClient = class APIClient {
           body: data != null ? encodedData : null,
         })
           .then(async res => {
-            // console.log("res::::::", res);
             try {
               let jsonVal = await res.json();
               // console.warn('MM', 'jsonVal::::::', jsonVal,endpoint);

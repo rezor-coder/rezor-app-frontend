@@ -146,7 +146,7 @@ const CoinHome = props => {
     } else if (item.coin_family == 3) {
       getCurrentRouteName() != 'SendTRX' && navigate(NavigationStrings.SendTRX,{ walletData: item });
     } else if (item.coin_family == 8) {
-      // getCurrentRouteName() != 'SendSOL' && navigate(NavigationStrings.SendSOL,{ walletData: item });
+      getCurrentRouteName() != 'SendSOL' && navigate(NavigationStrings.SendSOL,{ walletData: item });
     }else if (item.coin_family == 4) {
       getCurrentRouteName() != 'SendSTC' && navigate(NavigationStrings.SendSTC,{ walletData: item });
     }

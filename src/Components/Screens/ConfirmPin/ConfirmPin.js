@@ -447,6 +447,7 @@ class ConfirmPin extends Component {
         Singleton.getInstance().defaultBnbAddress = response?.defaultBnbAddress;
         Singleton.getInstance().defaultTrxAddress = response?.defaultTrxAddress;
         Singleton.getInstance().defaultStcAddress = response?.defaultEthAddress;
+        Singleton.getInstance().defaultSolAddress = response?.defaultSolAddress;
         Singleton.getInstance().walletName = response.walletName;
 
         if (this.props?.route?.params?.redirectTo == 'RecoveryPhrase') {

@@ -34,6 +34,8 @@ const QrCode = props => {
         ? Singleton.getInstance().defaultTrxAddress
         : props.route?.params?.item.coin_family == 4
         ? Singleton.getInstance().defaultStcAddress
+        : props.route?.params?.item.coin_family == 8
+        ? Singleton.getInstance().defaultSolAddress
         : Singleton.getInstance().defaultBtcAddress;
 
     setPublicAddress(add);
