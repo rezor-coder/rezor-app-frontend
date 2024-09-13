@@ -81,7 +81,7 @@ function MultiWalletList(props) {
   }, []);
 
   async function setDefault(item, index) {
-    console.log('##################### SET DEFAULT');
+    console.log('#####kkkk################ SET DEFAULT', item);
 
     if (deleteTimer.current) {
       clearTimeout(deleteTimer.current);
@@ -95,7 +95,13 @@ function MultiWalletList(props) {
       }
 
       if (item?.loginRequest?.addresses?.length > 0) {
-        Singleton.coinListCaching = { bnb: [], eth: [], all: [] ,stc:[]};
+        Singleton.coinListCaching = {
+          bnb: [],
+          eth: [],
+          all: [],
+          stc: [],
+          sol: [],
+        };
         // this means the user is already using the latest version
         setDefaultWithoutCreate(item, index);
         return;
@@ -142,6 +148,10 @@ function MultiWalletList(props) {
                 coin_symbol: constants.COIN_SYMBOL.STC,
                 wallet_address: res?.ethAddress,
               },
+              {
+                coin_symbol: constants.COIN_SYMBOL.SOL,
+                wallet_address: res?.solAddress,
+              },
             ];
             let address = res.ethAddress;
             let wallet_name = item?.walletName;
@@ -155,7 +165,13 @@ function MultiWalletList(props) {
               }),
             )
               .then(response => {
-                Singleton.coinListCaching = { bnb: [], eth: [], all: [] ,stc:[]};
+                Singleton.coinListCaching = {
+                  bnb: [],
+                  eth: [],
+                  all: [],
+                  stc: [],
+                  sol: [],
+                };
                 //  console.warn('MM', 'response---wallet--- ', response);
                 // global.firstLogin = true
                 // if (props.isFrom != 'multiWallet') {
@@ -164,7 +180,13 @@ function MultiWalletList(props) {
                   btcAddress: res.btcAddress,
                   trxAddress: res.trxAddress,
                   address: res.ethAddress,
-                  addresses: [res.ethAddress, res.btcAddress, res.trxAddress],
+                  solAddress: res.solAddress,
+                  addresses: [
+                    res.ethAddress,
+                    res.btcAddress,
+                    res.trxAddress,
+                    res.solAddress,
+                  ],
                   wallet_addresses: wallet_addresses,
                   walletName: wallet_name,
                   device_token: device_token,
@@ -177,14 +199,16 @@ function MultiWalletList(props) {
                   defaultBtcAddress: res.btcAddress,
                   defaultTrxAddress: res.trxAddress,
                   defaultStcAddress: res.ethAddress,
+                  defaultSolAddress: res.solAddress,
                   walletName: wallet_name,
                 };
                 let addrsListKeys = [
                   res.ethAddress,
                   res.btcAddress,
                   res.trxAddress,
+                  res.solAddress,
                 ];
-                let coinFamilyKeys = [1, 2, 6, 11, 3,4];
+                let coinFamilyKeys = [1, 2, 6, 11, 3, 4, 8];
                 let WalletData = {
                   walletName: wallet_name,
                   mnemonics: res.mnemonics,
@@ -243,6 +267,7 @@ function MultiWalletList(props) {
                 Singleton.getInstance().defaultBtcAddress = res.btcAddress;
                 Singleton.getInstance().defaultBnbAddress = res.ethAddress;
                 Singleton.getInstance().defaultStcAddress = res.ethAddress;
+                Singleton.getInstance().defaultSolAddress = res.solAddress;
                 Singleton.getInstance().walletName = wallet_name;
                 // }
 
@@ -281,9 +306,15 @@ function MultiWalletList(props) {
         let data = item?.loginRequest;
 
         // this.setState({isLoading: true});
-        dispatch(MultiWallet_create({ data }))
+        dispatch(MultiWallet_create({data}))
           .then(async response => {
-            Singleton.coinListCaching = { bnb: [], eth: [], all: [],stc:[] };
+            Singleton.coinListCaching = {
+              bnb: [],
+              eth: [],
+              all: [],
+              stc: [],
+              sol: [],
+            };
             //  console.warn('MM','wallet imported response--- ', response);
             let newData = {};
 
@@ -355,13 +386,14 @@ function MultiWalletList(props) {
           bnb: [],
           eth: [],
           all: [],
-          stc:[]
+          stc: [],
+          sol: [],
         };
         console.log('--------c');
         let login_data = {};
         let isPrivateWallet = '0';
         if (item.blockChain == 'all') {
-          coinFamilyKeys = [1, 2, 6, 11, 3,4];
+          coinFamilyKeys = [1, 2, 6, 11, 3, 4, 8];
           login_data = {
             access_token: item.user_jwtToken,
             defaultEthAddress: item?.loginRequest.address,
@@ -370,6 +402,7 @@ function MultiWalletList(props) {
             defaultStcAddress: item?.loginRequest.address,
             defaultBtcAddress: item?.loginRequest.btcAddress,
             defaultTrxAddress: item?.loginRequest.trxAddress,
+            defaultSolAddress: item?.loginRequest.solAddress,
             walletName: item.walletName,
           };
           Singleton.getInstance().defaultEthAddress =
@@ -378,12 +411,14 @@ function MultiWalletList(props) {
             login_data?.defaultEthAddress;
           Singleton.getInstance().defaultMaticAddress =
             login_data?.defaultEthAddress;
-            Singleton.getInstance().defaultStcAddress =
+          Singleton.getInstance().defaultStcAddress =
             login_data?.defaultStcAddress;
           Singleton.getInstance().defaultBtcAddress =
             login_data?.defaultBtcAddress;
           Singleton.getInstance().defaultTrxAddress =
             login_data?.defaultTrxAddress;
+          Singleton.getInstance().defaultSolAddress =
+            login_data?.defaultSolAddress;
         } else if (item.blockChain == constants.COIN_SYMBOL.ETH) {
           isPrivateWallet = constants.COIN_SYMBOL.ETH;
           coinFamilyKeys = [1];
@@ -757,6 +792,8 @@ function MultiWalletList(props) {
                               ? 'Bitcoin Wallet'
                               : item?.blockChain == constants.COIN_SYMBOL.TRX
                                 ? 'Tron Wallet'
+                                : item?.blockChain == constants.COIN_SYMBOL.SOL
+                                ? 'Solana Wallet'
                                 : 'Multicoin Wallet'}
                   </Text>
                 </View>

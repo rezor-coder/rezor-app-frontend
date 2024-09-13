@@ -459,6 +459,7 @@ class MultiWalletImportSingleCoin extends Component {
                 address: address,
                 btcAddress: coinSymbol == 'btc' ? address : '',
                 trxAddress: coinSymbol == 'trx' ? address : '',
+                solAddress: coinSymbol == 'sol' ? address : '',
                 addresses: [address],
                 wallet_addresses: wallet_addresses,
                 wallet_name: this.props.multiWalletName,

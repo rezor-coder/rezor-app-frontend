@@ -227,7 +227,13 @@ const Splash = props => {
                 btcAddress: res.btcAddress,
                 trxAddress: res.trxAddress,
                 address: res.ethAddress,
-                addresses: [res.ethAddress, res.btcAddress, res.trxAddress],
+                solAddress: res.solAddress,
+                addresses: [
+                  res.ethAddress,
+                  res.btcAddress,
+                  res.trxAddress,
+                  res.solAddress,
+                ],
                 wallet_addresses: wallet_addresses,
                 walletName: wallet_name,
                 device_token: device_token,
@@ -242,8 +248,13 @@ const Splash = props => {
                 defaultSolAddress: res.solAddress,
                 walletName: wallet_name,
               };
-              let addrsListKeys = [res.ethAddress, res.btcAddress, res.trxAddress];
-              let coinFamilyKeys = [1, 2, 6, 11, 3, 4];
+              let addrsListKeys = [
+                res.ethAddress,
+                res.btcAddress,
+                res.trxAddress,
+                res.solAddress,
+              ];
+              let coinFamilyKeys = [1, 2, 6, 11, 3, 4, 8];
               let WalletData = {
                 walletName: wallet_name,
                 mnemonics: res.mnemonics,
@@ -340,6 +351,7 @@ const Splash = props => {
             defaultBnbAddress: loginRequest?.address,
             walletName: loginRequest?.walletName,
             defaultStcAddress: loginRequest?.address,
+            defaultSolAddress: loginRequest?.address,
           };
           let addrsListKeys = [loginRequest?.address];
           let coinFamilyKeys

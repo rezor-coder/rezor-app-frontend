@@ -79,7 +79,13 @@ const nextPressed = async (
       address: DATA.ethAddress,
       btcAddress: DATA?.btcAddress,
       trxAddress: DATA?.trxAddress,
-      addresses: [DATA.ethAddress, DATA.btcAddress, DATA.trxAddress],
+      solAddress: DATA?.solAddress,
+      addresses: [
+        DATA.ethAddress,
+        DATA.btcAddress,
+        DATA.trxAddress,
+        DATA.solAddress,
+      ],
       wallet_addresses: walletAddresses,
       wallet_name: walletName,
       walletName: walletName,
@@ -98,7 +104,12 @@ const nextPressed = async (
       walletName: walletName,
     };
 
-    const addrsListKeys = [DATA.ethAddress, DATA.btcAddress, DATA.trxAddress];
+    const addrsListKeys = [
+      DATA.ethAddress,
+      DATA.btcAddress,
+      DATA.trxAddress,
+      DATA.solAddress,
+    ];
     const coinFamilyKeys = [1, 2, 6, 11, 3, 4, 8];
 
     const walletData = {

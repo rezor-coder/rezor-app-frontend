@@ -128,7 +128,7 @@ const ImportWallet = props => {
               wallet_address: res?.ethAddress,
             },
             {
-            coin_symbol: constants.COIN_SYMBOL.BNB,
+              coin_symbol: constants.COIN_SYMBOL.BNB,
               wallet_address: res?.ethAddress,
             },
             {
@@ -140,12 +140,16 @@ const ImportWallet = props => {
             //  wallet_address: res?.btcAddress,
             //  },
             {
-              coin_symbol: 'matic',
+              coin_symbol: constants.COIN_SYMBOL.MATIC,
               wallet_address: res?.ethAddress,
             },
             {
-              coin_symbol: 'trx',
+              coin_symbol: constants.COIN_SYMBOL.TRX,
               wallet_address: res?.trxAddress,
+            },
+            {
+              coin_symbol: constants.COIN_SYMBOL.SOL,
+              wallet_address: res?.solAddress,
             },
           ];
           let address = res.ethAddress;
@@ -171,7 +175,13 @@ const ImportWallet = props => {
                 btcAddress: res.btcAddress,
                 trxAddress: res.trxAddress,
                 address: res.ethAddress,
-                addresses: [res.ethAddress, res.btcAddress, res.trxAddress],
+                solAddress: res.solAddress,
+                addresses: [
+                  res.ethAddress,
+                  res.btcAddress,
+                  res.trxAddress,
+                  res.solAddress,
+                ],
                 // addresses: [res.ethAddress,  res.trxAddress],
                 wallet_addresses: wallet_addresses,
                 walletName: props?.route?.params?.isFrom == 'multiWallet' ? name : 'Basic',
@@ -185,14 +195,16 @@ const ImportWallet = props => {
                 defaultStcAddress: res.ethAddress,
                 defaultBtcAddress: res.btcAddress,
                 defaultTrxAddress: res.trxAddress,
+                defaultSolAddress: res.solAddress,
                 walletName: props.route?.params?.isFrom == 'multiWallet' ? name : 'Basic',
               };
               let addrsListKeys = [
                 res.ethAddress,
                 res.btcAddress,
                 res.trxAddress,
+                res.solAddress,
               ];
-               let coinFamilyKeys = [1, 2, 6, 11, 3,4];
+              let coinFamilyKeys = [1, 2, 6, 11, 3, 4, 8];
              // let coinFamilyKeys = [1,  6, 11, 3,4];
               let WalletData = {
                 walletName: props.route?.params?.isFrom == 'multiWallet' ? name : 'Basic',

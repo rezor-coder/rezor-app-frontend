@@ -158,6 +158,8 @@ const ManageWallet = props => {
       walletAddress = walletData.loginRequest.btcAddress;
     } else if (coin.coin_family == 3) {
       walletAddress = walletData.loginRequest.trxAddress;
+    } else if (coin.coin_family == 8) {
+      walletAddress = walletData.loginRequest.solAddress;
     } else {
       Singleton.showAlert(constants.COMING_SOON);
       setisLoading(false);

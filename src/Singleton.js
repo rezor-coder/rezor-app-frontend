@@ -236,6 +236,7 @@ export default class Singleton {
     bnb: [],
     all: [],
     stc: [],
+    sol: [],
   };
 
   static getInstance() {
