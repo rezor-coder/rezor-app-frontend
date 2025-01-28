@@ -43,6 +43,7 @@ export const createWallet = ({
       APIClient.getInstance()
         .post(API_CREATE_WALLET, data, '')
         .then(response => {
+          console.warn('MM','error create wallet----response- ', response);
           let result = response;
           if ( Singleton.getInstance().CurrencySelected == undefined ||  Singleton.getInstance().CurrencySelected == null ||  Singleton.getInstance().CurrencySelected == "") {
             Singleton.getInstance().newSaveData(Constants.CURRENCY_SELECTED, 'USD');
@@ -54,7 +55,7 @@ export const createWallet = ({
           resolve(result);
         })
         .catch(error => {
-          //console.warn('MM','error create wallet-- ', error);
+          console.warn('MM','error create wallet-- ', error);
           reject(error);
         });
     });

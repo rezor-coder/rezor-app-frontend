@@ -71,6 +71,8 @@ const nextPressed = async (
       device_token: deviceToken,
     });
 
+    console.log('-------props-r22es----', JSON.stringify(response));
+
     const token = response.data.token;
     const refreshToken = response.data.refreshToken;
 

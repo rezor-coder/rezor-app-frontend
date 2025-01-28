@@ -175,7 +175,7 @@ class ConfirmPin extends Component {
     this.props
       .getInfuraBNBLink()
       .then(response => {
-        //console.warn('MM','response==bnb ==== pin', response);
+        console.warn('MM','response==bnb ==== pin', response);
         Constants.mainnetInfuraLinkBNB = response.link;
         Singleton.getInstance().bnbLink = response.link;
       })

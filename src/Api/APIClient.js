@@ -1,5 +1,6 @@
 import NodeRSA from 'node-rsa';
 import { fetch as ssl_fetch } from 'react-native-ssl-pinning';
+import axios from 'axios';
 import RNFetchBlob from 'rn-fetch-blob';
 import {
   BASE_URL,
@@ -59,7 +60,7 @@ const APIClient = class APIClient {
     } else {
       return new Promise((resolve, reject) => {
         console.warn('MM', 'UserToken', endpoint, UserToken);
-        console.warn('MM', 'url', `${BASE_URL}${endpoint}`);
+        console.warn('MM', 'url11', `${BASE_URL}${endpoint}`);
         ssl_fetch(`${BASE_URL}${endpoint}`, {
           method: 'GET',
           headers: {
@@ -191,65 +192,74 @@ const APIClient = class APIClient {
         console.warn('MM', 'params11', JSON.stringify(data));
         let encodedData = await this.encode_saitamask_data(data);
         console.warn('MM', 'await this.encodeData(data::::::', encodedData);
-        ssl_fetch(`${BASE_URL}${endpoint}`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: UserToken || undefined,
-          },
-          sslPinning: {
-            certs: sslCertificateList,
-          },
-          disableAllSecurity: true,
-          // body: data != null ? JSON.stringify(data) : null,
-          body: data != null ? encodedData : null,
-        })
-          .then(async res => {
-            try {
-              let jsonVal = await res.json();
-              // console.warn('MM', 'jsonVal::::::', jsonVal,endpoint);
-              if (res.status != 200) {
-                if (jsonVal.message == undefined) {
-                  return reject({message: Constants.SOMETHING_WRONG});
-                }
-                return reject(jsonVal);
-              }
-              return resolve(jsonVal);
-            } catch (e) {
-              // console.warn('MM', 'api error', e);
-              return reject({message: Constants.SOMETHING_WRONG});
-            }
+      //   const config = {
+      //     method: 'post',
+      //     url: `${BASE_URL}${endpoint}`,
+      //     headers: {
+      //       'Content-Type': 'application/json',
+      //       Authorization: UserToken || undefined,
+      //     },
+      //     data: data != null ? JSON.stringify(data) : null,
+      //     timeout: 1000000,
+      //     sslPinning: {
+      //       certs: sslCertificateList,
+      //     },
+      // };
+        try {
+          // await axios(config)
+          ssl_fetch(`${BASE_URL}${endpoint}`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: UserToken || undefined,
+            },
+            sslPinning: {
+              certs: sslCertificateList,
+            },
+            disableAllSecurity: true,
+            body: data != null ? JSON.stringify(data) : null,
+            timeout: 1000000,
+            // body: data != null ? encodedData : null,
           })
-          .catch(error => {
-            let msg = JSON.parse(error?.bodyString);
-            if (error?.status == 400) {
-              if (msg?.invalid) {
-                getCurrentRouteName() != 'ConfirmPin' &&
-                  navigate(NavigationStrings.ConfirmPin, {refreshToken: true});
-              } else if (msg?.logout) {
-                getCurrentRouteName() != 'ConfirmPin' &&
-                  navigate(NavigationStrings.ConfirmPin, {loginAgain: true});
+            .then(async res => {
+              console.log("res::::::", res);
+              try {
+                let jsonVal = await res.json();
+                console.warn('MM', 'jsonVal::::::', jsonVal);
+                if (res.status != 200) {
+                  if (jsonVal.message == undefined) {
+                    return reject({message: Constants.SOMETHING_WRONG});
+                  }
+                  return reject(jsonVal);
+                }
+                return resolve(jsonVal);
+              } catch (e) {
+                console.warn('MM', 'api error', e);
+                return reject({message: Constants.SOMETHING_WRONG});
               }
-            }
-            // console.warn('MM', `msg err::::::post`, msg);
-            return reject(msg);
-          });
-        // .then(async res => {
-        //   try {
-        //     let jsonVal = await res.json();
-        //     if (!res.ok) {
-        //       if (jsonVal.message == undefined) {
-        //         return reject({ message: Constants.SOMETHING_WRONG });
-        //       }
-        //       return reject(jsonVal);
-        //     }
-        //     return resolve(jsonVal);
-        //   } catch (e) {
-        //     //console.warn('MM','error', e);
-        //     return reject({ message: Constants.SOMETHING_WRONG });
-        //   }
-        // })
-        // .catch(reject);
+            })
+            .catch(error => {
+              let msg = error?.bodyString
+                ? JSON.parse(error.bodyString)
+                : {message: Constants.SOMETHING_WRONG};
+              if (error?.status == 400) {
+                if (msg?.invalid) {
+                  getCurrentRouteName() != 'ConfirmPin' &&
+                    navigate(NavigationStrings.ConfirmPin, {
+                      refreshToken: true,
+                    });
+                } else if (msg?.logout) {
+                  getCurrentRouteName() != 'ConfirmPin' &&
+                    navigate(NavigationStrings.ConfirmPin, {loginAgain: true});
+                }
+              }
+              console.warn('MM', 'msg err::::::post77777', error);
+              return reject(msg);
+            });
+        } catch (error) {
+          console.log('-----123----', error);
+          return reject({message: Constants.SOMETHING_WRONG});
+        }
       });
     }
   }
@@ -1045,16 +1055,20 @@ const APIClient = class APIClient {
   }
 
   encode_saitamask_data = data => {
-    return new Promise((resolve, reject) => {
-      const second = new NodeRSA(Constants.SAITAMASK_WALLET_KEY);
-      second.setOptions({encryptionScheme: 'pkcs1'});
-      const enc = second.encrypt(data, 'base64');
-      const dataa = {
-        dataString: enc,
-      };
-      // console.warn('MM','enc::::', dataa);
-      return resolve(JSON.stringify(dataa));
-    });
+    try {
+      return new Promise((resolve, reject) => {
+        const second = new NodeRSA(Constants.SAITAMASK_WALLET_KEY);
+        second.setOptions({encryptionScheme: 'pkcs1'});
+        const enc = second.encrypt(data, 'base64');
+        const dataa = {
+          dataString: enc,
+        };
+        // console.warn('MM','enc::::', dataa);
+        return resolve(JSON.stringify(dataa));
+      });
+    } catch (error) {
+      console.log('--------ENCODE--', error);
+    }
   };
 
   encodeData = data => {

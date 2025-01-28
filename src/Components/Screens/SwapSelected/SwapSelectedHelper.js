@@ -13,7 +13,7 @@ const limit = 20;
 const GAS_PRICE_EXTRA_BUFFER = 2000000000;
 
 export const getWeb3Object = (chain, tokenFirst) => {
-  console.log('chain:::::', chain, Singleton.getInstance().ethLink);
+  console.log('chain:::::12222222', chain, Singleton.getInstance().ethLink);
   let network;
   console.log('');
   if (chain) {

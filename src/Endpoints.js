@@ -1,7 +1,8 @@
 import * as constants from './Constant';
 
+// export const BASE_URL = 'http://192.0.0.2:3000/api/v1/';
 export const BASE_URL = 'https://api.saita.pro/prod/api/v1/';
-// export const BASE_URL = 'https://stage-api.saita.pro/prod/api/v1/';
+// export const BASE_URL = 'https://wallet-api.pro-saitamask.com/stage/api/v1/';
 //  constants.network == 'testnet' ? 'https://wallet-api.pro-saitamask.com/stage/api/v1/' : 'https://api.saita.pro/prod/api/v1/';// ? 
 export const BASE_URL_SAITACARDS =
   constants.network == 'testnet' ?

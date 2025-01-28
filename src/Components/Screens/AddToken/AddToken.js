@@ -32,7 +32,7 @@ let scanner = false
 const AddToken = props => {
   const [isLoading, setisLoading] = useState(false);
   const [selectedCurrency, setselectedCurrency] = useState("Ethereum");
-  const [currencyData, setCurrencyData] = useState(["Ethereum", "Binance", "Polygon", "Tron", "SaitaChain"])
+  const [currencyData, setCurrencyData] = useState(["Ethereum", "Binance", "Polygon", "Tron", "SaitaChain", "Solana"])
   const [tokenSymbol, settokenSymbol] = useState('');
   const [NoOfdecimals, setNoOfdecimals] = useState('');
   const [name, setname] = useState('');
@@ -54,6 +54,9 @@ const AddToken = props => {
     }else if(props?.route?.params?.coin_family==6){
       setCurrencyData(["Binance"])
       setselectedCurrency("Binance")
+    }else if(props?.route?.params?.coin_family==8){
+      setCurrencyData(["Solana"])
+      setselectedCurrency("Solana")
     }
     const backAction = () => {
       console.log("Start_Scanner::::", scanner);
@@ -85,6 +88,9 @@ const AddToken = props => {
         } else if (res == constants.COIN_SYMBOL.STC) {
           setselectedCurrency('SaitaChain')
           setCurrencyData(["SaitaChain"])
+        } else if (res == constants.COIN_SYMBOL.SOL) {
+          setselectedCurrency('Solana')
+          setCurrencyData(["Solana"])
         }
       })
 
@@ -168,10 +174,16 @@ const AddToken = props => {
         selectedCurrency.toLowerCase() == constants.NETWORK.ETHEREUM
           ? 1
           : selectedCurrency.toLowerCase() == constants.NETWORK.BINANCE
-            ? 6 : selectedCurrency.toLowerCase() == constants.NETWORK.POLYGON ?
-              11 : selectedCurrency.toLowerCase() == constants.NETWORK.SAITACHAIN ? 4 : 3,
-      tokenType: selectedCurrency.toLowerCase() == constants.NETWORK.TRON ? 2 : 1,
-
+          ? 6
+          : selectedCurrency.toLowerCase() == constants.NETWORK.POLYGON
+          ? 11
+          : selectedCurrency.toLowerCase() == constants.NETWORK.SAITACHAIN
+          ? 4
+          : selectedCurrency.toLowerCase() == constants.NETWORK.SOLANA
+          ? 8
+          : 3,
+      tokenType:
+        selectedCurrency.toLowerCase() == constants.NETWORK.TRON ? 2 : 1,
     };
     let access_token = Singleton.getInstance().access_token;
     props
@@ -196,7 +208,6 @@ const AddToken = props => {
     if (selectedCurrency.toUpperCase() == 'ETHEREUM') {
       var isEthAddress = Singleton.getInstance().validateEthAddress(text);
       if (isEthAddress) {
-        //console.warn('MM','This is a valid address');
         return true;
       } else {
         Singleton.showAlert('Invalid token address');
@@ -206,7 +217,6 @@ const AddToken = props => {
     } else if (selectedCurrency.toUpperCase() == 'BINANCE') {
       var isBnbAddress = Singleton.getInstance().validateEthAddress(text);
       if (isBnbAddress) {
-        //console.warn('MM','This is a valid address');
         return true;
       } else {
         Singleton.showAlert('Invalid token address');
@@ -216,27 +226,34 @@ const AddToken = props => {
     } else if (selectedCurrency.toUpperCase() == 'POLYGON') {
       var isMaticAddress = Singleton.getInstance().validateEthAddress(text);
       if (isMaticAddress) {
-        //console.warn('MM','This is a valid address');
         return true;
       } else {
         Singleton.showAlert('Invalid token address');
         setContractAddress('');
         return false;
       }
-    }else if (selectedCurrency.toUpperCase() == 'SAITACHAIN') {
+    } else if (selectedCurrency.toUpperCase() == 'SAITACHAIN') {
       var isStcAddress = Singleton.getInstance().validateEthAddress(text);
       if (isStcAddress) {
-        //console.warn('MM','This is a valid address');
         return true;
       } else {
         Singleton.showAlert('Invalid token address');
         setContractAddress('');
         return false;
       }
-    }  else {
+    } else if (selectedCurrency.toUpperCase() == 'SOLANA') {
+      console.log('------IN-SOLANA-------');
+      var isSolAddress = Singleton.getInstance().validateSolAddress(text);
+      if (isSolAddress) {
+        return true;
+      } else {
+        Singleton.showAlert('Invalid token address');
+        setContractAddress('');
+        return false;
+      }
+    } else {
       var isTronAddress = Singleton.getInstance().validateTronAddress(text);
       if (isTronAddress) {
-        //console.warn('MM','This is a valid address');
         return true;
       } else {
         Singleton.showAlert('Invalid token address');
@@ -266,10 +283,14 @@ const AddToken = props => {
         selectedCurrency.toLowerCase() == constants.NETWORK.ETHEREUM
           ? 1
           : selectedCurrency.toLowerCase() == constants.NETWORK.BINANCE
-            ? 6
-            : selectedCurrency.toLowerCase() == constants.NETWORK.POLYGON ? 11
-              :selectedCurrency.toLowerCase() == constants.NETWORK.SAITACHAIN ? 4 :
-              3,
+          ? 6
+          : selectedCurrency.toLowerCase() == constants.NETWORK.POLYGON
+          ? 11
+          : selectedCurrency.toLowerCase() == constants.NETWORK.SOLANA
+          ? 8
+          : selectedCurrency.toLowerCase() == constants.NETWORK.SAITACHAIN 
+          ? 4
+          : 3,
       token_address: contractAddress,
       name: name,
       token_type: selectedCurrency.toLowerCase() == constants.NETWORK.TRON ? 2 : 1,

@@ -13,6 +13,14 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import {
+  Connection,
+  Keypair,
+  Transaction,
+  SystemProgram,
+  PublicKey,
+} from '@solana/web3.js';
+import bs58 from 'bs58';
 import FastImage from 'react-native-fast-image';
 import {connect, useDispatch} from 'react-redux';
 import {API_ETH_GAS_PRICE} from '../../../Endpoints';
@@ -97,6 +105,7 @@ const SendSOL = props => {
   // const [gaslimitForTxn, setgaslimitForTxn] = useState(21000);
   const [gasFeeMultiplier, setgasFeeMultiplier] =
     useState(0.000000000000000001);
+  const [transactionFee, setTransactionFee] = useState('');
   // const [totalFee, settotalFee] = useState('');
   const [balance, setbalance] = useState(0);
   const [advancedGasPrice, setadvancedGasPrice] = useState('');
@@ -106,7 +115,7 @@ const SendSOL = props => {
   // const [maxClicked, setmaxClicked] = useState(false);
   const [MaxFee, setMaxFee] = useState(0);
   const [baseFee, setbaseFee] = useState(0);
-  const [ethPvtKey, setethPvtKey] = useState('');
+  const [solPvtKey, setSolPvtKey] = useState('');
   const [gas_price_eth, setgas_price_eth] = useState(0);
   const [showConfirmTxnModal, setshowConfirmTxnModal] = useState(false);
   const [BasicModall, setBasicModal] = useState(false);
@@ -155,18 +164,16 @@ const SendSOL = props => {
 
   useEffect(() => {
     // console.warn('MM', 'props---SendEthClass');
-    console.log('walletData===', walletData);
-    let address = props?.route?.params?.qrCode
-      ? props?.route?.params?.qrCode
-      : '';
-    settoAddress(address);
+    console.log('walletData==123=', props?.route?.params);
+    // let address = props?.route?.params?.qrCode
+    //   ? props?.route?.params?.qrCode
+    //   : '';
+    // settoAddress(address);
     Singleton.getInstance()
-      .newGetData(`${Singleton.getInstance().defaultEthAddress}_pk`)
-      .then(ethPvtKey => {
-        console.warn('MM', 'ethPvtKey--------', ethPvtKey);
-        setethPvtKey(ethPvtKey);
-        // let a = Buffer.from(ethPvtKey.substring(2) , 'hex')
-        // console.log(a);
+      .newGetData(`${Singleton.getInstance().defaultSolAddress}_pk`)
+      .then(solanaPvtKey => {
+        console.warn('MM', 'solPvtKey--------', solanaPvtKey);
+        setSolPvtKey(solanaPvtKey);
       })
       .catch(err => {
         console.log(err);
@@ -174,9 +181,42 @@ const SendSOL = props => {
     availableBalance();
     // getBaseFee();
     gaslimitForTxn = 21000;
-    walletData?.is_token == 1 ? getGasLimit() : getTotalFee();
+    getTransactionFee();
+    console.log('-------transac123t999ionFee-----', transactionFee)
+    // walletData?.is_token == 1 ? getGasLimit() : getTotalFee();
     return;
   }, []);
+  const connection = new Connection('https://api.mainnet-beta.solana.com', 'confirmed');
+  //SENDSOL
+  const getTransactionFee = async () => {
+    try {
+      // Create a dummy transaction to estimate the fee
+      const sender = Keypair.generate(); // This should be your actual wallet keypair
+      const transaction = new Transaction().add(
+        SystemProgram.transfer({
+          fromPubkey: sender.publicKey,
+          toPubkey: sender.publicKey, // Dummy recipient
+          lamports: 0, // No transfer, just to calculate fee
+        }),
+      );
+
+      // Get the recent blockhash and set it for the transaction
+      const {blockhash} = await connection.getLatestBlockhash('confirmed');
+      transaction.recentBlockhash = blockhash;
+      transaction.feePayer = sender.publicKey;
+
+      // Estimate the fee for the transaction
+      const {value: feeLamports} = await connection.getFeeForMessage(
+        transaction.compileMessage(),
+      );
+      const feeInSOL = feeLamports / 1_000_000_000;
+      setTransactionFee(feeInSOL.toFixed(8));
+      console.log('-------transact999ionFee-----', transactionFee?.toFixed(8)); // Convert from lamports to SOL
+    } catch (error) {
+      console.error('Failed to estimate fee:', error);
+    }
+  };
+  //END
   const availableBalance = () => {
     let bal =
       walletData?.balance != 0
@@ -196,42 +236,42 @@ const SendSOL = props => {
   //   setbaseFee(fee);
   //   console.warn('MM','chk fee:::::eth:::::::', fee, baseFee);
   // };
-  const getTotalFee = async () => {
-    try {
-      // setisLoading(true);
-      // const Totalfee = await getTotalGasFee();
-      let token = await Singleton.getInstance().newGetData(
-        Constants.access_token,
-      );
-      let res = await APIClient.getInstance().get(API_ETH_GAS_PRICE, token);
-      console.log('response .... ', res);
-      let Totalfee = res?.data?.FastGasPrice * 10 ** 9;
-      setbaseFee(Totalfee);
-      // console.log('response .... ' , res);
-      setgas_price_eth(Totalfee);
-      // console.warn('MM','-----feeeee', Totalfee, gaslimitForTxn);
-      totalFee = (Totalfee * gasFeeMultiplier * gaslimitForTxn).toFixed(8);
+  // const getTotalFee = async () => {
+  //   try {
+  //     // setisLoading(true);
+  //     // const Totalfee = await getTotalGasFee();
+  //     let token = await Singleton.getInstance().newGetData(
+  //       Constants.access_token,
+  //     );
+  //     let res = await APIClient.getInstance().get(API_ETH_GAS_PRICE, token);
+  //     console.log('response .... ', res);
+  //     let Totalfee = res?.data?.FastGasPrice * 10 ** 9;
+  //     setbaseFee(Totalfee);
+  //     // console.log('response .... ' , res);
+  //     setgas_price_eth(Totalfee);
+  //     // console.warn('MM','-----feeeee', Totalfee, gaslimitForTxn);
+  //     totalFee = (Totalfee * gasFeeMultiplier * gaslimitForTxn).toFixed(8);
 
-      // settotalFee((Totalfee * gasFeeMultiplier * gaslimitForTxn).toFixed(8));
-      ////console.log(
-      // Totalfee * gasFeeMultiplier * gaslimitForTxn,
-      //   '(Totalfee * gasFeeMultiplier * gaslimitForTxn).toFixed(8)',
-      //   );
-      {
-        amount ? findMaxSend() : null;
-      }
-      setisLoading(false);
-    } catch (error) {
-      console.warn('MM', error);
-      // Singleton.showAlert(error?.message || Constants.SOMETHING_WRONG)
-      setisLoading(false);
-    }
-  };
+  //     // settotalFee((Totalfee * gasFeeMultiplier * gaslimitForTxn).toFixed(8));
+  //     ////console.log(
+  //     // Totalfee * gasFeeMultiplier * gaslimitForTxn,
+  //     //   '(Totalfee * gasFeeMultiplier * gaslimitForTxn).toFixed(8)',
+  //     //   );
+  //     {
+  //       amount ? findMaxSend() : null;
+  //     }
+  //     setisLoading(false);
+  //   } catch (error) {
+  //     console.warn('MM', error);
+  //     // Singleton.showAlert(error?.message || Constants.SOMETHING_WRONG)
+  //     setisLoading(false);
+  //   }
+  // };
   const findMaxSend = () => {
     //console.warn('MM','tlhis.state.totaFee:::::::::', maxClicked, totalFee);
     if (maxClicked) {
       if (walletData?.coin_symbol?.toLowerCase() == Constants.COIN_SYMBOL.SOL) {
-        if (parseFloat(walletData?.balance - totalFee) <= 0) {
+        if (parseFloat(walletData?.balance - transactionFee) <= 0) {
           Singleton.showAlert(LanguageManager.lowBalanceAlert);
           maxClicked = false;
           // setmaxClicked(false);
@@ -240,7 +280,7 @@ const SendSOL = props => {
         setAmount(
           Singleton.getInstance().toFixed(
             exponentialToDecimalWithoutComma(
-              walletData?.balance - totalFee - 0.00002,
+              walletData?.balance - transactionFee,
             ),
             decim,
           ),
@@ -294,11 +334,11 @@ const SendSOL = props => {
       Singleton.showAlert(constants.VALID_PRIORITY_FEE);
       return;
     }
-    totalFee = (
-      (2 * baseFee + parseInt(priorityFee)) *
-      gasFeeMultiplier *
-      gaslimitForTxn
-    ).toFixed(8);
+    // totalFee = (
+    //   (2 * baseFee + parseInt(priorityFee)) *
+    //   gasFeeMultiplier *
+    //   gaslimitForTxn
+    // ).toFixed(8);
     setVisible(false);
     setgasPriceForTxn(advancedGasPrice * gwei_multi),
       setgasPriceForTxn(advancedGasLimit),
@@ -341,12 +381,12 @@ const SendSOL = props => {
       Singleton.showAlert(constants.VALID_AMOUNT);
       return;
     }
-    if (parseFloat(balance) < parseFloat(amount)) {
+    if (parseFloat(balance) < parseFloat(amount) + parseFloat(transactionFee)) {
       console.warn('MM', '>>>', balance, amount);
       Singleton.showAlert(constants.INSUFFICIENT_BALANCE);
       return;
     } else {
-      if (Singleton.getInstance().validateEthAddress(toAddress)) {
+      if (Singleton.getInstance().validateSolAddress(toAddress)) {
         setshowConfirmTxnModal(true);
       } else {
         Singleton.showAlert(constants.VALID_ADDRESS);
@@ -354,74 +394,105 @@ const SendSOL = props => {
     }
   };
 
-  const getGasLimit = () => {
-    setisLoading(true);
-    let data = {
-      from: Singleton.getInstance().defaultEthAddress,
-      to: Singleton.getInstance().defaultEthAddress,
-      amount: amount,
-    };
-    let blockChain = Constants.NETWORK.SOLANA;
-    let access_token = Singleton.getInstance().access_token;
-    let contractAddress = walletData?.token_address;
-    props
-      .getEthGasEstimate({blockChain, data, contractAddress, access_token})
-      .then(res => {
-        console.warn('MM', 'chk res gas estimate:::::', res);
-        gaslimitForTxn = res.gas_estimate;
-        setisLoading(false);
-        getTotalFee();
-        // setisLoading(false), setgaslimitForTxn(res.gas_estimate), getTotalFee();
-      })
-      .catch(err => {
-        setisLoading(false);
-      });
-  };
-  const send_ETH = () => {
-    setshowConfirmTxnModal(false);
-    setisLoading(true);
-    //  console.warn('MM','in Send ETH');
-    createSignedNewEthTransaction(
-      Singleton.getInstance().defaultEthAddress,
-      toAddress,
-      ethPvtKey,
-      amount,
-      baseFee,
-    )
-      .then(ethSignedRaw => {
-        send(
-          ethSignedRaw.signedRaw,
-          walletData?.coin_symbol.toLowerCase(),
-          ethSignedRaw.nonce,
-        );
-      })
-      .catch(err => {
-        //  console.warn('MM','chk signed raw err::::::::::::=====>', err);
-        setisLoading(false);
-      });
-  };
+  // const getGasLimit = () => {
+  //   setisLoading(true);
+  //   let data = {
+  //     from: Singleton.getInstance().defaultEthAddress,
+  //     to: Singleton.getInstance().defaultEthAddress,
+  //     amount: amount,
+  //   };
+  //   let blockChain = Constants.NETWORK.SOLANA;
+  //   let access_token = Singleton.getInstance().access_token;
+  //   let contractAddress = walletData?.token_address;
+  //   props
+  //     .getEthGasEstimate({blockChain, data, contractAddress, access_token})
+  //     .then(res => {
+  //       console.warn('MM', 'chk res gas estimate:::::', res);
+  //       gaslimitForTxn = res.gas_estimate;
+  //       setisLoading(false);
+  //       getTotalFee();
+  //       // setisLoading(false), setgaslimitForTxn(res.gas_estimate), getTotalFee();
+  //     })
+  //     .catch(err => {
+  //       setisLoading(false);
+  //     });
+  // };
+  // const send_ETH = async () => {
+  //   setshowConfirmTxnModal(false);
+  //   setisLoading(true);
+  //   try {
+  //     const connection = new Connection(
+  //       clusterApiUrl('mainnet-beta'),
+  //       'confirmed',
+  //     );
+  //     const senderKeypair = Keypair.fromSecretKey(solPvtKey);
+  //     const {blockhash} = await connection.getRecentBlockhash();
+  //     const transaction = new Transaction({
+  //       recentBlockhash: blockhash,
+  //       feePayer: senderKeypair.publicKey,
+  //     });
+
+  //     transaction.add(
+  //     SystemProgram.transfer({
+  //       fromPubkey: senderKeypair.publicKey,
+  //       toPubkey: 'recipientPublicKey',
+  //       lamports: 1000000000 + 'transactionFee', // 1 SOL + fee
+  //     })
+  //   );
+
+  //   await transaction.sign(senderKeypair);
+
+  //   // Serialize the transaction to get the raw signed transaction
+  //   const serializedTransaction = transaction.serialize();
+  //   const rawTransactionHex = Buffer.from(serializedTransaction).toString('hex');
+  //   const signature = await sendAndConfirmTransaction(connection, transaction, [senderKeypair]);
+  // } catch (error) {
+  //   console.error("Transaction failed:", error);
+  //   setisLoading(false);
+  // } finally {
+  //   setisLoading(false);
+  // }
+  //   //  console.warn('MM','in Send ETH');
+  //   // createSignedNewEthTransaction(
+  //   //   Singleton.getInstance().defaultEthAddress,
+  //   //   toAddress,
+  //   //   ethPvtKey,
+  //   //   amount,
+  //   //   baseFee,
+  //   // )
+  //   //   .then(ethSignedRaw => {
+  //   //     send(
+  //   //       ethSignedRaw.signedRaw,
+  //   //       walletData?.coin_symbol.toLowerCase(),
+  //   //       ethSignedRaw.nonce,
+  //   //     );
+  //   //   })
+  //   //   .catch(err => {
+  //   //     //  console.warn('MM','chk signed raw err::::::::::::=====>', err);
+  //   //     setisLoading(false);
+  //   //   });
+  // };
   const send = (signedRaw, coinSymbol, nonce) => {
     setisLoading(true);
     let data = {
-      from: Singleton.getInstance().defaultEthAddress,
+      from: Singleton.getInstance().defaultSolAddress,
       to: toAddress,
       amount: amount,
       gas_price: 0,
-      gas_estimate: 21000,
+      gas_estimate: 0,
       tx_raw: signedRaw,
       tx_type: 'WITHDRAW',
-      nonce: nonce,
+      nonce: 0,
       // chat: this.props.chat
     };
     let access_token = Singleton.getInstance().access_token;
-    let blockChain = Constants.NETWORK.SOLANA;
     let coin_symbol = coinSymbol;
     props
       .sendETH({data, access_token, blockChain, coin_symbol})
       .then(res => {
         let req = {
           to: toAddress,
-          coinFamily: 1,
+          coinFamily: 8,
         };
         props
           .CheckIsContactExist({data: req, access_token})
@@ -447,58 +518,58 @@ const SendSOL = props => {
         }
       });
   };
-  const send_ERC20 = () => {
-    setshowConfirmTxnModal(false);
-    setisLoading(true);
-    let amountcheck = amount * walletData?.decimals;
-    // if (amountcheck.toString().includes('.')) {
-    //   let intPart = amountcheck.toString().split('.')[0];
-    //   amountcheck = intPart;
-    // }
+  // const send_ERC20 = () => {
+  //   setshowConfirmTxnModal(false);
+  //   setisLoading(true);
+  //   let amountcheck = amount * walletData?.decimals;
+  //   // if (amountcheck.toString().includes('.')) {
+  //   //   let intPart = amountcheck.toString().split('.')[0];
+  //   //   amountcheck = intPart;
+  //   // }
 
-    //  console.warn('MM', 'amount' , amount , amount * walletData?.decimals , amountcheck , amountcheck , exponentialToDecimalWithoutComma(amountcheck));
-    let data = {
-      my_address: Singleton.getInstance().defaultEthAddress,
-      dest_address: toAddress,
-      amount: amountcheck,
-    };
+  //   //  console.warn('MM', 'amount' , amount , amount * walletData?.decimals , amountcheck , amountcheck , exponentialToDecimalWithoutComma(amountcheck));
+  //   let data = {
+  //     my_address: Singleton.getInstance().defaultEthAddress,
+  //     dest_address: toAddress,
+  //     amount: amountcheck,
+  //   };
 
-    let access_token = Singleton.getInstance().access_token;
-    let blockChain = Constants.NETWORK.SOLANA;
-    let contractAddress = walletData?.token_address;
-    props
-      .getEthTokenRaw({blockChain, data, contractAddress, access_token})
-      .then(raw => {
-        console.warn('MM', 'chk eth token signed raw res::::::::::::', raw);
-        createSignedNewEthTokenTransaction(
-          Singleton.getInstance().defaultEthAddress,
-          contractAddress,
-          ethPvtKey,
-          amount,
-          gaslimitForTxn,
-          raw.data,
-          baseFee,
-        )
-          .then(token_raw => {
-            console.warn(
-              'MM',
-              'chk erc20 signed raw res::::::::::::',
-              token_raw,
-            );
-            send(token_raw.signedRaw, contractAddress, token_raw.nonce);
-          })
-          .catch(err => {
-            console.warn('MM', 'chk erc20 signed raw err::::::::::::', err);
-            setisLoading(false);
-          });
-        // setisLoading(false);
-      })
-      .catch(err => {
-        //  console.warn('MM','chk eth token signed raw err::::::::::::', err);
-        Singleton.showAlert(constants.SOMETHING_WRONG);
-        setisLoading(false);
-      });
-  };
+  //   let access_token = Singleton.getInstance().access_token;
+  //   let blockChain = Constants.NETWORK.SOLANA;
+  //   let contractAddress = walletData?.token_address;
+  //   props
+  //     .getEthTokenRaw({blockChain, data, contractAddress, access_token})
+  //     .then(raw => {
+  //       console.warn('MM', 'chk eth token signed raw res::::::::::::', raw);
+  //       createSignedNewEthTokenTransaction(
+  //         Singleton.getInstance().defaultEthAddress,
+  //         contractAddress,
+  //         ethPvtKey,
+  //         amount,
+  //         gaslimitForTxn,
+  //         raw.data,
+  //         baseFee,
+  //       )
+  //         .then(token_raw => {
+  //           console.warn(
+  //             'MM',
+  //             'chk erc20 signed raw res::::::::::::',
+  //             token_raw,
+  //           );
+  //           send(token_raw.signedRaw, contractAddress, token_raw.nonce);
+  //         })
+  //         .catch(err => {
+  //           console.warn('MM', 'chk erc20 signed raw err::::::::::::', err);
+  //           setisLoading(false);
+  //         });
+  //       // setisLoading(false);
+  //     })
+  //     .catch(err => {
+  //       //  console.warn('MM','chk eth token signed raw err::::::::::::', err);
+  //       Singleton.showAlert(constants.SOMETHING_WRONG);
+  //       setisLoading(false);
+  //     });
+  // };
   const qrClose = () => {
     settoAddress('');
     setStart_Scanner(false);
@@ -588,7 +659,7 @@ const SendSOL = props => {
             Singleton.showAlert(constants.NO_NETWORK);
             return;
           }
-          walletData?.is_token == 1 ? send_ERC20() : send_ETH();
+          sendSol(); //walletData?.is_token == 1 ? send_ERC20() : send_ETH();
           setPinModal(false);
         } else {
           Singleton.showAlert(LanguageManager.wrongPin);
@@ -597,18 +668,88 @@ const SendSOL = props => {
       });
     return;
   };
+  const hexToUint8Array = (hex) => {
+    const array = new Uint8Array(hex.length / 2);
+    for (let i = 0; i < hex.length; i += 2) {
+      array[i / 2] = parseInt(hex.slice(i, i + 2), 16);
+    }
+    return array;
+  };
+
+  const sendSol = () => {
+    setshowConfirmTxnModal(false);
+    setisLoading(true);
+    let nonce;
+    let rawTransaction;
+    try {
+      const senderSecretKey = hexToUint8Array(solPvtKey);
+      const senderKeypair = Keypair.fromSecretKey(senderSecretKey);
+
+      // Get the recent blockhash and set it for the transaction
+      connection
+        .getLatestBlockhash('confirmed')
+        .then(({blockhash}) => {
+          nonce = blockhash;
+          console.log('-------blockhash-nonce--', blockhash);
+
+          // Create a transaction
+          const transaction = new Transaction().add(
+            SystemProgram.transfer({
+              fromPubkey: senderKeypair.publicKey,
+              toPubkey: new PublicKey(walletData?.wallet_address),
+              lamports: amount * 1_000_000_000, // Convert SOL to lamports
+            }),
+          );
+
+          console.log('-------transaction--', transaction);
+
+          transaction.feePayer = senderKeypair.publicKey;
+          transaction.recentBlockhash = blockhash;
+
+          // Sign the transaction
+          transaction.sign(senderKeypair);
+
+          // Serialize the transaction to get the raw transaction
+          const rawTransactionBuffer = transaction.serialize();
+          rawTransaction = bs58.encode(rawTransactionBuffer);
+          console.log('Raw Transaction:', rawTransaction);
+
+          // Send the transaction and get the signature
+          return connection.sendRawTransaction(rawTransactionBuffer);
+        })
+        .then(signature => {
+          console.log('Transaction Signature:', signature);
+          return connection.confirmTransaction({
+            signature,
+            commitment: 'confirmed', // Updated confirmation method
+          });
+        })
+        .then(solTransaction => {
+          send(rawTransaction, walletData?.coin_symbol.toLowerCase(), nonce);
+          console.log('-----------solTransaction----', solTransaction);
+        })
+        .catch(error => {
+          console.error('Transaction failed:', error);
+          setisLoading(false);
+        });
+    } catch (err) {
+      console.log('---error', err);
+      setisLoading(false);
+    }
+  };
+
   const getAddress = address => {
     setShowAddContact(false);
     settoAddress(address);
   };
-  const resetAction = () => {
-    gaslimitForTxn = gaslimitForTxn;
-    setadvancedSet(false);
-    maxClicked = true;
-    setTimeout(() => {
-      getTotalFee();
-    }, 250);
-  };
+  // const resetAction = () => {
+  //   gaslimitForTxn = gaslimitForTxn;
+  //   setadvancedSet(false);
+  //   maxClicked = true;
+  //   setTimeout(() => {
+  //     getTotalFee();
+  //   }, 250);
+  // };
   return (
     <>
       {Start_Scanner && (
@@ -975,7 +1116,7 @@ const SendSOL = props => {
                     style={{fontSize: 15}}
                     placeholder=""
                     title=""
-                    text={totalFee}
+                    text={transactionFee}
                     editable={false}
                     width={'100%'}
                   />
@@ -1006,10 +1147,10 @@ const SendSOL = props => {
                             exponentialToDecimalWithoutComma(amount),
                             decim,
                           )} ${walletData?.coin_symbol.toUpperCase()} + ${parseFloat(
-                            totalFee,
+                            transactionFee,
                           )} SOL`
                         : `${0} ${walletData?.coin_symbol.toUpperCase()} + ${parseFloat(
-                            totalFee,
+                            transactionFee,
                           )} SOL`
                       : amount
                       ? Singleton.getInstance().toFixednew(
@@ -1017,13 +1158,13 @@ const SendSOL = props => {
                             bigNumberSafeMath(
                               amount == '.' ? '0' : amount,
                               '+',
-                              totalFee,
+                              transactionFee,
                             ),
                           ),
                           decim,
                         ) + ' SOL'
-                      : totalFee
-                      ? parseFloat(totalFee).toFixed(8) + ' SOL'
+                      : transactionFee
+                      ? parseFloat(transactionFee).toFixed(8) + ' SOL'
                       : '0.00 SOL'}
                   </Text>
                 </View>
@@ -1035,6 +1176,7 @@ const SendSOL = props => {
               onPress={() => onSendAction()}
               btnStyle={{height: heightDimen(60), width: '100%'}}
               customGradient={{borderRadius: heightDimen(30)}}
+              disabled={true}
               text={LanguageManager.next}
             />
           </View>
@@ -1199,7 +1341,7 @@ const SendSOL = props => {
                 <DetailOption
                   type={'From'}
                   item={'From'}
-                  value={Singleton.getInstance().defaultEthAddress}
+                  value={Singleton.getInstance().defaultSolAddress}
                   bottomLine={true}
                 />
 
@@ -1213,10 +1355,10 @@ const SendSOL = props => {
                 <DetailOption
                   type={'AmountWithSmallText'}
                   item={'Network Fee'}
-                  value={parseFloat(totalFee).toFixed(8)}
+                  value={parseFloat(transactionFee).toFixed(8)}
                   fiatValue={Singleton.getInstance().toFixed(
                     exponentialToDecimalWithoutComma(
-                      parseFloat(totalFee) *
+                      parseFloat(transactionFee) *
                         walletData?.native_perPrice_in_fiat,
                     ),
                     2,
@@ -1238,23 +1380,23 @@ const SendSOL = props => {
                       ? `${exponentialToDecimalWithoutComma(
                           parseFloat(amount),
                         )} ${walletData?.coin_symbol.toUpperCase()} + ${parseFloat(
-                          totalFee,
+                          transactionFee,
                         )} SOL`
-                      : (parseFloat(amount) + parseFloat(totalFee)).toFixed(8)
+                      : (parseFloat(amount) + parseFloat(transactionFee)).toFixed(8)
                   }
                   fiatValue={
                     walletData?.is_token == 1
                       ? Singleton.getInstance().toFixed(
                           exponentialToDecimalWithoutComma(
                             parseFloat(amount) * walletData?.perPrice_in_fiat +
-                              parseFloat(totalFee) *
+                              parseFloat(transactionFee) *
                                 walletData?.native_perPrice_in_fiat,
                           ),
                           2,
                         )
                       : Singleton.getInstance().toFixed(
                           exponentialToDecimalWithoutComma(
-                            (parseFloat(amount) + parseFloat(totalFee)) *
+                            (parseFloat(amount) + parseFloat(transactionFee)) *
                               walletData?.perPrice_in_fiat,
                           ),
                           2,

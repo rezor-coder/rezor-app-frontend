@@ -50,7 +50,7 @@ const ConnectWithDapp2 = props => {
   const [showDisconnect, setShowDisconnect] = useState(false);
   const [selectedDapp, setSelectedDapp] = useState({});
   const [chainList, setChainList] = useState([]);
-  const [setis_private_wallet] = useState('0');
+  const [is_private_wallet, setis_private_wallet] = useState('0');
   let clickDocument = false;
   const [activeSessions, setActiveSessions] = useState([]);
   const route = useRoute();

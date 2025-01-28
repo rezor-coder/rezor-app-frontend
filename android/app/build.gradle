@@ -80,8 +80,8 @@ android {
         applicationId "com.saitapro"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 45
-        versionName "1.45"
+        versionCode 1
+        versionName "1.0"
         missingDimensionStrategy 'react-native-camera', 'general' //add this line
         multiDexEnabled true
 

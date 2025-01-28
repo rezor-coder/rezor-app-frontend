@@ -367,6 +367,8 @@ const ManageWallet = props => {
                           ? 'MATIC'
                           : item?.coin_family == 4
                           ? 'STC'
+                          : item?.coin_family == 8
+                          ? 'SOL'
                           : 'TRX'
                         : ''}
                     </Text>

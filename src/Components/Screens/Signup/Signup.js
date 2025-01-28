@@ -28,7 +28,7 @@ const Signup = () => {
             getCurrentRouteName() != 'VerifyPhrase' && navigate(NavigationStrings.VerifyPhrase)
           }
           style={styles.signupText}>
-          SETTINGSsdsdsds
+          SETTINGS
         </Text>
       </View>
     </Wrap>

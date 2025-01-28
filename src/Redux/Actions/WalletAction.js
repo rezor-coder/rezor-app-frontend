@@ -94,7 +94,6 @@ export const getCoinList = ({
       APIClient.getInstance()
         .post(API_COIN_LIST, data, access_token)
         .then(response => {
-          // console.warn('MM', 'COINlIST--- ', response);
           let result = response;
           resolve(result);
           coinListSuccess(dispatch, result);
@@ -160,9 +159,11 @@ export const getMyWallets = ({
         coinFamilyKeys: coinFamilyKeys,
         search: search,
       };
+      console.log('------params---', data);
       APIClient.getInstance()
         .post(API_MYWALLETS, data, access_token)
         .then(response => {
+          console.log('------response---', response);
           var newArray = [];
           let price = 0;
           let totalBalance = 0;
@@ -269,88 +270,6 @@ export const getMyWallets = ({
               ? [stcCoin, ...filteredArray]
               : [...filteredArray];
             finalArray.sort((a, b) => b.balance - a.balance);
-            const dummySol = {
-              "wallet_id": 692200,
-              "user_id": 74527,
-              "coin_id": 1810,
-              "wallet_address": "C3d4Csradh8Co4bL8NA3mLdVuTSWtkSg9Vmhe3Do8Czr",
-              "wallet_name": "Raj123",
-              "balance": 0,
-              "coin_family": 8,
-              "coin_name": "Solana",
-              "coin_symbol": "sol",
-              "coin_gicko_alias": "solana",
-              "is_stake": 0,
-              "coin_image": "https://assets.coingecko.com/coins/images/4128/large/solana.png?1639702671",
-              "is_token": 0,
-              "token_address": null,
-              "decimals": 100000000,
-              "usd_price": null,
-              "coin_status": 1,
-              "currency_id": 4,
-              "currency_name": "US Dollar",
-              "currency_code": "USD",
-              "currency_symbol": "$",
-              "default_withdraw_limit": null,
-              "user_wallet_status": 1,
-              "is_swap": 0,
-              "on_epay": 0,
-              "w_coin_id": 1800,
-              "coin_fiat_price": [
-                {
-                  "id": 11400,
-                  "coin_type": "sol",
-                  "fiat_type": "aud",
-                  "cmc_id": "1",
-                  "coin_id": 1817,
-                  "value": 0.000000,
-                  "price_change_24h": -0.00000,
-                  "price_change_percentage_24h": 0.00000,
-                  "market_cap": 0.00000,
-                  "circulating": 0,
-                  "total_supply": 0,
-                  "rank": 1,
-                  "volume_24h": 0.000000,
-                  "max_supply": 0.00000,
-                  "roi": 0,
-                  "open": 0,
-                  "high": 0,
-                  "average": 0,
-                  "close": 0,
-                  "low": 0,
-                  "change_price": -0.000000,
-                  "all_time_high": 0,
-                  "createdAt": "2022-11-10T13:15:02.000Z",
-                  "updatedAt": "2024-09-03T07:50:30.000Z"
-                }
-              ],
-              "native_perPrice_in_fiat": 0.00000000,
-              "graphData": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-              "totalRecords": 1,
-              "no_of_decimals": 8,
-              "current_pricing": 0,
-              "price_change_percentage": 0.000000,
-              "perPrice_in_fiat": 0.000000,
-              "high": 0,
-              "low": 0,
-              "average": 0,
-              "change": -2.02006151,
-              "marketCap": 1167032467587.5642,
-              "volume_24h": 25558979242.063828,
-              "circulating": 19748946,
-              "max_supply": 2.86520097,
-              "total_supply": 19748946,
-              "roi": 0,
-              "rank": 1
-            }
-            const exists = finalArray.some(item => item.wallet_id === dummySol.wallet_id);
-  
-            // If it does not exist, push the new object into the array
-            if (!exists) {
-              finalArray.push(dummySol);
-              console.log('Object added:', dummySol);
-            }
-            // console.log('---------REDUCERRRRR', JSON.stringify(finalArray));
             resolve(finalArray);
             Singleton.getInstance().newSaveData(
               Constants.WALLET_LIST,
@@ -612,7 +531,7 @@ export const getTransactionList = ({data, access_token}) => {
       APIClient.getInstance()
         .post(API_TRANSACTION, data, access_token)
         .then(response => {
-          // //console.warn('MM','respone API_TRANSACTION--- ', response);
+          console.warn('MM','respone API_TRANSACTION--- ', response);
           let result = response;
           resolve(result);
         })
@@ -824,7 +743,7 @@ export const getInfuraLink = () => {
       APIClient.getInstance()
         .get(API_INFURA_LINK)
         .then(response => {
-          // //console.warn('MM','response API_infura -- ', response.data);
+          console.warn('MM','response API_infura -- ', response.data);
           let result = response.data;
           resolve(result);
         })
@@ -844,7 +763,6 @@ export const getDexUrls = access_token => {
       APIClient.getInstance()
         .get(API_DEX_URLS, access_token)
         .then(response => {
-          console.warn('MM', 'response API_infura -- ', response.data);
           let result = response.data;
           let data = {
             epayUrl: '',
