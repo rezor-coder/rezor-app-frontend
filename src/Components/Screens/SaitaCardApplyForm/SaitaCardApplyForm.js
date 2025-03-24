@@ -785,7 +785,7 @@ const SaitaCardApplyForm = props => {
   };
   const redirect = msg => {
     Alert.alert(
-      'SaitaPro',
+      'Rezor',
       msg,
       [
         {
@@ -1887,7 +1887,7 @@ const SaitaCardApplyForm = props => {
                     fontFamily: fonts.semibold,
                     fontSize: areaDimen(14),
                   }}>
-                  Pay using SaitaPro Wallet
+                  Pay using Rezor Wallet
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity

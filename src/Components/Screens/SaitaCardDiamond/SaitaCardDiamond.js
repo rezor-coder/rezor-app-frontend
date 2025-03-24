@@ -1266,11 +1266,11 @@ const SaitaCardDiamond = props => {
             />
   <Text
                   style={{ fontFamily: Fonts.bold, fontSize: 20, color: ThemeManager.colors.textColor, textAlign:'center'}}>
-                  IMPORTANT: SaitaPro Balance Check
+                  IMPORTANT: Rezor Balance Check
                 </Text>
   <Text
                   style={{ fontFamily: Fonts.regular, fontSize: 15, color: ThemeManager.colors.lightTextColor, textAlign:'center' , marginTop:12}}>
-                  Please ensure you have {tempData?.fee} USDT in your SaitaPro wallet to apply successfully.
+                  Please ensure you have {tempData?.fee} USDT in your Rezor wallet to apply successfully.
                 </Text>
               
                  <View style={{flexDirection:'row' , justifyContent:'space-between' , width:'100%'}}>

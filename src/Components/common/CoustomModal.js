@@ -33,7 +33,7 @@ const CoustomModal = props => {
       }}>
       <View style={[styles.centeredView, props.ModalStyle]}>
         {/* <SimpleHeader
-          title={'SaitaPro Support'}
+          title={'Rezor Support'}
           rightImage={styles.rightImgStyle}
         /> */}
         <SimpleHeader
@@ -78,7 +78,7 @@ const CoustomModal = props => {
               source={Images.saita}
               style={{height: 20, width: 20, marginHorizontal: 5}}
             />
-            <Text style={styles.textnewlight}>SaitaPro</Text>
+            <Text style={styles.textnewlight}>Rezor</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -227,7 +227,7 @@ const CoustomModal = props => {
             </View>
           </View>
           <View style={{ width: '48%', justifyContent: 'center', marginLeft: 10, }}>
-            <Text style={styles.textnewlight}>SaitaPro</Text>
+            <Text style={styles.textnewlight}>Rezor</Text>
           </View>
         </View>
 

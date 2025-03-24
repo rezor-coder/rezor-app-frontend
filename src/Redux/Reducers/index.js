@@ -9,7 +9,8 @@ import MultiWalletCreateWalletReducer from './MultiWalletCreateWalletReducer';
 import WalletConnectReducer from './WalletConnectReducer';
 import SwapReducer from './SwapReducer';
 import SaitaCardReducer from './SaitaCardReducer'
-import storage from 'redux-persist/lib/storage' // defaults to localStorage for web
+// import storage from 'redux-persist/lib/storage' // defaults to localStorage for web
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import persistReducer from 'redux-persist/es/persistReducer';
 import persistStore from 'redux-persist/es/persistStore';
 import ReduxThunk from 'redux-thunk';
@@ -27,8 +28,8 @@ const appReducer = combineReducers({
 });
 const persistConfig = {
   key: 'root',
-  storage,
-  whitelist: ['walletReducer']
+  storage: AsyncStorage,
+  whitelist: ['walletReducer'],
 }
 
 export const rootReducer = (state, action) => {

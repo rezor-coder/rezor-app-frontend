@@ -5,7 +5,7 @@ export let LanguageManager = new LocalizedStrings({
   English: {
     assetsNotFound: 'Assets not found',
     Huobi: 'HTX Exchange',
-    SaitaDex: 'SaitaDex',
+    SaitaDex: 'Rezor',
     SelectProvider: 'Select Provider',
     buySell: 'Buy/Sell',
     invest: 'Invest',
@@ -40,7 +40,7 @@ export let LanguageManager = new LocalizedStrings({
     uploadSelfieIdCard: 'Upload Your Selfie With ID Card',
     goldCard: 'Get SaitaCard Gold',
     diamondCard: 'Get SaitaCard Diamond',
-    PayusingSaitaPro: 'Pay using USDT(ERC20)',
+    PayusingRezor: 'Pay using USDT(ERC20)',
     Payusinggateway: 'Pay using Visa/Mastercard(Epay)',
     retryKyc: 'Retry KYC Process',
     contactepay: 'Contact Epay Support team',
@@ -118,7 +118,7 @@ export let LanguageManager = new LocalizedStrings({
     theme: 'Theme',
     mode: 'Mode',
     getSupported: 'Get Supported',
-    saitaProSupport: 'SaitaPro Support',
+    saitaProSupport: 'Rezor Support',
     connectWithUs: 'Connect With Us',
     instagram: 'Instagram',
     facebook: 'Facebook',
@@ -144,7 +144,7 @@ export let LanguageManager = new LocalizedStrings({
     CreateWallet: 'CREATE\nWALLET',
     needHelp: 'Need help deciding?',
     walletText:
-      'On SaitaPro you can create a\nnon-custodial wallet or import an existing\none using your security phrase.',
+      'On Rezor you can create a\non-custodial wallet or import an existing\none using your security phrase.',
     Import: 'Import',
     Wallet: 'Wallet',
     pasteText:
@@ -276,8 +276,8 @@ export let LanguageManager = new LocalizedStrings({
     errorWhileSendingRequest: 'Error while sending request',
     getInTouch: 'Get in touch',
     forSupport: 'for support',
-    supportLine: 'This is the official SaitaPro support channel please fill all the fields and provide links and screenshots when applicable, we will contact you shortly through emails.',//New
-    // supportLine1: 'This is official SaitaPro support channel please fill all the fields and provide links and screenshots when applicable, we will contact you shortly through emails',//New
+    supportLine: 'This is the official Rezor support channel please fill all the fields and provide links and screenshots when applicable, we will contact you shortly through emails.',//New
+    // supportLine1: 'This is official Rezor support channel please fill all the fields and provide links and screenshots when applicable, we will contact you shortly through emails',//New
     supportLine2: 'please fill all the fields and provide links and',
     supportLine3: 'screenshots when applicable, we will contact',
     supportLine4: 'you shortly through emails',
@@ -303,7 +303,7 @@ export let LanguageManager = new LocalizedStrings({
     enterNewPin: 'Enter New PIN',
     creatingAPin: 'Creating a PIN',
     cameraAppPermission: 'Camera App Permission',
-    needAccessToCamera: 'SaitaPro use camera to scan crypto addresses, transfer requests and wallet details',
+    needAccessToCamera: 'Rezor use camera to scan crypto addresses, transfer requests and wallet details',
     cameraPermissionDenied: 'Camera permission denied',
     applock: 'Security',
     searchCurrency: 'Search currency',
@@ -393,7 +393,7 @@ export let LanguageManager = new LocalizedStrings({
     useCryptoEasier: 'Using your crypto just got easier',//New
     limitlessWorld: 'in a limitless world of credit cards',//New
     getStarted: "Get Started",//New
-    saitaPro: "SaitaPro",//New
+    saitaPro: "Rezor",//New
     fangArt: 'FANG Art',//New
     saitamaStore: 'Saitama Store',//New
     saitaMarket: 'SaitaMarket',//New
@@ -746,7 +746,7 @@ export let LanguageManager = new LocalizedStrings({
     theme: 'Theme',
     mode: 'Mode',
     getSupported: 'Get Supported',
-    saitaProSupport: 'SaitaPro Support',
+    saitaProSupport: 'Rezor Support',
     connectWithUs: 'Connect With Us',
     instagram: 'Instagram',
     facebook: 'Facebook',
@@ -772,7 +772,7 @@ export let LanguageManager = new LocalizedStrings({
     CreateWallet: 'CREAR\nBILLETERA',
     needHelp: 'øNecesitas ayuda para decidirte?',
     walletText:
-      'En SaitaPro, puedes crear una billetera no custodiada o importar una existente utilizando tu frase de seguridad.',
+      'En Rezor, puedes crear una billetera no custodiada o importar una existente utilizando tu frase de seguridad.',
     Import: 'Importar',
     Wallet: 'Billetera',
     pasteText:
@@ -883,8 +883,8 @@ export let LanguageManager = new LocalizedStrings({
     errorWhileSendingRequest: 'Error al enviar solicitud',
     getInTouch: 'Cont·ctanos',
     forSupport: 'para soporte',
-    supportLine: 'This is the official SaitaPro support channel please fill all the fields and provide links and screenshots when applicable, we will contact you shortly through emails',
-    // supportLine1: 'Este es el canal de soporte oficial de SaitaPro.',
+    supportLine: 'This is the official Rezor support channel please fill all the fields and provide links and screenshots when applicable, we will contact you shortly through emails',
+    // supportLine1: 'Este es el canal de soporte oficial de Rezor.',
     supportLine2: 'Por favor completa todos los campos y proporciona enlaces y',
     supportLine3:
       'capturas de pantalla cuando corresponda, nos pondremos en contacto',
@@ -911,7 +911,7 @@ export let LanguageManager = new LocalizedStrings({
     enterNewPin: 'Introducir Nuevo Pin',
     creatingAPin: 'Creando un PIN',
     cameraAppPermission: 'Permiso de acceso a la aplicaciÛn c·mara',
-    needAccessToCamera: 'SaitaPro App necesita acceso a tu c·mara',
+    needAccessToCamera: 'Rezor App necesita acceso a tu c·mara',
     cameraPermissionDenied: 'Permiso de C¡MARA denegado',
     applock: 'Seguridad',
     searchCurrency: 'Buscar moneda',
@@ -986,7 +986,7 @@ export let LanguageManager = new LocalizedStrings({
     useCryptoEasier: 'Using your crypto just got easier',//New
     limitlessWorld: 'in a limitless world of credit cards',
     getStarted: "Get Started",
-    saitaPro: "SaitaPro",
+    saitaPro: "Rezor",
     fangArt: 'FANG Art',
     saitamaStore: 'Saitama Store',
     saitaMarket: 'SaitaMarket',
@@ -1347,7 +1347,7 @@ export let LanguageManager = new LocalizedStrings({
     theme: 'Theme',
     mode: 'Mode',
     getSupported: 'Get Supported',
-    saitaProSupport: 'SaitaPro Support',
+    saitaProSupport: 'Rezor Support',
     connectWithUs: 'Connect With Us',
     instagram: 'Instagram',
     facebook: 'Facebook',
@@ -1391,7 +1391,7 @@ export let LanguageManager = new LocalizedStrings({
     useCryptoEasier: 'Using your crypto just got easier',//New
     limitlessWorld: 'in a limitless world of credit cards',
     getStarted: "Get Started",
-    saitaPro: "SaitaPro",
+    saitaPro: "Rezor",
     fangArt: 'FANG Art',
     saitamaStore: 'Saitama Store',
     saitaMarket: 'SaitaMarket',
@@ -1742,7 +1742,7 @@ export let LanguageManager = new LocalizedStrings({
     theme: 'Theme',
     mode: 'Mode',
     getSupported: 'Get Supported',
-    saitaProSupport: 'SaitaPro Support',
+    saitaProSupport: 'Rezor Support',
     connectWithUs: 'Connect With Us',
     instagram: 'Instagram',
     facebook: 'Facebook',
@@ -1768,7 +1768,7 @@ export let LanguageManager = new LocalizedStrings({
     CreateWallet: 'Créer un portefeuille',
     needHelp: 'Besoin de conseils pour vous décider ?',
     walletText:
-      'Sur Saitapro, vous pouvez créer un portefeuille non custodial ou en importer un déjà existant à l’aide de votre phrase de sécurité.',
+      'Sur Rezor, vous pouvez créer un portefeuille non custodial ou en importer un déjà existant à l’aide de votre phrase de sécurité.',
     Import: 'Importer',
     Wallet: 'Portefeuille',
     pasteText:
@@ -1880,7 +1880,7 @@ export let LanguageManager = new LocalizedStrings({
     errorWhileSendingRequest: 'Erreur durant l’envoi de la requête',
     getInTouch: 'Rester en contact',
     forSupport: 'Pour de l’assistance',
-    supportLine: 'This is the official SaitaPro support channel please fill all the fields and provide links and screenshots when applicable, we will contact you shortly through emails',
+    supportLine: 'This is the official Rezor support channel please fill all the fields and provide links and screenshots when applicable, we will contact you shortly through emails',
     // supportLine1: 'Bienvenue sur l’assistance officielle de Saitapro',
     supportLine2:
       'Veuillez remplir tous les champs et fournir tous les liens et',
@@ -1908,7 +1908,7 @@ export let LanguageManager = new LocalizedStrings({
     enterNewPin: ' Entrer le nouveau code PIN',
     creatingAPin: 'Créer un code PIN',
     cameraAppPermission: ' Autorisation d’accéder à l’appareil photo',
-    needAccessToCamera: 'Saitapro a besoin d’accéder à votre appareil photo.',
+    needAccessToCamera: 'Rezor a besoin d’accéder à votre appareil photo.',
     cameraPermissionDenied:
       'Autorisation d’accèder à l’appareil photo refusée.',
     applock: 'Sécurité',
@@ -1985,7 +1985,7 @@ export let LanguageManager = new LocalizedStrings({
     useCryptoEasier: 'Using your crypto just got easier',//New
     limitlessWorld: 'in a limitless world of credit cards',
     getStarted: "Get Started",
-    saitaPro: "SaitaPro",
+    saitaPro: "Rezor",
     fangArt: 'FANG Art',
     saitamaStore: 'Saitama Store',
     saitaMarket: 'SaitaMarket',
@@ -2333,7 +2333,7 @@ export let LanguageManager = new LocalizedStrings({
     theme: 'Theme',
     mode: 'Mode',
     getSupported: 'Get Supported',
-    saitaProSupport: 'SaitaPro Support',
+    saitaProSupport: 'Rezor Support',
     connectWithUs: 'Connect With Us',
     instagram: 'Instagram',
     facebook: 'Facebook',
@@ -2359,7 +2359,7 @@ export let LanguageManager = new LocalizedStrings({
     CreateWallet: 'CREA\nWALLET',
     needHelp: 'Ti serve aiuto per decidere?',
     walletText:
-      'Con SaitaPro puoi creare un\nwallet non-custodial o importane uno esistente\n usando la tua frase di sicurezza.',
+      'Con Rezor puoi creare un\nwallet non-custodial o importane uno esistente\n usando la tua frase di sicurezza.',
     Import: 'Importa',
     Wallet: 'Wallet',
     pasteText:
@@ -2471,8 +2471,8 @@ export let LanguageManager = new LocalizedStrings({
     errorWhileSendingRequest: 'Errore durante l’invio della richiesta',
     getInTouch: 'Contattaci',
     forSupport: 'per assistenza',
-    supportLine: 'This is the official SaitaPro support channel please fill all the fields and provide links and screenshots when applicable, we will contact you shortly through emails',
-    // supportLine1: 'Questo è il canale ufficiale di SaitaPro',
+    supportLine: 'This is the official Rezor support channel please fill all the fields and provide links and screenshots when applicable, we will contact you shortly through emails',
+    // supportLine1: 'Questo è il canale ufficiale di Rezor',
     supportLine2: 'per favore riempi i campi e forniscici link e/o',
     supportLine3: 'screenshots quando possibile, ti contatteremo',
     supportLine4: 'il prima possibile tramite e-mail',
@@ -2498,7 +2498,7 @@ export let LanguageManager = new LocalizedStrings({
     enterNewPin: 'Inserisci un nuovo Pin',
     creatingAPin: 'Crea un nuovo Pin',
     cameraAppPermission: 'Permessi della fotocamera',
-    needAccessToCamera: 'SaitaPro ha bisogno dell’accesso alla tua fotocamera ',
+    needAccessToCamera: 'Rezor ha bisogno dell’accesso alla tua fotocamera ',
     cameraPermissionDenied: 'Permessi della fotocamera negati',
     applock: 'Sicurezza',
     searchCurrency: 'Cerca Valuta',
@@ -2573,7 +2573,7 @@ export let LanguageManager = new LocalizedStrings({
     useCryptoEasier: 'Using your crypto just got easier',//New
     limitlessWorld: 'in a limitless world of credit cards',
     getStarted: "Get Started",
-    saitaPro: "SaitaPro",
+    saitaPro: "Rezor",
     fangArt: 'FANG Art',
     saitamaStore: 'Saitama Store',
     saitaMarket: 'SaitaMarket',
@@ -2923,7 +2923,7 @@ export let LanguageManager = new LocalizedStrings({
     theme: 'Theme',
     mode: 'Mode',
     getSupported: 'Get Supported',
-    saitaProSupport: 'SaitaPro Support',
+    saitaProSupport: 'Rezor Support',
     connectWithUs: 'Connect With Us',
     instagram: 'Instagram',
     facebook: 'Facebook',
@@ -2948,7 +2948,7 @@ export let LanguageManager = new LocalizedStrings({
     CreateWallet: 'CRIAR\nWALLET',
     needHelp: 'Precisa de ajuda para se decidir?',
     walletText:
-      'No SaitaPro você pode criar uma carteira sem custódia ou importar uma existente usando sua frase de segurança.',
+      'No Rezor você pode criar uma carteira sem custódia ou importar uma existente usando sua frase de segurança.',
     Importar: 'Importar',
     Wallet: 'Carteira',
     pasteText:
@@ -3059,8 +3059,8 @@ export let LanguageManager = new LocalizedStrings({
     errorWhileSendingRequest: 'Erro ao enviar solicitação',
     getInTouch: 'Entre em contato',
     forSupport: 'para suporte',
-    supportLine: 'This is the official SaitaPro support channel please fill all the fields and provide links and screenshots when applicable, we will contact you shortly through emails',
-    // supportLine1: 'Este é o canal oficial de suporte do SaitaPro',
+    supportLine: 'This is the official Rezor support channel please fill all the fields and provide links and screenshots when applicable, we will contact you shortly through emails',
+    // supportLine1: 'Este é o canal oficial de suporte do Rezor',
     supportLine2: 'preencha todos os campos e forneça links e',
     supportLine3: 'capturas de tela quando necessário, entraremos em contato',
     supportLine4: 'com você em breve através de e-mail',
@@ -3086,7 +3086,7 @@ export let LanguageManager = new LocalizedStrings({
     enterNewPin: 'Insira o novo PIN',
     creatingAPin: 'Criar PIN',
     cameraAppPermission: 'Autorização de acesso a aplicação câmara',
-    needAccessToCamera: 'SaitaPro App precisa de acesso à sua câmara',
+    needAccessToCamera: 'Rezor App precisa de acesso à sua câmara',
     cameraPermissionDenied: 'Autorização de câmara negada',
     applock: 'Segurança',
     searchCurrency: 'Pesquisar moeda',
@@ -3161,7 +3161,7 @@ export let LanguageManager = new LocalizedStrings({
     useCryptoEasier: 'Using your crypto just got easier',//New
     limitlessWorld: 'in a limitless world of credit cards',
     getStarted: "Get Started",
-    saitaPro: "SaitaPro",
+    saitaPro: "Rezor",
     fangArt: 'FANG Art',
     saitamaStore: 'Saitama Store',
     saitaMarket: 'SaitaMarket',
@@ -3427,6 +3427,8 @@ export let ThemeManager = new LocalizedStrings({
       statusBarColor: '#ffffff',
       borderColor: '#707070',
       textColor: '#FFFFFF',
+      darkTextColor: '#000000',
+      descriptionTextColor: '#2E2E2E',
       themeColor: 'dark',
       lightTextColor: '#86868B',//'#989898',
       placeholderTextColor: '#86868B',//'#6E737E',
@@ -3485,6 +3487,7 @@ export let ThemeManager = new LocalizedStrings({
       buy: '#34CC79',
       linearGradient1: '#321E3D',
       linearGradient2: '#082758',
+      linearGradient3: '#171717',
       borderColorNew: "#ffffff50",
       lightButton: "#363636",
       headingText: '#fff',

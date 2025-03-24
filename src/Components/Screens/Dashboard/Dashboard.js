@@ -586,7 +586,7 @@ const Dashboard = props => {
               title={LanguageManager.buy}
             /> */}
 
-            <IconText
+            {/* <IconText
               tintColor={ThemeManager.colors.headingText}
               disabled={onPressActive}
               onPress={() => {
@@ -630,7 +630,7 @@ const Dashboard = props => {
               styleIconText={{backgroundColor: ThemeManager.colors.iconBg}}
               imageIcon={Images.saitaCard}
               title={'SaitaCard'}
-            />
+            /> */}
             <IconText
               tintColor={ThemeManager.colors.headingText}
               onPress={() => {

@@ -527,7 +527,7 @@ export const getWalletCoinListOrder = ({data, access_token}) => {
 export const getTransactionList = ({data, access_token}) => {
   return dispatch => {
     return new Promise((resolve, reject) => {
-      //console.warn('MM',data);
+      console.warn('MM---------', data);
       APIClient.getInstance()
         .post(API_TRANSACTION, data, access_token)
         .then(response => {

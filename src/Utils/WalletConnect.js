@@ -29,9 +29,9 @@ export default class WalletConnect {
     this.web3Wallet = await Web3Wallet.init({
       core, // <- pass the shared `core` instance
       metadata: {
-        name: 'SaitaPro',
+        name: 'Rezor',
         description:
-          'SaitaPro is here to make crypto and decentralized finance simple and safe for you. Buying crypto, trading assets, staking .',
+          'Rezor is here to make crypto and decentralized finance simple and safe for you. Buying crypto, trading assets, staking .',
         url: 'https://www.saitamatoken.com/saitapro/',
         icons: ['https://walletconnect.org/walletconnect-logo.png'],
       },

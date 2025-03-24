@@ -63,7 +63,7 @@ import {
   coinSelection,
 } from './WalletHelper';
 
-const tabs = ['Tokens', 'SaitaCard', 'Staking'];
+const tabs = ['Tokens', 'Staking'];
 const Wallet = props => {
 
   const dispatch = useDispatch();

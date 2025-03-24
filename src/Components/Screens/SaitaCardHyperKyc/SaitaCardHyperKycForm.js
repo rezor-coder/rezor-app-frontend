@@ -271,7 +271,7 @@ const SaitaCardHyperKycForm = props => {
       if (Platform.OS === 'android') {
         PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.CAMERA, {
           title: 'Camera Permission',
-          message: 'SaitaPro wants to access camera to upload document',
+          message: 'Rezor wants to access camera to upload document',
           buttonNeutral: 'Ask Me Later',
           buttonNegative: 'Cancel',
           buttonPositive: 'OK',

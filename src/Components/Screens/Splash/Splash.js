@@ -580,7 +580,7 @@ const Splash = props => {
             alignSelf: 'center',
             position: 'absolute',
             bottom: heightDimen(36)
-          }}>by SaitaChain</Text>
+          }}>by Rezor</Text>
         </LinearGradient>
       </SafeAreaView>
     </>

@@ -342,7 +342,7 @@ const Market = props => {
         }
       />
       <SimpleHeaderNew
-        title={showSaitaDex ? 'SaitaDex' : 'HTX Exchange'}
+        title={showSaitaDex ? 'Rezor' : 'HTX Exchange'}
         // backImage={ThemeManager.ImageIcons.iconBack}
         titleStyle
         back={false}

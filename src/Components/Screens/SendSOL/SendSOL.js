@@ -19,8 +19,11 @@ import {
   Transaction,
   SystemProgram,
   PublicKey,
+  solanaWeb3,
 } from '@solana/web3.js';
 import bs58 from 'bs58';
+import { TatumSDK, Network, Solana } from '@tatumio/tatum';
+import {Buffer} from 'buffer';
 import FastImage from 'react-native-fast-image';
 import {connect, useDispatch} from 'react-redux';
 import {API_ETH_GAS_PRICE} from '../../../Endpoints';
@@ -30,8 +33,8 @@ import {
   getEthGasPrice,
   getEthNonce,
   getEthTokenRaw,
-  sendETH,
   walletFormUpdate,
+  sendSOL,
 } from '../../../Redux/Actions';
 import Singleton from '../../../Singleton';
 import {Colors, Fonts, Images} from '../../../theme/index';
@@ -80,6 +83,16 @@ let scanner = true;
 let basicModal = false;
 let isContact = false;
 let eventListener;
+import axios from 'axios';
+const API_KEY = 't-67af28fcd3fac43678f77227-075e4fd5121848f582d89a6c';
+// Initialize Tatum SDK for Solana
+// const tatum =
+//   (await TatumSDK.init) <
+//   Solana >
+//   {
+//   network: Network.SOLANA,
+//   apiKey: API_KEY,  // Replace with your actual API key
+// };
 const SendSOL = props => {
   const dispatch = useDispatch();
   let timer = createRef();
@@ -162,6 +175,40 @@ const SendSOL = props => {
     }
   };
 
+  // const connection = new Connection('https://api.mainnet-beta.solana.com', 'confirmed');
+  const connection = new Connection(
+    'https://api.mainnet-beta.solana.com',
+    'confirmed',
+  );
+  //SENDSOL
+  const getTransactionFee = async () => {
+    try {
+      const sender = Keypair.generate();
+      const transaction = new Transaction().add(
+        SystemProgram.transfer({
+          fromPubkey: sender.publicKey,
+          toPubkey: sender.publicKey, // Dummy recipient
+          lamports: 0, // No transfer, just to calculate fee
+        }),
+      );
+
+      const {blockhash} = await connection.getLatestBlockhash('confirmed');
+      transaction.recentBlockhash = blockhash;
+      transaction.feePayer = sender.publicKey;
+
+      const {value: feeLamports} = await connection.getFeeForMessage(
+        transaction.compileMessage(),
+      );
+
+      const feeInSOL = feeLamports / 1_000_000_000;
+      console.log('Transaction Fee (in SOL):', feeInSOL);
+      setTransactionFee(feeInSOL);
+    } catch (error) {
+      console.error('Failed to estimate fee:', error);
+    }
+  };
+  //END
+
   useEffect(() => {
     // console.warn('MM', 'props---SendEthClass');
     console.log('walletData==123=', props?.route?.params);
@@ -182,41 +229,10 @@ const SendSOL = props => {
     // getBaseFee();
     gaslimitForTxn = 21000;
     getTransactionFee();
-    console.log('-------transac123t999ionFee-----', transactionFee)
     // walletData?.is_token == 1 ? getGasLimit() : getTotalFee();
     return;
-  }, []);
-  const connection = new Connection('https://api.mainnet-beta.solana.com', 'confirmed');
-  //SENDSOL
-  const getTransactionFee = async () => {
-    try {
-      // Create a dummy transaction to estimate the fee
-      const sender = Keypair.generate(); // This should be your actual wallet keypair
-      const transaction = new Transaction().add(
-        SystemProgram.transfer({
-          fromPubkey: sender.publicKey,
-          toPubkey: sender.publicKey, // Dummy recipient
-          lamports: 0, // No transfer, just to calculate fee
-        }),
-      );
+  }, [transactionFee]);
 
-      // Get the recent blockhash and set it for the transaction
-      const {blockhash} = await connection.getLatestBlockhash('confirmed');
-      transaction.recentBlockhash = blockhash;
-      transaction.feePayer = sender.publicKey;
-
-      // Estimate the fee for the transaction
-      const {value: feeLamports} = await connection.getFeeForMessage(
-        transaction.compileMessage(),
-      );
-      const feeInSOL = feeLamports / 1_000_000_000;
-      setTransactionFee(feeInSOL.toFixed(8));
-      console.log('-------transact999ionFee-----', transactionFee?.toFixed(8)); // Convert from lamports to SOL
-    } catch (error) {
-      console.error('Failed to estimate fee:', error);
-    }
-  };
-  //END
   const availableBalance = () => {
     let bal =
       walletData?.balance != 0
@@ -231,6 +247,8 @@ const SendSOL = props => {
     const balance = bal == undefined ? '0' : bal;
     setbalance(balance);
   };
+  console.log('Transaction Fee---------:', transactionFee);
+
   // const getBaseFee = async () => {
   //   const fee = await getEthBaseFee();
   //   setbaseFee(fee);
@@ -472,24 +490,51 @@ const SendSOL = props => {
   //   //     setisLoading(false);
   //   //   });
   // };
-  const send = (signedRaw, coinSymbol, nonce) => {
+  const send = (txId, coinSymbol, nonce) => {
     setisLoading(true);
+  //   {
+  //     "from": "pn5LaruD2VEGYCTwWhceJuJrENg1RKMbwuqLTxt41a7",
+  //     "to": "BL3rxhFfcxusWxYZHqXAAYiKdfxn6SDct6cnRk2Cu463",
+  //     "amount": "0.00000001",
+  //     "gas_price": 0,
+  //     "gas_estimate": 0,
+  //     "tx_raw": "EFmdbS25jN8sCdHLrZx6jbXZfyQnUq2tD4DR6Xg3KnmV3gk9wYkpXmDkZPWyyWw3of3PcHuL17gU9GitomQMajjKeV16WJm1fLde7p23Ej9sodpAnzKPWHLL2cDtiTL52xtfEgyWfYbDS7fws6m8ob5gpKz1Urbu8Lm9mKaJUeNsAzHFJZy6jwoGqpk5GxyBsTkbd53K8qpf2Xf2LCcoww2gaga5bwoDaYTow6mnz7dd64MMJxADugK9H",
+  //     "tx_type": "WITHDRAW",
+  //     "nonce": 0,
+  //     "tx_hash": "",
+  //     "coininfo": {
+  //       "coin_symbol": coinSymbol,
+  //       "coin_id": "0xabcd1234ef567890"
+  //     }
+  // }
     let data = {
       from: Singleton.getInstance().defaultSolAddress,
       to: toAddress,
       amount: amount,
       gas_price: 0,
       gas_estimate: 0,
-      tx_raw: signedRaw,
+      tx_raw: '',
       tx_type: 'WITHDRAW',
-      nonce: 0,
+      nonce: nonce,
+      tx_hash: txId,
+      coininfo: {
+        coin_symbol: coinSymbol,
+        coin_id: 8,
+      },
       // chat: this.props.chat
     };
     let access_token = Singleton.getInstance().access_token;
     let coin_symbol = coinSymbol;
+    console.log('-------SEND-SOL-PARAMS', {
+      data,
+      access_token,
+      blockChain,
+      coin_symbol,
+    });
     props
-      .sendETH({data, access_token, blockChain, coin_symbol})
+      .sendSOL({data, access_token, blockChain, coin_symbol})
       .then(res => {
+        console.log('-------SEND-SOL-RESPONSE', res);
         let req = {
           to: toAddress,
           coinFamily: 8,
@@ -497,7 +542,7 @@ const SendSOL = props => {
         props
           .CheckIsContactExist({data: req, access_token})
           .then(response => {
-            console.log('response::::', response);
+            console.log('-------CHECK-CONTACT-RESPONSE', response);
             isContact = response.is_contact == 0 ? true : false;
             basicModal = true;
             setisLoading(false);
@@ -668,7 +713,7 @@ const SendSOL = props => {
       });
     return;
   };
-  const hexToUint8Array = (hex) => {
+  const hexToUint8Array = hex => {
     const array = new Uint8Array(hex.length / 2);
     for (let i = 0; i < hex.length; i += 2) {
       array[i / 2] = parseInt(hex.slice(i, i + 2), 16);
@@ -676,66 +721,195 @@ const SendSOL = props => {
     return array;
   };
 
+  // const sendSol = () => {
+  //   setshowConfirmTxnModal(false);
+  //   setisLoading(true);
+  //   let nonce;
+  //   let rawTransaction;
+  //   try {
+  //     const senderSecretKey = hexToUint8Array(solPvtKey);
+  //     const senderKeypair = Keypair.fromSecretKey(senderSecretKey);
+
+  //     // Get the recent blockhash and set it for the transaction
+  //     connection
+  //       .getLatestBlockhash('confirmed')
+  //       .then(({blockhash}) => {
+  //         nonce = blockhash;
+  //         console.log('-------blockhash-nonce--', blockhash);
+
+  //         // Create a transaction
+  //         const transaction = new Transaction().add(
+  //           SystemProgram.transfer({
+  //             fromPubkey: senderKeypair.publicKey,
+  //             toPubkey: new PublicKey(walletData?.wallet_address),
+  //             lamports: amount * 1_000_000_000, // Convert SOL to lamports
+  //           }),
+  //         );
+
+  //         console.log('-------transaction--', transaction);
+
+  //         transaction.feePayer = senderKeypair.publicKey;
+  //         transaction.recentBlockhash = blockhash;
+
+  //         // Sign the transaction
+  //         transaction.sign(senderKeypair);
+
+  //         // Serialize the transaction to get the raw transaction
+  //         const rawTransactionBuffer = transaction.serialize();
+  //         rawTransaction = bs58.encode(rawTransactionBuffer);
+  //         console.log('Raw Transaction:', rawTransaction);
+
+  //         // Send the transaction and get the signature
+  //         return connection.sendRawTransaction(rawTransactionBuffer);
+  //       })
+  //       .then(async signature => {
+  //         console.log('Transaction Signature:', signature);
+  //         try {
+  //           console.log('Attempting to confirm the transaction...');
+  //           const confirmTransaction = await connection.confirmTransaction({
+  //             signature,
+  //             commitment: 'confirmed', // Ensure confirmation
+  //           });
+  //           console.log('Transaction confirmation:', confirmTransaction);
+  //           return confirmTransaction;
+  //         } catch (confirmError) {
+  //           console.error('Error during transaction confirmation:', confirmError);
+  //           throw confirmError; // Propagate error if confirmation fails
+  //         }
+  //       })
+  //       .then(solTransaction => {
+  //         console.log('-----------solTransaction----', solTransaction);
+  //         send(rawTransaction, walletData?.coin_symbol.toLowerCase(), nonce);
+  //       })
+  //       .catch(error => {
+  //         console.error('Transaction failed:', error);
+  //         setisLoading(false);
+  //       });
+  //   } catch (err) {
+  //     console.log('---error', err);
+  //     setisLoading(false);
+  //   }
+  // };
+
+  // Function to send SOL using Tatum API
   const sendSol = () => {
     setshowConfirmTxnModal(false);
     setisLoading(true);
     let nonce;
     let rawTransaction;
     try {
+      // Replace with sender's private key (base58 format)
       const senderSecretKey = hexToUint8Array(solPvtKey);
       const senderKeypair = Keypair.fromSecretKey(senderSecretKey);
 
-      // Get the recent blockhash and set it for the transaction
-      connection
-        .getLatestBlockhash('confirmed')
-        .then(({blockhash}) => {
-          nonce = blockhash;
-          console.log('-------blockhash-nonce--', blockhash);
+      // Convert the byte array into a Buffer (Uint8Array)
+      const privateKeyBuffer = Buffer.from(senderSecretKey);
 
-          // Create a transaction
-          const transaction = new Transaction().add(
-            SystemProgram.transfer({
-              fromPubkey: senderKeypair.publicKey,
-              toPubkey: new PublicKey(walletData?.wallet_address),
-              lamports: amount * 1_000_000_000, // Convert SOL to lamports
-            }),
-          );
+      // Convert the Buffer to Base58 encoding
+      const privateKeyBase58 = bs58.encode(privateKeyBuffer);
 
-          console.log('-------transaction--', transaction);
+      // Prepare transaction data for Tatum API
+      const transactionData = {
+        from: senderKeypair.publicKey.toString(), // Sender's public key
+        to: toAddress, // Recipient's public key
+        amount: amount,
+        fromPrivateKey: privateKeyBase58, // Sender's private key
+        feePayer: senderKeypair.publicKey.toString(), // Fee payer's public key
+        feePayerPrivateKey: solPvtKey, // Fee payer's private key (could be same as sender)
+      };
+      console.log('-----TRAN-ATA', transactionData);
+      // Send the transaction using Tatum API
+      const options = {
+        method: 'POST',
+        url: 'https://api.tatum.io/v3/solana/transaction',
+        headers: {
+          accept: 'application/json',
+          'content-type': 'application/json',
+          'x-api-key': API_KEY, // Replace with your Tatum API key
+        },
+        data: transactionData,
+      };
 
-          transaction.feePayer = senderKeypair.publicKey;
-          transaction.recentBlockhash = blockhash;
+      // Making the API request using axios
+      axios
+        .request(options)
+        .then(async response => {
+          // Get the transaction hash (txHash) from Tatum's response
+          const {txId} = response.data;
+          console.log('Transaction sent successfully:', response.data);
 
-          // Sign the transaction
-          transaction.sign(senderKeypair);
+          // Now attempt to confirm the transaction using Tatum API
+          console.log('Attempting to confirm the transaction...');
 
-          // Serialize the transaction to get the raw transaction
-          const rawTransactionBuffer = transaction.serialize();
-          rawTransaction = bs58.encode(rawTransactionBuffer);
-          console.log('Raw Transaction:', rawTransaction);
+          try {
+            // Confirm the transaction using Tatum API
+            const confirmResponse = await axios.get(
+              `https://api.tatum.io/v3/solana/transaction/${txId}`,
+              {
+                headers: {
+                  'x-api-key': API_KEY, // Replace with your Tatum API key
+                },
+              },
+            );
 
-          // Send the transaction and get the signature
-          return connection.sendRawTransaction(rawTransactionBuffer);
+            console.log('Transaction confirmed response:', confirmResponse);
+
+            if (confirmResponse.data.meta.err === null) {
+              console.log(
+                'Transaction confirmed------1-:',
+                confirmResponse.data,
+              );
+              // const signature = confirmResponse?.data?.transaction?.signatures[0];
+              // rawTransaction = await tatum.rpc.getTransaction(signature);
+              nonce =
+                confirmResponse?.data?.transaction?.message?.recentBlockhash;
+              // console.log('Raw Transaction:1111', rawTransaction);
+              console.log('Raw nonce:1111', nonce);
+
+              // // After confirmation, proceed with further steps (e.g., send callback or post-process)
+              send(txId, walletData?.coin_symbol.toLowerCase(), nonce);
+            } else {
+              console.log(
+                'Transaction not confirmed yet:',
+                confirmResponse.data.meta.err,
+              );
+            }
+          } catch (confirmError) {
+            console.error('Error confirming transaction:', confirmError);
+            setisLoading(false);
+            throw confirmError; // Propagate error if confirmation fails
+          }
         })
-        .then(signature => {
-          console.log('Transaction Signature:', signature);
-          return connection.confirmTransaction({
-            signature,
-            commitment: 'confirmed', // Updated confirmation method
-          });
-        })
-        .then(solTransaction => {
-          send(rawTransaction, walletData?.coin_symbol.toLowerCase(), nonce);
-          console.log('-----------solTransaction----', solTransaction);
-        })
-        .catch(error => {
-          console.error('Transaction failed:', error);
+        .catch(err => {
+          // Log detailed error response from Tatum API
+          if (err.response) {
+            console.error('Error Response from Tatum API:', err.response.data);
+            console.error('Error Status:', err.response.status);
+          } else {
+            console.error('Error:', err.message);
+          }
           setisLoading(false);
         });
     } catch (err) {
       console.log('---error', err);
       setisLoading(false);
     }
+  };
+
+  const reconstructRawTransaction = transactionData => {
+    // Convert the message object back to a Message object
+    const message = solanaWeb3.Message.from(
+      transactionData.transaction.message,
+    );
+
+    // Populate the transaction using the message and signatures
+    const transaction = solanaWeb3.Transaction.populate(
+      message,
+      transactionData.transaction.signatures,
+    );
+
+    // Serialize the transaction and encode as base64
+    return transaction.serialize().toString('base64'); // Raw transaction
   };
 
   const getAddress = address => {
@@ -1116,7 +1290,7 @@ const SendSOL = props => {
                     style={{fontSize: 15}}
                     placeholder=""
                     title=""
-                    text={transactionFee}
+                    text={parseFloat(transactionFee).toFixed(8)}
                     editable={false}
                     width={'100%'}
                   />
@@ -1176,7 +1350,7 @@ const SendSOL = props => {
               onPress={() => onSendAction()}
               btnStyle={{height: heightDimen(60), width: '100%'}}
               customGradient={{borderRadius: heightDimen(30)}}
-              disabled={true}
+              // disabled={true}
               text={LanguageManager.next}
             />
           </View>
@@ -1382,7 +1556,9 @@ const SendSOL = props => {
                         )} ${walletData?.coin_symbol.toUpperCase()} + ${parseFloat(
                           transactionFee,
                         )} SOL`
-                      : (parseFloat(amount) + parseFloat(transactionFee)).toFixed(8)
+                      : (
+                          parseFloat(amount) + parseFloat(transactionFee)
+                        ).toFixed(8)
                   }
                   fiatValue={
                     walletData?.is_token == 1
@@ -1519,7 +1695,7 @@ export default connect(mapStateToProp, {
   walletFormUpdate,
   getEthNonce,
   getEthGasPrice,
-  sendETH,
+  sendSOL,
   getEthGasEstimate,
   getEthTokenRaw,
   CheckIsContactExist,

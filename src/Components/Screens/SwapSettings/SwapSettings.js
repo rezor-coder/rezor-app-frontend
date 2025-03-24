@@ -86,7 +86,7 @@ const SwapSettings = props => {
         <View style={[{ flex: 1 }]}>
           {/* 
           <SimpleHeader
-          title={'SaitaPro Support'}
+          title={'Rezor Support'}
           rightImage={styles.rightImgStyle}
           />
          */}

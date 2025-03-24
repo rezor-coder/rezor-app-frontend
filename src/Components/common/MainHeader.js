@@ -60,10 +60,10 @@ const MainHeader = props => {
               style={{
                 color: ThemeManager.colors.textColor,
                 fontFamily: fonts.semibold,
-                marginLeft: areaDimen(10.5),
+                marginLeft: areaDimen(8.5), //10.5
                 fontSize: areaDimen(18),
               }}>
-              SaitaPro
+              Rezor
             </Text>
           </View>
         ) : (

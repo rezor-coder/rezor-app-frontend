@@ -2,7 +2,7 @@ apply plugin: "com.android.application"
 apply plugin: "com.facebook.react"
 apply plugin: 'com.google.gms.google-services'
 apply plugin: "kotlin-android"
-apply plugin: "kotlin-android-extensions"
+// apply plugin: "kotlin-android-extensions"
 /**
  * This is the configuration block to customize your React Native Android app.
  * By default you don't need to apply any configuration, just uncomment the lines you need.
@@ -75,12 +75,12 @@ android {
 
     compileSdkVersion rootProject.ext.compileSdkVersion
 
-    namespace "com.saitapro"
+    namespace "com.saitapronew"
     defaultConfig {
-        applicationId "com.saitapro"
+        applicationId "com.saitapronew"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
+        versionCode 6
         versionName "1.0"
         missingDimensionStrategy 'react-native-camera', 'general' //add this line
         multiDexEnabled true

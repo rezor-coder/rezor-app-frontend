@@ -151,7 +151,7 @@ export const PERCENTAGE_VALUES = [
 ];
 
 /************************************** Error messages ****************************************************/
-export const APP_NAME = 'SaitaPro';
+export const APP_NAME = 'Rezor';
 export const COPIED = 'Copied!';
 export const DO_YOU_WANT_TO_CHANGE_CARD =
   'Prior to proceeding with the payment of the card fee, would you like to modify the card type?';

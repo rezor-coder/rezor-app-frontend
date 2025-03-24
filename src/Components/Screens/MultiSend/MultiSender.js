@@ -133,7 +133,7 @@ class MultiSender extends Component {
         {
           title: 'App Permission',
           message:
-            'SaitaPro App needs access to your files to upload CSV file ',
+            'Rezor App needs access to your files to upload CSV file ',
         },
       );
 

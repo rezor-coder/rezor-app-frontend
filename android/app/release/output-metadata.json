@@ -4,15 +4,15 @@
     "type": "APK",
     "kind": "Directory"
   },
-  "applicationId": "com.saitapro",
+  "applicationId": "com.saitapronew",
   "variantName": "release",
   "elements": [
     {
       "type": "SINGLE",
       "filters": [],
       "attributes": [],
-      "versionCode": 43,
-      "versionName": "1.43",
+      "versionCode": 5,
+      "versionName": "1.0",
       "outputFile": "app-release.apk"
     }
   ],

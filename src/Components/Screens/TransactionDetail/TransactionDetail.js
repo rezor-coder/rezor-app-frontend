@@ -146,6 +146,7 @@ class TransactionDetail extends Component {
     }
   }
   getStatus(item) {
+    console.log('--------TX_DAATA', this.props.route?.params.TxnData);
     var trx_type = this.props.route?.params.TxnData?.type.toLowerCase();
     var status = item?.status?.toLowerCase();
     var blockChain_status =
@@ -341,7 +342,7 @@ class TransactionDetail extends Component {
               this.state.txnDetail?.amount != undefined
                 ? this.state.txnDetail?.amount.toString().includes('e')
                   ? Singleton.getInstance().exponentialToDecimal(
-                    parseFloat(this.state.txnDetail?.amount).toFixed(6),
+                    parseFloat(this.state.txnDetail?.amount).toFixed(8),
                   )
                   : Singleton.getInstance().toFixednew(
                     this.state.txnDetail?.amount, 6)

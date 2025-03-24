@@ -5,6 +5,7 @@ import {
   API_SEND_TXN,
   API_ETH_GAS_ESTIMATE,
   API_ETH_TOKEN_RAW,
+  API_SAVE_TXN,
 } from '../../Endpoints';
 import { APIClient } from '../../Api';
 
@@ -132,12 +133,35 @@ export const sendETH = ({ data, access_token, blockChain, coin_symbol }) => {
       APIClient.getInstance()
         .post(blockChain + '/' + coin_symbol + API_SEND_TXN, data, access_token)
         .then(response => {
-          //console.warn('MM','response sendEth -- ', response);
+          console.warn('MM','response sendEth -- ', response);
           let result = response;
           resolve(result);
         })
         .catch(error => {
           console.warn('MM','error sendEth -- ', error);
+          reject(error);
+          ethereumFail(dispatch, error);
+        });
+    });
+  };
+};
+
+/**************************************Solana send Api ****************************************************/
+export const sendSOL = ({ data, access_token, blockChain, coin_symbol }) => {
+  return dispatch => {
+    return new Promise((resolve, reject) => {
+      console.warn('MM','eth data::::', data);
+      console.warn('MM','blockChain data::::', blockChain);
+      console.warn('MM','coin_symbol data::::', coin_symbol);
+      APIClient.getInstance()
+        .post(blockChain + '/' + coin_symbol + API_SAVE_TXN, data, access_token)
+        .then(response => {
+          console.warn('MM','response sendSOL -- ', response);
+          let result = response;
+          resolve(result);
+        })
+        .catch(error => {
+          console.warn('MM','error sendSOL -- ', error);
           reject(error);
           ethereumFail(dispatch, error);
         });

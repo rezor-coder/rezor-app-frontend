@@ -141,7 +141,7 @@ const ConnectWithDapp2 = props => {
     if (Platform.OS === 'android') {
       PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.CAMERA, {
         title: 'Camera Permission',
-        message: 'SaitaPro wants to access camera to scan QR Code',
+        message: 'Rezor wants to access camera to scan QR Code',
         buttonNeutral: 'Ask Me Later',
         buttonNegative: 'Cancel',
         buttonPositive: 'OK',

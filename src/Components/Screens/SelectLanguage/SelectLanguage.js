@@ -178,7 +178,7 @@ const SelectLanguage = props => {
               styles.headerStyle,
               {color: ThemeManager.colors.titleColor},
             ]}
-            title={'Welcome To SaitaPro'}
+            title={'Welcome To Rezor'}
           />
           <Text
             style={[

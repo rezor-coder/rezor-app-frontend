@@ -1,42 +1,38 @@
 /* eslint-disable react-native/no-inline-styles */
 import React from 'react';
-import {
-  Dimensions,
-  Image,
-  ImageBackground,
-  Text,
-  TouchableOpacity,
-  View
-} from 'react-native';
-import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
-import {
-  Header,
-  MainStatusBar
-} from '../../common/index';
+import {Image, Text, TouchableOpacity, View} from 'react-native';
+import {LanguageManager, ThemeManager} from '../../../../ThemeManager';
+import {Header, MainStatusBar} from '../../common/index';
 import styles from './WelcomeScreenStyle';
-
-import { Fonts, Images } from '../../../theme';
-// import {ScrollView} from 'react-native-gesture-handler';
-import { NavigationStrings } from '../../../Navigation/NavigationStrings';
-import { areaDimen, widthDimen } from '../../../Utils/themeUtils';
-import { getCurrentRouteName, navigate } from '../../../navigationsService';
-const windowWidth = Dimensions.get('window').width;
-const windowHeight = Dimensions.get('window').height;
+import LinearGradient from 'react-native-linear-gradient';
+import {Fonts, Images} from '../../../theme';
+import {NavigationStrings} from '../../../Navigation/NavigationStrings';
+import {areaDimen, widthDimen} from '../../../Utils/themeUtils';
+import {getCurrentRouteName, navigate} from '../../../navigationsService';
 
 const WelcomeScreen = props => {
+  const textColor =
+    ThemeManager.colors.themeColor === 'light'
+      ? ThemeManager.colors.darkTextColor
+      : ThemeManager.colors.textColor;
 
+  const descriptionTextColor =
+    ThemeManager.colors.themeColor === 'light'
+      ? ThemeManager.colors.descriptionTextColor
+      : ThemeManager.colors.textColor;
 
   const renderGetStarted = () => {
     return (
       <TouchableOpacity
         onPress={() => {
-          getCurrentRouteName() != 'SelectLanguage' && navigate(NavigationStrings.SelectLanguage);
+          getCurrentRouteName() != 'SelectLanguage' &&
+            navigate(NavigationStrings.SelectLanguage);
         }}
         activeOpacity={1}
         style={[
           styles.languageItemWrapStyle,
           {
-            borderColor: ThemeManager.colors.textColor,
+            borderColor: textColor,
             backgroundColor: 'transparent',
           },
         ]}>
@@ -44,7 +40,7 @@ const WelcomeScreen = props => {
           style={[
             styles.languageItemStyle,
             {
-              color: ThemeManager.colors.textColor,
+              color: textColor,
             },
           ]}>
           {LanguageManager.getStarted}
@@ -54,7 +50,7 @@ const WelcomeScreen = props => {
           style={{
             width: widthDimen(16),
             height: widthDimen(14),
-            tintColor: ThemeManager.colors.textColor,
+            tintColor: textColor,
           }}
         />
       </TouchableOpacity>
@@ -65,7 +61,11 @@ const WelcomeScreen = props => {
     return (
       <View style={{flex: 1}}>
         <MainStatusBar
-          backgroundColor={ThemeManager.colors.linearGradient1}
+          backgroundColor={
+            ThemeManager.colors.themeColor === 'light'
+              ? ThemeManager.colors.wcbackground
+              : ThemeManager.colors.linearGradient3
+          }
           barStyle={
             ThemeManager.colors.themeColor === 'light'
               ? 'dark-content'
@@ -73,58 +73,67 @@ const WelcomeScreen = props => {
           }
         />
         <View style={styles.container}>
-          <Image source={Images.welcomebg} style={styles.bgImageStyle} />
+          <Image
+            source={
+              ThemeManager.colors.themeColor === 'light'
+                ? Images.welcomeLightbg
+                : Images.welcomebg
+            }
+            style={styles.bgImageStyle}
+          />
+          <Image source={Images.security1} style={styles.securityIconStyle} />
           <Image source={Images.welcomeIcon} style={styles.welcomeIconStyle} />
-          <View style={{flex: 1, alignItems: 'center',}}>
+          <Image source={Images.biometric} style={styles.biometricIconStyle} />
+          <View style={{flex: 1, alignItems: 'center'}}>
             <Header
               headerStyle={[
                 styles.headerStyle,
-                {color: ThemeManager.colors.titleColor},
+                {
+                  color:
+                    ThemeManager.colors.themeColor === 'light'
+                      ? ThemeManager.colors.textColor
+                      : ThemeManager.colors.titleColor,
+                },
               ]}
               title={LanguageManager.useCryptoEasier}
             />
-            <Text
-              style={[
-                styles.lablePrefLang,
-                {color: ThemeManager.colors.textColor},
-              ]}>
+            <Text style={[styles.lablePrefLang, {color: descriptionTextColor}]}>
               {LanguageManager.limitlessWorld}
             </Text>
-
-            {/* <View style={{top:'-5%'}}> */}
             {renderGetStarted()}
             <Text
               style={{
-                color: ThemeManager.colors.textColor,
+                color: descriptionTextColor,
                 fontSize: areaDimen(16),
                 fontFamily: Fonts.medium,
                 alignSelf: 'center',
                 position: 'absolute',
                 bottom: '7.5%',
               }}>
-              by SaitaChain
+              by Rezor
             </Text>
           </View>
-          {/* </View> */}
         </View>
       </View>
     );
   };
   return (
-    <View
+    <LinearGradient
+      colors={
+        ThemeManager.colors.themeColor === 'light'
+          ? ['#FAFAFA', '#EEF4FF']
+          : ['#171717', '#1A212D']
+      }
+      start={{x: 0, y: 0}}
+      end={{x: 0, y: 1}}
       style={{
-        backgroundColor: ThemeManager.colors.linearGradient1,
-        position: 'relative',
-        flex:1
+        flex: 1,
+        position: 'relative', // Keep this if you need positioning for nested elements
       }}>
       <View style={styles.bgViewStyle}>
-        <ImageBackground
-          source={ThemeManager.ImageIcons.splashBg}
-          style={styles.gradientStyle}>
-          {renderView()}
-        </ImageBackground>
+        <View style={styles.gradientStyle}>{renderView()}</View>
       </View>
-    </View>
+    </LinearGradient>
   );
 };
 
