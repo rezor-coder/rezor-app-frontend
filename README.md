@@ -13,7 +13,7 @@ This repository contains all the code for the **Rezor Wallet** React Native app.
 * Gradle (use Homebrew to install) - guide [here](https://formulae.brew.sh/formula/gradle)
 
 ## Setup
-1. Clone the repository: `git clone https://github.com/your-username/SaitaPro-frontend.git`
+1. Clone the repository: `git clone https://github.com/rezor-coder/rezor-app-frontend.git`
 2. Install nvm
 3. Run `nvm use` at the base of this repository
 4. Run `npm install` to install the dependencies
