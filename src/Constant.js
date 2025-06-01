@@ -101,7 +101,7 @@ export const CARD_KYC_STATUSES = {
 };
 export const ACCESS_TOKEN_EXPIRED = 'Access token expired';
 export const ANDROID_APP_ID =
-  'https://play.google.com/store/apps/details?id=com.saitapro';
+  'https://play.google.com/store/apps/details?id=com.rezor';
 export const IOS_APP_ID = 'https://apps.apple.com/in/app/saitapro/id1636523777';
 export const CURRENT_ANDROID_VERSION = 1.23;
 export const CURRENT_IOS_VERSION = 1.91;
@@ -410,7 +410,7 @@ export const NETWORK = {
   BINANCE: 'binance',
   POLYGON: 'polygon',
   TRON: 'tron',
-  SAITACHAIN: 'saitachain',
+  // SAITACHAIN: 'saitachain',
   BITCOIN: 'bitcoin',
   BINANCE_SMART_CHAIN: 'binancesmartchain',
   SOLANA: 'solana',

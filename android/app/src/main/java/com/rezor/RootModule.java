@@ -1,4 +1,4 @@
-package com.saitapronew;
+package com.rezor;
 import android.app.Activity;
 import android.util.Log;
 import android.view.WindowManager;

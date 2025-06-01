@@ -1,21 +1,28 @@
 import Clipboard from '@react-native-community/clipboard';
-import React, { createRef, useEffect, useState } from 'react';
-import { BackHandler, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import React, {createRef, useEffect, useState} from 'react';
+import {
+  BackHandler,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import Toast from 'react-native-easy-toast';
-import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
+import {LanguageManager, ThemeManager} from '../../../../ThemeManager';
 import * as Constants from '../../../Constant';
-import { NavigationStrings } from '../../../Navigation/NavigationStrings';
+import {NavigationStrings} from '../../../Navigation/NavigationStrings';
 import Singleton from '../../../Singleton';
-import { heightDimen } from '../../../Utils/themeUtils';
-import { navigate } from '../../../navigationsService';
-import { BorderLine, Wrap } from '../../common';
-import { SimpleHeader } from '../../common/SimpleHeader';
-import { styles } from './ExportPrivateKeysStyle';
-
+import {heightDimen} from '../../../Utils/themeUtils';
+import {navigate} from '../../../navigationsService';
+import {BorderLine, Wrap} from '../../common';
+import {SimpleHeader} from '../../common/SimpleHeader';
+import {styles} from './ExportPrivateKeysStyle';
 
 const ExportPrivateKeys = props => {
+  console.log('-------88888', props.route?.params?.walletItem?.loginRequest);
   const [ethPvtKey, setEthPvtKey] = useState('');
   const [btcPvtKey, setBtcPvtKey] = useState('');
+  const [solPvtKey, setSolPvtKey] = useState('');
   const [addressObj, setAddressObj] = useState([{}]);
   const toastRef = createRef();
 
@@ -37,98 +44,138 @@ const ExportPrivateKeys = props => {
     });
     return () => {
       if (focus) {
-        focus()
+        focus();
       }
       if (blur) {
-        blur()
+        blur();
       }
       if (backHandle) {
-        backHandle?.remove()
+        backHandle?.remove();
       }
-    }
+    };
   }, [props]);
 
   const backAction = () => {
     props.route?.params?.screenType == 'Editwallet'
-      ? navigate(NavigationStrings.EditWallet)
+      ? navigate(NavigationStrings.MultiWalletList)
       : navigate(NavigationStrings.BackupOptions);
     return true;
   };
 
-
   useEffect(() => {
     //  console.warn('MM','chk item:::::::::', JSON.stringify(props.route?.params?.walletItem));
     if (props.route?.params?.walletItem == undefined) {
-      Singleton.getInstance().newGetData(`${Singleton.getInstance().defaultEthAddress}_pk`).then(ethPvtKey => {
-        // console.warn('MM','ethPvtKey--------', ethPvtKey);
-        setEthPvtKey(ethPvtKey);
-      });
+      Singleton.getInstance()
+        .newGetData(`${Singleton.getInstance().defaultEthAddress}_pk`)
+        .then(ethPvtKey => {
+          setEthPvtKey(ethPvtKey);
+        });
     } else {
       let address = props.route?.params?.walletItem.loginRequest.address;
       let blockChain = props.route?.params?.walletItem?.blockChain;
       switch (blockChain) {
         case 'all':
-          Singleton.getInstance().newGetData(`${props.route?.params?.walletItem?.loginRequest?.btcAddress}_pk`).then(btcPvtKey => {
-            // console.warn('MM','ethPvtKey--------', ethPvtKey);
-            setBtcPvtKey(btcPvtKey);
-            Singleton.getInstance().newGetData(`${address}_pk`).then(ethPvtKey => {
-              // console.warn('MM','ethPvtKey--------', ethPvtKey);
-              Singleton.getInstance().newGetData(`${props.route?.params?.walletItem?.loginRequest?.trxAddress}_pk`).then(trxPvtKey => {
-                setEthPvtKey(ethPvtKey);
-                setAddressObj([
-                  {
-                    coin_symbol: 'ETH',
-                    key: ethPvtKey,
-                  },
-                  {
-                    coin_symbol: 'BNB',
-                    key: ethPvtKey,
-                  },
-                  {
-                    coin_symbol: 'MATIC',
-                    key: ethPvtKey,
-                  },
-                  {
-                    coin_symbol: 'BTC',
-                    key: btcPvtKey,
-                  },
-                  {
-                    coin_symbol: 'TRX',
-                    key: trxPvtKey,
-                  },
-                  {
-                    coin_symbol: 'STC',
-                    key: ethPvtKey,
-                  },
-                ]);
-              })
-
-            })
-              .catch(err => {
-                //  console.warn('MM','err add', err);
-              });
-          })
-            .catch(err => {
-              //  console.warn('MM','err add', err);
+          Singleton.getInstance()
+            .newGetData(
+              `${props.route?.params?.walletItem?.loginRequest?.btcAddress}_pk`,
+            )
+            .then(btcPvtKey => {
+              setBtcPvtKey(btcPvtKey);
+              Singleton.getInstance()
+                .newGetData(
+                  `${props.route?.params?.walletItem?.loginRequest?.solAddress}_pk`,
+                )
+                .then(solPvtKey => {
+                  setSolPvtKey(solPvtKey);
+                  Singleton.getInstance()
+                    .newGetData(`${address}_pk`)
+                    .then(ethPvtKey => {
+                      Singleton.getInstance()
+                        .newGetData(
+                          `${props.route?.params?.walletItem?.loginRequest?.trxAddress}_pk`,
+                        )
+                        .then(trxPvtKey => {
+                          setEthPvtKey(ethPvtKey);
+                          setAddressObj([
+                            {
+                              coin_symbol: 'ETH',
+                              key: ethPvtKey,
+                            },
+                            {
+                              coin_symbol: 'BNB',
+                              key: ethPvtKey,
+                            },
+                            {
+                              coin_symbol: 'MATIC',
+                              key: ethPvtKey,
+                            },
+                            {
+                              coin_symbol: 'BTC',
+                              key: btcPvtKey,
+                            },
+                            {
+                              coin_symbol: 'TRX',
+                              key: trxPvtKey,
+                            },
+                            {
+                              coin_symbol: 'STC',
+                              key: ethPvtKey,
+                            },
+                            {
+                              coin_symbol: 'SOL',
+                              key: solPvtKey,
+                            },
+                          ]);
+                        });
+                    })
+                    .catch(err => {
+                      console.warn('MM', 'err add', err);
+                    });
+                })
+                .catch(err => {
+                  console.warn('MM', 'err add', err);
+                });
             });
-
           break;
 
         case Constants.COIN_SYMBOL.ETH:
-          Singleton.getInstance().newGetData(`${address}_pk`).then(ethPvtKey => {
-            setEthPvtKey(ethPvtKey);
-            setAddressObj([
-              {
-                coin_symbol: 'ETH',
-                key: ethPvtKey,
-              },
-            ]);
-          }).catch(err => {
-            //  console.warn('MM','err add', err);
-          });
+          Singleton.getInstance()
+            .newGetData(`${address}_pk`)
+            .then(ethPvtKey => {
+              setEthPvtKey(ethPvtKey);
+              setAddressObj([
+                {
+                  coin_symbol: 'ETH',
+                  key: ethPvtKey,
+                },
+              ]);
+            })
+            .catch(err => {
+              console.warn('MM', 'err add', err);
+            });
           break;
-          case 'stc':
-            Singleton.getInstance().newGetData(`${address}_pk`).then(ethPvtKey => {
+
+        case Constants.COIN_SYMBOL.SOL:
+          Singleton.getInstance()
+            .newGetData(`${address}_pk`)
+            .then(solPvtKey => {
+              setSolPvtKey(solPvtKey);
+              setAddressObj([
+                {
+                  coin_symbol: 'SOL',
+                  key: solPvtKey,
+                },
+              ]);
+            })
+            .catch(err => {
+              console.warn('MM', 'err add', err);
+            });
+          break;
+
+        case 'stc':
+          Singleton.getInstance()
+            .newGetData(`${address}_pk`)
+            .then(ethPvtKey => {
               setEthPvtKey(ethPvtKey);
               setAddressObj([
                 {
@@ -136,71 +183,80 @@ const ExportPrivateKeys = props => {
                   key: ethPvtKey,
                 },
               ]);
-            }).catch(err => {
-              //  console.warn('MM','err add', err);
-            });
-            break;
-        case 'bnb':
-          Singleton.getInstance().newGetData(`${address}_pk`).then(ethPvtKey => {
-            // console.warn('MM','ethPvtKey--------', ethPvtKey);
-            setEthPvtKey(ethPvtKey);
-            setAddressObj([
-              {
-                coin_symbol: 'BNB',
-                key: ethPvtKey,
-              },
-            ]);
-          })
-            .catch(err => {
-              //  console.warn('MM','err add', err);
             })
-
-
+            .catch(err => {
+              console.warn('MM', 'err add', err);
+            });
+          break;
+        case 'bnb':
+          Singleton.getInstance()
+            .newGetData(`${address}_pk`)
+            .then(ethPvtKey => {
+              setEthPvtKey(ethPvtKey);
+              setAddressObj([
+                {
+                  coin_symbol: 'BNB',
+                  key: ethPvtKey,
+                },
+              ]);
+            })
+            .catch(err => {
+              console.warn('MM', 'err add', err);
+            });
 
           break;
         case 'matic':
-          Singleton.getInstance().newGetData(`${address}_pk`).then(ethPvtKey => {
-            // console.warn('MM','ethPvtKey--------', ethPvtKey);
-            setEthPvtKey(ethPvtKey);
-            setAddressObj([
-              {
-                coin_symbol: 'MATIC',
-                key: ethPvtKey,
-              },
-            ]);
-          }).catch(err => {
-            //  console.warn('MM','err add', err);
-          });
+          Singleton.getInstance()
+            .newGetData(`${address}_pk`)
+            .then(ethPvtKey => {
+              setEthPvtKey(ethPvtKey);
+              setAddressObj([
+                {
+                  coin_symbol: 'MATIC',
+                  key: ethPvtKey,
+                },
+              ]);
+            })
+            .catch(err => {
+              console.warn('MM', 'err add', err);
+            });
           break;
 
         case 'btc':
-          Singleton.getInstance().newGetData(`${props.route?.params?.walletItem?.loginRequest?.btcAddress}_pk`).then(btcPvtKey => {
-            setBtcPvtKey(btcPvtKey);
-            setAddressObj([
-              {
-                coin_symbol: 'BTC',
-                key: btcPvtKey,
-              },
-            ]);
-          })
+          Singleton.getInstance()
+            .newGetData(
+              `${props.route?.params?.walletItem?.loginRequest?.btcAddress}_pk`,
+            )
+            .then(btcPvtKey => {
+              setBtcPvtKey(btcPvtKey);
+              setAddressObj([
+                {
+                  coin_symbol: 'BTC',
+                  key: btcPvtKey,
+                },
+              ]);
+            })
             .catch(err => {
-              //  console.warn('MM','err add', err);
+              console.warn('MM', 'err add', err);
             });
           break;
 
         case 'trx':
-          Singleton.getInstance().newGetData(`${props.route?.params?.walletItem?.loginRequest?.trxAddress}_pk`).then(btcPvtKey => {
-
-            setBtcPvtKey(btcPvtKey);
-            setAddressObj([
-              {
-                coin_symbol: 'TRX',
-                key: btcPvtKey,
-              },
-            ]);
-          })
+          Singleton.getInstance()
+            .newGetData(
+              `${props.route?.params?.walletItem?.loginRequest?.trxAddress}_pk`,
+            )
+            .then(btcPvtKey => {
+              setBtcPvtKey(btcPvtKey);
+              setAddressObj([
+                {
+                  coin_symbol: 'TRX',
+                  key: btcPvtKey,
+                },
+              ]);
+            })
             .catch(err => {
-              //  console.warn('MM','err add', err);
+              console.warn('MM', 'err add', err);
             });
           break;
         default:
@@ -221,7 +277,7 @@ const ExportPrivateKeys = props => {
   }, []);
 
   return (
-    <Wrap style={{ backgroundColor: ThemeManager.colors.bg }}>
+    <Wrap style={{backgroundColor: ThemeManager.colors.bg}}>
       <SimpleHeader
         title={LanguageManager.exportPrivateKeys}
         // rightImage={[styles.rightImgStyle]}
@@ -232,24 +288,25 @@ const ExportPrivateKeys = props => {
         backPressed={() => {
           // props.navigation.state.params.onGoBack();
           props.route?.params?.screenType == 'Editwallet'
-            ? navigate(NavigationStrings.EditWallet)
+            ? navigate(NavigationStrings.MultiWalletList)
             : navigate(NavigationStrings.BackupOptions);
           // props.navigation.goBack();
         }}
       />
 
       <BorderLine
-        borderColor={{ backgroundColor: ThemeManager.colors.viewBorderColor }}
+        borderColor={{backgroundColor: ThemeManager.colors.viewBorderColor}}
       />
 
       <ScrollView style={styles.mainContainer}>
-        {addressObj.map((item,index) => {
+        {addressObj.map((item, index) => {
           return (
             <View
               style={[
                 styles.blockChainWrap,
-                { backgroundColor: ThemeManager.colors.mnemonicsView ,
-                  shadowColor:ThemeManager.colors.shadowColor,
+                {
+                  backgroundColor: ThemeManager.colors.mnemonicsView,
+                  shadowColor: ThemeManager.colors.shadowColor,
                   shadowOffset: {
                     width: 0,
                     height: 3,
@@ -257,13 +314,14 @@ const ExportPrivateKeys = props => {
                   shadowOpacity: 0.1,
                   shadowRadius: 3.05,
                   elevation: 4,
-                  marginBottom:index==addressObj?.length-1? heightDimen(40):0
+                  marginBottom:
+                    index == addressObj?.length - 1 ? heightDimen(40) : 0,
                 },
               ]}>
               <Text
                 style={[
                   styles.headingStyle,
-                  { color: ThemeManager.colors.textColor },
+                  {color: ThemeManager.colors.textColor},
                 ]}>
                 {item?.coin_symbol}
               </Text>

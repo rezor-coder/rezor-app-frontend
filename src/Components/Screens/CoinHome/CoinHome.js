@@ -1,23 +1,33 @@
-import React, { useEffect, useState } from 'react';
-import { BackHandler, FlatList, Text, TouchableOpacity, View } from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {
+  BackHandler,
+  FlatList,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import FastImage from 'react-native-fast-image';
-import { useDispatch, useSelector } from 'react-redux';
-import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
+import {useDispatch, useSelector} from 'react-redux';
+import {LanguageManager, ThemeManager} from '../../../../ThemeManager';
 import * as constants from '../../../Constant';
-import { NavigationStrings } from '../../../Navigation/NavigationStrings';
-import { getTransactionList, saveSwapItem } from '../../../Redux/Actions';
+import {NavigationStrings} from '../../../Navigation/NavigationStrings';
+import {getTransactionList, saveSwapItem} from '../../../Redux/Actions';
 import Singleton from '../../../Singleton';
-import { areaDimen, heightDimen } from '../../../Utils/themeUtils';
-import { getCurrentRouteName, goBack, navigate } from '../../../navigationsService';
-import { Images } from '../../../theme';
+import {areaDimen, heightDimen} from '../../../Utils/themeUtils';
+import {
+  getCurrentRouteName,
+  goBack,
+  navigate,
+} from '../../../navigationsService';
+import {Images} from '../../../theme';
 import fonts from '../../../theme/Fonts';
-import { CommaSeprator3, exponentialToDecimalWithoutComma } from '../../../utils';
-import { BorderLine, MainStatusBar, SimpleHeaderNew, Wrap } from '../../common';
+import {CommaSeprator3, exponentialToDecimalWithoutComma} from '../../../utils';
+import {BorderLine, MainStatusBar, SimpleHeaderNew, Wrap} from '../../common';
 import HistoryItem from '../../common/HistoryItem';
 import Loader from '../Loader/Loader';
 import styles from './CoinHomeStyles';
 const CoinHome = props => {
-  const { coin } = props?.route?.params;
+  const {coin} = props?.route?.params;
   const dispatch = useDispatch();
   const [historyList, setHistoryList] = useState([]);
   const [Page, setpage] = useState(1);
@@ -26,28 +36,31 @@ const CoinHome = props => {
   const [totalRecords, setTotalRecordd] = useState('');
   console.log('props:::::::::', coin);
   const [LoadList, setLoadList] = useState(false);
-  const { refreshWallet } = useSelector(state => state?.walletReducer);
+  const {refreshWallet} = useSelector(state => state?.walletReducer);
   useEffect(() => {
     let backHandle = null;
     backHandle = BackHandler.addEventListener('hardwareBackPress', backAction);
     getHistory();
     let focus = props.navigation.addListener('focus', () => {
-      backHandle = BackHandler.addEventListener('hardwareBackPress', backAction);
+      backHandle = BackHandler.addEventListener(
+        'hardwareBackPress',
+        backAction,
+      );
       getHistory();
     });
     let blur = props.navigation.addListener('blur', () => {
-      backHandle?.remove()
-    })
+      backHandle?.remove();
+    });
     return () => {
-      blur()
+      blur();
       focus();
       backHandle?.remove();
     };
   }, [refreshWallet]);
-  const backAction=()=>{
-    goBack()
+  const backAction = () => {
+    goBack();
     return true;
-  }
+  };
   function getHistory() {
     let addrssList = [coin.wallet_address];
     let coinFamilyKeys = [coin.coin_family];
@@ -69,7 +82,7 @@ const CoinHome = props => {
     let access_token = Singleton.getInstance().access_token;
     setisLoading(historyList.length > 0 ? false : true),
       setTimeout(() => {
-        dispatch(getTransactionList({ data, access_token }))
+        dispatch(getTransactionList({data, access_token}))
           .then(response => {
             console.warn('MM', 'response===History====', response);
             setHistoryList(response?.data);
@@ -89,12 +102,12 @@ const CoinHome = props => {
     contentOffset,
     contentSize,
   }) => {
-    console.log("::::::isCloseToBottom:");
+    console.log('::::::isCloseToBottom:');
     const paddingToBottom = 60;
     let bottomReached =
       layoutMeasurement.height + contentOffset.y >=
       contentSize.height - paddingToBottom;
-    console.log("::::::bottomReached:", bottomReached, LoadList);
+    console.log('::::::bottomReached:', bottomReached, LoadList);
     if (bottomReached && LoadList) {
       let page = Page + 1;
       setpage(page);
@@ -116,7 +129,7 @@ const CoinHome = props => {
           to_date: '',
           coin_id: coin.coin_id,
         };
-        dispatch(getTransactionList({ data, access_token }))
+        dispatch(getTransactionList({data, access_token}))
           .then(response => {
             console.warn('MM', 'response===History====close', response?.data);
             const txnList = historyList.concat(response?.data);
@@ -135,40 +148,47 @@ const CoinHome = props => {
   const onSend = (item = coin) => {
     Singleton.getInstance().updateBalance(item?.coin_id, item?.wallet_address);
     if (item.coin_family == 1) {
-      getCurrentRouteName() != 'SendETH' && navigate(NavigationStrings.SendETH,{ walletData: item });
+      getCurrentRouteName() != 'SendETH' &&
+        navigate(NavigationStrings.SendETH, {walletData: item});
     } else if (item.coin_family == 6) {
-      getCurrentRouteName() != 'SendBNB' && navigate(NavigationStrings.SendBNB,{ walletData: item });
+      getCurrentRouteName() != 'SendBNB' &&
+        navigate(NavigationStrings.SendBNB, {walletData: item});
     } else if (item.coin_family == 11) {
       getCurrentRouteName() != 'SendMATIC' &&
-        navigate(NavigationStrings.SendMATIC,{ walletData: item });
+        navigate(NavigationStrings.SendMATIC, {walletData: item});
     } else if (item.coin_family == 2) {
-      getCurrentRouteName() != 'SendBTC' && navigate(NavigationStrings.SendBTC,{ walletData: item });
+      getCurrentRouteName() != 'SendBTC' &&
+        navigate(NavigationStrings.SendBTC, {walletData: item});
     } else if (item.coin_family == 3) {
-      getCurrentRouteName() != 'SendTRX' && navigate(NavigationStrings.SendTRX,{ walletData: item });
+      getCurrentRouteName() != 'SendTRX' &&
+        navigate(NavigationStrings.SendTRX, {walletData: item});
     } else if (item.coin_family == 8) {
-      getCurrentRouteName() != 'SendSOL' && navigate(NavigationStrings.SendSOL,{ walletData: item });
-    }else if (item.coin_family == 4) {
-      getCurrentRouteName() != 'SendSTC' && navigate(NavigationStrings.SendSTC,{ walletData: item });
+      getCurrentRouteName() != 'SendSOL' &&
+        navigate(NavigationStrings.SendSOL, {walletData: item});
+    } else if (item.coin_family == 4) {
+      getCurrentRouteName() != 'SendSTC' &&
+        navigate(NavigationStrings.SendSTC, {walletData: item});
     }
   };
   const onRecieve = (item = coin) => {
-    getCurrentRouteName() != 'QrCode' && navigate(NavigationStrings.QrCode,{ item: item });
+    getCurrentRouteName() != 'QrCode' &&
+      navigate(NavigationStrings.QrCode, {item: item});
   };
   const onPresSwap = (item = coin) => {
     Singleton.getInstance()
       .newGetData(constants.IS_PRIVATE_WALLET)
       .then(isPrivate => {
-        dispatch(saveSwapItem(item))
-        getCurrentRouteName() != 'Trade' &&
-        navigate(NavigationStrings.Trade,{ chain: isPrivate, item: item });
+        dispatch(saveSwapItem(item));
+        getCurrentRouteName() != 'SwapNew' &&
+          navigate(NavigationStrings.SwapNew, {chain: isPrivate, item: item});
       });
   };
-  const OptionsBg = ({ image, text, onPress }) => {
+  const OptionsBg = ({image, text, onPress}) => {
     return (
       <TouchableOpacity
         style={[
           styles.optionBg,
-          { backgroundColor: ThemeManager.colors.primary },
+          {backgroundColor: ThemeManager.colors.primary},
         ]}
         onPress={() => onPress()}>
         <FastImage
@@ -177,7 +197,7 @@ const CoinHome = props => {
           resizeMode="contain"
         />
         <Text
-          style={[styles.optionText, { color: ThemeManager.colors.colorLight }]}>
+          style={[styles.optionText, {color: ThemeManager.colors.colorLight}]}>
           {text}
         </Text>
       </TouchableOpacity>
@@ -188,14 +208,11 @@ const CoinHome = props => {
     return (
       <>
         <View
-          style={[
-            styles.box,
-            { backgroundColor: ThemeManager.colors.swapBg },
-          ]}>
+          style={[styles.box, {backgroundColor: ThemeManager.colors.swapBg}]}>
           {coin?.coin_image ? (
             <FastImage
               style={styles.coinImage}
-              source={{ uri: coin?.coin_image }}
+              source={{uri: coin?.coin_image}}
             />
           ) : (
             <View
@@ -220,7 +237,7 @@ const CoinHome = props => {
           <Text
             style={[
               styles.coinBalanceStyle,
-              { color: ThemeManager.colors.textColor },
+              {color: ThemeManager.colors.textColor},
             ]}>
             {Singleton.getInstance().toFixednew(
               exponentialToDecimalWithoutComma(coin?.balance),
@@ -231,7 +248,7 @@ const CoinHome = props => {
           <Text
             style={[
               styles.coinBalanceFiatStyle,
-              { color: ThemeManager.colors.inActiveColor },
+              {color: ThemeManager.colors.inActiveColor},
             ]}>
             {coin?.currency_symbol} {CommaSeprator3(coin?.perPrice_in_fiat, 8)}
             <Text
@@ -278,7 +295,7 @@ const CoinHome = props => {
         <Text
           style={[
             styles.trxHistoryText,
-            { color: ThemeManager.colors.textColor },
+            {color: ThemeManager.colors.textColor},
           ]}>
           Transaction History
         </Text>
@@ -286,7 +303,7 @@ const CoinHome = props => {
     );
   };
   return (
-    <Wrap style={{ backgroundColor: ThemeManager.colors.bg, flex: 1 }}>
+    <Wrap style={{backgroundColor: ThemeManager.colors.bg, flex: 1}}>
       <MainStatusBar
         backgroundColor={ThemeManager.colors.bg}
         barStyle={
@@ -302,14 +319,14 @@ const CoinHome = props => {
             ? coin?.coin_family == 1
               ? ' (ERC20)'
               : coin?.coin_family == 6
-                ? ' (BEP20)'
-                : coin?.coin_family == 3
-                  ? ' (TRC20)'
-                  : coin?.coin_family == 11
-                    ? ' (MATIC ERC20)'
-                    :coin?.coin_family==4
-                    ? ' (SBC24)'
-                    : ''
+              ? ' (BEP20)'
+              : coin?.coin_family == 3
+              ? ' (TRC20)'
+              : coin?.coin_family == 11
+              ? ' (MATIC ERC20)'
+              : // : coin?.coin_family == 4  //Commented for coming soon
+                // ? ' (SBC24)'
+                ''
             : '')
         }
         backImage={ThemeManager.ImageIcons.iconBack}
@@ -321,7 +338,7 @@ const CoinHome = props => {
         }}
       />
       <BorderLine
-        borderColor={{ backgroundColor: ThemeManager.colors.viewBorderColor }}
+        borderColor={{backgroundColor: ThemeManager.colors.viewBorderColor}}
       />
       <View
         style={{
@@ -333,21 +350,23 @@ const CoinHome = props => {
           showsVerticalScrollIndicator={false}
           ListHeaderComponent={ListHeaderComponent}
           data={historyList}
-          onScroll={({ nativeEvent }) => {
+          onScroll={({nativeEvent}) => {
             isCloseToBottom(nativeEvent);
           }}
-          renderItem={({ item, index }) => (
+          renderItem={({item, index}) => (
             <HistoryItem
               onPress={() => {
                 getCurrentRouteName() != 'TransactionDetail' &&
-                navigate(NavigationStrings.TransactionDetail,{ TxnData: item });
+                  navigate(NavigationStrings.TransactionDetail, {
+                    TxnData: item,
+                  });
               }}
               item={item}
               index={index}
             />
           )}
           ListFooterComponent={() => {
-            return <View style={{ marginBottom: heightDimen(60) }} />;
+            return <View style={{marginBottom: heightDimen(60)}} />;
           }}
           ListEmptyComponent={() => {
             return (
@@ -361,7 +380,7 @@ const CoinHome = props => {
                 <Text
                   style={[
                     styles.notFound,
-                    { color: ThemeManager.colors.inActiveColor },
+                    {color: ThemeManager.colors.inActiveColor},
                   ]}>
                   {LanguageManager.NoHistory}
                 </Text>

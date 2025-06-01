@@ -2,7 +2,8 @@ import { Alert } from 'react-native';
 import * as Constants from './Constant';
 const CryptoJS = require('crypto-js');
 import { createAlchemyWeb3 } from '@alch/alchemy-web3';
-import AsyncStorage from '@react-native-community/async-storage';
+// import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Common from '@ethereumjs/common';
 const bitcoin = require('bitcoinjs-lib');
 import {
@@ -608,12 +609,9 @@ export default class Singleton {
     return new Promise(async (resolve, reject) => {
       EncryptedStorage.getItem(key)
         .then(res => {
-          // console.warn('MM','newGetData res::::key', key, '\nres::::::', res);
-          //  console.warn('MM','######## GET NEW ########' , key  );
           return resolve(res);
         })
         .catch(err => {
-          //  console.warn('MM','newGetData err::::', err);
           return reject(err);
         });
 

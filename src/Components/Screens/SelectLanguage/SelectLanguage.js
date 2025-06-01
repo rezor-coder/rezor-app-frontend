@@ -180,13 +180,13 @@ const SelectLanguage = props => {
             ]}
             title={'Welcome To Rezor'}
           />
-          <Text
+          {/* <Text
             style={[
               styles.lablePrefLang,
               {color: ThemeManager.colors.lightTextColor},
             ]}>
             {LanguageManager.selectLangProceed}
-          </Text>
+          </Text> */}
 
           {Languages.map((item, index) => {
             return renderLanguageItem(item, index);
@@ -250,7 +250,7 @@ const SelectLanguage = props => {
             style={{}}
             onPress={() =>
               Linking.openURL(
-                'https://api.saita.pro/prod/api/v1/page/web-terms-and-conditions.html',
+                'https://d2xj8dmcp1sq1d.cloudfront.net/pages/web-terms-and-conditions.html',
               )
             }>
             <Text
@@ -279,7 +279,7 @@ const SelectLanguage = props => {
             style={{}}
             onPress={() =>
               Linking.openURL(
-                'https://api.saita.pro/prod/api/v1/page/web-privacy-policy.html',
+                'https://d2xj8dmcp1sq1d.cloudfront.net/pages/web-privacy-policy.html',
               )
             }>
             <Text

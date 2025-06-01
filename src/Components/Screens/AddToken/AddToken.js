@@ -242,7 +242,6 @@ const AddToken = props => {
         return false;
       }
     } else if (selectedCurrency.toUpperCase() == 'SOLANA') {
-      console.log('------IN-SOLANA-------');
       var isSolAddress = Singleton.getInstance().validateSolAddress(text);
       if (isSolAddress) {
         return true;
@@ -288,23 +287,25 @@ const AddToken = props => {
           ? 11
           : selectedCurrency.toLowerCase() == constants.NETWORK.SOLANA
           ? 8
-          : selectedCurrency.toLowerCase() == constants.NETWORK.SAITACHAIN 
+          : selectedCurrency.toLowerCase() == constants.NETWORK.SAITACHAIN
           ? 4
           : 3,
       token_address: contractAddress,
       name: name,
-      token_type: selectedCurrency.toLowerCase() == constants.NETWORK.TRON ? 2 : 1,
+      token_type:
+        selectedCurrency.toLowerCase() == constants.NETWORK.TRON ? 2 : 1,
       symbol: tokenSymbol.toLowerCase(),
       coin_gicko_alias: coin_gicko_alias,
       decimals: NoOfdecimals,
       wallet_address:
         selectedCurrency.toLowerCase() == constants.NETWORK.TRON
           ? Singleton.getInstance().defaultTrxAddress
-          : Singleton.getInstance().defaultEthAddress
+          : selectedCurrency.toLowerCase() == constants.NETWORK.SOLANA
+          ? Singleton.getInstance().defaultSolAddress
+          : Singleton.getInstance().defaultEthAddress,
 
-      ,
       wallet_name: Singleton.getInstance().walletName,
-      is_swap_list:props?.route?.params?.from=='swap'?1:0
+      is_swap_list: props?.route?.params?.from == 'swap' ? 1 : 0,
     };
     let access_token = Singleton.getInstance().access_token;
     props
@@ -365,7 +366,7 @@ const AddToken = props => {
             PermissionsAndroid.PERMISSIONS.CAMERA,
             {
               title: 'Camera App Permission',
-              message: 'Saita Pro App needs access to your camera ',
+              message: 'Rezor App needs access to your camera ',
             },
           );
           if (granted === PermissionsAndroid.RESULTS.GRANTED) {

@@ -8,11 +8,11 @@
 
 /* Begin PBXBuildFile section */
 		00E356F31AD99517003FC87E /* SaitaProTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* SaitaProTests.m */; };
+		0563251C921D7BFC273ECB3F /* libPods-Rezor.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 19BAB78FB754E34990BAA4DD /* libPods-Rezor.a */; };
 		0919F60ED29B4F788DEC4E5E /* Poppins-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4E14CE96C3B64FCF8694BDDD /* Poppins-Light.ttf */; };
 		13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
-		17C15E38192FBFAC1204F715 /* libPods-SaitaPro.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E7B27EEAAE2BE5F63E7DE48C /* libPods-SaitaPro.a */; };
 		1E17F68204D04175B0759225 /* helvetica-rounded-bold-5871d05ead8de.otf in Resources */ = {isa = PBXBuildFile; fileRef = 0839D7A5028F49228A4B5CBB /* helvetica-rounded-bold-5871d05ead8de.otf */; };
 		1FAA5F07C1924F5FA2E90541 /* OCR-ABT.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 89641FB457144C3C91DB7719 /* OCR-ABT.ttf */; };
 		2E3B0EF96D474C75A311B05F /* Poppins-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 50EDC4583F034353853325B2 /* Poppins-Bold.ttf */; };
@@ -24,10 +24,10 @@
 		8086F1EC9F334B13BFF4357F /* Helvetica.ttf in Resources */ = {isa = PBXBuildFile; fileRef = ECB91B1669AF417E93631B6A /* Helvetica.ttf */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		8740F342923E445196515895 /* Helvetica-Oblique.ttf in Resources */ = {isa = PBXBuildFile; fileRef = EE36ED76F6DA44219BB9EBAF /* Helvetica-Oblique.ttf */; };
+		980ED532984DB629AB148782 /* libPods-Rezor-RezorTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D7A71AAD7206AF1D0BEC2F26 /* libPods-Rezor-RezorTests.a */; };
 		98AB25CAD8BA4866BF587246 /* ocr-aregular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 194F8C473A444D6686D1CF29 /* ocr-aregular.ttf */; };
 		B35D07E7BFD94CCE9F2005A1 /* helvetica-compressed-5871d14b6903a.otf in Resources */ = {isa = PBXBuildFile; fileRef = 1B9E064B6CCB48FF96A2F428 /* helvetica-compressed-5871d14b6903a.otf */; };
 		BC9AD9BD943948D58A2D1E5F /* OCR-A_Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 74D3D64B4180425CA385481E /* OCR-A_Regular.ttf */; };
-		C0F835BBDBCB9AF90BD184A9 /* libPods-SaitaPro-SaitaProTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4DAB0AF22E73125F004E3C64 /* libPods-SaitaPro-SaitaProTests.a */; };
 		CEB2653F3AE04E8E81009DF9 /* Helvetica-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 73D8B05A5B104EC1A51F1EA1 /* Helvetica-Bold.ttf */; };
 		CEB8B52E2C19660300DC1EC3 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = CEB8B52D2C19660300DC1EC3 /* GoogleService-Info.plist */; };
 		CEB8B53A2C1966FF00DC1EC3 /* saitaCardCentralizedLive.cer in Resources */ = {isa = PBXBuildFile; fileRef = CEB8B5302C1966FF00DC1EC3 /* saitaCardCentralizedLive.cer */; };
@@ -78,27 +78,30 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		00E356EE1AD99517003FC87E /* SaitaProTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SaitaProTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		00E356EE1AD99517003FC87E /* RezorTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RezorTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		00E356F21AD99517003FC87E /* SaitaProTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SaitaProTests.m; sourceTree = "<group>"; };
 		0839D7A5028F49228A4B5CBB /* helvetica-rounded-bold-5871d05ead8de.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "helvetica-rounded-bold-5871d05ead8de.otf"; path = "../assets/fonts/helvetica-rounded-bold-5871d05ead8de.otf"; sourceTree = "<group>"; };
-		13B07F961A680F5B00A75B9A /* SaitaPro.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SaitaPro.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		13B07F961A680F5B00A75B9A /* Rezor.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Rezor.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = SaitaPro/AppDelegate.h; sourceTree = "<group>"; };
 		13B07FB01A68108700A75B9A /* AppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppDelegate.mm; path = SaitaPro/AppDelegate.mm; sourceTree = "<group>"; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = SaitaPro/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = SaitaPro/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = SaitaPro/main.m; sourceTree = "<group>"; };
 		194F8C473A444D6686D1CF29 /* ocr-aregular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "ocr-aregular.ttf"; path = "../assets/fonts/ocr-aregular.ttf"; sourceTree = "<group>"; };
+		19BAB78FB754E34990BAA4DD /* libPods-Rezor.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Rezor.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1B9E064B6CCB48FF96A2F428 /* helvetica-compressed-5871d14b6903a.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "helvetica-compressed-5871d14b6903a.otf"; path = "../assets/fonts/helvetica-compressed-5871d14b6903a.otf"; sourceTree = "<group>"; };
 		2DA9568CACD0B83321930C28 /* Pods-SaitaPro-SaitaProTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SaitaPro-SaitaProTests.debug.xcconfig"; path = "Target Support Files/Pods-SaitaPro-SaitaProTests/Pods-SaitaPro-SaitaProTests.debug.xcconfig"; sourceTree = "<group>"; };
 		31814E3D911744688BF1646B /* helvetica-light-587ebe5a59211.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "helvetica-light-587ebe5a59211.ttf"; path = "../assets/fonts/helvetica-light-587ebe5a59211.ttf"; sourceTree = "<group>"; };
-		4DAB0AF22E73125F004E3C64 /* libPods-SaitaPro-SaitaProTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SaitaPro-SaitaProTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		4E14CE96C3B64FCF8694BDDD /* Poppins-Light.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-Light.ttf"; path = "../assets/fonts/Poppins-Light.ttf"; sourceTree = "<group>"; };
 		50EDC4583F034353853325B2 /* Poppins-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-Bold.ttf"; path = "../assets/fonts/Poppins-Bold.ttf"; sourceTree = "<group>"; };
 		52301EB0DAA6469178D71B95 /* Pods-SaitaPro.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SaitaPro.debug.xcconfig"; path = "Target Support Files/Pods-SaitaPro/Pods-SaitaPro.debug.xcconfig"; sourceTree = "<group>"; };
+		62EB95C258461072453735E2 /* Pods-Rezor.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Rezor.release.xcconfig"; path = "Target Support Files/Pods-Rezor/Pods-Rezor.release.xcconfig"; sourceTree = "<group>"; };
 		73D8B05A5B104EC1A51F1EA1 /* Helvetica-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Helvetica-Bold.ttf"; path = "../assets/fonts/Helvetica-Bold.ttf"; sourceTree = "<group>"; };
 		74D3D64B4180425CA385481E /* OCR-A_Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "OCR-A_Regular.ttf"; path = "../assets/fonts/OCR-A_Regular.ttf"; sourceTree = "<group>"; };
+		7EF4EF65E202744A732F39BE /* Pods-Rezor-RezorTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Rezor-RezorTests.debug.xcconfig"; path = "Target Support Files/Pods-Rezor-RezorTests/Pods-Rezor-RezorTests.debug.xcconfig"; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = SaitaPro/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		87CF10B04C64A7008CCD3993 /* Pods-Rezor-RezorTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Rezor-RezorTests.release.xcconfig"; path = "Target Support Files/Pods-Rezor-RezorTests/Pods-Rezor-RezorTests.release.xcconfig"; sourceTree = "<group>"; };
 		89641FB457144C3C91DB7719 /* OCR-ABT.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "OCR-ABT.ttf"; path = "../assets/fonts/OCR-ABT.ttf"; sourceTree = "<group>"; };
 		98A44ECAB9A8A177C214E2FD /* Pods-SaitaPro-SaitaProTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SaitaPro-SaitaProTests.release.xcconfig"; path = "Target Support Files/Pods-SaitaPro-SaitaProTests/Pods-SaitaPro-SaitaProTests.release.xcconfig"; sourceTree = "<group>"; };
 		99B2E90B41F74C16B9957A8A /* OCR-A.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "OCR-A.ttf"; path = "../assets/fonts/OCR-A.ttf"; sourceTree = "<group>"; };
@@ -142,13 +145,14 @@
 		CEB8B5702C196AB500DC1EC3 /* devCentralize.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = devCentralize.cer; sourceTree = "<group>"; };
 		CEB8B5712C196AB500DC1EC3 /* CreateWalletBridge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CreateWalletBridge.m; sourceTree = "<group>"; };
 		CEB8B5772C19711000DC1EC3 /* SaitaPro.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = SaitaPro.entitlements; path = SaitaPro/SaitaPro.entitlements; sourceTree = "<group>"; };
+		D7A71AAD7206AF1D0BEC2F26 /* libPods-Rezor-RezorTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Rezor-RezorTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E41AB4B5A89F54E73E4532F4 /* Pods-SaitaPro.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SaitaPro.release.xcconfig"; path = "Target Support Files/Pods-SaitaPro/Pods-SaitaPro.release.xcconfig"; sourceTree = "<group>"; };
-		E7B27EEAAE2BE5F63E7DE48C /* libPods-SaitaPro.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SaitaPro.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		EC247A07A6164B7D9FE9716D /* Poppins-SemiBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-SemiBold.ttf"; path = "../assets/fonts/Poppins-SemiBold.ttf"; sourceTree = "<group>"; };
 		ECB91B1669AF417E93631B6A /* Helvetica.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Helvetica.ttf; path = ../assets/fonts/Helvetica.ttf; sourceTree = "<group>"; };
 		ED135075671A4F7FBFC573CD /* Helvetica-BoldOblique.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Helvetica-BoldOblique.ttf"; path = "../assets/fonts/Helvetica-BoldOblique.ttf"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		EE36ED76F6DA44219BB9EBAF /* Helvetica-Oblique.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Helvetica-Oblique.ttf"; path = "../assets/fonts/Helvetica-Oblique.ttf"; sourceTree = "<group>"; };
+		F1BE29754308312FF1147EC8 /* Pods-Rezor.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Rezor.debug.xcconfig"; path = "Target Support Files/Pods-Rezor/Pods-Rezor.debug.xcconfig"; sourceTree = "<group>"; };
 		F6B26C3A4B684204B89E47CC /* Poppins-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-Regular.ttf"; path = "../assets/fonts/Poppins-Regular.ttf"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -157,7 +161,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C0F835BBDBCB9AF90BD184A9 /* libPods-SaitaPro-SaitaProTests.a in Frameworks */,
+				980ED532984DB629AB148782 /* libPods-Rezor-RezorTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -165,7 +169,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				17C15E38192FBFAC1204F715 /* libPods-SaitaPro.a in Frameworks */,
+				0563251C921D7BFC273ECB3F /* libPods-Rezor.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -230,8 +234,8 @@
 			isa = PBXGroup;
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				E7B27EEAAE2BE5F63E7DE48C /* libPods-SaitaPro.a */,
-				4DAB0AF22E73125F004E3C64 /* libPods-SaitaPro-SaitaProTests.a */,
+				19BAB78FB754E34990BAA4DD /* libPods-Rezor.a */,
+				D7A71AAD7206AF1D0BEC2F26 /* libPods-Rezor-RezorTests.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -286,8 +290,8 @@
 		83CBBA001A601CBA00E9B192 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				13B07F961A680F5B00A75B9A /* SaitaPro.app */,
-				00E356EE1AD99517003FC87E /* SaitaProTests.xctest */,
+				13B07F961A680F5B00A75B9A /* Rezor.app */,
+				00E356EE1AD99517003FC87E /* RezorTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -299,6 +303,10 @@
 				E41AB4B5A89F54E73E4532F4 /* Pods-SaitaPro.release.xcconfig */,
 				2DA9568CACD0B83321930C28 /* Pods-SaitaPro-SaitaProTests.debug.xcconfig */,
 				98A44ECAB9A8A177C214E2FD /* Pods-SaitaPro-SaitaProTests.release.xcconfig */,
+				F1BE29754308312FF1147EC8 /* Pods-Rezor.debug.xcconfig */,
+				62EB95C258461072453735E2 /* Pods-Rezor.release.xcconfig */,
+				7EF4EF65E202744A732F39BE /* Pods-Rezor-RezorTests.debug.xcconfig */,
+				87CF10B04C64A7008CCD3993 /* Pods-Rezor-RezorTests.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -336,9 +344,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		00E356ED1AD99517003FC87E /* SaitaProTests */ = {
+		00E356ED1AD99517003FC87E /* RezorTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 00E357021AD99517003FC87E /* Build configuration list for PBXNativeTarget "SaitaProTests" */;
+			buildConfigurationList = 00E357021AD99517003FC87E /* Build configuration list for PBXNativeTarget "RezorTests" */;
 			buildPhases = (
 				1A7871BC808ECDE1F3D160CF /* [CP] Check Pods Manifest.lock */,
 				00E356EA1AD99517003FC87E /* Sources */,
@@ -352,14 +360,14 @@
 			dependencies = (
 				00E356F51AD99517003FC87E /* PBXTargetDependency */,
 			);
-			name = SaitaProTests;
+			name = RezorTests;
 			productName = SaitaProTests;
-			productReference = 00E356EE1AD99517003FC87E /* SaitaProTests.xctest */;
+			productReference = 00E356EE1AD99517003FC87E /* RezorTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		13B07F861A680F5B00A75B9A /* SaitaPro */ = {
+		13B07F861A680F5B00A75B9A /* Rezor */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "SaitaPro" */;
+			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "Rezor" */;
 			buildPhases = (
 				8523744D55FC8D5D5F1EE067 /* [CP] Check Pods Manifest.lock */,
 				FD10A7F022414F080027D42C /* Start Packager */,
@@ -375,9 +383,9 @@
 			);
 			dependencies = (
 			);
-			name = SaitaPro;
+			name = Rezor;
 			productName = SaitaPro;
-			productReference = 13B07F961A680F5B00A75B9A /* SaitaPro.app */;
+			productReference = 13B07F961A680F5B00A75B9A /* Rezor.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -386,7 +394,8 @@
 		83CBB9F71A601CBA00E9B192 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 1210;
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
 				TargetAttributes = {
 					00E356ED1AD99517003FC87E = {
 						CreatedOnToolsVersion = 6.2;
@@ -397,7 +406,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "SaitaPro" */;
+			buildConfigurationList = 83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "Rezor" */;
 			compatibilityVersion = "Xcode 12.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -410,8 +419,8 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				13B07F861A680F5B00A75B9A /* SaitaPro */,
-				00E356ED1AD99517003FC87E /* SaitaProTests */,
+				13B07F861A680F5B00A75B9A /* Rezor */,
+				00E356ED1AD99517003FC87E /* RezorTests */,
 			);
 		};
 /* End PBXProject section */
@@ -489,15 +498,15 @@
 			files = (
 			);
 			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-SaitaPro/Pods-SaitaPro-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-Rezor/Pods-Rezor-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-SaitaPro/Pods-SaitaPro-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-Rezor/Pods-Rezor-frameworks-${CONFIGURATION}-output-files.xcfilelist",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SaitaPro/Pods-SaitaPro-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Rezor/Pods-Rezor-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		1A7871BC808ECDE1F3D160CF /* [CP] Check Pods Manifest.lock */ = {
@@ -515,7 +524,7 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-SaitaPro-SaitaProTests-checkManifestLockResult.txt",
+				"$(DERIVED_FILE_DIR)/Pods-Rezor-RezorTests-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -541,15 +550,15 @@
 			files = (
 			);
 			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-SaitaPro-SaitaProTests/Pods-SaitaPro-SaitaProTests-resources-${CONFIGURATION}-input-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-Rezor-RezorTests/Pods-Rezor-RezorTests-resources-${CONFIGURATION}-input-files.xcfilelist",
 			);
 			name = "[CP] Copy Pods Resources";
 			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-SaitaPro-SaitaProTests/Pods-SaitaPro-SaitaProTests-resources-${CONFIGURATION}-output-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-Rezor-RezorTests/Pods-Rezor-RezorTests-resources-${CONFIGURATION}-output-files.xcfilelist",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SaitaPro-SaitaProTests/Pods-SaitaPro-SaitaProTests-resources.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Rezor-RezorTests/Pods-Rezor-RezorTests-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		39645E9A3BFD569D36B7C0B9 /* [CP] Embed Pods Frameworks */ = {
@@ -558,15 +567,15 @@
 			files = (
 			);
 			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-SaitaPro-SaitaProTests/Pods-SaitaPro-SaitaProTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-Rezor-RezorTests/Pods-Rezor-RezorTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-SaitaPro-SaitaProTests/Pods-SaitaPro-SaitaProTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-Rezor-RezorTests/Pods-Rezor-RezorTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SaitaPro-SaitaProTests/Pods-SaitaPro-SaitaProTests-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Rezor-RezorTests/Pods-Rezor-RezorTests-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		8523744D55FC8D5D5F1EE067 /* [CP] Check Pods Manifest.lock */ = {
@@ -584,7 +593,7 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-SaitaPro-checkManifestLockResult.txt",
+				"$(DERIVED_FILE_DIR)/Pods-Rezor-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -597,15 +606,15 @@
 			files = (
 			);
 			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-SaitaPro/Pods-SaitaPro-resources-${CONFIGURATION}-input-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-Rezor/Pods-Rezor-resources-${CONFIGURATION}-input-files.xcfilelist",
 			);
 			name = "[CP] Copy Pods Resources";
 			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-SaitaPro/Pods-SaitaPro-resources-${CONFIGURATION}-output-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-Rezor/Pods-Rezor-resources-${CONFIGURATION}-output-files.xcfilelist",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SaitaPro/Pods-SaitaPro-resources.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Rezor/Pods-Rezor-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		FD10A7F022414F080027D42C /* Start Packager */ = {
@@ -672,7 +681,7 @@
 /* Begin PBXTargetDependency section */
 		00E356F51AD99517003FC87E /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 13B07F861A680F5B00A75B9A /* SaitaPro */;
+			target = 13B07F861A680F5B00A75B9A /* Rezor */;
 			targetProxy = 00E356F41AD99517003FC87E /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -680,7 +689,7 @@
 /* Begin XCBuildConfiguration section */
 		00E356F61AD99517003FC87E /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 2DA9568CACD0B83321930C28 /* Pods-SaitaPro-SaitaProTests.debug.xcconfig */;
+			baseConfigurationReference = 7EF4EF65E202744A732F39BE /* Pods-Rezor-RezorTests.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -702,13 +711,13 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SaitaPro.app/SaitaPro";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Rezor.app/Rezor";
 			};
 			name = Debug;
 		};
 		00E356F71AD99517003FC87E /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 98A44ECAB9A8A177C214E2FD /* Pods-SaitaPro-SaitaProTests.release.xcconfig */;
+			baseConfigurationReference = 87CF10B04C64A7008CCD3993 /* Pods-Rezor-RezorTests.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -727,13 +736,13 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SaitaPro.app/SaitaPro";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Rezor.app/Rezor";
 			};
 			name = Release;
 		};
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 52301EB0DAA6469178D71B95 /* Pods-SaitaPro.debug.xcconfig */;
+			baseConfigurationReference = F1BE29754308312FF1147EC8 /* Pods-Rezor.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -744,6 +753,7 @@
 				DEVELOPMENT_TEAM = 3836KMQXC6;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = SaitaPro/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Rezor;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -755,7 +765,7 @@
 					"-lc++",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.saitapro;
-				PRODUCT_NAME = SaitaPro;
+				PRODUCT_NAME = Rezor;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "SaitaPro-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -766,7 +776,7 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = E41AB4B5A89F54E73E4532F4 /* Pods-SaitaPro.release.xcconfig */;
+			baseConfigurationReference = 62EB95C258461072453735E2 /* Pods-Rezor.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -776,6 +786,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 3836KMQXC6;
 				INFOPLIST_FILE = SaitaPro/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Rezor;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -787,7 +798,7 @@
 					"-lc++",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.saitapro;
-				PRODUCT_NAME = SaitaPro;
+				PRODUCT_NAME = Rezor;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "SaitaPro-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
@@ -937,6 +948,7 @@
 				OTHER_LDFLAGS = "$(inherited)";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
@@ -944,7 +956,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		00E357021AD99517003FC87E /* Build configuration list for PBXNativeTarget "SaitaProTests" */ = {
+		00E357021AD99517003FC87E /* Build configuration list for PBXNativeTarget "RezorTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				00E356F61AD99517003FC87E /* Debug */,
@@ -953,7 +965,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "SaitaPro" */ = {
+		13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "Rezor" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				13B07F941A680F5B00A75B9A /* Debug */,
@@ -962,7 +974,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "SaitaPro" */ = {
+		83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "Rezor" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				83CBBA201A601CBA00E9B192 /* Debug */,

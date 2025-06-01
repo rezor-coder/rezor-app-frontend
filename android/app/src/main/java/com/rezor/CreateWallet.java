@@ -1,4 +1,4 @@
-package com.saitapronew;
+package com.rezor;
 
 import static android.content.ContentValues.TAG;
 
@@ -46,7 +46,7 @@ public class CreateWallet extends ReactContextBaseJavaModule {
     public void generateMnemonics(Callback callback) throws CipherException, IOException {
         Log.d("CreateWallet", "Create event called with name: " );
 
-        String packageName = "com.saitapronew";
+        String packageName = "com.rezor";
         String path = Environment.getDataDirectory().toString() + "/data/" + packageName + "/ACW/";
 
         writeFile(path);
@@ -60,7 +60,7 @@ public class CreateWallet extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void generateAddressFromMnemonics(String mnemonics, Callback callback) throws CipherException, IOException {
-        String packageName = "com.saitapronew";
+        String packageName = "com.rezor";
         JSONObject addresses =  generateAdressFromMnemonics(mnemonics);
         Log.d("CreateWallet", addresses.toString() );
         callback.invoke(addresses.toString());

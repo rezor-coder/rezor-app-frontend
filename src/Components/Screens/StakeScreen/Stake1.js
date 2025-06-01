@@ -666,7 +666,7 @@ const Stake = props => {
                       fontFamily: fonts.regular,
                       color: ThemeManager.colors.lightTextColor,
                     }}>
-                    {'Saitama'}
+                    {'Rezor'}
                   </Text>
                 </View>
                 <View style={{ flex: 1 }}>
@@ -684,7 +684,7 @@ const Stake = props => {
                       fontFamily: fonts.regular,
                       color: ThemeManager.colors.lightTextColor,
                     }}>
-                    {'Saitama'}
+                    {'Rezor'}
                   </Text>
                 </View>
                 <View

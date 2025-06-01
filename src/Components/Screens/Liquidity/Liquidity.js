@@ -190,7 +190,7 @@ const SwapScreen = ({ slippage, timeout }) => {
   let slippage2 = 0
   let fetchedTokenOneValue = 0
   let fetchedTokenTwoValue = 0
-  const [tabstatus, setTabSatus] = useState('Saita Swap');
+  const [tabstatus, setTabSatus] = useState('Rezor Swap');
   const [sliderValue, setSliderValue] = useState(0);
   const [isLoading, setLoading] = useState(false);
   const [swapModal, setSwapModal] = useState(false);
@@ -972,7 +972,7 @@ const SwapScreen = ({ slippage, timeout }) => {
   return (
     <Wrap>
       <View style={styles.roundView}>
-        {tabstatus == 'Saita Swap' && (
+        {tabstatus == 'Rezor Swap' && (
           <ScrollView style={styles.innerRoundView}>
             <View style={{ marginBottom: 40, paddingBottom: 20 }}>
               <Text style={{ color: '#CACACA' }}>You Send </Text>

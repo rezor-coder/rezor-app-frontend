@@ -63,7 +63,7 @@ static void ClearKeychainIfNecessary() {
   bridge.surfacePresenter = _bridgeAdapter.surfacePresenter;
 #endif
 
-  NSString *moduleName = @"SaitaPro";
+  NSString *moduleName = @"Rezor";
   NSDictionary *initialProps = @{};
 
   RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
@@ -166,7 +166,7 @@ static void ClearKeychainIfNecessary() {
 }
 
 + (NSString *)moduleName {
-  return @"SaitaPro";
+  return @"Rezor";
 }
 
 @end

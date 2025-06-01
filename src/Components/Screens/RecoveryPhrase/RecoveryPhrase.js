@@ -76,20 +76,20 @@ const RecoveryPhrase = props => {
   const backAction = () => {
     //Actions.jump('BackupOptions');
     props.route?.params?.screenType == 'Editwallet'
-      ? navigate(NavigationStrings.EditWallet)
+      ? navigate(NavigationStrings.MultiWalletList)
       : navigate(NavigationStrings.BackupOptions);
     return true;
   };
   useEffect(() => {
     if (props.route?.params?.screenType == 'Editwallet') {
-      if (props.route?.params?.walletItem.privateKey == undefined) {
+      if (props.route?.params?.walletItem?.privateKey == undefined) {
         let mnemonics = props.route?.params?.walletItem?.mnemonics;
         setIsPrvtKey(false);
         setMnemonics(mnemonics);
         let mnemonicArr = mnemonics ? mnemonics.split(' ') : [];
         setMnemonicArray(mnemonicArr);
       } else {
-        setPrvtKey(props.route?.params?.walletItem.privateKey);
+        setPrvtKey(props.route?.params?.walletItem?.privateKey);
         setIsPrvtKey(true);
       }
       // let mnemonics = await Singleton.getInstance().getData( response.defaultEthAddress,);
@@ -150,7 +150,7 @@ const RecoveryPhrase = props => {
           // props.navigation.state.params.onGoBack();
           // props.navigation.goBack();
           props.route?.params?.screenType == 'Editwallet'
-            ? navigate(NavigationStrings.EditWallet)
+            ? navigate(NavigationStrings.MultiWalletList)
             : navigate(NavigationStrings.BackupOptions);
         }}
       />
@@ -253,7 +253,7 @@ const RecoveryPhrase = props => {
           <BasicButton
             onPress={() => {
               props.route?.params?.screenType == 'Editwallet'
-                ? navigate(NavigationStrings.EditWallet)
+                ? navigate(NavigationStrings.MultiWalletList)
                 : navigate(NavigationStrings.BackupOptions);
             }}
             // colors={Singleton.getInstance().dynamicColor}

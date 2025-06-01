@@ -1,36 +1,41 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, { createRef, useCallback, useEffect, useRef, useState } from 'react';
+import React, {
+  createRef,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import {
   BackHandler,
   FlatList,
   Platform,
   Text,
   TextInput,
-  View
+  View,
 } from 'react-native';
-import { EventRegister } from 'react-native-event-listeners';
+import {EventRegister} from 'react-native-event-listeners';
 import FastImage from 'react-native-fast-image';
-import { useDispatch } from 'react-redux';
-import { ThemeManager } from '../../../../ThemeManager';
-import { APIClient } from '../../../Api';
+import {useDispatch} from 'react-redux';
+import {ThemeManager} from '../../../../ThemeManager';
+import {APIClient} from '../../../Api';
 import * as Constants from '../../../Constant';
-import {
-  HUOBI_TOKEN_LIST
-} from '../../../Endpoints';
-import { NavigationStrings } from '../../../Navigation/NavigationStrings';
-import { getSwapListAll, saveSwapItem } from '../../../Redux/Actions';
+import {HUOBI_TOKEN_LIST} from '../../../Endpoints';
+import {NavigationStrings} from '../../../Navigation/NavigationStrings';
+import {getSwapListAll, saveSwapItem} from '../../../Redux/Actions';
 import Singleton from '../../../Singleton';
-import { areaDimen, heightDimen, widthDimen } from '../../../Utils/themeUtils';
-import { getCurrentRouteName, goBack, navigate, reset } from '../../../navigationsService';
-import { Fonts, Images } from '../../../theme';
-import fonts from '../../../theme/Fonts';
+import {areaDimen, heightDimen, widthDimen} from '../../../Utils/themeUtils';
 import {
-  MainStatusBar,
-  SelectionModal,
-  SimpleHeaderNew
-} from '../../common';
-import { Card } from '../../common/Card';
-import { Wrap } from '../../common/Wrap';
+  getCurrentRouteName,
+  goBack,
+  navigate,
+  reset,
+} from '../../../navigationsService';
+import {Fonts, Images} from '../../../theme';
+import fonts from '../../../theme/Fonts';
+import {MainStatusBar, SelectionModal, SimpleHeaderNew} from '../../common';
+import {Card} from '../../common/Card';
+import {Wrap} from '../../common/Wrap';
 import Loader from '../Loader/Loader';
 import styles from './MarketStyle';
 
@@ -74,29 +79,29 @@ const Market = props => {
   }, [props]);
   /******************************************************************************************/
   useEffect(() => {
-    let backHandle
-    backHandle= BackHandler.addEventListener('hardwareBackPress',()=>{
-      if( getCurrentRouteName()=='Market'){
-        getCurrentRouteName() != 'Main' && reset(NavigationStrings.Main)
-      }else{
-        goBack()
+    let backHandle;
+    backHandle = BackHandler.addEventListener('hardwareBackPress', () => {
+      if (getCurrentRouteName() == 'Market') {
+        getCurrentRouteName() != 'Main' && reset(NavigationStrings.Main);
+      } else {
+        goBack();
       }
-      return true
-    })
+      return true;
+    });
     EventRegister.addEventListener('downModal', data1 => {
       setOpenModal(false);
     });
     showSaitaDex ? getsaitaDexList() : findDesiredToken();
     // getFavourite();
     let focus = props.navigation.addListener('focus', () => {
-      backHandle= BackHandler.addEventListener('hardwareBackPress',()=>{
-        if( getCurrentRouteName()=='Market'){
-          getCurrentRouteName() != 'Main' && reset(NavigationStrings.Main)
-        }else{
-          goBack()
+      backHandle = BackHandler.addEventListener('hardwareBackPress', () => {
+        if (getCurrentRouteName() == 'Market') {
+          getCurrentRouteName() != 'Main' && reset(NavigationStrings.Main);
+        } else {
+          goBack();
         }
-        return true
-      })
+        return true;
+      });
       initialCall();
       console.log('chk focus:::::::');
       setSearchText('');
@@ -105,7 +110,7 @@ const Market = props => {
     });
     let blur = props.navigation.addListener('blur', () => {
       backHandle?.remove();
-    })
+    });
     return () => {
       backHandle?.remove();
       blur();
@@ -135,7 +140,7 @@ const Market = props => {
     }
 
     return () => {};
-  }, [randomMath, searchText,showSaitaDex]);
+  }, [randomMath, searchText, showSaitaDex]);
 
   /******************************************************************************************/
   const findDesiredToken = useCallback(
@@ -147,7 +152,7 @@ const Market = props => {
         receivableCurrency: token,
       });
       APIClient.getInstance()
-        .get(HUOBI_TOKEN_LIST,Singleton.getInstance().access_token)
+        .get(HUOBI_TOKEN_LIST, Singleton.getInstance().access_token)
         .then(res => {
           setIsLoading(false);
           console.log('res', res);
@@ -179,9 +184,9 @@ const Market = props => {
   /******************************************************************************************/
   const changeText = val => {
     setSearchText(val);
-    console.log("val:::",val);
-    if(val?.trim() == ''){
-      console.log(":::::");
+    console.log('val:::', val);
+    if (val?.trim() == '') {
+      console.log(':::::');
       // if (activeWallet == Constants.COIN_SYMBOL.BNB) {
       //   list = searchFilteredArray?.filter(item => item?.coin_family == 6);
       // } else if (activeWallet == Constants.COIN_SYMBOL.ETH) {
@@ -192,7 +197,7 @@ const Market = props => {
         : setSearchedData([...desiredTokenListing]);
     }
     if (val && val?.trim() != '') {
-      console.log(":::::33333",val);
+      console.log(':::::33333', val);
       if (showSaitaDex) {
         const filteredData = searchFilteredArray.filter(function (item) {
           return (
@@ -208,14 +213,14 @@ const Market = props => {
         // }
         setSaitaDexListing(list);
       } else {
-        console.log(":::::3444444",val);
-        let filteredList = desiredTokenListing?.filter((token)=>{
-          return  token?.symbol
-          ?.toLowerCase()
-          ?.includes(val?.trim()?.toLowerCase());
-        })
-        console.log(":::::filteredList",filteredList);
-        setSearchedData(filteredList?filteredList:[]);
+        console.log(':::::3444444', val);
+        let filteredList = desiredTokenListing?.filter(token => {
+          return token?.symbol
+            ?.toLowerCase()
+            ?.includes(val?.trim()?.toLowerCase());
+        });
+        console.log(':::::filteredList', filteredList);
+        setSearchedData(filteredList ? filteredList : []);
       }
     } else {
       let list = searchFilteredArray;
@@ -263,7 +268,7 @@ const Market = props => {
             bnb: bnbList,
             eth: ethList,
             all: res.data,
-            stc:stcList
+            stc: stcList,
           };
           console.log('getsaitaDexList', 'res :::::::::', res, activeWallet);
           let list = res.data;
@@ -279,53 +284,63 @@ const Market = props => {
       });
   };
   const onPressSwap = item => {
-    console.log("activeWallet:::::::::",activeWallet,item);
     Singleton.getInstance()
-    .newGetData(Constants.IS_PRIVATE_WALLET)
-    .then(isPrivate => {
-      console.log("isPrivate::",isPrivate);
-      if (isPrivate !=Constants.COIN_SYMBOL.ETH && isPrivate !=Constants.COIN_SYMBOL.BNB && isPrivate !=Constants.COIN_SYMBOL.MATIC && isPrivate!=Constants.COIN_SYMBOL.TRX && isPrivate != Constants.COIN_SYMBOL.BTC && isPrivate != Constants.COIN_SYMBOL.STC) {
-        console.log("activeWallet all:::::",item);
-        dispatch(saveSwapItem(item))
-        getCurrentRouteName() != 'Trade' && navigate(NavigationStrings.Trade,{ chain: isPrivate ,item:item});
-      } else if (isPrivate == Constants.COIN_SYMBOL.ETH) {
-        console.log("activeWallet eth:::::",item);
-        if (item?.coin_family == 1) {
-          console.log("coin_family eth inside:::::",item);
-          dispatch(saveSwapItem(item))
-          getCurrentRouteName() != 'Trade' && navigate(NavigationStrings.Trade,{ chain: isPrivate ,item:item});
+      .newGetData(Constants.IS_PRIVATE_WALLET)
+      .then(isPrivate => {
+        if (
+          isPrivate != Constants.COIN_SYMBOL.ETH &&
+          isPrivate != Constants.COIN_SYMBOL.BNB &&
+          isPrivate != Constants.COIN_SYMBOL.MATIC &&
+          isPrivate != Constants.COIN_SYMBOL.TRX &&
+          isPrivate != Constants.COIN_SYMBOL.BTC &&
+          isPrivate != Constants.COIN_SYMBOL.STC
+        ) {
+          dispatch(saveSwapItem(item));
+          getCurrentRouteName() != 'SwapNew' &&
+            navigate(NavigationStrings.SwapNew, {chain: isPrivate, item: item});
+        } else if (isPrivate == Constants.COIN_SYMBOL.ETH) {
+          if (item?.coin_family == 1) {
+            dispatch(saveSwapItem(item));
+            getCurrentRouteName() != 'SwapNew' &&
+              navigate(NavigationStrings.SwapNew, {
+                chain: isPrivate,
+                item: item,
+              });
+          } else {
+            Singleton.showAlert(Constants.UNCOMPATIBLE_WALLET);
+          }
+        } else if (isPrivate == Constants.COIN_SYMBOL.BNB) {
+          if (item?.coin_family == 6) {
+            dispatch(saveSwapItem(item));
+            getCurrentRouteName() != 'SwapNew' &&
+              navigate(NavigationStrings.SwapNew, {
+                chain: isPrivate,
+                item: item,
+              });
+          } else {
+            Singleton.showAlert(Constants.UNCOMPATIBLE_WALLET);
+          }
+        } else if (isPrivate == Constants.COIN_SYMBOL.STC) {
+          if (item?.coin_family == 4) {
+            dispatch(saveSwapItem(item));
+            getCurrentRouteName() != 'SwapNew' &&
+              navigate(NavigationStrings.SwapNew, {
+                chain: isPrivate,
+                item: item,
+              });
+          } else {
+            Singleton.showAlert(Constants.UNCOMPATIBLE_WALLET);
+          }
         } else {
-          console.log("coin_family eth::::else:",);
           Singleton.showAlert(Constants.UNCOMPATIBLE_WALLET);
         }
-      } else if (isPrivate == Constants.COIN_SYMBOL.BNB) {
-        console.log("activeWallet bnb:::::",item);
-        if (item?.coin_family == 6) {
-          dispatch(saveSwapItem(item))
-          getCurrentRouteName() != 'Trade' && navigate(NavigationStrings.Trade,{ chain: isPrivate ,item:item});
-        } else {
-          Singleton.showAlert(Constants.UNCOMPATIBLE_WALLET);
-        }
-      }else if (isPrivate == Constants.COIN_SYMBOL.STC) {
-        console.log("activeWallet stc:::::",item);
-        if (item?.coin_family == 4) {
-          dispatch(saveSwapItem(item))
-          getCurrentRouteName() != 'Trade' && navigate(NavigationStrings.Trade,{ chain: isPrivate ,item:item});
-        } else {
-          Singleton.showAlert(Constants.UNCOMPATIBLE_WALLET);
-        }
-      } else {
-        Singleton.showAlert(Constants.UNCOMPATIBLE_WALLET);
-      }
-    });
-   
+      });
   };
 
   const onPressBuySell = item => {
-    console.log('activeWallet::', activeWallet);
     if (activeWallet == Constants.COIN_SYMBOL.ETH || activeWallet == 0) {
-      console.log('----------------item', item);
-      getCurrentRouteName() != 'TradeSwap' && navigate(NavigationStrings.TradeSwap,{item: item});
+      getCurrentRouteName() != 'TradeSwap' &&
+        navigate(NavigationStrings.TradeSwap, {item: item});
     } else {
       Singleton.showAlert(Constants.UNCOMPATIBLE_WALLET);
     }
@@ -350,7 +365,7 @@ const Market = props => {
           props.navigation.goBack();
         }}
       />
-     
+
       <View style={[styles.roundView]}>
         <View
           style={{
@@ -384,7 +399,7 @@ const Market = props => {
               alignItems: 'center',
               width: '100%',
               // left: widthDimen(-5),
-              alignSelf:'center'
+              alignSelf: 'center',
             }}>
             <TextInput
               maxLength={25}
@@ -422,99 +437,109 @@ const Market = props => {
           </Text>
         </View>
 
-       {showSaitaDex? <FlatList
-          bounces={false}
-          ref={flatlist_ref}
-          style={{flex: 1}}
-          contentContainerStyle={{overflow: 'hidden', flexGrow: 1,paddingVertical:heightDimen(10)}}
-          showsVerticalScrollIndicator={false}
-          ListFooterComponent={() => {
-            return (
-              <View
-                style={{
-                  marginBottom: heightDimen(Platform.OS == 'ios' ? 50 : 90),
-                }}
-              />
-            );
-          }}
-          data={saitaDexListing}
-          keyExtractor={(item, index) => index + ''}
-          renderItem={({item, index}) => {
-            return (
-              <Card
-                onPressSwap={() => onPressSwap(item)}
-                onPressBuy={() => onPressBuySell(item)}
-                isSaitaDex={showSaitaDex}
-                item={item}
-              />
-            );
-          }}
-          ListEmptyComponent={() => {
-            return (
-              <View
-                style={{
-                  flex: 1,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}>
-                <Text
+        {showSaitaDex ? (
+          <FlatList
+            bounces={false}
+            ref={flatlist_ref}
+            style={{flex: 1}}
+            contentContainerStyle={{
+              overflow: 'hidden',
+              flexGrow: 1,
+              paddingVertical: heightDimen(10),
+            }}
+            showsVerticalScrollIndicator={false}
+            ListFooterComponent={() => {
+              return (
+                <View
                   style={{
-                    fontFamily: fonts.regular,
-                    color: ThemeManager.colors.textColor,
+                    marginBottom: heightDimen(Platform.OS == 'ios' ? 50 : 90),
+                  }}
+                />
+              );
+            }}
+            data={saitaDexListing}
+            keyExtractor={(item, index) => index + ''}
+            renderItem={({item, index}) => {
+              return (
+                <Card
+                  onPressSwap={() => onPressSwap(item)}
+                  onPressBuy={() => onPressBuySell(item)}
+                  isSaitaDex={showSaitaDex}
+                  item={item}
+                />
+              );
+            }}
+            ListEmptyComponent={() => {
+              return (
+                <View
+                  style={{
+                    flex: 1,
+                    alignItems: 'center',
+                    justifyContent: 'center',
                   }}>
-                  No Data Found
-                </Text>
-              </View>
-            );
-          }}
-        />:
-        <FlatList
-        bounces={false}
-        ref={flatlist_ref}
-        style={{flex: 1,marginHorizontal:widthDimen(-5)}}
-        contentContainerStyle={{overflow: 'hidden', flexGrow: 1,paddingVertical:heightDimen(10)}}
-        showsVerticalScrollIndicator={false}
-        ListFooterComponent={() => {
-          return (
-            <View
-              style={{
-                marginBottom: heightDimen(Platform.OS == 'ios' ? 50 : 90),
-              }}
-            />
-          );
-        }}
-        data={searchedData}
-        keyExtractor={(item, index) => index + ''}
-        renderItem={({item, index}) => {
-          return (
-            <Card
-              onPressSwap={() => onPressSwap(item)}
-              onPressBuy={() => onPressBuySell(item)}
-              isSaitaDex={showSaitaDex}
-              item={item}
-            />
-          );
-        }}
-        ListEmptyComponent={() => {
-          return (
-            <View
-              style={{
-                flex: 1,
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}>
-              <Text
-                style={{
-                  fontFamily: fonts.regular,
-                  color: ThemeManager.colors.textColor,
-                }}>
-                No Data Found
-              </Text>
-            </View>
-          );
-        }}
-      />
-        }
+                  <Text
+                    style={{
+                      fontFamily: fonts.regular,
+                      color: ThemeManager.colors.textColor,
+                    }}>
+                    No Data Found
+                  </Text>
+                </View>
+              );
+            }}
+          />
+        ) : (
+          <FlatList
+            bounces={false}
+            ref={flatlist_ref}
+            style={{flex: 1, marginHorizontal: widthDimen(-5)}}
+            contentContainerStyle={{
+              overflow: 'hidden',
+              flexGrow: 1,
+              paddingVertical: heightDimen(10),
+            }}
+            showsVerticalScrollIndicator={false}
+            ListFooterComponent={() => {
+              return (
+                <View
+                  style={{
+                    marginBottom: heightDimen(Platform.OS == 'ios' ? 50 : 90),
+                  }}
+                />
+              );
+            }}
+            data={searchedData}
+            keyExtractor={(item, index) => index + ''}
+            renderItem={({item, index}) => {
+              return (
+                <Card
+                  onPressSwap={() => onPressSwap(item)}
+                  onPressBuy={() => onPressBuySell(item)}
+                  isSaitaDex={showSaitaDex}
+                  item={item}
+                />
+              );
+            }}
+            ListEmptyComponent={() => {
+              return (
+                <View
+                  style={{
+                    flex: 1,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}>
+                  <Text
+                    style={{
+                      fontFamily: fonts.regular,
+                      color: ThemeManager.colors.textColor,
+                    }}>
+                    No Data Found
+                  </Text>
+                </View>
+              );
+            }}
+          />
+        )}
       </View>
 
       <SelectionModal

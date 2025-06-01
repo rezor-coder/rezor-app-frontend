@@ -58,11 +58,11 @@ class Send extends Component {
   }
   componentDidMount() {
     Singleton.getInstance()
-    .newGetData(constants.DASHBOARD_WALLET_LIST)
+      .newGetData(constants.DASHBOARD_WALLET_LIST)
       .then(wallet_list => {
-        this.setState({ isLoading: wallet_list == null ? true : false });
+        this.setState({isLoading: wallet_list == null ? true : false});
         this.getMyWalletsData();
-      })
+      });
 
     AppState.addEventListener('change', state => {
       if (state === 'inactive' || state === 'background') {
@@ -78,8 +78,8 @@ class Send extends Component {
       return true;
     });
     this.props.navigation.addListener('focus', () => {
-      this.setState({Page: 1, bottomLoading: false,});
-      
+      this.setState({Page: 1, bottomLoading: false});
+
       this.backHandle = BackHandler.addEventListener(
         'hardwareBackPress',
         () => {
@@ -114,6 +114,9 @@ class Send extends Component {
       } else if (item.coin_family == 2) {
         getCurrentRouteName() != 'SendBTC' &&
           navigate(NavigationStrings.SendBTC, {walletData: item});
+      } else if (item.coin_family == 8) {
+        getCurrentRouteName() != 'SendSOL' &&
+          navigate(NavigationStrings.SendBTC, {walletData: item});
       } else if (item.coin_family == 3) {
         getCurrentRouteName() != 'SendTRX' &&
           navigate(NavigationStrings.SendTRX, {walletData: item}); //Pending
@@ -127,17 +130,17 @@ class Send extends Component {
   searchCurrency = text => {
     let coinsData = this.state.coinData;
     let lowerCaseText = text.toLowerCase();
-  
+
     if (text === '') {
-      this.setState({ searchData: [] });
+      this.setState({searchData: []});
       return;
     }
-  
+
     let filteredData = coinsData.filter(item => {
       return item.coin_name.toLowerCase().includes(lowerCaseText);
     });
-  
-    this.setState({ searchData: filteredData });
+
+    this.setState({searchData: filteredData});
   };
   getMyWalletsData() {
     let page = this.state.Page;
@@ -183,7 +186,7 @@ class Send extends Component {
     console.log(
       'MM',
       'this.state.coinDat0000000-----------',
-      this.state.coinData.length
+      this.state.coinData.length,
     );
 
     return (

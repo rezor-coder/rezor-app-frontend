@@ -85,7 +85,7 @@ class TermsandPrivacy extends Component {
               title={'Terms of Service'}
               onPress={() =>
                 Linking.openURL(
-                  'https://api.saita.pro/prod/api/v1/page/web-terms-and-conditions.html',
+                  'https://d2xj8dmcp1sq1d.cloudfront.net/pages/web-terms-and-conditions.html',
                 )
               }
             />
@@ -96,7 +96,7 @@ class TermsandPrivacy extends Component {
               title={'Privacy Policy'}
               onPress={() =>
                 Linking.openURL(
-                  'https://api.saita.pro/prod/api/v1/page/web-privacy-policy.html',
+                  'https://d2xj8dmcp1sq1d.cloudfront.net/pages/web-privacy-policy.html',
                 )
               }
             />

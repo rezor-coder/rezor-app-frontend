@@ -363,8 +363,8 @@ const Dashboard = props => {
                     ? '(TRC20)'
                     : item?.coin_family == 11
                     ? ' (MATIC ERC20)'
-                    : item?.coin_family == 4
-                    ? ' (SBC24)'
+                    // : item?.coin_family == 4
+                   // ? ' (SBC24)' //Commented for coming soon
                     : ''
                   : ''}
               </Text>
@@ -390,7 +390,8 @@ const Dashboard = props => {
           </Text>
         </View>
         <View style={{flexDirection: 'row'}}>
-          {item.is_stake == 1 && (
+        {/* Commented for coming soon */}
+          {/* {item.is_stake == 1 && (
             <TouchableOpacity
               style={[
                 styles.stakeButton,
@@ -422,7 +423,7 @@ const Dashboard = props => {
                 {LanguageManager.stake}
               </Text>
             </TouchableOpacity>
-          )}
+          )} */}
           {/* {item.on_epay == 1 && (
             <TouchableOpacity
               style={[styles.buyButton, { backgroundColor: ThemeManager.colors.primary, }]}
@@ -585,7 +586,7 @@ const Dashboard = props => {
               imageIcon={Images.Buy}
               title={LanguageManager.buy}
             /> */}
-
+            {/* Commented for coming soon */}
             {/* <IconText
               tintColor={ThemeManager.colors.headingText}
               disabled={onPressActive}

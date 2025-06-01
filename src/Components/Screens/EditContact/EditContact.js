@@ -191,7 +191,7 @@ const EditContact = props => {
             PermissionsAndroid.PERMISSIONS.CAMERA,
             {
               title: 'Camera App Permission',
-              message: 'Saita Pro App needs access to your camera ',
+              message: 'Rezor App needs access to your camera ',
             },
           );
           if (granted === PermissionsAndroid.RESULTS.GRANTED) {

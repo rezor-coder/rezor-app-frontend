@@ -20,7 +20,7 @@ export const NavigationStrings = {
   HistoryComponent: 'HistoryComponent',
   ConfirmPin: 'ConfirmPin',
   WalletSequrity: 'WalletSequrity',
-  SaitaProSupport: 'SaitaProSupport',
+  SaitaProSupport: 'RezorSupport',
   WalletSequrityConfirm: 'WalletSequrityConfirm',
   CreateOrImportWallet: 'CreateOrImportWallet',
   Setting: 'Setting',

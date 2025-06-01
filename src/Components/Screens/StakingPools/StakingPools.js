@@ -757,7 +757,7 @@ const StakingPools = () => {
                   marginVertical: 40,
                 }}>
                 <Text style={{ color: '#FFF', fontSize: 18 }}>
-                  Saitama Balance: {userBal}
+                  Rezor Balance: {userBal}
                 </Text>
               </View>
 

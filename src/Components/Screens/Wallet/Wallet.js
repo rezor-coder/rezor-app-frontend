@@ -5,8 +5,8 @@ import {
   ActivityIndicator,
   BackHandler,
   Dimensions,
-  FlatList,
   Modal,
+  FlatList,
   RefreshControl,
   ScrollView,
   StatusBar,
@@ -27,7 +27,7 @@ import {
   getDexUrls,
   getMyWallets,
   getUserCardAddress,
-  getVaultDetails,
+  getVaultDetails, //Commented for saitacard
   myWalletListSuccess,
   updateListBalances,
 } from '../../../Redux/Actions';
@@ -63,12 +63,11 @@ import {
   coinSelection,
 } from './WalletHelper';
 
-const tabs = ['Tokens', 'Staking'];
+const tabs = ['Tokens', 'Staking (Coming soon)'];
 const Wallet = props => {
-
   const dispatch = useDispatch();
   const insets = useSafeAreaInsets();
-  const CoinData = useSelector(state => state?.walletReducer?.myWallets);
+  const CoinData = useSelector(state => state?.walletReducer?.myWallets || []);
   const {totalBalance, lastDepositData} = useSelector(
     state => state?.walletReducer,
   );
@@ -108,7 +107,7 @@ const Wallet = props => {
   useEffect(() => {
     Notification();
     getRouterDetailsApi(dispatch);
-    dispatch(getVaultDetails());
+    // dispatch(getVaultDetails()); //Commented for saitacard
     EventRegister.addEventListener('themeChanged', () => {
       setViewKey(new Date());
     });
@@ -199,7 +198,11 @@ const Wallet = props => {
         setActiveWallet(isPrivate);
         if (!isPrivate) {
           setInCompatible(false);
-        } else if (isPrivate != Constants.COIN_SYMBOL.BNB && isPrivate != Constants.COIN_SYMBOL.ETH && isPrivate != 0) {
+        } else if (
+          isPrivate != Constants.COIN_SYMBOL.BNB &&
+          isPrivate != Constants.COIN_SYMBOL.ETH &&
+          isPrivate != 0
+        ) {
           setInCompatible(true);
         } else {
           setInCompatible(false);
@@ -222,7 +225,6 @@ const Wallet = props => {
           setWalletsDetailData.push(data);
           setCheckIsArray(true);
         } else {
-          console.warn('MM', 'notArray-----=-=-=-=', Object.entries(data));
           setWalletsDetailData.push(Object.entries(data));
           setCheckIsArray(false);
         }
@@ -291,7 +293,6 @@ const Wallet = props => {
         getList();
       })
       .catch(err => {
-        console.log('err:::::::', err);
         getList();
         setisLoading(false);
       });
@@ -475,7 +476,7 @@ const Wallet = props => {
           }
         }
       }
-      case 'Staking': {
+      case 'Staking (Coming soon)': {
         return <></>;
       }
       default: {
@@ -487,7 +488,6 @@ const Wallet = props => {
     return new Promise(async (resolve, reject) => {
       try {
         // setisLoading(true);
-        console.log('createWalletAddress req', card, user);
         let data = {
           full_name: user.full_name,
           email: user.email,
@@ -538,10 +538,8 @@ const Wallet = props => {
                 tokenListItem: [],
                 fees: selectedItem?.card_fee,
               });
-            console.log('wallet::::::', wallet);
           })
           .catch(err => {
-            // console.log('err:::::onPressPay:', err);
             setisLoading(false);
           });
       });
@@ -621,7 +619,10 @@ const Wallet = props => {
             Singleton.getInstance()
               .newGetData(Constants.IS_PRIVATE_WALLET)
               .then(isPrivate => {
-                if (isPrivate == Constants.COIN_SYMBOL.BTC || isPrivate == Constants.COIN_SYMBOL.TRX) {
+                if (
+                  isPrivate == Constants.COIN_SYMBOL.BTC ||
+                  isPrivate == Constants.COIN_SYMBOL.TRX
+                ) {
                   Singleton.showAlert(Constants.UNCOMPATIBLE_WALLET);
                 } else {
                   getCurrentRouteName() != 'ConnectWithDapp' &&
@@ -779,8 +780,8 @@ const Wallet = props => {
               return (
                 <BasicButton
                   onPress={() => {
-                    if (tab == 'Staking') {
-                      onPressStake();
+                    if (tab == 'Staking (Coming soon)') {
+                      return; //Commented for coming soon onPressStake();
                     }
                     if (tab == 'SaitaCard') {
                       getCardDetails();
@@ -789,7 +790,7 @@ const Wallet = props => {
                   }}
                   customGradient={[
                     styles.tabStyle,
-                    {width: widthDimen(358 / 3)},
+                    {width: widthDimen(358 / 2)},
                   ]}
                   customColor={
                     activeTab == tab
@@ -829,7 +830,7 @@ const Wallet = props => {
               </Text>
             </View>
           )}
-          {activeTab == 'Staking' && isIncompatible && (
+          {activeTab == 'Staking (Coming soon)' && isIncompatible && (
             <View
               style={{
                 height: Dimensions.get('screen').height / 2.18,

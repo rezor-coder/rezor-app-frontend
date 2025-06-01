@@ -1,4 +1,4 @@
-package com.saitapronew;
+package com.rezor;
 
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;

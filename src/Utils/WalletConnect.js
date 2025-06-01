@@ -24,7 +24,7 @@ export default class WalletConnect {
   initialiseWalletConnect = async () => {
     console.log('--INSIDE-INITIAL');
     const core = new Core({
-      projectId: '160e9f6ba80c6225462a13c2640ffd83',
+      projectId: 'a9d7c8d07b81ba50fa96d6670edc1afb',
     });
     this.web3Wallet = await Web3Wallet.init({
       core, // <- pass the shared `core` instance
@@ -32,7 +32,7 @@ export default class WalletConnect {
         name: 'Rezor',
         description:
           'Rezor is here to make crypto and decentralized finance simple and safe for you. Buying crypto, trading assets, staking .',
-        url: 'https://www.saitamatoken.com/saitapro/',
+        url: 'https://www.rezor.org/',
         icons: ['https://walletconnect.org/walletconnect-logo.png'],
       },
     });

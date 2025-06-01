@@ -144,7 +144,7 @@ const GetSupport = props => {
 
     let data = {
       name: name,
-      email: 'info@saitachain.com',
+      email: 'support@rezor.org',
       subject: subject,
       message: message,
       address: walletAddress,
@@ -161,7 +161,7 @@ const GetSupport = props => {
       .then(res => {
         setIsLoading(false);
         Linking.openURL(
-          `mailto:info@saitachain.com?subject=${subject}&body=Name: ${name}\nMessage: ${message}\nWalletAddress: ${walletAddress}\nLink: ${transactionLinks}\nImage: ${selectedImageUrl}`,
+          `mailto:support@rezor.org?subject=${subject}&body=Name: ${name}\nMessage: ${message}\nWalletAddress: ${walletAddress}\nLink: ${transactionLinks}\nImage: ${selectedImageUrl}`,
         );
         goBack();
       })
@@ -300,7 +300,7 @@ const GetSupport = props => {
               title={LanguageManager.email}
               editable={false}
               mainStyle={{borderColor: ThemeManager.colors.inputBoxColor}}
-              text={'info@saitachain.com'}
+              text={'support@rezor.org'}
               onChangeText={text => setEmail(text)}
               width="100%"
               placeholder={LanguageManager.email}></BasicInputBox>

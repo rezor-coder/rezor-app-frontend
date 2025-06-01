@@ -777,7 +777,7 @@ const StakeView = props => {
           );
         }
       } else {
-        Singleton.showAlert("You don't have enough Saitama balance");
+        Singleton.showAlert("You don't have enough Rezor balance");
       }
 
     }
@@ -925,7 +925,7 @@ const StakeView = props => {
                 color: ThemeManager.colors.textColor,
                 marginHorizontal: 5,
               }}>
-              {'Saita'}
+              {'Rezor'}
             </Text>
           </View>
           <View

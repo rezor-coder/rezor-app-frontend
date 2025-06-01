@@ -45,7 +45,7 @@ const SwapScreenBnb = ({ slippage, timeout }) => {
   let routerAddress = Singleton.getInstance().SwapRouterBNBAddress; // mainnet saitaswap router address  bnb
   let WETH = Singleton.getInstance().SwapWethAddress  // Using Wrapped Ether (WETH) contract address to get ETH equivalent balance
   let userAddress = Singleton.getInstance().defaultEthAddress;
-  const [tabstatus, setTabSatus] = useState('Saita Swap');
+  const [tabstatus, setTabSatus] = useState('Rezor Swap');
   const [sliderValue, setSliderValue] = useState(0);
   const [isLoading, setLoading] = useState(false);
   const [swapModal, setSwapModal] = useState(false);
@@ -651,7 +651,7 @@ const SwapScreenBnb = ({ slippage, timeout }) => {
 
 
       <View style={styles.roundView}>
-        {tabstatus == 'Saita Swap' && (
+        {tabstatus == 'Rezor Swap' && (
           <ScrollView style={styles.innerRoundView}>
             <View style={{ marginBottom: 40, paddingBottom: 20 }}>
               <Text style={{ color: '#CACACA' }}>You Send</Text>

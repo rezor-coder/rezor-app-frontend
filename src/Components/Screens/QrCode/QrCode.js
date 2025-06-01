@@ -1,22 +1,24 @@
 /* eslint-disable react-native/no-inline-styles */
 import Clipboard from '@react-native-community/clipboard';
-import React, { createRef, useEffect, useState } from 'react';
-import { Image, Share, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import React, {createRef, useEffect, useState, useRef} from 'react';
+import {Image, Text, TextInput, TouchableOpacity, View} from 'react-native';
 import Toast from 'react-native-easy-toast';
 import FastImage from 'react-native-fast-image';
-import QRCode from 'react-native-qrcode-image';
-import { LanguageManager, ThemeManager } from '../../../../ThemeManager';
+import Share from 'react-native-share';
+// import QRCode from 'react-native-qrcode-image';
+import QRCode from 'react-native-qrcode-svg';
+import {LanguageManager, ThemeManager} from '../../../../ThemeManager';
 import * as constants from '../../../Constant';
 import Singleton from '../../../Singleton';
-import { areaDimen, heightDimen, widthDimen } from '../../../Utils/themeUtils';
-import { Colors, Fonts, Images } from '../../../theme';
-import { MainStatusBar, SimpleHeader } from '../../common';
-import { BorderLine, Wrap } from '../../common/index';
+import {areaDimen, heightDimen, widthDimen} from '../../../Utils/themeUtils';
+import {Colors, Fonts, Images} from '../../../theme';
+import {MainStatusBar, SimpleHeader} from '../../common';
+import {BorderLine, Wrap} from '../../common/index';
 import styles from './QrCodeStyle';
-import { goBack } from '../../../navigationsService';
+import {goBack} from '../../../navigationsService';
 
-var qrBase64 = '';
 const QrCode = props => {
+  const qrCodeRef = useRef(null);
   const [showAmountModal, setShowAmountModal] = useState(false);
   const [publicAddress, setPublicAddress] = useState('');
   const [walletData, setwalletData] = useState(props.route?.params?.item);
@@ -42,18 +44,27 @@ const QrCode = props => {
   }, [props.route?.params?.item]);
   const shareAction = () => {
     try {
-      const result = Share.share({
-        message: `Please send  ${props.route?.params?.item.coin_symbol.toUpperCase()} on ${publicAddress}`,
-      });
-      if (result.action === Share.sharedAction) {
-        if (result.activityType) {
-          // shared with activity type of result.activityType
-        } else {
-          // shared
-        }
-      } else if (result.action === Share.dismissedAction) {
-        // dismissed
+      if (qrCodeRef.current) {
+        qrCodeRef.current.toDataURL(dataURL => {
+          const shareOptions = {
+            message: `My Public Address to Receive  ${props.route?.params?.item.coin_symbol.toUpperCase()}  ${publicAddress}`,
+            url: `data:image/png;base64,${dataURL}`,
+          };
+          Share.open(shareOptions);
+        });
       }
+      // const result = Share.share({
+      //   message: `Please send  ${props.route?.params?.item.coin_symbol.toUpperCase()} on ${publicAddress}`,
+      // });
+      // if (result.action === Share.sharedAction) {
+      //   if (result.activityType) {
+      //     // shared with activity type of result.activityType
+      //   } else {
+      //     // shared
+      //   }
+      // } else if (result.action === Share.dismissedAction) {
+      //   // dismissed
+      // }
     } catch (error) {
       Singleton.showAlert(error.message);
     }
@@ -139,7 +150,9 @@ const QrCode = props => {
                     fontFamily: Fonts.bold,
                     fontSize: areaDimen(14),
                   }}>
-                  {props.route?.params?.item?.coin_symbol?.toUpperCase()?.charAt(0)}
+                  {props.route?.params?.item?.coin_symbol
+                    ?.toUpperCase()
+                    ?.charAt(0)}
                 </Text>
               </View>
             )}
@@ -189,19 +202,24 @@ const QrCode = props => {
                     fontFamily: Fonts.bold,
                     fontSize: areaDimen(18),
                   }}>
-                  {props.route?.params?.item?.coin_symbol?.toUpperCase()?.charAt(0)}
+                  {props.route?.params?.item?.coin_symbol
+                    ?.toUpperCase()
+                    ?.charAt(0)}
                 </Text>
               </View>
             )}
-            <QRCode
-              getBase64={base64 => {
-                qrBase64 = base64;
-              }}
-              value={publicAddress}
-              size={200}
-              bgColor="#FFFFFF"
-              fgColor="#000000"
-            />
+            {publicAddress && (
+              <QRCode
+                // getBase64={base64 => {
+                //   qrBase64 = base64;
+                // }}
+                getRef={qrCodeRef}
+                value={publicAddress}
+                size={200}
+                bgColor="#FFFFFF"
+                fgColor="#000000"
+              />
+            )}
           </View>
           <Text
             style={{
@@ -242,10 +260,10 @@ const QrCode = props => {
             <TouchableOpacity
               disabled={disableButton}
               onPress={() => {
-               setDisabled(true)
-               setTimeout(() => {
-                setDisabled(false)
-               }, 1000);
+                setDisabled(true);
+                setTimeout(() => {
+                  setDisabled(false);
+                }, 1000);
                 shareAction();
               }}
               style={[

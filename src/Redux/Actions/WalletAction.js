@@ -54,6 +54,7 @@ import {
   API_SWAP_NEW,
   CHECK_EXIST_CONTACT,
   UPDATE_WALLET_BALANCES,
+  API_CHECK_APP_VERSION,
 } from '../../Endpoints';
 
 import {APIClient} from '../../Api/APIClient';
@@ -99,7 +100,6 @@ export const getCoinList = ({
           coinListSuccess(dispatch, result);
         })
         .catch(error => {
-          // console.warn('MM', 'error coin list-- ', error);
           reject(error);
           walletFail(dispatch, error);
         });
@@ -123,17 +123,14 @@ export const getNotificationList = ({
         addrsListKeys: addrsListKeys,
         coinFamilyKeys: coinFamilyKeys,
       };
-      //console.warn('MM',data);
       APIClient.getInstance()
         .post(API_NOTIFICATION, data, access_token)
         .then(response => {
-          // //console.warn('MM','Notification List--- ', response);
           let result = response;
           resolve(result);
           coinListSuccess(dispatch, result);
         })
         .catch(error => {
-          //console.warn('MM','error notification list-- ', error);
           reject(error);
           walletFail(dispatch, error);
         });
@@ -159,11 +156,9 @@ export const getMyWallets = ({
         coinFamilyKeys: coinFamilyKeys,
         search: search,
       };
-      console.log('------params---', data);
       APIClient.getInstance()
         .post(API_MYWALLETS, data, access_token)
         .then(response => {
-          console.log('------response---', response);
           var newArray = [];
           let price = 0;
           let totalBalance = 0;
@@ -184,7 +179,6 @@ export const getMyWallets = ({
                   Singleton.getInstance().CurrencySelected.toLowerCase(),
               );
               if (selectedData != undefined) {
-                // //console.warn('MM','>>>>>', selectedData);
                 price =
                   parseFloat(element.balance) * parseFloat(selectedData.value);
                 element.current_pricing = price;
@@ -302,7 +296,6 @@ export const getMyWallets = ({
           }
         })
         .catch(error => {
-          //  console.warn('MM','error mywallets list-- ', error);
           reject(error);
           walletFail(dispatch, error);
         });
@@ -349,7 +342,6 @@ export const getDashboardWallets = ({
                 Singleton.getInstance().CurrencySelected.toLowerCase(),
             );
             if (selectedData != undefined) {
-              // //console.warn('MM','>>>>>', selectedData);
               price =
                 parseFloat(element.balance) * parseFloat(selectedData.value);
               element.current_pricing = price;
@@ -438,7 +430,6 @@ export const getGraphData = ({
           access_token,
         )
         .then(response => {
-          // //console.warn('MM','getGraphData--- ', response);
           const res = response.data;
           var newArray = [];
           for (let i = 0; i < res.length; i++) {
@@ -452,12 +443,10 @@ export const getGraphData = ({
               name: element.coin_type,
             });
           }
-          // //console.warn('MM','chk new Arr::::', newArray);
           resolve(newArray);
           coinListSuccess(dispatch, newArray);
         })
         .catch(error => {
-          //console.warn('MM','error getGraphData list-- ', error);
           reject(error);
           walletFail(dispatch, error);
         });
@@ -479,17 +468,14 @@ export const coinActiveInactive = ({
         walletAddress: walletAddress,
         isActive: isActive,
       };
-      //console.warn('MM','==>>', data);
       APIClient.getInstance()
         .post(API_ACTIVE_INACTIVE_COIN, data, access_token)
         .then(response => {
-          //console.warn('MM','respone API_ACTIVE_INACTIVE_COIN--- ', response);
           let result = response;
           resolve(result);
           //activeInactiveSuccess(dispatch, response.token);
         })
         .catch(error => {
-          //console.warn('MM','error API_ACTIVE_INACTIVE_COIN-- ', error);
           reject(error);
           walletFail(dispatch, error);
         });
@@ -501,21 +487,16 @@ export const coinActiveInactive = ({
 export const getWalletCoinListOrder = ({data, access_token}) => {
   return dispatch => {
     return new Promise((resolve, reject) => {
-      //console.warn('MM',data);
       APIClient.getInstance()
         .post(WALLET_GET_COIN_LIST_ORDER, data, access_token)
         .then(response => {
-          // //console.warn('MM','respone WALLET_GET_COIN_LIST_ORDER--- ', response);
           let result = response;
           resolve(result);
           Singleton.getInstance()
             .newSaveData(Constants.HOT_LIST, JSON.stringify(response))
-            .then(res => {
-              // //console.warn('MM','cointlistsingleton======res======:::::', res);
-            });
+            .then(res => {});
         })
         .catch(error => {
-          //console.warn('MM','error WALLET_GET_COIN_LIST_ORDER-- ', error);
           reject(error);
           walletFail(dispatch, error);
         });
@@ -527,16 +508,13 @@ export const getWalletCoinListOrder = ({data, access_token}) => {
 export const getTransactionList = ({data, access_token}) => {
   return dispatch => {
     return new Promise((resolve, reject) => {
-      console.warn('MM---------', data);
       APIClient.getInstance()
         .post(API_TRANSACTION, data, access_token)
         .then(response => {
-          console.warn('MM','respone API_TRANSACTION--- ', response);
           let result = response;
           resolve(result);
         })
         .catch(error => {
-          //console.warn('MM','error API_TRANSACTION-- ', error);
           reject(error);
           walletFail(dispatch, error);
         });
@@ -548,16 +526,13 @@ export const getTransactionList = ({data, access_token}) => {
 export const getBuyTransactionList = ({data, access_token}) => {
   return dispatch => {
     return new Promise((resolve, reject) => {
-      //console.warn('MM',data);
       APIClient.getInstance()
         .post(API_BUYLIST, data, access_token)
         .then(response => {
-          // //console.warn('MM','Buy Transaction API_TRANSACTION--- ', response);
           let result = response;
           resolve(result);
         })
         .catch(error => {
-          //console.warn('MM','Buy Transaction API_TRANSACTION-- ', error);
           reject(error);
           walletFail(dispatch, error);
         });
@@ -569,16 +544,13 @@ export const getBuyTransactionList = ({data, access_token}) => {
 export const getBuyRAte = ({data, access_token}) => {
   return dispatch => {
     return new Promise((resolve, reject) => {
-      //console.warn('MM','>>>>in', data);
       APIClient.getInstance()
         .post(API_GET_PRICE_EPAY, data, access_token)
         .then(response => {
-          // //console.warn('MM','API_EpayRate Transaction API_TRANSACTION--- ', response);
           let result = response;
           resolve(result);
         })
         .catch(error => {
-          //console.warn('MM','API_EpayRate Transaction API_TRANSACTION-- ', error);
           reject(error);
           walletFail(dispatch, error);
         });
@@ -590,16 +562,13 @@ export const getBuyRAte = ({data, access_token}) => {
 export const getTransactionDetail = ({data, access_token}) => {
   return dispatch => {
     return new Promise((resolve, reject) => {
-      //console.warn('MM',data);
       APIClient.getInstance()
         .post(API_TRANSACTION_DETAIL, data, access_token)
         .then(response => {
-          //console.warn('MM','respone API_TRANSACTION_DETAIL--- ', response);
           let result = response;
           resolve(result);
         })
         .catch(error => {
-          //console.warn('MM','error API_TRANSACTION_DETAIL-- ', error);
           reject(error);
           walletFail(dispatch, error);
         });
@@ -617,12 +586,10 @@ export const getSocialList = () => {
       APIClient.getInstance()
         .get(SOCIAL_LINK, access_token)
         .then(response => {
-          console.warn('MM', 'response APISOCIAL_LINK-- ', response.data);
           let result = response.data;
           resolve(result);
         })
         .catch(error => {
-          //console.warn('MM','error API_SOCIAL_LINK-- ', error);
           reject(error);
           // ethereumFail(dispatch, error);
         });
@@ -637,12 +604,10 @@ export const getColorList = ({access_token}) => {
       APIClient.getInstance()
         .get(COLOR_LIST, access_token)
         .then(response => {
-          // //console.warn('MM','response API_COLOR_LIST-- ', response.data);
           let result = response.data;
           resolve(result);
         })
         .catch(error => {
-          //console.warn('MM','error API_COLOR_LIST-- ', error);
           reject(error);
           // ethereumFail(dispatch, error);
         });
@@ -656,12 +621,10 @@ export const getCurrencyPreferenceList = ({access_token}) => {
       APIClient.getInstance()
         .get(API_CURRENCY_PREFERENCE, access_token)
         .then(response => {
-          // //console.warn('MM','response API_CURRENCY_PREFERENCE -- ', response.data);
           let result = response.data;
           resolve(result);
         })
         .catch(error => {
-          //console.warn('MM','error API_CURRENCY_PREFERENCE -- ', error);
           reject(error);
           // ethereumFail(dispatch, error);
         });
@@ -675,7 +638,6 @@ export const getDappList = ({access_token}) => {
       APIClient.getInstance()
         .get(DAPP_LIST, access_token)
         .then(response => {
-          // //console.warn('MM','response ----Action-getDappList -- ', response);
           let result = response;
           resolve(result);
           Singleton.getInstance().newSaveData(
@@ -684,7 +646,6 @@ export const getDappList = ({access_token}) => {
           );
         })
         .catch(error => {
-          //console.warn('MM','error Action getDappList-- ', error);
           reject(error);
           // ethereumFail(dispatch, error);
         });
@@ -698,7 +659,6 @@ export const getFinanceList = ({access_token}) => {
       APIClient.getInstance()
         .get(FINANCE_LIST, access_token)
         .then(response => {
-          // //console.warn('MM','response ----Action-getFinanceList -- ', response);
           let result = response;
           resolve(result);
           Singleton.getInstance().newSaveData(
@@ -707,7 +667,6 @@ export const getFinanceList = ({access_token}) => {
           );
         })
         .catch(error => {
-          //console.warn('MM','error Action getFinanceList-- ', error);
           reject(error);
           // ethereumFail(dispatch, error);
         });
@@ -716,19 +675,15 @@ export const getFinanceList = ({access_token}) => {
 };
 /************************************** BANNER API ****************************************************/
 export const getAdvertisementList = ({access_token}) => {
-  //console.warn('MM','herreeeeee');
   return dispatch => {
     return new Promise((resolve, reject) => {
       APIClient.getInstance()
         .get(BANNER_IMG, access_token)
         .then(response => {
-          // //console.warn('MM','response API_BANNER_IMG -- ', response.data);
-          // //console.warn('MM','response API_BANNER_IMG -- ');
           let result = response.data;
           resolve(result);
         })
         .catch(error => {
-          //console.warn('MM','error API_BANNER_IMG -- ', error, BASE_URL + BANNER_IMG);
           reject(error);
           // ethereumFail(dispatch, error);
         });
@@ -743,12 +698,10 @@ export const getInfuraLink = () => {
       APIClient.getInstance()
         .get(API_INFURA_LINK)
         .then(response => {
-          console.warn('MM','response API_infura -- ', response.data);
           let result = response.data;
           resolve(result);
         })
         .catch(error => {
-          //console.warn('MM','error API_infura -- ', error);
           reject(error);
           // ethereumFail(dispatch, error);
         });
@@ -791,7 +744,6 @@ export const getDexUrls = access_token => {
               data.publicStcUrl = item.url;
             } else if (item?.name?.toUpperCase() == 'SAITACHAIN_EXPLORER') {
               if (item.url) {
-                console.log('item.url:::::', item.url);
                 Singleton.getInstance().stcExplorerLink = item.url;
               }
             }
@@ -800,7 +752,6 @@ export const getDexUrls = access_token => {
           resolve(result);
         })
         .catch(error => {
-          //console.warn('MM','error API_infura -- ', error);
           reject(error);
           // ethereumFail(dispatch, error);
         });
@@ -814,12 +765,10 @@ export const getInfuraBNBLink = () => {
       APIClient.getInstance()
         .get(API_INFURA_LINKBNB)
         .then(response => {
-          // //console.warn('MM','response API_infura -- ', response.data);
           let result = response.data;
           resolve(result);
         })
         .catch(error => {
-          //console.warn('MM','error API_infura -- ', error);
           reject(error);
           // ethereumFail(dispatch, error);
         });
@@ -935,7 +884,6 @@ export const getRouterDetails = () => {
 /************************************** get router details ****************************************************/
 export const CheckForSwapToken = ({data, access_token}) => {
   return dispatch => {
-    console.log('data:::::', data);
     return new Promise((resolve, reject) => {
       APIClient.getInstance()
         .post(CHECK_FOR_SWAP_TOKEN, data, access_token)
@@ -952,7 +900,6 @@ export const CheckForSwapToken = ({data, access_token}) => {
 /************************************** check is contact exist ****************************************************/
 export const CheckIsContactExist = ({data, access_token}) => {
   return dispatch => {
-    console.log('data:::::', data);
     return new Promise((resolve, reject) => {
       APIClient.getInstance()
         .post(CHECK_EXIST_CONTACT, data, access_token)
@@ -973,12 +920,10 @@ export const logoutUser = ({data, access_token}) => {
       APIClient.getInstance()
         .post(API_LOGOUT, data, access_token)
         .then(response => {
-          // //console.warn('MM','respone logoutUser--- ', response);
           let result = response;
           resolve(result);
         })
         .catch(error => {
-          //console.warn('MM','error logoutUser-- ', error);
           reject(error);
           walletFail(dispatch, error);
         });
@@ -990,16 +935,13 @@ export const logoutUser = ({data, access_token}) => {
 export const epayMerchant = ({data, access_token}) => {
   return dispatch => {
     return new Promise((resolve, reject) => {
-      //console.warn('MM',data);
       APIClient.getInstance()
         .post(API_EPAY_ORDER_V2, data, access_token)
         .then(response => {
-          // //console.warn('MM','respone epayorder--- ', response);
           let result = response;
           resolve(result);
         })
         .catch(error => {
-          //console.warn('MM','error epayorder+-- ', error);
           reject(error);
           walletFail(dispatch, error);
         });
@@ -1011,16 +953,13 @@ export const epayMerchant = ({data, access_token}) => {
 export const checkMaintenance = () => {
   return dispatch => {
     return new Promise((resolve, reject) => {
-      console.warn('MM checkMaintenance');
       APIClient.getInstance()
         .get(CHECK_MAINTENANCE)
         .then(response => {
-          // //console.warn('MM','respone epayorder--- ', response);
           let result = response;
           resolve(result);
         })
         .catch(error => {
-          //console.warn('MM','error epayorder+-- ', error);
           reject(error);
           walletFail(dispatch, error);
         });
@@ -1031,22 +970,36 @@ export const checkMaintenance = () => {
 export const updateListBalances = () => {
   return dispatch => {
     return new Promise((resolve, reject) => {
-      console.warn('MM updateListBalances');
       let access_token = Singleton.getInstance().access_token;
       APIClient.getInstance()
         .get(UPDATE_WALLET_BALANCES, access_token)
         .then(response => {
-          console.warn('MM', 'respone updateListBalances--- ', response);
           let result = response;
           resolve(result);
         })
         .catch(error => {
-          console.warn('MM', 'error updateListBalances+-- ', error);
           reject(error);
         });
     });
   };
 };
+
+export const getAppVersion = access_token => {
+  return dispatch => {
+    return new Promise((resolve, reject) => {
+      APIClient.getInstance()
+        .get(API_CHECK_APP_VERSION, access_token)
+        .then(response => {
+          let result = response.data;
+          resolve(result);
+        })
+        .catch(error => {
+          reject(error);
+        });
+    });
+  };
+};
+
 export const coinListSuccess = (dispatch, result) => {
   dispatch({
     type: COIN_LIST,
@@ -1058,8 +1011,6 @@ export const coinListEmpty = () => dispatch => {
     Constants.WALLET_LIST,
     JSON.stringify([]),
   );
-
-  console.log('coinListEmpty');
   dispatch({
     type: COIN_LIST_EMPTY,
     payload: [],

@@ -147,7 +147,7 @@ const CoustomModal = props => {
               source={Images.imgSubTract}
               style={{height: 20, width: 20, marginHorizontal: 5}}
             />
-            <Text style={styles.textnewlight}>Saitama Store</Text>
+            <Text style={styles.textnewlight}>Rezor Store</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -165,7 +165,7 @@ const CoustomModal = props => {
               source={Images.imgSaitaMarket}
               style={{height: 20, width: 20, marginHorizontal: 5}}
             />
-            <Text style={styles.textnewlight}>SaitaMarket</Text>
+            <Text style={styles.textnewlight}>RezorMarket</Text>
           </TouchableOpacity>
         </View>
 

@@ -558,10 +558,14 @@ export const checkforPair = (item, tokenSecond, setIsPairSupported) => {
       console.log('res::::::checkforPair', res);
       if (!res) {
         setIsPairSupported(false);
-        Singleton.showAlert(`Pair not supported at the moment.`);
+        Singleton.showAlert('Pair not supported at the moment.');
       }
     })
     .catch(err => {
       console.log('err::::::checkforPair', err);
     });
+};
+
+export const sanitizeErrorMessage = message => {
+  return message.replace(/saita|saitama|saitapro/gi, 'Rezor');
 };

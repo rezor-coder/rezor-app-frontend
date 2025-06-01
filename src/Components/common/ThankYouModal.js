@@ -13,7 +13,7 @@ const ThankYouModal = props => {
       <Text style={styles.thankYouText}>Thank You</Text>
       <Text style={styles.thankYouDesc}>
         We will get in touch shortly in the email address you provided. This is
-        the only official Saita mask support. Please do not trust other alleged
+        the only official Rezor support. Please do not trust other alleged
         channels.
       </Text>
       <BasicButton

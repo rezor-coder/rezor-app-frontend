@@ -1,15 +1,15 @@
 {
   "project_info": {
     "project_number": "77721019614",
-    "project_id": "saitaproapp",
-    "storage_bucket": "saitaproapp.firebasestorage.app"
+    "project_id": "rezor",
+    "storage_bucket": "rezor.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
         "mobilesdk_app_id": "1:77721019614:android:39f30807e67f5abde18e4f",
         "android_client_info": {
-          "package_name": "com.saitapronew"
+          "package_name": "com.rezor"
         }
       },
       "oauth_client": [],

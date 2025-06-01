@@ -127,7 +127,6 @@ const ManageWallet = props => {
                 setcoinList(response?.data);
                 setloadList(true);
                 settotalRecords(response?.meta?.total);
-                console.warn('MM', 'coinList--- ', coinList);
               })
               .catch(error => {
                 console.warn('MM', '===error====error====', error);
@@ -143,7 +142,6 @@ const ManageWallet = props => {
     let data = await Singleton.getInstance().newGetData(constants.ACTIVE_WALLET,)
    
     let walletData = JSON.parse(data)
-    console.log("walletData",walletData);
     let coinId = coin.coin_id;
     var walletAddress = '';
     if (coin.coin_family == 1) {
@@ -167,7 +165,6 @@ const ManageWallet = props => {
     }
     let isActive = status;
     let access_token = Singleton.getInstance().access_token;
-    console.log("walletAddress",walletAddress);
     setisLoading(true);
     dispatch(
       coinActiveInactive({coinId, walletAddress, isActive, access_token}),

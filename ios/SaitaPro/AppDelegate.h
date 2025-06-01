@@ -1,6 +1,6 @@
 #import <React/RCTBridgeDelegate.h>
 #import <UIKit/UIKit.h>
-#import "SaitaPro-Swift.h"
+#import "Rezor-Swift.h"
 #import "PreventScreenShotModule.h"
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate, RCTBridgeDelegate,RCTBridgeModule>

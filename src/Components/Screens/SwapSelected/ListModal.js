@@ -174,8 +174,8 @@ const ListModal = ({
                           ]}>
                           {item?.coin_family == 6
                             ? '(BNB)'
-                            : item?.coin_family == 4
-                            ? '(SBC)'
+                            //: item?.coin_family == 4
+                            //? '(SBC)' //Commented for coming soon
                             : '(ETH)'}
                         </Text>
                       )}

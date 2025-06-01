@@ -1,7 +1,7 @@
 /* eslint-disable handle-callback-err */
 /* eslint-disable react-native/no-inline-styles */
 import '@walletconnect/react-native-compat';
-import React, { useEffect, Component, } from 'react';
+import React, {useEffect, Component} from 'react';
 import {
   UIManager,
   AppState,
@@ -10,51 +10,80 @@ import {
   NativeModules,
   NativeEventEmitter,
   Modal,
-  View,
-  BackHandler
+  Linking,
+  Alert,
 } from 'react-native';
 import KeyboardManager from 'react-native-keyboard-manager';
-import { Provider } from 'react-redux';
+import {Provider, useDispatch} from 'react-redux';
 import ReduxThunk from 'redux-thunk';
-import reducers, { persistor, store } from './Redux/Reducers';
-import { createStore, applyMiddleware } from 'redux';
+import reducers, {persistor, store} from './Redux/Reducers';
+import {createStore, applyMiddleware} from 'redux';
 import FlashMessage from 'react-native-flash-message';
-import { firebase } from '@react-native-firebase/messaging';
+import {firebase} from '@react-native-firebase/messaging';
 import NetInfo from '@react-native-community/netinfo';
 import Singleton from './Singleton';
 import * as Constants from './Constant';
 import '../shim';
-import { EventRegister } from 'react-native-event-listeners';
-import { ThemeManager } from '../ThemeManager';
+import {EventRegister} from 'react-native-event-listeners';
+import {ThemeManager} from '../ThemeManager';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import AsyncStorage from '@react-native-community/async-storage';
-const { PreventScreenShotModule } = NativeModules;
+// import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+const {PreventScreenShotModule} = NativeModules;
 const preventScreenShotModule = new NativeEventEmitter(PreventScreenShotModule);
-import {
-  transactionConfirm,
-} from './Redux/Actions/WallectConnectActions';
+import {transactionConfirm} from './Redux/Actions/WallectConnectActions';
 import TransactionModal from './Components/common/TransactionModal';
-import { request } from 'react-native-permissions';
+import {request} from 'react-native-permissions';
 import WalletConnect from './Utils/WalletConnect';
-import { AppView } from './Components/common/AppView';
-import { cardUserdata } from './Redux/Actions';
+import {AppView} from './Components/common/AppView';
+import {cardUserdata, getAppVersion} from './Redux/Actions';
 import Routes from './Navigation/Routes';
-import { getCurrentRouteName, navigate } from './navigationsService';
-import { NavigationStrings } from './Navigation/NavigationStrings';
-import { PersistGate } from 'redux-persist/integration/react'
-import {
-  QueryClient,
-  QueryClientProvider,
-} from '@tanstack/react-query'
-global.alert = false
+import {getCurrentRouteName, navigate} from './navigationsService';
+import {NavigationStrings} from './Navigation/NavigationStrings';
+import {PersistGate} from 'redux-persist/integration/react';
+import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
+import DeviceInfo from 'react-native-device-info';
+global.alert = false;
 let previousState = AppState.currentState;
 const App = () => {
-  const queryClient = new QueryClient()
+  const dispatch = useDispatch();
+  let access_token = Singleton.getInstance().access_token;
+  const queryClient = new QueryClient();
+
+  const promptUpdate = () => {
+    Alert.alert(
+      'Update Required',
+      'A new version of the app is available. Please update to continue.',
+      [{text: 'Update Now', onPress: () => redirectToAppStore()}],
+      {cancelable: false},
+    );
+  };
+
+  const redirectToAppStore = () => {
+    const playStoreLink =
+      'https://play.google.com/store/apps/details?id=com.rezor&hl=en';
+    Linking.openURL(playStoreLink);
+  };
+
+  const checkAppVersion = () => {
+    dispatch(getAppVersion(access_token))
+      .then(res => {
+        console.log('-------', res);
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
+
   useEffect(() => {
+    checkAppVersion();
+    const currentVersion = DeviceInfo.getBuildNumber();
+    if (currentVersion < 11) {
+      promptUpdate();
+    }
     Singleton.getInstance()
       .newGetData(Constants.USER_DATA)
       .then(res => {
-        console.log('res::::::111111', JSON.parse(res));
         cardUserdata(store.dispatch, JSON.parse(res));
       })
       .catch(error => {
@@ -63,15 +92,15 @@ const App = () => {
     let Listener_event = preventScreenShotModule.addListener(
       'screenshotEvent',
       data => {
-          getCurrentRouteName() == 'SecureWallet' &&
+        getCurrentRouteName() == 'SecureWallet' &&
           Singleton.showAlert(
             `It isn't safe to take screenshot of secret phrase`,
           );
-          getCurrentRouteName() == 'ExportPrivateKeys' &&
+        getCurrentRouteName() == 'ExportPrivateKeys' &&
           Singleton.showAlert(
             `It isn't safe to take screenshot of private key`,
           );
-          getCurrentRouteName() == 'RecoveryPhrase' &&
+        getCurrentRouteName() == 'RecoveryPhrase' &&
           Singleton.showAlert(
             `It isn't safe to take screenshot of secret phrase`,
           );
@@ -96,32 +125,27 @@ const App = () => {
       let device_token = await Singleton.getInstance().getData(
         Constants.device_token,
       );
-      //  console.warn('MM', 'initialize');
       if (device_token == null && Platform.OS == 'ios') {
-        //  console.warn('MM', 'need to clear all');
         await EncryptedStorage.clear();
         await AsyncStorage.clear();
         await Singleton.getInstance().saveData(Constants.device_token, 'true');
       }
       if (Platform.OS == 'android') {
-
         request('android.permission.POST_NOTIFICATIONS')
           .then(res => {
             console.log(res, 'fff');
-
-          }).catch(er => {
-            console.log('er', er);
           })
+          .catch(er => {
+            console.log('er', er);
+          });
       }
       registerFCM();
       AppState.addEventListener('change', _handleAppStateChange);
-    } catch (error) {
-    }
+    } catch (error) {}
   };
   const _handleAppStateChange = nextAppState => {
     try {
       if (previousState == 'background' && nextAppState == 'active') {
-        console.log('previousState', previousState, 'nextAppState', nextAppState);
         EventRegister.emit('downModal', '');
         Singleton.getInstance()
           .newGetData(Constants.IS_LOGIN)
@@ -135,14 +159,18 @@ const App = () => {
                       false,
                     );
                   }
-                  const { isFromDapp } = store.getState()?.swapReducer
+                  const {isFromDapp} = store.getState()?.swapReducer;
                   if (res == 1) {
-                    if (!Singleton.getInstance().isCamera && !global.isCamera && !global.stop_pin) {
+                    if (
+                      !Singleton.getInstance().isCamera &&
+                      !global.isCamera &&
+                      !global.stop_pin
+                    ) {
                       getCurrentRouteName() != 'ConfirmPin' &&
-                      navigate(NavigationStrings.ConfirmPin);
+                        navigate(NavigationStrings.ConfirmPin);
                     } else {
                       global.isCamera = false;
-                      global.stop_pin = false
+                      global.stop_pin = false;
                       Singleton.getInstance().isCamera = false;
                     }
                   }
@@ -153,12 +181,11 @@ const App = () => {
       }
       previousState = nextAppState;
     } catch (e) {
-      console.log("appState::::::error", e);
+      console.log('appState::::::error', e);
     }
   };
 
   const checkConnection = state => {
-    console.log('checkConnection', state.isConnected);
     global.isConnected = state.isConnected;
     global.disconnected = !state.isConnected;
     global.isInternetReachable =
@@ -178,7 +205,6 @@ const App = () => {
               .getToken()
               .then(async fcmToken => {
                 if (fcmToken) {
-                  console.warn('MM', 'FCM TOKEN app.js  ', fcmToken);
                   const saveRes = await Singleton.getInstance().newSaveData(
                     Constants.device_token,
                     fcmToken,
@@ -188,15 +214,15 @@ const App = () => {
                 }
               })
               .catch(error => {
-                //console.warn('MM', 'FCM TOKEN error111  ' + error);
+                console.warn('MM', 'FCM TOKEN error111  ' + error);
               });
           })
           .catch(error => {
-            //console.warn('MM', 'FCdddM TOKEN error111  ' + error);
+            console.warn('MM', 'FCdddM TOKEN error111  ' + error);
           });
       })
       .catch(error => {
-        //console.warn('MM', 'FCM TOKEN error222  ' + error);
+        console.warn('MM', 'FCM TOKEN error222  ' + error);
       });
   };
 
@@ -212,28 +238,30 @@ const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
       {Platform.OS == 'ios' ? (
-        <Provider store={store}>
-          <PersistGate loading={null} persistor={persistor}>
+        <>
+        {/* <Provider store={store}> */}
+          {/* <PersistGate loading={null} persistor={persistor}> */}
             <ApproveRequestModal
               ref={ref => (Singleton.getInstance().walletConnectRef = ref)}
               store={store}
             />
             <Routes />
             <FlashMessage position="top" />
-          </PersistGate>
-        </Provider>
+          {/* </PersistGate> */}
+        {/* </Provider> */}
+        </>
       ) : (
         <AppView>
-            <Provider store={store}>
-              <PersistGate loading={null} persistor={persistor}>
-                <ApproveRequestModal
-                  ref={ref => (Singleton.getInstance().walletConnectRef = ref)}
-                  store={store}
-                />
-                <Routes />
-                <FlashMessage position="top" />
-              </PersistGate>
-            </Provider>
+          {/* <Provider store={store}> */}
+            {/* <PersistGate loading={null} persistor={persistor}> */}
+              <ApproveRequestModal
+                ref={ref => (Singleton.getInstance().walletConnectRef = ref)}
+                store={store}
+              />
+              <Routes />
+              <FlashMessage position="top" />
+            {/* </PersistGate> */}
+          {/* </Provider> */}
         </AppView>
       )}
     </QueryClientProvider>
@@ -253,31 +281,31 @@ export class ApproveRequestModal extends Component {
       showAlertDialog3: val,
     });
   }
-  onRejectTransaction = async (msg) => {
-    let requests = WalletConnect.getInstance().web3Wallet.getPendingSessionRequests()
-    console.log("--------------------------pending WC requests", requests);
+  onRejectTransaction = async msg => {
+    let requests =
+      WalletConnect.getInstance().web3Wallet.getPendingSessionRequests();
     requests.map(async el => {
       const response = {
         id: el?.id,
         jsonrpc: '2.0',
         error: {
           code: 5000,
-          message: 'User rejected.'
-        }
-      }
+          message: 'User rejected.',
+        },
+      };
       try {
         await WalletConnect.getInstance().web3Wallet?.respondSessionRequest({
           topic: el?.topic,
           response: response,
         });
       } catch (e) {
-        console.log('----------dapp request reject----error', e)
+        console.log('----------dapp request reject----error', e);
       }
-    })
-    global.wcTxnPopup = false
-    Singleton.getInstance().walletConnectRef?.showWalletData(false)
-    store.dispatch(transactionConfirm())
-  }
+    });
+    global.wcTxnPopup = false;
+    Singleton.getInstance().walletConnectRef?.showWalletData(false);
+    store.dispatch(transactionConfirm());
+  };
 
   render() {
     if (!this.state.showAlertDialog3) {
@@ -289,13 +317,13 @@ export class ApproveRequestModal extends Component {
         transparent={true}
         visible={this.state.showAlertDialog3}
         onRequestClose={() => {
-          this.onRejectTransaction()
+          this.onRejectTransaction();
         }}>
-        <SafeAreaView style={{ flex: 1, backgroundColor: ThemeManager.colors.bg }}>
+        <SafeAreaView
+          style={{flex: 1, backgroundColor: ThemeManager.colors.bg}}>
           <TransactionModal store={this.props.store} />
         </SafeAreaView>
       </Modal>
     );
   }
 }
-

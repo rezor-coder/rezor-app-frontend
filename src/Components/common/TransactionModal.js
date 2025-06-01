@@ -765,7 +765,7 @@ const TransactionModal = ({store}) => {
         coin_address: Singleton.getInstance().defaultEthAddress,
         chainId: IS_PRODUCTION == 0 ? 97 : 56,
       };
-    } else if (coin_family == 4) {
+    } else if (coin_family == 4000) { //Commented for coming soon
       currency = {
         coin_icon: {
           uri: 'https://s2.coinmarketcap.com/static/img/coins/64x64/20513.png',

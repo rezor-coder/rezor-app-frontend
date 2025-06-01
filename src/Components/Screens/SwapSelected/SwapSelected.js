@@ -54,6 +54,7 @@ import {
   makeTransaction,
   calculatePercentage,
   checkforPair,
+  sanitizeErrorMessage
 } from './SwapSelectedHelper';
 const GAS_FEE_MULTIPLIER = 0.000000000000000001;
 const GAS_PRICE_EXTRA_BUFFER = 2000000000;
@@ -157,7 +158,7 @@ const SwapSelected = props => {
         if (swapCheck?.value == 1) {
           setIsOnMaintainanceMsg(swapCheck?.msg);
           setIsOnMaintainance(true);
-          Singleton.showAlert(swapCheck?.msg);
+          Singleton.showAlert(sanitizeErrorMessage(swapCheck?.msg));
         } else {
           setIsOnMaintainance(false);
         }
@@ -186,7 +187,7 @@ const SwapSelected = props => {
           if (swapCheck?.value == 1) {
             setIsOnMaintainanceMsg(swapCheck?.msg);
             setIsOnMaintainance(true);
-            Singleton.showAlert(swapCheck?.msg);
+            Singleton.showAlert(sanitizeErrorMessage(swapCheck?.msg));
           } else {
             setIsOnMaintainance(false);
           }
@@ -286,7 +287,9 @@ const SwapSelected = props => {
         );
       }
     } catch (err) {
-      Singleton.showAlert(err?.message || constants.SOMETHING_WRONG);
+      Singleton.showAlert(
+        sanitizeErrorMessage(err?.message) || constants.SOMETHING_WRONG,
+      );
     } finally {
       getGasPrice(selectedItem, setGasPrice);
       setLoading(false);
@@ -353,7 +356,7 @@ const SwapSelected = props => {
             settotalRecordsSelected(responseSelected.meta?.total);
           }
         } catch (err) {
-          Singleton.showAlert(err?.message || constants.SOMETHING_WRONG);
+          Singleton.showAlertsanitizeErrorMessage((err?.message) || constants.SOMETHING_WRONG);
         } finally {
           setLoading(false);
           dispatch(saveSwapItem({}));
@@ -457,7 +460,7 @@ const SwapSelected = props => {
           Singleton.showAlert('Approval Failed. ' + constants.NO_NETWORK);
           console.warn('MM', 'approve send transaction err ==>>', err);
         } else {
-          Singleton.showAlert(err?.message || 'Approval Failed');
+          Singleton.showAlert(sanitizeErrorMessage(err?.message) || 'Approval Failed');
           console.warn('MM', 'approve send transaction err ==>>', err);
         }
       })
@@ -1240,7 +1243,9 @@ const SwapSelected = props => {
         ) {
           Singleton.showAlert(constants.SOMETHING_WRONG);
         } else if (err?.message != constants.SOMETHING_WRONG) {
-          Singleton.showAlert(err?.message || 'Unable to fetch gas price');
+          Singleton.showAlert(
+            sanitizeErrorMessage(err?.message) || 'Unable to fetch gas price',
+          );
         } else if (err?.message?.includes('execution reverted')) {
           Singleton.showAlert('Pair not Supported at the moment.');
         }
@@ -1334,7 +1339,7 @@ const SwapSelected = props => {
         Singleton.showAlert(constants.NO_NETWORK);
         console.warn('MM', ' send transaction err ==>>', err);
       } else {
-        Singleton.showAlert(error?.message || constants.SOMETHING_WRONG);
+        Singleton.showAlert(sanitizeErrorMessage(error?.message) || constants.SOMETHING_WRONG);
       }
     }
   };

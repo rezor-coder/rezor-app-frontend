@@ -1,7 +1,7 @@
 
-## SaitaPro Wallet
-Welcome to SaitaPro Wallet ! It is a non-custodial wallet or decentralized wallet, it is a type of cryptocurrency wallet that gives users complete control over their private keys and funds on Blockchain.
-This repository contains all the code for the **SaitaPro Wallet** React Native app. 
+## Rezor Wallet
+Welcome to Rezor Wallet ! It is a non-custodial wallet or decentralized wallet, it is a type of cryptocurrency wallet that gives users complete control over their private keys and funds on Blockchain.
+This repository contains all the code for the **Rezor Wallet** React Native app. 
 
 
 ## Prerequisites
@@ -24,7 +24,7 @@ This repository contains all the code for the **SaitaPro Wallet** React Native a
 2. Run `pod install` to install the CocoaPods dependencies
 3. Run `cd ..` to return to the base of the directory
 4. Run `npm start`
-5. Run `npx react-native run-ios --simulator "iPhone 14 Pro"` (you may need to open a new terminal window) and the Simulator will launch running the SaitaPro Wallet 🎉
+5. Run `npx react-native run-ios --simulator "iPhone 14 Pro"` (you may need to open a new terminal window) and the Simulator will launch running the Rezor Wallet 🎉
 
 ### Cocoapods (iOS Only)
 
@@ -62,7 +62,7 @@ In this project we have used following technologies:
 ## Folder Structure
 
 ```md
-SaitaPro_frontend
+Rezor_wallet
 
 |--ABI # this folder abis for contracts
 |--android # this folder contains android native files

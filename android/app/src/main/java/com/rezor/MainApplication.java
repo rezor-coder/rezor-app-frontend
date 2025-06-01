@@ -1,4 +1,4 @@
-package com.saitapronew;
+package com.rezor;
 
 import android.app.Application;
 import com.facebook.react.PackageList;
@@ -9,8 +9,8 @@ import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint;
 import com.facebook.react.defaults.DefaultReactNativeHost;
 import com.facebook.soloader.SoLoader;
 import java.util.List;
-import com.saitapronew.CreateWalletPackage;  // for CreateWalletPackage
-import com.saitapronew.RootPackage;          // for RootPackage (replace `somepackage` with the actual package name)
+import com.rezor.CreateWalletPackage;  // for CreateWalletPackage
+import com.rezor.RootPackage;          // for RootPackage (replace `somepackage` with the actual package name)
 // import com.facebook.react.ReactNativeFlipper; // for ReactNativeFlipper
 
 

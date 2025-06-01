@@ -98,11 +98,11 @@ const handleDeepLink = event => {
   }
   setTimeout(async () => {
     const decodedLink = decodeURIComponent(event.url);
-    const link = decodedLink.includes('saitapro')
+    const link = decodedLink.includes('rezor')
       ? decodedLink
-          .replace('saitapro:///wc?uri=', '')
-          .replace('saitapro://wc?uri=', '')
-          .replace('saitapro://app/wc?uri=', '')
+          .replace('rezor:///wc?uri=', '')
+          .replace('rezor://wc?uri=', '')
+          .replace('rezor://app/wc?uri=', '')
       : decodedLink;
     if (link.includes('requestId=') || link.includes('sessionTopic=')) {
       if (getCurrentRouteName() === 'DappBrowser') {
@@ -150,11 +150,11 @@ export const addDeepLinkListner = () => {
             // console.log('------killed------', url);
             if (supported) {
               const decodedLink = decodeURIComponent(url);
-              const link = decodedLink.includes('saitapro')
+              const link = decodedLink.includes('rezor')
                 ? decodedLink
-                    .replace('saitapro:///wc?uri=', '')
-                    .replace('saitapro://wc?uri=', '')
-                    .replace('saitapro://app/wc?uri=', '')
+                    .replace('rezor:///wc?uri=', '')
+                    .replace('rezor://wc?uri=', '')
+                    .replace('rezor://app/wc?uri=', '')
                 : decodedLink;
               if (link?.includes('relay')) {
                 Singleton.getInstance()

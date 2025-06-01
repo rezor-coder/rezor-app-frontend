@@ -75,13 +75,13 @@ android {
 
     compileSdkVersion rootProject.ext.compileSdkVersion
 
-    namespace "com.saitapronew"
+    namespace "com.rezor"
     defaultConfig {
-        applicationId "com.saitapronew"
+        applicationId "com.rezor"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 6
-        versionName "1.0"
+        versionCode 11
+        versionName "1"
         missingDimensionStrategy 'react-native-camera', 'general' //add this line
         multiDexEnabled true
 
@@ -93,6 +93,12 @@ android {
             keyAlias 'androiddebugkey'
             keyPassword 'android'
         }
+        release {
+            storeFile file('../../my-new-release-key.jks')
+            storePassword "Admin@123"
+            keyAlias "my-new-key-alias"
+            keyPassword "Admin@123"
+        }
     }
     buildTypes {
         debug {
@@ -101,7 +107,7 @@ android {
         release {
             // Caution! In production, you need to generate your own keystore file.
             // see https://reactnative.dev/docs/signed-apk-android.
-            signingConfig signingConfigs.debug
+            signingConfig signingConfigs.release
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }
@@ -109,6 +115,7 @@ android {
 }
 
 dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:1.8.0"
     implementation(platform("org.jetbrains.kotlin:kotlin-bom:1.8.0"))
     implementation fileTree(dir: "libs", include: ["*.jar"])
     //noinspection GradleDynamicVersion

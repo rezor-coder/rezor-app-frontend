@@ -63,8 +63,8 @@ const WalletCard = props => {
                 ? ' (TRC20)'
                 : item?.coin_family == 11
                 ? ' (MATIC ERC20)'
-                : item?.coin_family == 4
-                ? ' (SBC24)'
+                //: item?.coin_family == 4
+                //? ' (SBC24)' //Commented for coming soon
                 : ''
               : ''}
           </Text>

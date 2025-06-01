@@ -1,7 +1,9 @@
 import * as constants from './Constant';
 
 // export const BASE_URL = 'http://192.0.0.2:3000/api/v1/';
-export const BASE_URL = 'https://api.saita.pro/prod/api/v1/';
+// export const BASE_URL = 'https://api.saita.pro/prod/api/v1/';
+// export const BASE_URL = 'https://api.rezor.org/prod/api/v1/';
+export const BASE_URL = 'https://app-api-v1.rezor.org/prod/api/v1/';
 // export const BASE_URL = 'https://wallet-api.pro-saitamask.com/stage/api/v1/';
 //  constants.network == 'testnet' ? 'https://wallet-api.pro-saitamask.com/stage/api/v1/' : 'https://api.saita.pro/prod/api/v1/';// ? 
 export const BASE_URL_SAITACARDS =
@@ -26,6 +28,7 @@ export const BANNER =
 export const DAPP_IMG_URL = 'https://api.saita.pro/prod/api/v1/static';
 export const SOCIAL_LINK = 'user/get/social/media/link/list';
 export const API_CREATE_WALLET = 'user/create/wallet';
+export const API_CHECK_APP_VERSION = 'wallet/checkAppVersion';
 export const API_COIN_LIST = 'wallet/coinlist';
 export const API_MYWALLETS = 'wallet/mywallet';
 export const API_DASHBOARD_WALLETS = 'wallet/myWalletHomeScreen';

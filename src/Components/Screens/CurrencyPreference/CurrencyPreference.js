@@ -61,7 +61,7 @@ class CurrencyPreference extends Component {
     return true;
   };
   itemPressed(item, index) {
-    //console.warn('MM','chk item------', item, '-------------', index);
+    console.warn('MM','chk item------', item, '-------------', index);
     this.setState({ isSelected: true, selectedIndex: index }, () => {
       Singleton.getInstance().newSaveData(Constants.CURRENCY_SELECTED, item.currency_code);
       Singleton.getInstance().newSaveData(Constants.CURRENCY_SYMBOL, item.currency_symbol);

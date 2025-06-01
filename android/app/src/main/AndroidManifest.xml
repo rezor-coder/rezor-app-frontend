@@ -9,7 +9,7 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <application
-      android:name="com.saitapronew.MainApplication"
+      android:name="com.rezor.MainApplication"
       android:label="@string/app_name"
       android:icon="@mipmap/rezor_square"
       android:roundIcon="@mipmap/rezor_square"
@@ -17,7 +17,7 @@
         android:usesCleartextTraffic="true"
       android:theme="@style/AppTheme">
       <activity
-        android:name="com.saitapronew.MainActivity"
+        android:name="com.rezor.MainActivity"
         android:label="@string/app_name"
         android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|screenSize|smallestScreenSize|uiMode"
         android:launchMode="singleTask"
@@ -39,7 +39,7 @@
               <action android:name="android.intent.action.VIEW" />
               <category android:name="android.intent.category.DEFAULT" />
               <category android:name="android.intent.category.BROWSABLE" />
-              <data android:scheme="saitapro"/>
+              <data android:scheme="rezor"/>
           </intent-filter>
       </activity>
     </application>
