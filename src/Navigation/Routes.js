@@ -109,7 +109,7 @@ import {
   SaitaCardTransaction,
   SaitaCardWelcome,
   SaitaCardsInfo,
-  SaitaProSupport,
+  RezorSupport,
   WelcomeScreen,
   ChangePassCode1,
   HourChanges,
@@ -165,7 +165,7 @@ const Routes = () => {
     {key: NavigationStrings.HistoryComponent, component: History},
     {key: NavigationStrings.ConfirmPin, component: ConfirmPin},
     {key: NavigationStrings.WalletSequrity, component: WalletSequrity},
-    {key: NavigationStrings.SaitaProSupport, component: SaitaProSupport},
+    {key: NavigationStrings.RezorSupport, component: RezorSupport},
     {
       key: NavigationStrings.WalletSequrityConfirm,
       component: WalletSequrityConfirm,

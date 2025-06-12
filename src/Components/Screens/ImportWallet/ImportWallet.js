@@ -131,14 +131,14 @@ const ImportWallet = props => {
               coin_symbol: constants.COIN_SYMBOL.BNB,
               wallet_address: res?.ethAddress,
             },
-            {
-              coin_symbol: constants.COIN_SYMBOL.STC,
-              wallet_address: res?.ethAddress,
-            },
             // {
-            //   coin_symbol: 'btc',
-            //  wallet_address: res?.btcAddress,
-            //  },
+            //   coin_symbol: constants.COIN_SYMBOL.STC,
+            //   wallet_address: res?.ethAddress,
+            // },
+            {
+              coin_symbol: 'btc',
+              wallet_address: res?.btcAddress,
+            },
             {
               coin_symbol: constants.COIN_SYMBOL.MATIC,
               wallet_address: res?.ethAddress,

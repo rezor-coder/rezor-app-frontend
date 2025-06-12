@@ -45,26 +45,7 @@ const CreateOrImportWallet = props => {
       />
       <HeaderwithBackIcon iconLeft={ThemeManager.ImageIcons.iconBack} />
       <View style={[styles.container,{backgroundColor: ThemeManager.colors.bg,}]}>
-        {/* <TouchableOpacity
-          style={styles.backTouchable}
-          onPress={() => goBack()}>
-          <Image
-            source={ThemeManager.ImageIcons.iconBack}
-            style={styles.imgBackStyle}
-          />
-        </TouchableOpacity> */}
-        {/* <ImageBackgroundComponent style={{ height: windowHeight }}> */}
-
-        {/* <Text style={{color:colors.white}}>CreateWallet</Text> */}
         <View>
-          {/* <Image style={[styles.imgSaitaPro, { height: Dimensions.get('window').height / 12 }]} source={images.SaitaPro} /> */}
-
-          {/* <LottieView
-          source={images.newAnimation}
-          style={styles.BYsaita}
-          autoPlay
-          loop
-        /> */}
 
           <View style={{marginTop: heightDimen(120)}}>
             <LottieView

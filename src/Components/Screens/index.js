@@ -77,7 +77,7 @@ import LiquiditySelected from './LiquiditySelected/LiquiditySelected';
 import SwapTab from './SwapTab';
 import SwapScreenBnb from './SwapScreenBnb';
 import SwapLiquidity from './SwapLiquidity';
-import SaitaProSupport from './SaitaProSupport/SaitaProSupport';
+import RezorSupport from './RezorSupport/RezorSupport';
 import SwapSettings from './SwapSettings/SwapSettings';
 import {EditWallet} from './EditWallet/EditWallet';
 import ConfirmSecurityPin from './ConfirmSecurityPin/ConfirmSecurityPin';
@@ -209,7 +209,7 @@ export {
   SwapTab,
   SwapScreenBnb,
   SwapLiquidity,
-  SaitaProSupport,
+  RezorSupport,
   SwapSettings,
   EditWallet,
   ConfirmSecurityPin,

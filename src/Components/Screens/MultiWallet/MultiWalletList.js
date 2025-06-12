@@ -144,10 +144,10 @@ function MultiWalletList(props) {
                 coin_symbol: constants.COIN_SYMBOL.TRX,
                 wallet_address: res?.trxAddress,
               },
-              {
-                coin_symbol: constants.COIN_SYMBOL.STC,
-                wallet_address: res?.ethAddress,
-              },
+              // {
+              //   coin_symbol: constants.COIN_SYMBOL.STC,
+              //   wallet_address: res?.ethAddress,
+              // },
               {
                 coin_symbol: constants.COIN_SYMBOL.SOL,
                 wallet_address: res?.solAddress,

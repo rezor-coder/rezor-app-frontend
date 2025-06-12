@@ -629,7 +629,7 @@ const Dashboard = props => {
                   });
               }}
               styleIconText={{backgroundColor: ThemeManager.colors.iconBg}}
-              imageIcon={Images.saitaCard}
+              imageIcon={Images.rezorCard}
               title={'SaitaCard'}
             /> */}
             <IconText

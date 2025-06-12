@@ -144,10 +144,8 @@ export const addDeepLinkListner = () => {
     Linking.addEventListener('url', event => handleDeepLink(event));
     Linking.getInitialURL()
       .then(url => {
-        console.log('------killed------', url);
         if (url) {
           Linking.canOpenURL(url).then(async supported => {
-            // console.log('------killed------', url);
             if (supported) {
               const decodedLink = decodeURIComponent(url);
               const link = decodedLink.includes('rezor')

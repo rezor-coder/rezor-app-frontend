@@ -36,10 +36,10 @@ const nextPressed = async (
         coin_symbol: Constants.COIN_SYMBOL.BNB,
         wallet_address: DATA?.ethAddress,
       },
-      {
-        coin_symbol: Constants.COIN_SYMBOL.STC,
-        wallet_address: DATA?.ethAddress,
-      },
+      // {
+      //   coin_symbol: Constants.COIN_SYMBOL.STC,
+      //   wallet_address: DATA?.ethAddress,
+      // },
       {
         coin_symbol: Constants.COIN_SYMBOL.BTC,
         wallet_address: DATA?.btcAddress,

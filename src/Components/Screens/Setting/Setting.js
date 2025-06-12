@@ -642,13 +642,13 @@ const Setting = props => {
               <SettingBar
                 shadowImage={true}
                 disabled={onPressActive}
-                iconImage={images.icon_saita_support}
+                iconImage={images.icon_rezor_support}
                 iconImageStyle={styles.imageViewStyle}
-                title={LanguageManager.saitaProSupport}
+                title={LanguageManager.rezorSupport}
                 titleStyle={{color: ThemeManager.colors.lightTextColor}}
                 onPress={() => {
-                  getCurrentRouteName() != 'SaitaProSupport' &&
-                    navigate(NavigationStrings.SaitaProSupport);
+                  getCurrentRouteName() != 'RezorSupport' &&
+                    navigate(NavigationStrings.RezorSupport);
                 }}
                 style={{borderBottomWidth: 0}}
                 imgStyle={[styles.img]}

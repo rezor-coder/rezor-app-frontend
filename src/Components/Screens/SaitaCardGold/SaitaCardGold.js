@@ -191,7 +191,7 @@ const SaitaCardGold = props => {
                     setFeesModal(true)
                     // Alert.alert(
                     //   Constants.APP_NAME,
-                    //   `Please make sure there is ${fee} USDT in your SaitaPro wallet to apply for the Card`,
+                    //   `Please make sure there is ${fee} USDT in your Rezor wallet to apply for the Card`,
                     //   [
                     //     {
                     //       text: 'Ok',
@@ -321,7 +321,7 @@ const SaitaCardGold = props => {
               setFeesModal(true)
               // Alert.alert(
               //   Constants.APP_NAME,
-              //   `Please make sure there is ${fee} USDT in your SaitaPro wallet to apply for the Card`,
+              //   `Please make sure there is ${fee} USDT in your Rezor wallet to apply for the Card`,
               //   [
               //     {
               //       text: 'Ok',
