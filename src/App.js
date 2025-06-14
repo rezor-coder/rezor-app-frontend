@@ -10,14 +10,10 @@ import {
   NativeModules,
   NativeEventEmitter,
   Modal,
-  Linking,
-  Alert,
 } from 'react-native';
 import KeyboardManager from 'react-native-keyboard-manager';
-import {Provider, useDispatch} from 'react-redux';
-import ReduxThunk from 'redux-thunk';
-import reducers, {persistor, store} from './Redux/Reducers';
-import {createStore, applyMiddleware} from 'redux';
+import {useDispatch} from 'react-redux';
+import {store} from './Redux/Reducers';
 import FlashMessage from 'react-native-flash-message';
 import {firebase} from '@react-native-firebase/messaging';
 import NetInfo from '@react-native-community/netinfo';
@@ -36,51 +32,17 @@ import TransactionModal from './Components/common/TransactionModal';
 import {request} from 'react-native-permissions';
 import WalletConnect from './Utils/WalletConnect';
 import {AppView} from './Components/common/AppView';
-import {cardUserdata, getAppVersion} from './Redux/Actions';
+import {cardUserdata} from './Redux/Actions';
 import Routes from './Navigation/Routes';
 import {getCurrentRouteName, navigate} from './navigationsService';
 import {NavigationStrings} from './Navigation/NavigationStrings';
-import {PersistGate} from 'redux-persist/integration/react';
 import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
-import DeviceInfo from 'react-native-device-info';
 global.alert = false;
 let previousState = AppState.currentState;
 const App = () => {
-  const dispatch = useDispatch();
-  let access_token = Singleton.getInstance().access_token;
   const queryClient = new QueryClient();
 
-  const promptUpdate = () => {
-    Alert.alert(
-      'Update Required',
-      'A new version of the app is available. Please update to continue.',
-      [{text: 'Update Now', onPress: () => redirectToAppStore()}],
-      {cancelable: false},
-    );
-  };
-
-  const redirectToAppStore = () => {
-    const playStoreLink =
-      'https://play.google.com/store/apps/details?id=com.rezor&hl=en';
-    Linking.openURL(playStoreLink);
-  };
-
-  const checkAppVersion = () => {
-    dispatch(getAppVersion(access_token))
-      .then(res => {
-        console.log('-------', res);
-      })
-      .catch(err => {
-        console.log(err);
-      });
-  };
-
   useEffect(() => {
-    checkAppVersion();
-    const currentVersion = DeviceInfo.getBuildNumber();
-    if (currentVersion < 11) {
-      promptUpdate();
-    }
     Singleton.getInstance()
       .newGetData(Constants.USER_DATA)
       .then(res => {
@@ -239,28 +201,28 @@ const App = () => {
     <QueryClientProvider client={queryClient}>
       {Platform.OS == 'ios' ? (
         <>
-        {/* <Provider store={store}> */}
+          {/* <Provider store={store}> */}
           {/* <PersistGate loading={null} persistor={persistor}> */}
-            <ApproveRequestModal
-              ref={ref => (Singleton.getInstance().walletConnectRef = ref)}
-              store={store}
-            />
-            <Routes />
-            <FlashMessage position="top" />
+          <ApproveRequestModal
+            ref={ref => (Singleton.getInstance().walletConnectRef = ref)}
+            store={store}
+          />
+          <Routes />
+          <FlashMessage position="top" />
           {/* </PersistGate> */}
-        {/* </Provider> */}
+          {/* </Provider> */}
         </>
       ) : (
         <AppView>
           {/* <Provider store={store}> */}
-            {/* <PersistGate loading={null} persistor={persistor}> */}
-              <ApproveRequestModal
-                ref={ref => (Singleton.getInstance().walletConnectRef = ref)}
-                store={store}
-              />
-              <Routes />
-              <FlashMessage position="top" />
-            {/* </PersistGate> */}
+          {/* <PersistGate loading={null} persistor={persistor}> */}
+          <ApproveRequestModal
+            ref={ref => (Singleton.getInstance().walletConnectRef = ref)}
+            store={store}
+          />
+          <Routes />
+          <FlashMessage position="top" />
+          {/* </PersistGate> */}
           {/* </Provider> */}
         </AppView>
       )}

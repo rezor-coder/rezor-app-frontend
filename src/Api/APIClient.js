@@ -1,5 +1,5 @@
 import NodeRSA from 'node-rsa';
-import { fetch as ssl_fetch } from 'react-native-ssl-pinning';
+import {fetch as ssl_fetch} from 'react-native-ssl-pinning';
 import axios from 'axios';
 import RNFetchBlob from 'rn-fetch-blob';
 import {
@@ -9,23 +9,13 @@ import {
   BASE_URL_SAITACARDS,
   VAULT_CARD_URL,
 } from '../Endpoints';
-import { NavigationStrings } from '../Navigation/NavigationStrings';
+import {NavigationStrings} from '../Navigation/NavigationStrings';
 import Singleton from '../Singleton';
-import { getCurrentRouteName, navigate, reset } from '../navigationsService';
+import {getCurrentRouteName, navigate, reset} from '../navigationsService';
 import * as Constants from './../Constant';
 
 export const disableAllSecurity = true;
-export const sslCertificateList = [
-  'saitaCardStage',
-  'saitaCardLive',
-  'saitaProStage',
-  'saitaProLive',
-  'saitaDevServer',
-  'saitaCardCentralizedStage',
-  'saitaCardCentralizedLive',
-  'devCard',
-  'devCentralize',
-];
+export const sslCertificateList = ['devCard', 'devCentralize'];
 const APIClient = class APIClient {
   static myInstance = null;
   static getInstance() {
@@ -192,19 +182,19 @@ const APIClient = class APIClient {
         console.warn('MM', 'params11', JSON.stringify(data));
         let encodedData = await this.encode_saitamask_data(data);
         console.warn('MM', 'await this.encodeData(data::::::', encodedData);
-      //   const config = {
-      //     method: 'post',
-      //     url: `${BASE_URL}${endpoint}`,
-      //     headers: {
-      //       'Content-Type': 'application/json',
-      //       Authorization: UserToken || undefined,
-      //     },
-      //     data: data != null ? JSON.stringify(data) : null,
-      //     timeout: 1000000,
-      //     sslPinning: {
-      //       certs: sslCertificateList,
-      //     },
-      // };
+        //   const config = {
+        //     method: 'post',
+        //     url: `${BASE_URL}${endpoint}`,
+        //     headers: {
+        //       'Content-Type': 'application/json',
+        //       Authorization: UserToken || undefined,
+        //     },
+        //     data: data != null ? JSON.stringify(data) : null,
+        //     timeout: 1000000,
+        //     sslPinning: {
+        //       certs: sslCertificateList,
+        //     },
+        // };
         try {
           // await axios(config)
           ssl_fetch(`${BASE_URL}${endpoint}`, {
@@ -222,7 +212,7 @@ const APIClient = class APIClient {
             // body: data != null ? encodedData : null,
           })
             .then(async res => {
-              console.log("res::::::", res);
+              console.log('res::::::', res);
               try {
                 let jsonVal = await res.json();
                 console.warn('MM', 'jsonVal::::::', jsonVal);
@@ -363,7 +353,7 @@ const APIClient = class APIClient {
     }
   }
   //   }
-  postCards(endpoint, data, UserToken,headers = {}) {
+  postCards(endpoint, data, UserToken, headers = {}) {
     if (global.disconnected) {
       Singleton.showAlert(Constants.NO_NETWORK);
       // if (!this.alertPresent) {
@@ -398,7 +388,7 @@ const APIClient = class APIClient {
             'Content-Type': 'application/json',
             Accept: 'application/json',
             Authorization: UserToken ? 'Bearer ' + UserToken : '',
-            ...headers
+            ...headers,
           },
           sslPinning: {
             certs: sslCertificateList,
@@ -1142,7 +1132,9 @@ const APIClient = class APIClient {
               if (jsonVal.code == 409) {
                 this.refreshTheToken()
                   .then(async res => {
-                    const UserToken = await Singleton.getInstance().newGetData(Constants.access_token);
+                    const UserToken = await Singleton.getInstance().newGetData(
+                      Constants.access_token,
+                    );
                     const response = await this.get(endpoint, UserToken);
                     return resolve(response);
                     // this.get(endpoint, UserToken)
@@ -1191,7 +1183,6 @@ const APIClient = class APIClient {
             Accept: 'application/json',
             Authorization: UserToken ? 'Bearer ' + UserToken : '',
             ...headers,
-        
           },
           body: data,
         };
@@ -1227,73 +1218,81 @@ const APIClient = class APIClient {
       });
     }
   }
-    // ************************************************* PUT **************************************************
-    async putCard(endpoint, data, UserToken,headers) {
-      if (!global.isConnected) {
-           return new Promise((resolve, reject) => {
-                reject({ message: Constants.NO_NETWORK });
-           });
-      } else {
-           return new Promise(async (resolve, reject) => {
-                console.log('UserToken11 post', UserToken);
-                console.log('url11 post', `${BASE_URL_SAITACARDS}${endpoint}`);
-                console.log('params11 post', JSON.stringify(data));
-                // console.log('SELECTED_LANGUAGE', await getData(Constants.SELECTED_LANGUAGE));
-                console.log('encodeData:::post', data != null ? this.encodeData(data) : null);
-                try {
-                     fetch(`${BASE_URL_SAITACARDS}${endpoint}`, {
-                          method: 'PUT',
-                          headers: {
-                               'Content-Type': 'application/json',
-                               'Authorization': UserToken ? 'Bearer ' + UserToken : '',
-                               ...headers
-                          },
+  // ************************************************* PUT **************************************************
+  async putCard(endpoint, data, UserToken, headers) {
+    if (!global.isConnected) {
+      return new Promise((resolve, reject) => {
+        reject({message: Constants.NO_NETWORK});
+      });
+    } else {
+      return new Promise(async (resolve, reject) => {
+        console.log('UserToken11 post', UserToken);
+        console.log('url11 post', `${BASE_URL_SAITACARDS}${endpoint}`);
+        console.log('params11 post', JSON.stringify(data));
+        // console.log('SELECTED_LANGUAGE', await getData(Constants.SELECTED_LANGUAGE));
+        console.log(
+          'encodeData:::post',
+          data != null ? this.encodeData(data) : null,
+        );
+        try {
+          fetch(`${BASE_URL_SAITACARDS}${endpoint}`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: UserToken ? 'Bearer ' + UserToken : '',
+              ...headers,
+            },
 
-                          body: data != null ? this.encodeData(data) : null,
-                     }).then(async res => {
-                          console.log("res::::", res);
-                          try {
-                               const jsonVal = await res.json();
-                               console.log('Json Response:endpoint', endpoint, jsonVal);
-                               if (jsonVal.code == 409) {
-                                    this.refreshTheToken().then(async res => {
-                                         console.log('refresh token resp:::::::')
-                                         const response = await this.postToken(endpoint, data);
-                                         return resolve(response);
-                                         //  this.postToken(endpoint, data)
-                                    }).catch(err => {
-                                         console.log('chk refresh errrrr post', err);
-                                         return reject(err);
-                                    })
-                               } else {
-                                     if (jsonVal.message?.toLowerCase()?.includes('access token')) {
-                                         navigationRef.navigate('CardSplash')
-                                         return reject({ message: Constants.ACCESS_TOKEN_EXPIRED });
-                                    }
-                                    if (!jsonVal.status) {
-                                         if (jsonVal.message == undefined) {
-                                              return reject({ message: Constants.SOMETHING_WRONG });
-                                         }
-                                         return reject(jsonVal);
-                                    } else {
-                                         return resolve(jsonVal);
-                                    }
-                               }
-                          } catch (e) {
-                               console.log('api error99', e);
-                               return reject({ message: Constants.SOMETHING_WRONG });
-                          }
-                     }).catch(err => {
-                          console.log('chk post errr::::', err);
-                          reject(err)
-                     });
-                } catch (e) {
-                     console.log("eroor:::::::::", e);
+            body: data != null ? this.encodeData(data) : null,
+          })
+            .then(async res => {
+              console.log('res::::', res);
+              try {
+                const jsonVal = await res.json();
+                console.log('Json Response:endpoint', endpoint, jsonVal);
+                if (jsonVal.code == 409) {
+                  this.refreshTheToken()
+                    .then(async res => {
+                      console.log('refresh token resp:::::::');
+                      const response = await this.postToken(endpoint, data);
+                      return resolve(response);
+                      //  this.postToken(endpoint, data)
+                    })
+                    .catch(err => {
+                      console.log('chk refresh errrrr post', err);
+                      return reject(err);
+                    });
+                } else {
+                  if (
+                    jsonVal.message?.toLowerCase()?.includes('access token')
+                  ) {
+                    navigationRef.navigate('CardSplash');
+                    return reject({message: Constants.ACCESS_TOKEN_EXPIRED});
+                  }
+                  if (!jsonVal.status) {
+                    if (jsonVal.message == undefined) {
+                      return reject({message: Constants.SOMETHING_WRONG});
+                    }
+                    return reject(jsonVal);
+                  } else {
+                    return resolve(jsonVal);
+                  }
                 }
-           });
-      }
- }
-
+              } catch (e) {
+                console.log('api error99', e);
+                return reject({message: Constants.SOMETHING_WRONG});
+              }
+            })
+            .catch(err => {
+              console.log('chk post errr::::', err);
+              reject(err);
+            });
+        } catch (e) {
+          console.log('eroor:::::::::', e);
+        }
+      });
+    }
+  }
 
   async putCardVault(endpoint, data, UserToken, headers = {}) {
     if (!global.isConnected) {
@@ -1372,7 +1371,7 @@ const APIClient = class APIClient {
           },
         })
           .then(async res => {
-            console.log("res:::::3234234",res);
+            console.log('res:::::3234234', res);
             try {
               let jsonVal = await res.json();
               if (jsonVal.code == 409) {
@@ -1407,4 +1406,4 @@ const APIClient = class APIClient {
   }
 };
 
-export { APIClient };
+export {APIClient};

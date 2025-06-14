@@ -1231,27 +1231,6 @@ export const createOrderForSaitaCard_Binance = (req, token) => {
 
   return new Promise((resolve, reject) => {
 
-    //  let req = {
-
-    //     env: {
-    //       terminalType: 'APP',
-    //     },
-
-    //     // card_table_id: cardId,
-    //     description: 'Saitapro Card',
-    //     goodsDetails: [
-    //       {
-    //         goodsType: '01',
-    //         goodsCategory: 'D000',
-    //         referenceGoodsId: '7876763A3B',
-    //         goodsName: 'Saitapro Card',
-    //         goodsDetail: 'Saitapro Card',
-    //       },
-    //     ],
-    //     // bnb_pay_order_type:bnb_pay_order_type
-
-    //   };
-
 
     APIClient.getInstance().postTokenCards(API_CARD_BINANCE_CREATE_ORDER, req, token)
       .then(res => {

@@ -137,7 +137,7 @@ const Splash = props => {
           // Alert.alert('coinFamilyKeys'+coinFamilyKeys)
           if (coinFamilyKeys?.length > 1) {
             if (!coinFamilyKeys?.toString()?.includes('4')) {
-              coinFamilyKeys = [1, 2, 6, 11, 3, 4]
+              coinFamilyKeys = [1, 2, 6, 11, 3]
             }
           }
           console.log("coinFamilyKeys  11",coinFamilyKeys,typeof coinFamilyKeys);
@@ -186,10 +186,10 @@ const Splash = props => {
               coin_symbol: Constants.COIN_SYMBOL.ETH,
               wallet_address: res?.ethAddress,
             },
-            {
-              coin_symbol: Constants.COIN_SYMBOL.STC,
-              wallet_address: res?.ethAddress,
-            },
+            // {
+            //   coin_symbol: Constants.COIN_SYMBOL.STC,
+            //   wallet_address: res?.ethAddress,
+            // },
             {
               coin_symbol: Constants.COIN_SYMBOL.BNB,
               wallet_address: res?.ethAddress,
@@ -254,7 +254,7 @@ const Splash = props => {
                 res.trxAddress,
                 res.solAddress,
               ];
-              let coinFamilyKeys = [1, 2, 6, 11, 3, 4, 8];
+              let coinFamilyKeys = [1, 2, 6, 11, 3, 8];
               let WalletData = {
                 walletName: wallet_name,
                 mnemonics: res.mnemonics,
@@ -563,7 +563,7 @@ const Splash = props => {
       <SafeAreaView style={{ flex: 1, backgroundColor: '#000' }}>
         <LinearGradient style={{ flex: 1, position: 'relative', justifyContent: 'flex-end' }} colors={['#000', '#000']}>
           <View style={{ flex: 1, height: '100%', width: '100%', position: 'absolute', justifyContent: 'center', alignItems: 'center' }}>
-            <Image source={images.SaitaPro_H5} style={{ height: widthDimen(400), width: widthDimen(400), alignSelf: 'center' }} resizeMode={'contain'} />
+            <Image source={images.Rezor_H5} style={{ height: widthDimen(400), width: widthDimen(400), alignSelf: 'center' }} resizeMode={'contain'} />
           </View>
           {/* <Text style={{
             color: '#ffff',

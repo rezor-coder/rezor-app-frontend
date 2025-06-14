@@ -475,8 +475,7 @@ const RmLiquidityConfirm = props => {
       //console.warn('MM','eth data:::: ccvc tkn', FilteredCoinOne.coin_symbol)
       coin_symbol = FilteredCoinOne.coin_symbol.toLowerCase() == constants.COIN_SYMBOL.ETH ? "eth" : rawTxnObj?.tokenContractAddress
       let access_token = Singleton.getInstance().access_token;
-      //console.warn('MM','eth data::::', data);
-      //console.warn('MM','eth data::::', `https://api.saita.pro/prod/api/v1/${blockChain}/${coin_symbol}/savetrnx`, access_token,);
+
       APIClient.getInstance().post(`${blockChain}/${coin_symbol}/savetrnx` , data , access_token) 
       .then(res=>{
  //  console.warn('MM','sendTransactionToBackend', res);

@@ -1,31 +1,16 @@
 import * as constants from './Constant';
 
 // export const BASE_URL = 'http://192.0.0.2:3000/api/v1/';
-// export const BASE_URL = 'https://api.saita.pro/prod/api/v1/';
 // export const BASE_URL = 'https://api.rezor.org/prod/api/v1/';
 export const BASE_URL = 'https://app-api-v1.rezor.org/prod/api/v1/';
-// export const BASE_URL = 'https://wallet-api.pro-saitamask.com/stage/api/v1/';
-//  constants.network == 'testnet' ? 'https://wallet-api.pro-saitamask.com/stage/api/v1/' : 'https://api.saita.pro/prod/api/v1/';// ? 
-export const BASE_URL_SAITACARDS =
-  constants.network == 'testnet' ?
-   'https://stage-card-api.pro-saitamask.com/api/v1/' 
-   :'https://card.saitacard.io/api/v1/';
-   export const VAULT_CARD_URL='https://api.prod.testessential.net/';
+export const BASE_URL_SAITACARDS = '';
+export const VAULT_CARD_URL = 'https://api.prod.testessential.net/';
 
-export const BASE_URL_CARDS_CENTRALISED =
-  constants.network == 'testnet' ? 
-  'https://centralized.pro-saitamask.com/api/v1/'
-    : 'https://centralized.saitacard.io/api/v1/'
-export const BASE_URL_CARD_EPAY = constants.network == 'testnet' ? "https://epay-saitacard-stage.herokuapp.com/" : "https://epay-card-dev.herokuapp.com/"
-export const BASE_URL_HUOBI =
-  constants.network == 'testnet'
-    ? 'https://api-huobi.saitamacard.ai/'
-    : 'https://api-huobi.saitamacard.ai/'
+export const BASE_URL_CARDS_CENTRALISED = '';
+export const BASE_URL_CARD_EPAY = '';
+export const BASE_URL_HUOBI = '';
 export const BASE_IMAGE = BASE_URL + 'static';
 export const BANNER_IMG = 'user/get/advertisement/list';
-export const BANNER =
-  'https://api.saita.pro/prod/api/v1/static/images/advertisement.png';
-export const DAPP_IMG_URL = 'https://api.saita.pro/prod/api/v1/static';
 export const SOCIAL_LINK = 'user/get/social/media/link/list';
 export const API_CREATE_WALLET = 'user/create/wallet';
 export const API_CHECK_APP_VERSION = 'wallet/checkAppVersion';
@@ -58,7 +43,7 @@ export const API_NONCE = '/nonce';
 export const API_ETH_GAS_PRICE = 'wallet/gasprice';
 export const API_ETH_GAS_ESTIMATE = '/gas_estimation';
 export const API_ETH_TOKEN_RAW = '/get_raw_data_string';
-export const CHECK_EXIST_CONTACT='user/check-contact-exist'
+export const CHECK_EXIST_CONTACT = 'user/check-contact-exist';
 /**************************************BITCOIN APIs ****************************************************/
 export const API_BTC_GAS_PRICE = 'https://api.blockchain.info/mempool/fees';
 export const API_UNSPENT = 'bitcoin/unspent/';
@@ -124,7 +109,7 @@ export const API_SWAP_COIN_LIST = 'wallet/swap/coinlist';
 export const API_SWAP_USER_LIST = 'wallet/swap/myNewCoinList';
 export const API_SWAP_LIST_ALL = 'wallet/all_swap_list';
 export const API_SWAP_LIST_ALL_V2 = 'wallet/all_swap_list';
-export const API_SWAP_NEW='wallet/new_swap_list';
+export const API_SWAP_NEW = 'wallet/new_swap_list';
 export const API_SWAP_COIN_LIST_NEW = 'wallet/swap_list';
 export const API_SWAP_COIN_LIST_BNB = 'wallet/swap_list_bnb';
 /************************************ Invite Link API ***************************************************/
@@ -197,25 +182,25 @@ export const API_CHANGE_PASSWORDCARD = 'auth/changePwd';
 export const API_UPDATE_MOBILE = 'user/updateUserDetails';
 export const API_CARD_EPAY_CREATE_ORDER = 'epay/create-order';
 export const API_CARD_BINANCE_CREATE_ORDER = 'card/bpay/create-order'; // old
-export const LIMINAL_COIN_LIST = 'liminal/LiminalCoin'
-export const LIMINAL_PRICE_CONVERSION = 'liminal/Calculator'
-export const BINANCE_PRICE_CONVERSION = 'bpay/create-order'
+export const LIMINAL_COIN_LIST = 'liminal/LiminalCoin';
+export const LIMINAL_PRICE_CONVERSION = 'liminal/Calculator';
+export const BINANCE_PRICE_CONVERSION = 'bpay/create-order';
 /************************************** HUOBI APIs ****************************************************/
-export const HUOBI_FIND_DESIRED_TOKEN = 'findDesiredToken'
-export const HUOBI_GET_FAVOURITES = 'getFavorites'
-export const HUOBI_SET_FAVOURITES = 'setFavourite'
-export const HUOBI_REMOVE_FAVOURITES = 'removeFromFavourites'
-export const HUOBI_FETCH_CHAIN = 'fetchChain'
-export const HUOBI_FETCH_FEE = 'fetchFee'
-export const HUOBI_CHECK_SWAP = 'checkswap'
-export const HUOBI_FIND_TOKEN_FOR_CURRENCY = 'findTokenForCurrency'
-export const HUOBI_SWAP = 'swap'
-export const HUOBI_TOKEN_LIST = 'wallet/getHuobiListing'
-export const CHECK_MAINTENANCE='wallet/isOnMaintainance';
-export const UPDATE_WALLET_BALANCES='user/updateUserWalletBalances';
+export const HUOBI_FIND_DESIRED_TOKEN = 'findDesiredToken';
+export const HUOBI_GET_FAVOURITES = 'getFavorites';
+export const HUOBI_SET_FAVOURITES = 'setFavourite';
+export const HUOBI_REMOVE_FAVOURITES = 'removeFromFavourites';
+export const HUOBI_FETCH_CHAIN = 'fetchChain';
+export const HUOBI_FETCH_FEE = 'fetchFee';
+export const HUOBI_CHECK_SWAP = 'checkswap';
+export const HUOBI_FIND_TOKEN_FOR_CURRENCY = 'findTokenForCurrency';
+export const HUOBI_SWAP = 'swap';
+export const HUOBI_TOKEN_LIST = 'wallet/getHuobiListing';
+export const CHECK_MAINTENANCE = 'wallet/isOnMaintainance';
+export const UPDATE_WALLET_BALANCES = 'user/updateUserWalletBalances';
 /************************************** HUOBI APIs ****************************************************/
-export const STC_GAS_PRICE='saitachain/gasPrices';
-export const STC_GAS_LIMIT='saitachain/gasLimit';
+export const STC_GAS_PRICE = 'saitachain/gasPrices';
+export const STC_GAS_LIMIT = 'saitachain/gasLimit';
 
 /************************************** Vault APIs ****************************************************/
 // export const SIGN_UP = 'user/v3/mobile/signup';
@@ -233,27 +218,32 @@ export const STC_GAS_LIMIT='saitachain/gasLimit';
 // export const FORGET_OTP_CONFIRM = 'user/v3/mobile/password/reset/confirm/code';
 // export const FORGET_PASSWORD_CONFIRM = 'user/v3/mobile/password/reset/confirm';
 
-
 // ----------------------------------------------------------------
 export const GET_SIGNUP_CODE = 'v2/mobile/signup';
 export const CONFIRM_PHONE_OTP = 'user-v3/mobile/phone/confirm';
-export const EMAIL_ADD='user-v3/mobile/email/add';
-export const USER_LOGIN='oauth/token';
-export const KYC_DATA='user-v3/customer/kyc/data';
-export const GET_CUSTOMER_PROFILE='user-v3/customer/profile';
-export const RESEND_OTP='user-v3/mobile/phone/verify/resend';
-export const KYC_START='user-v3/kyc/start';
-export const VAULT_DETAILS='user-v3/vault/details';
-export const USER_CARD_LIST='card-v3/card/list';
-export const CARD_TRANSACTION_HISTORY='card-v3/history/card/';
-export const otpForCardDetailsCode=(cardId,cp)=>`card-v3/card/${cardId}/details/code?cp=${cp}`;
-export const otpForCardDetails=(cardId,cp)=>`v2/card/${cardId}/details?cp=${cp}`;
-export const otpForCardBlock=(cardId,cp)=>`card-v3/card/${cardId}/soft-block/code?cp=${cp}`;
-export const otpForCardUnblock=(cardId,cp)=>`card-v3/card/${cardId}/soft-unblock/code?cp=${cp}`;
-export const BlockCard=(cardId,cp)=>`v2/card/${cardId}/soft-block?cp=${cp}`;
-export const unblockCard=(cardId,cp)=>`v2/card/${cardId}/soft-unblock?cp=${cp}`;
-export const LOG_OUT='signout';
-export const CHANGE_PASSWORD='v2/mobile/password/change';
+export const EMAIL_ADD = 'user-v3/mobile/email/add';
+export const USER_LOGIN = 'oauth/token';
+export const KYC_DATA = 'user-v3/customer/kyc/data';
+export const GET_CUSTOMER_PROFILE = 'user-v3/customer/profile';
+export const RESEND_OTP = 'user-v3/mobile/phone/verify/resend';
+export const KYC_START = 'user-v3/kyc/start';
+export const VAULT_DETAILS = 'user-v3/vault/details';
+export const USER_CARD_LIST = 'card-v3/card/list';
+export const CARD_TRANSACTION_HISTORY = 'card-v3/history/card/';
+export const otpForCardDetailsCode = (cardId, cp) =>
+  `card-v3/card/${cardId}/details/code?cp=${cp}`;
+export const otpForCardDetails = (cardId, cp) =>
+  `v2/card/${cardId}/details?cp=${cp}`;
+export const otpForCardBlock = (cardId, cp) =>
+  `card-v3/card/${cardId}/soft-block/code?cp=${cp}`;
+export const otpForCardUnblock = (cardId, cp) =>
+  `card-v3/card/${cardId}/soft-unblock/code?cp=${cp}`;
+export const BlockCard = (cardId, cp) =>
+  `v2/card/${cardId}/soft-block?cp=${cp}`;
+export const unblockCard = (cardId, cp) =>
+  `v2/card/${cardId}/soft-unblock?cp=${cp}`;
+export const LOG_OUT = 'signout';
+export const CHANGE_PASSWORD = 'v2/mobile/password/change';
 // ----------vault forget apis ----------
 export const FORGET_OTP_SEND = 'v2/mobile/password/reset';
 export const FORGET_OTP_CONFIRM = 'v2/mobile/password/reset/confirm/code';
@@ -261,19 +251,28 @@ export const FORGET_PASSWORD_CONFIRM = 'v2/mobile/password/reset/confirm';
 
 export const GET_WALLET_LIST = 'user-v3/wallets';
 export const CREATE_WALLETS = 'user-v3/wallets';
-export const requestCard=(cp)=>`card-v3/card/card-requests?cp=${cp}`;
-export const getValutWalletList=(cp) => `v2/card/payload/currencies?cp=${cp}&force=true`
-export const FINISH_KYC='user-v3/kyc/ondato/finished?platform=COMMON';
+export const requestCard = cp => `card-v3/card/card-requests?cp=${cp}`;
+export const getValutWalletList = cp =>
+  `v2/card/payload/currencies?cp=${cp}&force=true`;
+export const FINISH_KYC = 'user-v3/kyc/ondato/finished?platform=COMMON';
 
-export const cardRequestAddress=(cardId,cp)=>`card-v3/card/card-requests/${cardId}/address?cp=${cp}`;
-export const ADDITIONAL_INFO=`card-v3/card/additional-personal-info`;
-export const getTopUpConversionPrice=(cardId,cp) => `card-v3/card/${cardId}/payload/offers?cp=${cp}&force=false`
+export const cardRequestAddress = (cardId, cp) =>
+  `card-v3/card/card-requests/${cardId}/address?cp=${cp}`;
+export const ADDITIONAL_INFO = `card-v3/card/additional-personal-info`;
+export const getTopUpConversionPrice = (cardId, cp) =>
+  `card-v3/card/${cardId}/payload/offers?cp=${cp}&force=false`;
 export const GET_COUNTRY_CODES = 'card-v3/get_country_codes';
 export const GET_VAULT_SETTINGS = 'card-v3/get_vault_settings';
-export const cardPrice=(cardId,currency,cp)=>`card-v3/card/card-requests/${cardId}/price/${currency}?cp=${cp}`;
-export const payCardFee=(cardId,currency,cp)=>`card-v3/card/card-requests/${cardId}/payment-offer/${currency}?cp=${cp}`
-export const confirmCardFee=(cardId,cp)=>`card-v3/card/card-requests/payment-offer/${cardId}/confirm?cp=${cp}`;
-export const rechargeConversion=(cardId,cp)=>`card-v3/card/${cardId}/payload/offers?cp=${cp}&force=false`;
-export const confirmRecharge=(cardId,cp,offerId)=>`card-v3/card/${cardId}/payload/offers/${offerId}/confirm?cp=${cp}&force=false`;
-export const cardLimits=(cardId,cp)=>`card-v3/card/${cardId}/payload/data?cp=${cp}&force=false`;
+export const cardPrice = (cardId, currency, cp) =>
+  `card-v3/card/card-requests/${cardId}/price/${currency}?cp=${cp}`;
+export const payCardFee = (cardId, currency, cp) =>
+  `card-v3/card/card-requests/${cardId}/payment-offer/${currency}?cp=${cp}`;
+export const confirmCardFee = (cardId, cp) =>
+  `card-v3/card/card-requests/payment-offer/${cardId}/confirm?cp=${cp}`;
+export const rechargeConversion = (cardId, cp) =>
+  `card-v3/card/${cardId}/payload/offers?cp=${cp}&force=false`;
+export const confirmRecharge = (cardId, cp, offerId) =>
+  `card-v3/card/${cardId}/payload/offers/${offerId}/confirm?cp=${cp}&force=false`;
+export const cardLimits = (cardId, cp) =>
+  `card-v3/card/${cardId}/payload/data?cp=${cp}&force=false`;
 export const CARD_PRICES = 'card-v3/card/prices';

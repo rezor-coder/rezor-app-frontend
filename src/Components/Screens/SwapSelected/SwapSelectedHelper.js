@@ -407,12 +407,6 @@ const sendTransactionToBackend = (
     }
     let access_token = Singleton.getInstance().access_token;
     console.warn('MM', 'eth data::::', data);
-    console.warn(
-      'MM',
-      'eth data::::',
-      `https://api.saita.pro/prod/api/v1/${blockChain}/${coin_symbol}/savetrnx`,
-      access_token,
-    );
     APIClient.getInstance()
       .post(`${blockChain}/${coin_symbol}/savetrnx`, data, access_token)
       .then(res => {

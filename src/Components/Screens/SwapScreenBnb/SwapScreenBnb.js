@@ -597,12 +597,6 @@ const SwapScreenBnb = ({ slippage, timeout }) => {
     return new Promise((resolve, reject) => {
       let access_token = Singleton.getInstance().access_token;
 
-      //console.warn('MM','bnb data::::', data);
-      ////console.log(
-      // 'bnb data::::',
-      //   `https://api.saita.pro/prod/api/v1/${blockChain}/${coin_symbol}/savetrnx`,
-      //   access_token,
-      // );
       APIClient.getInstance().post(`${blockChain}/${coin_symbol}/savetrnx` , data , access_token)
       .then(res=>{
  //  console.warn('MM','sendTransactionToBackend', res);

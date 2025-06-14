@@ -136,7 +136,7 @@ class ConfirmPin extends Component {
           // Alert.alert('coinFamilyKeys'+coinFamilyKeys)
           if (coinFamilyKeys?.length > 1) {
             if (!coinFamilyKeys?.toString()?.includes('4')) {
-              coinFamilyKeys = [1, 2, 6, 11, 3, 4]
+              coinFamilyKeys = [1, 2, 6, 11, 3]
             }
           }
           console.log("coinFamilyKeys  11",coinFamilyKeys,typeof coinFamilyKeys);

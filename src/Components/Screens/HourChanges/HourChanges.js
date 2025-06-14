@@ -248,7 +248,7 @@ const HourChanges = props => {
         //           <Text style={[styles.lastStyle]}>
         //             {graphData.length > 0
         //               ? graphData[0]?.name
-        //               : LanguageManager.SaitamaInu}
+        //               : LanguageManager.RezorInu}
         //           </Text>
         //           <Text style={[styles.coinStyle, {color: Colors.fadetext}]}>
         //             {Singleton.getInstance().CurrencySymbol}

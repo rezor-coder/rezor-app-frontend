@@ -58,7 +58,7 @@ const SaitaCardPayOption = props => {
                     disabled={onPressActive}
                     // iconImage={images.wallet_inactive}
                     iconImage={ThemeManager.ImageIcons.manageWallet}
-                    title={LanguageManager.PayusingSaitaPro}
+                    title={LanguageManager.PayusingRezor}
                     titleStyle={{ color: ThemeManager.colors.textColor, fontFamily: Fonts.light, fontSize: 13, }}
                     onPress={() => { setApplyModal(true) }}
                     style={{ borderBottomWidth: 0 }}

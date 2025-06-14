@@ -80,7 +80,7 @@ android {
         applicationId "com.rezor"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 11
+        versionCode 12
         versionName "1"
         missingDimensionStrategy 'react-native-camera', 'general' //add this line
         multiDexEnabled true

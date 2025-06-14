@@ -37,7 +37,7 @@ const CoustomModal = props => {
           rightImage={styles.rightImgStyle}
         /> */}
         <SimpleHeader
-          title={LanguageManager.saitaProSupport}
+          title={LanguageManager.rezorSupport}
           backImage={ThemeManager.ImageIcons.iconBack}
           titleStyle
           imageShow
@@ -74,10 +74,6 @@ const CoustomModal = props => {
               alignItems: 'center',
               justifyContent: 'center',
             }}>
-            <Image
-              source={Images.saita}
-              style={{height: 20, width: 20, marginHorizontal: 5}}
-            />
             <Text style={styles.textnewlight}>Rezor</Text>
           </TouchableOpacity>
 
@@ -162,7 +158,7 @@ const CoustomModal = props => {
               justifyContent: 'center',
             }}>
             <Image
-              source={Images.imgSaitaMarket}
+              source={Images.imgRezorMarket}
               style={{height: 20, width: 20, marginHorizontal: 5}}
             />
             <Text style={styles.textnewlight}>RezorMarket</Text>
@@ -213,92 +209,12 @@ const CoustomModal = props => {
               justifyContent: 'center',
             }}>
             <Image
-              source={Images.imgSaitaMarket}
+              source={Images.imgRezorMarket}
               style={{height: 20, width: 20, marginHorizontal: 5}}
             />
             <Text style={styles.textnewlight}>Get Support</Text>
           </TouchableOpacity>
         </View>
-
-        {/* <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-          <View style={{ width: '48%', alignItems: 'flex-end', }}>
-            <View style={[styles.roundnew, { borderColor: "white", borderWidth: 1, backgroundColor: "transparent" }]}>
-              <Image source={Images.saita} style={{ height: 30, width: 30, }} />
-            </View>
-          </View>
-          <View style={{ width: '48%', justifyContent: 'center', marginLeft: 10, }}>
-            <Text style={styles.textnewlight}>Rezor</Text>
-          </View>
-        </View>
-
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-          <View style={{ width: '48%', alignItems: 'flex-end', }}>
-            <View style={styles.roundnew}>
-              <Image source={Images.learn} style={{ height: 30, width: 30, tintColor: Colors.White, }} />
-            </View>
-          </View>
-          <View style={{ width: '48%', justifyContent: 'center', marginLeft: 10, }}>
-            <TouchableOpacity onPress={() => { Linking.openURL('https://saitama.academy',) }}>
-              <Text style={styles.textnew}>Saitama Academy</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-
-
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-          <View style={{ width: '48%', alignItems: 'flex-end', }}>
-            <View style={styles.roundnew}>
-              <Image source={Images.FANG} style={{ height: 30, width: 30, tintColor: Colors.White, }} />
-            </View>
-          </View>
-          <View style={{ width: '48%', justifyContent: 'center', marginLeft: 10, }}>
-            <TouchableOpacity onPress={() => { Linking.openURL('https://fang.art',) }}>
-              <Text style={styles.textnew}>FANG Art</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-          <View style={{ width: '48%', alignItems: 'flex-end', }}>
-            <View style={styles.roundnew}>
-              <Image source={Images.hmask} style={{ height: 30, width: 30, }} />
-            </View>
-          </View>
-          <View style={{ width: '48%', justifyContent: 'center', marginLeft: 10, }}>
-
-            <Text style={styles.textnewlight}>Saitama Store</Text>
-
-          </View>
-        </View> */}
-
-        {/* <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-          <View style={{width: '48%', alignItems: 'flex-end'}}>
-            <View style={styles.roundnew}>
-              <Image source={Images.mask} style={{height: 30, width: 30}} />
-            </View>
-          </View>
-          <View
-            style={{width: '48%', justifyContent: 'center', marginLeft: 10}}>
-            <Text style={styles.textnewlight}>SaitaMarket</Text>
-          </View>
-        </View> */}
-        {/* 
-        <TouchableOpacity
-          style={{marginTop: 10}}
-          onPress={() => {
-            props.setModalVisible(false);
-            Actions.GetSupport();
-          }}>
-          <Text style={styles.getSuppoert}>Get Support</Text>
-        </TouchableOpacity> */}
-
-        {/* <View style={{marginTop: 30}}>
-          <ButtonPrimary
-            onpress={() => props.setModalVisible(false)}
-            btnstyle={{height: 50, width: 200}}
-            text="Close"
-          />
-        </View> */}
       </View>
     </Modal>
   );

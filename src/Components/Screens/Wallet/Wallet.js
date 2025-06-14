@@ -13,12 +13,15 @@ import {
   Text,
   TouchableOpacity,
   View,
+  Alert,
+  Linking,
 } from 'react-native';
 import {EventRegister} from 'react-native-event-listeners';
 import FastImage from 'react-native-fast-image';
 import LinearGradient from 'react-native-linear-gradient';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {useDispatch, useSelector} from 'react-redux';
+import DeviceInfo from 'react-native-device-info';
 import {LanguageManager, ThemeManager} from '../../../../ThemeManager';
 import * as Constants from '../../../Constant';
 import {NavigationStrings} from '../../../Navigation/NavigationStrings';
@@ -30,6 +33,7 @@ import {
   getVaultDetails, //Commented for saitacard
   myWalletListSuccess,
   updateListBalances,
+  getAppVersion,
 } from '../../../Redux/Actions';
 import {wallectConnectParamsUpdate} from '../../../Redux/Actions/WallectConnectActions';
 import Singleton from '../../../Singleton';
@@ -92,6 +96,58 @@ const Wallet = props => {
   const [Page, setPage] = useState(1);
   const [bottomLoading, setBottomLoading] = useState(false);
   const [totalLength, setTotalLength] = useState(CoinData?.length);
+
+  const [isMandatory, setIsMandatory] = useState(false);
+  const [requiredVersion, setRequiredVersion] = useState(null);
+  let access_token = Singleton.getInstance().access_token;
+
+  const promptUpdate = () => {
+    const buttons = [{text: 'Update Now', onPress: () => redirectToAppStore()}];
+
+    if (!isMandatory) {
+      buttons.push({text: 'Cancel', style: 'cancel'});
+    }
+
+    Alert.alert(
+      'Update Required',
+      'A new version of the app is available. Please update to continue.',
+      buttons,
+      {cancelable: !isMandatory},
+    );
+  };
+
+  const redirectToAppStore = () => {
+    const playStoreLink =
+      'https://play.google.com/store/apps/details?id=com.rezor&hl=en';
+    Linking.openURL(playStoreLink);
+  };
+
+  const checkAppVersion = () => {
+    dispatch(getAppVersion(access_token))
+      .then(res => {
+        setIsMandatory(res[0]?.mandatoryUpdate);
+        setRequiredVersion(res[0]?.latestVersionCode);
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
+
+  useEffect(() => {
+    const checkVersionAndPromptUpdate = () => {
+      const currentVersion = DeviceInfo.getBuildNumber();
+      if (parseInt(currentVersion, 10) < parseInt(requiredVersion, 10)) {
+        promptUpdate();
+      }
+    };
+
+    checkAppVersion(); // Assuming this fetches and updates `requiredVersion` and `isMandatory`
+    const timeout = setTimeout(() => {
+      checkVersionAndPromptUpdate();
+    }, 5000);
+
+    return () => clearTimeout(timeout); // Cleanup on component unmount
+  }, [requiredVersion, isMandatory]);
 
   const [cardInfo, setCardInfo] = useState({
     cardNumber: '**** **** **** ****',

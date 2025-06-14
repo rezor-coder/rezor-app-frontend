@@ -247,7 +247,7 @@ const RegisterNow = ({navigation,route}) => {
           <View style={styles.loginTextView}>
             <Image source={Images.splashLogo} style={styles.logoStyle} />
             <Text style={[styles.straproStyle]}>
-              {LanguageManager.saitaPro}
+              {LanguageManager.rezor}
             </Text>
           </View>
           <Text

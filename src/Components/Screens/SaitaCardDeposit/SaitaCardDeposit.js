@@ -21,7 +21,7 @@ let tokenList = [
         id: 2,
         coin_name: 'Saitama',
         coin_symbol: 'Saitama',
-        coin_image: Images.saita_stake,
+        coin_image: Images.rezor_stake,
     },
 
 ];

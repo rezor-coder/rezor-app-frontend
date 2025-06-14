@@ -159,29 +159,6 @@ const SaitaCardLogin = props => {
     };
   }, []);
 
-  // const createOrder = () => {
-  //   setisLoading(true)
-  //   createOrderForSaitaCard({
-  //     card_table_id: userCardType,
-  //     address: Singleton.getInstance().defaultEthAddress,
-  //   }).then(res=>{
-  //     setisLoading(false)
-  //     if(res?.status){
-
-  //       //             {"amount": null, "customerId": 160, "orderId": "66d994c6-8fb0-49c1-95f9-5976f5c68875"}, "message": "Card", "status": true}
-  //       //  WARN  - resssss {"data": {"amount": null, "customerId": 160, "orderId": "66d994c6-8fb0-49c1-95f9-5976f5c68875"},
-  //                   Actions.SaitaCardEpay({linkhash:`https://epay-saitapro-prod.herokuapp.com/?customerId=${res.data.customer_id}&orderID=${res.data.order_id}&orderDescription=${props?.route?.params?.selectedItem?.name}&orderAmount=${res.data.amount}`})
-  //                   // `https://epay-saitapro-prod.herokuapp.com/?customerId=${res.data.customer_id}&orderID=${res.data.order_id}&orderDescription=${res.data.description}&orderAmount=${res.data.amount}`
-  //                 }else{
-
-  //                 }
-  //     console.log('resssss' , res);
-  //   }).catch(err=>{
-  //     setisLoading(false)
-  //     console.log('errrrrr' , err);
-  //     Singleton.showAlert(err?.message || Constants.SOMETHING_WRONG)
-  //   })
-  // };
   const createOrder = async () => {
     try {
       let token = await Singleton.getInstance().newGetData(
@@ -207,8 +184,7 @@ const SaitaCardLogin = props => {
             } else {
               Singleton.showAlert(LanguageManager.unableToProcessYourRequest);
             }
-            // `https://epay-saitapro-prod.herokuapp.com/?customerId=${res.data.customer_id}&orderID=${res.data.order_id}&orderDescription=${res.data.description}&orderAmount=${res.data.amount}`
-          } else {
+            } else {
             Singleton.showAlert(res?.message || Constants.SOMETHING_WRONG);
           }
         })
@@ -765,17 +741,7 @@ const SaitaCardLogin = props => {
           if (res?.status) {
             getCurrentRouteName() != 'SaitaCardBinanceQr' &&
             navigate(NavigationStrings.SaitaCardBinanceQr,{ data: res?.data });
-            //        {"amount": null, "customerId": 167, "orderId": "2b974f13-cd33-4123-94f5-283f6a7408c7"}
-            // https://epay-saitacard-stage.herokuapp.com/?customerId=167&orderID2b974f13-cd33-4123-94f5-283f6a7408c7=&orderDescription=black&orderAmount=20
-            //  WARN  - resssss {"data": {"amount": null, "customerId": 160, "orderId": "66d994c6-8fb0-49c1-95f9-5976f5c68875"},
-            // if (res.data.customerId && res.data.orderId && res.data.amount) {
-            //   let url = `${BASE_URL_CARD_EPAY}?customerId=${res.data.customerId}&orderID=${res.data.orderId}&orderDescription=${props?.route?.params?.selectedItem?.name}&orderAmount=${res.data.amount}`;
-            //   Actions.SaitaCardEpay({linkhash: url});
-            // } else {
-            //   Singleton.showAlert('Unable to process your request');
-            // }
-            // `https://epay-saitapro-prod.herokuapp.com/?customerId=${res.data.customer_id}&orderID=${res.data.order_id}&orderDescription=${res.data.description}&orderAmount=${res.data.amount}`
-          } else {
+            } else {
             Singleton.showAlert(res?.message || Constants.SOMETHING_WRONG);
           }
         })
@@ -794,8 +760,6 @@ const SaitaCardLogin = props => {
   const sendDataToWallet = (data, blockChain, coin_symbol, fromApproval) => {
     return new Promise((resolve, reject) => {
       let access_token = Singleton.getInstance().access_token;
-      //console.warn('MM','eth data::::', data);
-      //console.warn('MM','eth data::::', `https://api.saita.pro/prod/api/v1/${blockChain}/${coin_symbol}/savetrnx`, access_token,);
 
       APIClient.getInstance()
         .post(`${blockChain}/${coin_symbol}/savetrnx`, data, access_token)
@@ -905,7 +869,7 @@ const SaitaCardLogin = props => {
                 <View style={styles.loginTextView}>
                   <Image source={images.splashLogo} style={styles.logoStyle} />
                   <Text style={[styles.straproStyle]}>
-                    {LanguageManager.saitaPro}
+                    {LanguageManager.rezor}
                   </Text>
                 </View>
                 <Text

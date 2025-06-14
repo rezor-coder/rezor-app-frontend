@@ -131,14 +131,14 @@ const ImportWallet = props => {
               coin_symbol: constants.COIN_SYMBOL.BNB,
               wallet_address: res?.ethAddress,
             },
-            {
-              coin_symbol: constants.COIN_SYMBOL.STC,
-              wallet_address: res?.ethAddress,
-            },
             // {
-            //   coin_symbol: 'btc',
-            //  wallet_address: res?.btcAddress,
-            //  },
+            //   coin_symbol: constants.COIN_SYMBOL.STC,
+            //   wallet_address: res?.ethAddress,
+            // },
+            {
+              coin_symbol: 'btc',
+              wallet_address: res?.btcAddress,
+            },
             {
               coin_symbol: constants.COIN_SYMBOL.MATIC,
               wallet_address: res?.ethAddress,
@@ -204,7 +204,7 @@ const ImportWallet = props => {
                 res.trxAddress,
                 res.solAddress,
               ];
-              let coinFamilyKeys = [1, 2, 6, 11, 3, 4, 8];
+              let coinFamilyKeys = [1, 2, 6, 11, 3, 8];
              // let coinFamilyKeys = [1,  6, 11, 3,4];
               let WalletData = {
                 walletName: props.route?.params?.isFrom == 'multiWallet' ? name : 'Basic',

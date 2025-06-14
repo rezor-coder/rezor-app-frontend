@@ -1202,8 +1202,6 @@ let WETH = Singleton.getInstance().SwapWethAddress; // Using Wrapped Ether (WETH
     return new Promise((resolve, reject) => {
       coin_symbol = tokenFirst.coin_symbol.toLowerCase() == constants.COIN_SYMBOL.ETH ? "eth" : rawTxnObj?.tokenContractAddress
       let access_token = Singleton.getInstance().access_token;
-      //console.warn('MM','eth data::::', data);
-      //console.warn('MM','eth data::::', `https://api.saita.pro/prod/api/v1/${blockChain}/${coin_symbol}/savetrnx`, access_token,);
      
       APIClient.getInstance().post(`${blockChain}/${coin_symbol}/savetrnx` , data , access_token) 
       .then(res=>{

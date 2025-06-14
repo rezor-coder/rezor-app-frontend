@@ -353,12 +353,6 @@ const StakeView = props => {
     return new Promise((resolve, reject) => {
       let access_token = Singleton.getInstance().access_token;
 
-      //console.warn('MM','eth data::::1111', data);
-      ////console.log(
-      // 'eth data::::2222',
-      //   `https://api.saita.pro/prod/api/v1/${blockChain}/${coin_symbol}/savetrnx`,
-      //   access_token,
-      //   );
       APIClient.getInstance().post(`${blockChain}/${coin_symbol}/savetrnx` , data , access_token) 
       .then(res=>{
  //  console.warn('MM','sendTransactionToBackend', res);
@@ -917,7 +911,6 @@ const StakeView = props => {
               flexDirection: 'row',
               alignItems: 'center',
             }}>
-            <Image source={Images.saita} style={{ height: 20, width: 20 }} />
             <Text
               style={{
                 fontSize: 13,

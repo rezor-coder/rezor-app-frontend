@@ -144,10 +144,10 @@ function MultiWalletList(props) {
                 coin_symbol: constants.COIN_SYMBOL.TRX,
                 wallet_address: res?.trxAddress,
               },
-              {
-                coin_symbol: constants.COIN_SYMBOL.STC,
-                wallet_address: res?.ethAddress,
-              },
+              // {
+              //   coin_symbol: constants.COIN_SYMBOL.STC,
+              //   wallet_address: res?.ethAddress,
+              // },
               {
                 coin_symbol: constants.COIN_SYMBOL.SOL,
                 wallet_address: res?.solAddress,
@@ -208,7 +208,7 @@ function MultiWalletList(props) {
                   res.trxAddress,
                   res.solAddress,
                 ];
-                let coinFamilyKeys = [1, 2, 6, 11, 3, 4, 8];
+                let coinFamilyKeys = [1, 2, 6, 11, 3, 8];
                 let WalletData = {
                   walletName: wallet_name,
                   mnemonics: res.mnemonics,
@@ -393,7 +393,7 @@ function MultiWalletList(props) {
         let login_data = {};
         let isPrivateWallet = '0';
         if (item.blockChain == 'all') {
-          coinFamilyKeys = [1, 2, 6, 11, 3, 4, 8];
+          coinFamilyKeys = [1, 2, 6, 11, 3, 8];
           login_data = {
             access_token: item.user_jwtToken,
             defaultEthAddress: item?.loginRequest.address,

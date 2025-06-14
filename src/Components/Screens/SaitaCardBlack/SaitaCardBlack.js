@@ -1219,7 +1219,7 @@ const SaitaCardBlack = props => {
             <View
               style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
               <FastImage
-                source={Images.contactSaitaSupport}
+                source={Images.contactRezorSupport}
                 style={{height: heightDimen(120), width: widthDimen(120)}}
                 resizeMode="contain"
                 tintColor={ThemeManager.colors.headingText}

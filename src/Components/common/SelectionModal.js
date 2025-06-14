@@ -7,7 +7,7 @@ import { LanguageManager, ThemeManager } from '../../../ThemeManager';
 import { area } from 'd3-shape';
 
 const SelectionModal = (props) => {
-  const List = [{ title: LanguageManager.Huobi, logo: Images.huobi }, { title: LanguageManager.SaitaDex, logo: Images.splashLogo }]
+  const List = [{ title: LanguageManager.Huobi, logo: Images.huobi }, { title: LanguageManager.RezorDex, logo: Images.splashLogo }]
   return (
     <>
       <Modal
