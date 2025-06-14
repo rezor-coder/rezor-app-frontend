@@ -197,16 +197,16 @@ export default class Singleton {
       token_address: null,
       decimals: 1000000,
     },
-    {
-      coin_family: 4,
-      coin_name: 'SaitaChain',
-      coin_symbol: Constants.COIN_SYMBOL.STC,
-      coin_image:
-        'https://s2.coinmarketcap.com/static/img/coins/64x64/20513.png',
-      is_token: 0,
-      token_address: null,
-      decimals: 1000000000000000000,
-    },
+    // {
+    //   coin_family: 4,
+    //   coin_name: 'SaitaChain',
+    //   coin_symbol: Constants.COIN_SYMBOL.STC,
+    //   coin_image:
+    //     'https://s2.coinmarketcap.com/static/img/coins/64x64/20513.png',
+    //   is_token: 0,
+    //   token_address: null,
+    //   decimals: 1000000000000000000,
+    // },
     {
       coin_family: 8,
       coin_name: 'Solana',

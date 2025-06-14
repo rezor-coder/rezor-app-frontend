@@ -112,7 +112,7 @@ const nextPressed = async (
       DATA.trxAddress,
       DATA.solAddress,
     ];
-    const coinFamilyKeys = [1, 2, 6, 11, 3, 4, 8];
+    const coinFamilyKeys = [1, 2, 6, 11, 3, 8];
 
     const walletData = {
       walletName: walletName,

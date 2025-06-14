@@ -102,11 +102,17 @@ const Wallet = props => {
   let access_token = Singleton.getInstance().access_token;
 
   const promptUpdate = () => {
+    const buttons = [{text: 'Update Now', onPress: () => redirectToAppStore()}];
+
+    if (!isMandatory) {
+      buttons.push({text: 'Cancel', style: 'cancel'});
+    }
+
     Alert.alert(
       'Update Required',
       'A new version of the app is available. Please update to continue.',
-      [{text: 'Update Now', onPress: () => redirectToAppStore()}],
-      {cancelable: false},
+      buttons,
+      {cancelable: !isMandatory},
     );
   };
 
@@ -130,10 +136,7 @@ const Wallet = props => {
   useEffect(() => {
     const checkVersionAndPromptUpdate = () => {
       const currentVersion = DeviceInfo.getBuildNumber();
-      if (
-        isMandatory &&
-        parseInt(currentVersion, 10) < parseInt(requiredVersion, 10)
-      ) {
+      if (parseInt(currentVersion, 10) < parseInt(requiredVersion, 10)) {
         promptUpdate();
       }
     };

@@ -137,7 +137,7 @@ const Splash = props => {
           // Alert.alert('coinFamilyKeys'+coinFamilyKeys)
           if (coinFamilyKeys?.length > 1) {
             if (!coinFamilyKeys?.toString()?.includes('4')) {
-              coinFamilyKeys = [1, 2, 6, 11, 3, 4]
+              coinFamilyKeys = [1, 2, 6, 11, 3]
             }
           }
           console.log("coinFamilyKeys  11",coinFamilyKeys,typeof coinFamilyKeys);
@@ -254,7 +254,7 @@ const Splash = props => {
                 res.trxAddress,
                 res.solAddress,
               ];
-              let coinFamilyKeys = [1, 2, 6, 11, 3, 4, 8];
+              let coinFamilyKeys = [1, 2, 6, 11, 3, 8];
               let WalletData = {
                 walletName: wallet_name,
                 mnemonics: res.mnemonics,

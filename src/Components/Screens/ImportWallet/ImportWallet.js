@@ -204,7 +204,7 @@ const ImportWallet = props => {
                 res.trxAddress,
                 res.solAddress,
               ];
-              let coinFamilyKeys = [1, 2, 6, 11, 3, 4, 8];
+              let coinFamilyKeys = [1, 2, 6, 11, 3, 8];
              // let coinFamilyKeys = [1,  6, 11, 3,4];
               let WalletData = {
                 walletName: props.route?.params?.isFrom == 'multiWallet' ? name : 'Basic',
